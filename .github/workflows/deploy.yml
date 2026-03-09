@@ -20,7 +20,6 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: ${{ secrets.FTP_SERVER_DIR }}
           dangerous-clean-slate: false
-          force-upload: true
           exclude: |
             **/.git*
             **/.git*/**
@@ -29,3 +28,6 @@ jobs:
             *.md
             .DS_Store
             **/.DS_Store
+
+      - name: Fix file permissions
+        run: curl -s "https://schalmontpto.com/fix-permissions.php?token=schalmontpto2026fix"
