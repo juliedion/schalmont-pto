@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events Calendar — Schalmont PTO</title>
+  <meta name="description" content="View and add events to the Schalmont PTO events calendar.">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="images/favicon.svg">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <nav class="container nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="images/logo.png" alt="Schalmont Central PTO" class="nav-logo-img">
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li class="has-dropdown">
+          <a href="schools.html">Schools</a>
+          <ul class="nav-dropdown">
+            <li><a href="woestina.html">🌱 Woestina Pre-K</a></li>
+            <li><a href="jefferson.html">🏫 Jefferson Elementary</a></li>
+            <li><a href="middle-school.html">📚 Middle School</a></li>
+            <li><a href="high-school.html">🎓 High School</a></li>
+          </ul>
+        </li>
+        <li><a href="events.html">Events</a></li>
+        <li><a href="meetings.html">Meetings</a></li>
+        <li class="has-dropdown">
+          <a href="shop.html">Shop</a>
+          <ul class="nav-dropdown">
+            <li><a href="shop.html">👕 Spiritwear</a></li>
+            <li><a href="fundraisers.html">💰 Fundraisers</a></li>
+          </ul>
+        </li>
+        <li><a href="fundraisers.html">Fundraisers</a></li>
+        <li><a href="directory.html">Directory</a></li>
+        <li class="has-dropdown">
+          <a href="contact.html">Contact</a>
+          <ul class="nav-dropdown">
+            <li><a href="about.html">About</a></li>
+            <li><a href="social.html">Social</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+          </ul>
+        </li>
+        <li><a href="login.html" class="btn btn-primary" style="padding:6px 16px;font-size:14px;color:#000000" id="nav-login-btn">Login/Register</a></li>
+        
+        <li><a href="social.html" class="nav-social-icon" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a></li>
+        <li><a href="social.html" class="nav-social-icon" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    </nav>
+  </header>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="homepage-layout">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="homepage-sidenav">
+      <div class="sidenav-heading">Browse</div>
+      <a href="index.html" class="sidenav-item">Home</a>
+      <a href="events.html" class="sidenav-item">Events Calendar</a>
+      <a href="meetings.html" class="sidenav-item">PTO Meetings</a>
+
+      <div class="sidenav-heading">Schools</div>
+      <a href="schools.html" class="sidenav-item">All Schools</a>
+
+      <div class="sidenav-group">
+        <button class="sidenav-item sidenav-toggle" data-target="snav-woestina">Woestina Pre-K <span class="sidenav-arrow">&#9660;</span></button>
+        <div class="sidenav-submenu" id="snav-woestina">
+          <a href="woestina.html" class="sidenav-item sub">Overview</a>
+          <a href="woestina.html#book-fairs" class="sidenav-item sub">Book Fairs</a>
+          <a href="woestina.html#appreciation-days" class="sidenav-item sub">Appreciation Days</a>
+          <a href="woestina.html#fundraisers" class="sidenav-item sub">Fundraisers</a>
+          <a href="woestina.html#incoming-kindergarten" class="sidenav-item sub">Incoming Kindergarten</a>
+          <a href="woestina.html#journey-to-jefferson" class="sidenav-item sub">Journey to Jefferson</a>
+          <a href="woestina.html#picture-days" class="sidenav-item sub">Picture Days</a>
+          <a href="woestina.html#spiritwear" class="sidenav-item sub">Spiritwear</a>
+          <a href="woestina.html#yearbook" class="sidenav-item sub">Yearbook</a>
+        </div>
+      </div>
+
+      <div class="sidenav-group">
+        <button class="sidenav-item sidenav-toggle" data-target="snav-jefferson">Jefferson Elementary <span class="sidenav-arrow">&#9660;</span></button>
+        <div class="sidenav-submenu" id="snav-jefferson">
+          <a href="jefferson.html" class="sidenav-item sub">Overview</a>
+          <a href="jefferson.html#k2-dance" class="sidenav-item sub">K-2 Dance</a>
+          <a href="glitz-and-glam-dance.html" class="sidenav-item sub">3rd/4th Dance</a>
+          <a href="jefferson.html#school-banking" class="sidenav-item sub">School Banking</a>
+          <a href="jefferson.html#birthdays" class="sidenav-item sub">Birthdays</a>
+          <a href="jefferson.html#book-fairs" class="sidenav-item sub">Book Fairs</a>
+          <a href="jefferson.html#appreciation-days" class="sidenav-item sub">Appreciation Days</a>
+          <a href="fundraisers-jefferson.html" class="sidenav-item sub">Fundraisers</a>
+          <a href="jefferson.html#craft-fair" class="sidenav-item sub">Craft Fair &amp; Santa</a>
+          <a href="jefferson.html#holiday-shoppe" class="sidenav-item sub">Holiday Shoppe</a>
+          <a href="jefferson.html#journey" class="sidenav-item sub">Journey to Jefferson</a>
+          <a href="jefferson.html#incoming-k" class="sidenav-item sub">Incoming Kindergarten</a>
+          <a href="jefferson.html#kindergarten-lunch-team" class="sidenav-item sub">K Lunch Team</a>
+          <a href="jefferson.html#picture-days" class="sidenav-item sub">Picture Days</a>
+          <a href="jefferson.html#scholarships" class="sidenav-item sub">Scholarships</a>
+          <a href="jefferson.html#spiritwear" class="sidenav-item sub">Spiritwear</a>
+          <a href="jefferson.html#school-supplies" class="sidenav-item sub">School Supplies</a>
+          <a href="jefferson.html#summer-camp" class="sidenav-item sub">Summer Camp Fair</a>
+          <a href="jefferson.html#trunk-or-treat" class="sidenav-item sub">Trunk or Treat</a>
+          <a href="jefferson.html#turn-off-screens" class="sidenav-item sub">Turn Off the Screens</a>
+          <a href="jefferson.html#yearbook" class="sidenav-item sub">Yearbook</a>
+        </div>
+      </div>
+
+      <div class="sidenav-group">
+        <button class="sidenav-item sidenav-toggle" data-target="snav-middle">Middle School <span class="sidenav-arrow">&#9660;</span></button>
+        <div class="sidenav-submenu" id="snav-middle">
+          <a href="middle-school.html" class="sidenav-item sub">Overview</a>
+          <a href="middle-school.html#grade5-dance" class="sidenav-item sub">5th Grade Dance</a>
+          <a href="casino-night.html" class="sidenav-item sub">6/7 Casino Night</a>
+          <a href="middle-school.html#grade8-formal" class="sidenav-item sub">8th Grade Formal</a>
+          <a href="middle-school.html#book-fairs" class="sidenav-item sub">Book Fairs</a>
+          <a href="middle-school.html#appreciation-days" class="sidenav-item sub">Appreciation Days</a>
+          <a href="middle-school.html#fundraisers" class="sidenav-item sub">Fundraisers</a>
+          <a href="middle-school.html#sports" class="sidenav-item sub">Sports &amp; Athletics</a>
+          <a href="middle-school.html#yearbook" class="sidenav-item sub">Yearbook</a>
+          <a href="middle-school.html#picture-days" class="sidenav-item sub">Picture Days</a>
+          <a href="student-council.html" class="sidenav-item sub">Student Council</a>
+          <a href="middle-school.html#sabre-nation" class="sidenav-item sub">Sabre Nation</a>
+          <a href="middle-school.html#spiritwear" class="sidenav-item sub">Spiritwear</a>
+          <a href="middle-school.html#trail-of-treats" class="sidenav-item sub">Trail of Treats</a>
+        </div>
+      </div>
+
+      <div class="sidenav-group">
+        <button class="sidenav-item sidenav-toggle" data-target="snav-high">High School <span class="sidenav-arrow">&#9660;</span></button>
+        <div class="sidenav-submenu" id="snav-high">
+          <a href="high-school.html" class="sidenav-item sub">Overview</a>
+          <a href="high-school.html#dances" class="sidenav-item sub">Dances</a>
+          <a href="high-school.html#junior-prom" class="sidenav-item sub">Junior Prom</a>
+          <a href="high-school.html#senior-ball" class="sidenav-item sub">Senior Ball</a>
+          <a href="high-school.html#book-fairs" class="sidenav-item sub">Book Fairs</a>
+          <a href="high-school.html#appreciation-days" class="sidenav-item sub">Appreciation Days</a>
+          <a href="high-school.html#fundraisers" class="sidenav-item sub">Fundraisers</a>
+          <a href="high-school.html#sports" class="sidenav-item sub">Sports &amp; Athletics</a>
+          <a href="high-school.html#yearbook" class="sidenav-item sub">Yearbook</a>
+          <a href="high-school.html#picture-days" class="sidenav-item sub">Picture Days</a>
+          <a href="high-school.html#student-council" class="sidenav-item sub">Student Council</a>
+          <a href="high-school.html#spiritwear" class="sidenav-item sub">Spiritwear</a>
+          <a href="high-school.html#class-pages" class="sidenav-item sub">Class Facebook Pages</a>
+        </div>
+      </div>
+
+      <div class="sidenav-heading">Resources</div>
+      <a href="directory.html" class="sidenav-item">Directory</a>
+      <a href="donate.html" class="sidenav-item">Donate</a>
+      <a href="events.html" class="sidenav-item">Events</a>
+      <a href="fundraisers.html" class="sidenav-item">Fundraisers</a>
+      <a href="gallery.html" class="sidenav-item">Gallery</a>
+      <a href="meetings.html" class="sidenav-item">Meetings</a>
+      <a href="schools.html" class="sidenav-item">Schools</a>
+      <a href="family-scouts.html" class="sidenav-item">Scouts</a>
+      <a href="shop.html" class="sidenav-item">Shop</a>
+      <a href="social.html" class="sidenav-item">Social Media</a>
+      <a href="yearbooks.html" class="sidenav-item">Yearbooks</a>
+
+      <div class="sidenav-heading">Connect</div>
+      <a href="about.html" class="sidenav-item">About the PTO</a>
+      <a href="social.html" class="sidenav-item">Social Media Links</a>
+      <a href="contact.html" class="sidenav-item">Contact Us</a>
+      <div class="sidenav-donate-wrap" style="display:flex;flex-direction:column;gap:5px;padding:10px 8px 8px">
+        <a href="https://woestina-pre-k-pto-donations.cheddarup.com" target="_blank" rel="noopener" style="font-size:12px">Give back: &#127807; Woestina PTO</a>
+        <a href="https://my.cheddarup.com/c/jefferson-pto-donation" target="_blank" rel="noopener" style="font-size:12px">Give back: &#127979; Jefferson PTO</a>
+        <a href="https://schalmont-central-pto.cheddarup.com" target="_blank" rel="noopener" style="font-size:12px">Give back: &#128154; Schalmont PTO</a>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="homepage-main">
+
+
+
+  <!-- PAGE HERO -->
+  <section class="page-hero">
+    <div class="container">
+      <h1>📅 Events Calendar</h1>
+      <p>Stay up to date with PTO meetings, school events, fundraisers, and activities throughout the year.</p>
+    </div>
+  </section>
+
+  <!-- TODAY AT SCHALMONT -->
+  <section class="today-widget-section">
+    <div class="container">
+      <div class="today-widget-header">
+        <div>
+          <h2 class="today-widget-title">Today at Schalmont</h2>
+          <span id="today-widget-date" class="today-widget-date"></span>
+        </div>
+        <button class="add-cal-btn" id="add-to-cal-btn">&#128197; Add to My Calendar</button>
+      </div>
+      <div class="today-widget-grid" id="today-widget-grid">
+
+        <!-- Weather Panel -->
+        <div class="today-weather-panel">
+          <div class="today-panel-label">Today&#39;s Weather &mdash; Schenectady, NY</div>
+          <div id="weather-loading" style="color:rgba(255,255,255,0.6);font-size:13px">Loading weather...</div>
+          <div id="weather-content" style="display:none">
+            <div class="weather-primary">
+              <div id="weather-icon" class="weather-big-icon"></div>
+              <div>
+                <div id="weather-temp" class="weather-current-temp"></div>
+                <div id="weather-desc" class="weather-desc"></div>
+              </div>
+            </div>
+            <div class="weather-pills">
+              <span class="weather-pill"><span class="pill-label">High</span><span id="weather-high"></span></span>
+              <span class="weather-pill"><span class="pill-label">Low</span><span id="weather-low"></span></span>
+              <span class="weather-pill"><span class="pill-label">Wind</span><span id="weather-wind"></span></span>
+              <span class="weather-pill"><span class="pill-label">Precip</span><span id="weather-precip"></span></span>
+            </div>
+            <div class="weather-hourly-label">Today&#39;s Outlook</div>
+            <div id="weather-hourly" class="weather-hourly-row"></div>
+            <div id="weather-alert" class="weather-alert" style="display:none"></div>
+          </div>
+          <div id="weather-error" style="display:none;color:rgba(255,255,255,0.5);font-size:13px">Weather unavailable</div>
+        </div>
+
+        <!-- Events Panel -->
+        <div class="today-events-panel">
+          <div class="today-events-header">
+            <div class="today-panel-label dark">
+              Today&#39;s Events &amp; School Schedule
+              <span class="today-cal-legend">
+                <span style="color:#295c38">&#9679; PTO</span>
+                <span style="color:#8bc341">&#9679; Woestina</span>
+                <span style="color:#6bb044">&#9679; Jefferson</span>
+                <span style="color:#087d40">&#9679; Middle</span>
+                <span style="color:#044d2a">&#9679; High</span>
+              </span>
+            </div>
+          </div>
+          <iframe id="today-events-iframe" class="today-events-iframe" frameborder="0" scrolling="no" title="Today&#39;s Events"></iframe>
+          <div id="today-events-list" class="today-events-list" style="display:none"></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- TOP BANNER AD -->
+  <div class="top-banner-ad">
+    <div class="container">
+      <div class="top-banner-ad-inner">
+        <div class="top-banner-ad-slot" style="padding:0;line-height:0">
+          <a href="https://tinyurl.com/5ac83fe9" id="banner-ad-img-1" target="_blank" rel="noopener" style="display:block"><img src="images/Ads/Banners/CW-Schalmont-leader.jpg" alt="Advertisement" style="width:100%;height:auto;display:block;border-radius:var(--radius)"></a>
+          <a href="https://www.namebubbles.com/?rfsn=8825780.ef49f8" id="banner-ad-img-2" target="_blank" rel="noopener" style="display:none"><img src="images/Ads/Banners/Name-bubbles-Schalmont-leader.jpg" alt="Advertisement" style="width:100%;height:auto;display:block;border-radius:var(--radius)"></a>
+          <a href="https://tinyurl.com/3e4rd8vr" id="banner-ad-img-3" target="_blank" rel="noopener" style="display:none"><img src="images/Ads/Banners/Leaderad-ss-2026.jpg" alt="Advertisement" style="width:100%;height:auto;display:block;border-radius:var(--radius)"></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALENDARS -->
+  <section class="section">
+    <div class="container">
+
+      <!-- Section heading — centered, same style as Find Your School -->
+      <div class="section-heading">
+        <h2>PTO/School Calendars</h2>
+        <p>Select a calendar to view upcoming events for each school.</p>
+        <div class="accent-line"></div>
+      </div>
+
+      <div class="cal-layout">
+
+        <!-- LEFT: calendar -->
+        <div>
+          <!-- Admin add-event button (admins only) -->
+          <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+            <button class="admin-toggle btn btn-blue btn-sm" id="admin-toggle" style="display:none">+ Add PTO Event</button>
+          </div>
+
+          <!-- Mobile calendar picker (shown on mobile only via CSS) -->
+          <div class="cal-tab-select-wrap">
+            <select class="cal-tab-select" id="cal-tab-select" onchange="window.showCalTabFromSelect(this.value)">
+              <option value="all">All Events</option>
+              <option value="pto">Schalmont PTO</option>
+              <option value="jefferson">Jefferson PTO</option>
+              <option value="woestina">Woestina PTO</option>
+              <option value="middle">Middle School</option>
+              <option value="high">High School</option>
+              <option value="district">District</option>
+            </select>
+          </div>
+
+          <!-- Tabs — color-coded to match school brand colors (desktop) -->
+          <div class="cal-tabs-row" style="margin-bottom:16px">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-light);margin-bottom:6px;text-align:center">Sort by</div>
+            <div style="display:flex;gap:5px;flex-wrap:nowrap;justify-content:center;overflow-x:auto">
+              <button class="cal-tab-btn active" style="--tab-color:#295c38" onclick="window.showCalTab('all',this)">All Events</button>
+              <button class="cal-tab-btn" style="--tab-color:#295c38" onclick="window.showCalTab('pto',this)">Schalmont PTO</button>
+              <button class="cal-tab-btn" style="--tab-color:#6bb044" onclick="window.showCalTab('jefferson',this)">Jefferson PTO</button>
+              <button class="cal-tab-btn" style="--tab-color:#8bc341" onclick="window.showCalTab('woestina',this)">Woestina PTO</button>
+              <button class="cal-tab-btn" style="--tab-color:#087d40" onclick="window.showCalTab('middle',this)">Middle School</button>
+              <button class="cal-tab-btn" style="--tab-color:#044d2a" onclick="window.showCalTab('high',this)">High School</button>
+              <button class="cal-tab-btn" style="--tab-color:#039BE5" onclick="window.showCalTab('district',this)">District</button>
+            </div>
+          </div>
+
+          <!-- Calendar panels -->
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:32px">
+            <div class="cal-panel" id="cal-panel-all">
+              <iframe src="https://calendar.google.com/calendar/embed?src=c_2ccf0495db5e7ffcf4129ac6965b5cbe82ec743a13050f3aeecc9a18c84a53f5%40group.calendar.google.com&color=%230B8043&src=b8ps3245btumu5q6psc3cmvs8c%40group.calendar.google.com&color=%236bb044&src=eumk9qp2llrljnfkp64k1dgk5g%40group.calendar.google.com&color=%23087d40&src=8b7ohsc70vgab6398itc7e73q0%40group.calendar.google.com&color=%23044d2a&ctz=America%2FNew_York" style="border:0;width:100%;height:640px;display:block" frameborder="0" scrolling="no" loading="lazy"></iframe>
+            </div>
+            <div class="cal-panel" id="cal-panel-pto" style="display:none">
+              <iframe src="https://calendar.google.com/calendar/embed?src=c_2ccf0495db5e7ffcf4129ac6965b5cbe82ec743a13050f3aeecc9a18c84a53f5%40group.calendar.google.com&ctz=America%2FNew_York" style="border:0;width:100%;height:640px;display:block" frameborder="0" scrolling="no" loading="lazy"></iframe>
+            </div>
+            <div class="cal-panel" id="cal-panel-woestina" style="display:none">
+              <div style="padding:60px 40px;text-align:center">
+                <div style="font-size:52px;margin-bottom:18px">🌱</div>
+                <h3 style="font-size:20px;margin-bottom:10px">Woestina Pre-K Events</h3>
+                <p style="color:var(--text-light);max-width:440px;margin:0 auto 28px;font-size:14px;line-height:1.6">Woestina events are included in the All Events calendar. Visit the Woestina page for specific activities and resources.</p>
+                <a href="woestina.html" class="btn btn-primary" style="font-size:15px;padding:12px 28px">Visit Woestina Page →</a>
+              </div>
+            </div>
+            <div class="cal-panel" id="cal-panel-district" style="display:none">
+              <div style="padding:60px 40px;text-align:center">
+                <div style="font-size:52px;margin-bottom:18px">🏫</div>
+                <h3 style="font-size:20px;margin-bottom:10px">Schalmont District Calendar</h3>
+                <p style="color:var(--text-light);max-width:440px;margin:0 auto 28px;font-size:14px;line-height:1.6">The Schalmont Central Schools district calendar is hosted on the district website.</p>
+                <a href="https://www.schalmont.org/district-office-services/about-us/calendar/" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:15px;padding:12px 28px">View District Calendar →</a>
+              </div>
+            </div>
+            <div class="cal-panel" id="cal-panel-jefferson" style="display:none">
+              <iframe src="https://calendar.google.com/calendar/embed?src=b8ps3245btumu5q6psc3cmvs8c%40group.calendar.google.com&ctz=America%2FNew_York" style="border:0;width:100%;height:640px;display:block" frameborder="0" scrolling="no" loading="lazy"></iframe>
+            </div>
+            <div class="cal-panel" id="cal-panel-middle" style="display:none">
+              <iframe src="https://calendar.google.com/calendar/embed?src=eumk9qp2llrljnfkp64k1dgk5g%40group.calendar.google.com&ctz=America%2FNew_York" style="border:0;width:100%;height:640px;display:block" frameborder="0" scrolling="no" loading="lazy"></iframe>
+            </div>
+            <div class="cal-panel" id="cal-panel-high" style="display:none">
+              <iframe src="https://calendar.google.com/calendar/embed?src=8b7ohsc70vgab6398itc7e73q0%40group.calendar.google.com&ctz=America%2FNew_York" style="border:0;width:100%;height:640px;display:block" frameborder="0" scrolling="no" loading="lazy"></iframe>
+            </div>
+          </div>
+
+          <!-- PHOTO SLIDER -->
+          <div class="cal-photo-slider">
+            <div class="cal-photo-slide active" data-img="images/gallery/calendar-gallery/554921682_1647792423188249_6947939323262574198_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/555155761_1647796689854489_3218781953385655560_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/555439633_1647792563188235_4346383392116810290_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/555442551_1647792746521550_8233685165023372123_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/555520476_1647593886541436_2469965356840868347_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/555541319_1647794269854731_3696159491227226639_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/555546713_1647795223187969_9133840993300016971_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/555554973_1647793259854832_5901824236564693323_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/555726481_1647793086521516_9020519247033119010_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/557623195_1650237266277098_3237701752889658630_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/560624228_1666218998012258_4252902628898790143_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/561727928_1666219001345591_5436706503083815301_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/561753571_1666219334678891_3986327600318987920_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/569551062_10172890097985693_7529201972420481055_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/570124043_10164104204031660_5755825998510847284_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/570319024_1365252418647554_7693644780058292497_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/570358276_1365252431980886_422758980582046997_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/570392174_1365252228647573_1034488207311186627_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/570913426_1365252595314203_1938603066377808507_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/570916630_1365252061980923_8515915881454139518_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/570936669_1365252171980912_828173654660534514_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/570994611_1365252455314217_4746828618036529324_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571014842_1365252585314204_8748700193261418058_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571117075_1365252631980866_6878105138472085541_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571124362_1365252485314214_7475133239651094246_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571129435_1365252555314207_1029763913118778547_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571132984_1365252461980883_7903430444828942730_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571134913_10164104203736660_4763469193726532354_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571140462_1365252558647540_3465455741797122609_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571209412_1365252315314231_4341748739661640479_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571222477_10164104193116660_5861374657972810378_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571227428_1365252065314256_4742337395957781246_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571230748_1365252291980900_2364633781794885708_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571232174_1365252528647543_5265351050852156171_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571253499_10164104203886660_6559721093166235002_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571256875_1365252238647572_4495473813610402638_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571264755_10164104214311660_3564031919921394723_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571269279_10232221421890476_2176103422678907618_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571271967_10164104203476660_1110626861939945600_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571284134_10164104203631660_2011696995416372994_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571297673_10164104204091660_1440011988865493941_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571386956_10164104203431660_4201595784851503092_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571408516_1365252111980918_2129790400314359074_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571511522_1365252368647559_8743625118045643219_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571651986_1365252531980876_7158840916286508617_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/571803915_10164104203326660_5258685887118373946_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/572064638_25909646691958382_8346490054849163690_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/572769456_1365252495314213_7046664374083292691_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/579208496_1690919245542233_3810320491675233473_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/592868853_1709814146986076_237401609332742068_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/595958424_1714319643202193_3455102486152225830_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/596768858_1716038829696941_2009525915963437885_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/599247739_1721090745858416_3108814905038263070_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/601857510_1725980982036059_2208042316283941080_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/602897616_1724540685513422_3596839004498746774_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/604707994_1727155888585235_2586344888852435525_n.jpg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/IMG_1974.jpeg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/IMG_1977.jpeg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/IMG_1980.jpeg"></div>
+            <div class="cal-photo-slide" data-img="images/gallery/calendar-gallery/IMG_1981.jpeg"></div>
+          </div>
+
+          <!-- Hidden elements required by admin JS -->
+          <span id="cal-month-label" style="display:none"></span>
+          <button id="cal-prev" style="display:none"></button>
+          <button id="cal-next" style="display:none"></button>
+          <div id="calendar-grid" style="display:none"></div>
+          <div id="event-list" style="display:none"></div>
+
+          <!-- Add Event Admin Panel -->
+          <div>
+            <div class="admin-panel hidden" id="admin-form-wrap">
+          <h3 style="margin-bottom:4px;font-size:18px">Add New Event</h3>
+          <p style="font-size:13px;color:var(--text-light);margin-bottom:24px">Admins: fill in the details below to add an event to the calendar.</p>
+          <div id="add-event-alert"></div>
+          <form id="add-event-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="ev-title">Event Title *</label>
+                <input type="text" id="ev-title" name="title" placeholder="e.g., Spring Book Fair" required>
+              </div>
+              <div class="form-group">
+                <label for="ev-type">Event Type *</label>
+                <select id="ev-type" name="type">
+                  <option value="meeting">Meeting</option>
+                  <option value="fundraiser">Fundraiser</option>
+                  <option value="social">Social</option>
+                  <option value="academic">Academic</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="ev-date">Date *</label>
+                <input type="date" id="ev-date" name="date" required>
+              </div>
+              <div class="form-group">
+                <label for="ev-time">Time</label>
+                <input type="text" id="ev-time" name="time" placeholder="e.g., 6:30 PM or 8 AM – 3 PM">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="ev-location">Location</label>
+              <input type="text" id="ev-location" name="location" placeholder="e.g., School Library, Main Gymnasium">
+            </div>
+            <div class="form-group">
+              <label for="ev-desc">Description</label>
+              <textarea id="ev-desc" name="description" placeholder="Brief description of the event…" rows="3"></textarea>
+            </div>
+            <div style="display:flex;gap:12px">
+              <button type="submit" class="btn btn-primary">Add to Calendar</button>
+              <button type="button" class="btn btn-blue" onclick="document.getElementById('admin-form-wrap').classList.add('hidden')">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+        </div><!-- end left col -->
+
+        <!-- RIGHT: upcoming events sidebar -->
+        <div class="upcoming-sidebar">
+          <h3 style="font-size:15px;font-weight:800;margin-bottom:4px;color:var(--primary)">Upcoming Events</h3>
+          <p style="font-size:12px;color:var(--text-light);margin-bottom:16px">Dates &amp; deadlines to know</p>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:0">
+            <li class="upc-item"><span class="upc-dot" style="background:#0B8043"></span><div><span class="upc-date">Mar 19</span><span class="upc-name">PTO Meeting</span><span class="upc-school" style="color:#0B8043">All Schools</span></div></li>
+            <li class="upc-item"><span class="upc-dot" style="background:#6bb044"></span><div><span class="upc-date">Mar 21</span><span class="upc-name"><a href="jefferson.html">3rd/4th Grade Dance</a></span><span class="upc-school" style="color:#6bb044">Jefferson</span></div></li>
+            <li class="upc-item"><span class="upc-dot" style="background:#087d40"></span><div><span class="upc-date">Mar 28</span><span class="upc-name"><a href="middle-school.html">6/7 Casino Night</a></span><span class="upc-school" style="color:#087d40">Middle School</span></div></li>
+            <li class="upc-item"><span class="upc-dot" style="background:#039BE5"></span><div><span class="upc-date">Apr 7–11</span><span class="upc-name">Spring Break</span><span class="upc-school" style="color:#039BE5">District</span></div></li>
+            <li class="upc-item"><span class="upc-dot" style="background:#0B8043"></span><div><span class="upc-date">May 5–9</span><span class="upc-name">Staff Appreciation Week</span><span class="upc-school" style="color:#0B8043">All Schools</span></div></li>
+            <li class="upc-item"><span class="upc-dot" style="background:#087d40"></span><div><span class="upc-date">May 16</span><span class="upc-name"><a href="middle-school.html">8th Grade Formal</a></span><span class="upc-school" style="color:#087d40">Middle School</span></div></li>
+            <li class="upc-item"><span class="upc-dot" style="background:#044d2a"></span><div><span class="upc-date">May 23</span><span class="upc-name"><a href="high-school.html">Junior Prom</a></span><span class="upc-school" style="color:#044d2a">High School</span></div></li>
+            <li class="upc-item"><span class="upc-dot" style="background:#6bb044"></span><div><span class="upc-date">Jun 4</span><span class="upc-name"><a href="jefferson.html">Jefferson Book Fair</a></span><span class="upc-school" style="color:#6bb044">Jefferson</span></div></li>
+            <li class="upc-item"><span class="upc-dot" style="background:#044d2a"></span><div><span class="upc-date">Jun 13</span><span class="upc-name"><a href="high-school.html">Senior Ball</a></span><span class="upc-school" style="color:#044d2a">High School</span></div></li>
+          </ul>
+        </div>
+
+      </div><!-- end cal-layout -->
+    </div>
+  </section>
+
+  <!-- DAY EVENTS MODAL -->
+  <div class="modal-overlay hidden" id="day-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="day-modal-date">Events</h3>
+        <button class="modal-close" id="day-modal-close">✕</button>
+      </div>
+      <div class="modal-body" id="day-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER AD -->
+  
+
+  <!-- ADD TO CALENDAR MODAL -->
+  <div id="add-cal-modal" class="modal-overlay hidden">
+    <div class="modal" style="max-width:480px">
+      <div class="modal-header">
+        <h3>&#128197; Add to My Calendar</h3>
+        <button class="modal-close" id="add-cal-close">&#10005;</button>
+      </div>
+      <div class="modal-body" style="padding:24px">
+        <p style="margin-bottom:16px;color:var(--text-light);font-size:14px">Select the school calendars you want to subscribe to:</p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+          <label class="cal-check-label"><input type="checkbox" value="pto" checked> <span style="color:#295c38;font-weight:600">&#9679; Schalmont Central PTO</span></label>
+          <label class="cal-check-label"><input type="checkbox" value="jefferson"> <span style="color:#6bb044;font-weight:600">&#9679; Jefferson Elementary PTO</span></label>
+          <label class="cal-check-label"><input type="checkbox" value="middle"> <span style="color:#087d40;font-weight:600">&#9679; Schalmont Middle School</span></label>
+          <label class="cal-check-label"><input type="checkbox" value="high"> <span style="color:#044d2a;font-weight:600">&#9679; Schalmont High School</span></label>
+        </div>
+        <div id="cal-sub-links" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+    </div>
+  </div>
+
+    </div><!-- /.homepage-main -->
+  </div><!-- /.homepage-layout -->
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-brand" style="margin-bottom:12px">
+            <img src="images/logo.png" alt="Schalmont Central PTO" class="nav-logo-img">
+          </div>
+          <p>Supporting students, connecting families, and building community in the Schalmont Central School District.</p>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap">
+            <a href="login.html" class="btn btn-primary" style="padding:6px 14px;font-size:13px;color:#000000">Login/Register</a>
+            <div class="footer-social-icons" style="margin-top:0">
+              <a href="social.html" class="footer-social-icon" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+              <a href="social.html" class="footer-social-icon" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+            </div>
+          </div>
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
+            <a href="https://woestina-pre-k-pto-donations.cheddarup.com" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-align:center;padding:6px 14px;font-size:13px;color:#000000">Give back: &#127807; Woestina PTO</a>
+            <a href="https://my.cheddarup.com/c/jefferson-pto-donation" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-align:center;padding:6px 14px;font-size:13px;color:#000000">Give back: &#127979; Jefferson PTO</a>
+            <a href="https://schalmont-central-pto.cheddarup.com" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-align:center;padding:6px 14px;font-size:13px;color:#000000">Give back: &#128154; Schalmont PTO</a>
+          </div>
+        </div>
+        <div>
+          <div class="footer-heading">Quick Links</div>
+          <ul class="footer-links">
+            <li><a href="events.html">Events Calendar</a></li>
+            <li><a href="directory.html">Parent Directory</a></li>
+            <li><a href="shop.html">Shop</a></li>
+            <li><a href="fundraisers.html">Fundraisers</a></li>
+            <li><a href="meetings.html">PTO Meetings</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-heading">About & Help</div>
+          <ul class="footer-links">
+            <li><a href="about.html">About the PTO</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="https://www.schalmont.org" target="_blank" rel="noopener">School District Website</a></li>
+          </ul>
+        </div>
+        <div class="footer-ad-col">
+
+          <div class="footer-ad-box" style="padding:0;overflow:hidden;border-radius:var(--radius)">
+            <a href="https://tinyurl.com/5ac83fe9" id="footer-ad-img-1" target="_blank" rel="noopener" style="display:block"><img src="images/Ads/Square/CW-Schalmont-square.jpg" alt="Advertisement" class="footer-ad-img" style="width:100%;display:block"></a>
+            <a href="https://www.namebubbles.com/?rfsn=8825780.ef49f8" id="footer-ad-img-2" target="_blank" rel="noopener" style="display:none"><img src="images/Ads/Square/Name-Bubbles-Schalmont-Ad1-square.jpg" alt="Advertisement" class="footer-ad-img" style="width:100%;display:block"></a>
+            <a href="https://tinyurl.com/3e4rd8vr" id="footer-ad-img-3" target="_blank" rel="noopener" style="display:none"><img src="images/Ads/Square/Squaress-ad2026.jpg" alt="Advertisement" class="footer-ad-img" style="width:100%;display:block"></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Schalmont Central Schools PTO. All rights reserved.</span>
+        <span>Schenectady, NY</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <style>
+    @media (max-width: 900px) {
+      .events-layout { grid-template-columns: 1fr !important; }
+    }
+  </style>
+  <script>
+  // ── Today at Schalmont (Events Page) ──────────────────────────────────────
+  (function() {
+    // ── CONFIGURATION ───────────────────────────────────────────────────────
+    // To label today's events by school (e.g. "D Day - Jefferson"), add a
+    // Google Calendar API key below. Get one free:
+    //   1. Go to console.cloud.google.com
+    //   2. Enable the "Google Calendar API"
+    //   3. Credentials → Create API Key
+    //   4. Restrict it to "Google Calendar API" + your website's HTTP referrer
+    var GCAL_API_KEY = '';  // ← paste your API key here
+
+    var CAL_IDS = {
+      pto:      'c_2ccf0495db5e7ffcf4129ac6965b5cbe82ec743a13050f3aeecc9a18c84a53f5@group.calendar.google.com',
+      jefferson:'b8ps3245btumu5q6psc3cmvs8c@group.calendar.google.com',
+      middle:   'eumk9qp2llrljnfkp64k1dgk5g@group.calendar.google.com',
+      high:     '8b7ohsc70vgab6398itc7e73q0@group.calendar.google.com'
+    };
+    var CAL_LABELS = { pto:'Schalmont PTO', jefferson:'Jefferson Elementary', middle:'Middle School', high:'High School' };
+    var CAL_COLORS = { pto:'#295c38', jefferson:'#6bb044', middle:'#087d40', high:'#044d2a' };
+    var WMO_ICONS = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',77:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',85:'🌨️',86:'❄️',95:'⛈️',96:'⛈️',99:'⛈️'};
+    var WMO_DESCS = {0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',48:'Freezing fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',77:'Snow grains',80:'Showers',81:'Rain showers',82:'Violent showers',85:'Snow showers',86:'Heavy snow showers',95:'Thunderstorm',96:'Thunderstorm with hail',99:'Thunderstorm with hail'};
+
+    // Date setup — Eastern time
+    var now = new Date();
+    var dateEl = document.getElementById('today-widget-date');
+    if (dateEl) dateEl.textContent = now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric',timeZone:'America/New_York'});
+
+    var etStr = now.toLocaleDateString('en-CA',{timeZone:'America/New_York'});
+    var etParts = etStr.split('-');
+    var todayParam = etParts[0]+etParts[1]+etParts[2];
+    var tomorrowDate = new Date(now); tomorrowDate.setDate(tomorrowDate.getDate()+1);
+    var etStr2 = tomorrowDate.toLocaleDateString('en-CA',{timeZone:'America/New_York'});
+    var etParts2 = etStr2.split('-');
+    var dateParam = todayParam+'%2F'+etParts2[0]+etParts2[1]+etParts2[2];
+
+    // Detect EST vs EDT offset
+    function getETOffset() {
+      var y=now.getFullYear();
+      var ds=new Date(y,2,8); while(ds.getDay()!==0)ds.setDate(ds.getDate()+1);
+      var de=new Date(y,10,1); while(de.getDay()!==0)de.setDate(de.getDate()+1);
+      return (now>=ds&&now<de)?'-04:00':'-05:00';
+    }
+
+    // Format event start time
+    function formatTime(ev) {
+      if (ev.start.date) return 'All day';
+      return new Date(ev.start.dateTime).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true,timeZone:'America/New_York'});
+    }
+
+    // Render the custom labeled event list
+    function renderEventList(allEvents) {
+      var listEl = document.getElementById('today-events-list');
+      if (!listEl) return;
+      if (!allEvents.length) {
+        listEl.innerHTML = '<div class="today-events-empty">No events scheduled for today.</div>';
+        return;
+      }
+      // Sort: all-day first, then by start time
+      allEvents.sort(function(a,b) {
+        var ad=!!a.ev.start.date, bd=!!b.ev.start.date;
+        if (ad&&!bd) return -1; if (!ad&&bd) return 1; if (ad&&bd) return 0;
+        return new Date(a.ev.start.dateTime)-new Date(b.ev.start.dateTime);
+      });
+      var html = '';
+      allEvents.forEach(function(item) {
+        var ev=item.ev, k=item.key, color=CAL_COLORS[k], label=CAL_LABELS[k];
+        var title = (ev.summary||'(No title)').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        html += '<div class="today-event-item">';
+        html += '<span class="today-event-dot" style="background:'+color+'"></span>';
+        html += '<div class="today-event-body">';
+        html += '<div class="today-event-title">'+title+'</div>';
+        html += '<div class="today-event-meta"><span class="today-event-time">'+formatTime(ev)+'</span>&nbsp;&middot;&nbsp;<span class="today-event-school" style="color:'+color+'">'+label+'</span></div>';
+        html += '</div></div>';
+      });
+      listEl.innerHTML = html;
+    }
+
+    // Fetch events from Google Calendar API
+    function loadCalendarAPI() {
+      var listEl = document.getElementById('today-events-list');
+      if (!listEl) return;
+      listEl.innerHTML = '<div class="today-events-loading">Loading events...</div>';
+      var offset = getETOffset();
+      var timeMin = etStr+'T00:00:00'+offset;
+      var timeMax = etStr2+'T00:00:00'+offset;
+      var keys = Object.keys(CAL_IDS), allEvents = [], pending = keys.length;
+      keys.forEach(function(key) {
+        var cid = encodeURIComponent(CAL_IDS[key]);
+        var url = 'https://www.googleapis.com/calendar/v3/calendars/'+cid+'/events'
+          +'?key='+GCAL_API_KEY
+          +'&timeMin='+encodeURIComponent(timeMin)
+          +'&timeMax='+encodeURIComponent(timeMax)
+          +'&singleEvents=true&orderBy=startTime&maxResults=20';
+        fetch(url).then(function(r){return r.json();}).then(function(data){
+          if (data.items) data.items.forEach(function(ev){allEvents.push({ev:ev,key:key});});
+          if (--pending===0) renderEventList(allEvents);
+        }).catch(function(){ if (--pending===0) renderEventList(allEvents); });
+      });
+    }
+
+    // Show Google Calendar agenda iframe for today (no API key or proxy needed)
+    function loadICSEvents() {
+      var iframeEl = document.getElementById('today-events-iframe');
+      var listEl   = document.getElementById('today-events-list');
+      if (listEl) listEl.style.display = 'none';
+      if (iframeEl) {
+        var src = 'https://calendar.google.com/calendar/embed?mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York&dates='+dateParam;
+        Object.values(CAL_IDS).forEach(function(id){ src += '&src='+encodeURIComponent(id); });
+        iframeEl.src = src;
+        iframeEl.style.display = 'block';
+      }
+    }
+
+    // Show events: if API key set → Google Calendar API; else → iCal feeds (fallback: iframe)
+    var iframeEl = document.getElementById('today-events-iframe');
+    var listEl   = document.getElementById('today-events-list');
+    if (GCAL_API_KEY) {
+      if (iframeEl) iframeEl.style.display = 'none';
+      if (listEl)   { listEl.style.display = 'block'; loadCalendarAPI(); }
+    } else {
+      loadICSEvents();
+    }
+
+    // Weather — Open-Meteo
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=42.7765&longitude=-73.9278&current=temperature_2m,precipitation,wind_speed_10m,weather_code&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FNew_York&forecast_days=1')
+      .then(function(r){return r.json();})
+      .then(function(data){
+        var cur=data.current, day=data.daily, hourly=data.hourly;
+        var code=cur.weather_code;
+        document.getElementById('weather-icon').textContent = WMO_ICONS[code]||'🌡️';
+        document.getElementById('weather-temp').textContent = Math.round(cur.temperature_2m)+'°F';
+        document.getElementById('weather-desc').textContent = WMO_DESCS[code]||'Current conditions';
+        document.getElementById('weather-high').textContent = Math.round(day.temperature_2m_max[0])+'°F';
+        document.getElementById('weather-low').textContent  = Math.round(day.temperature_2m_min[0])+'°F';
+        document.getElementById('weather-wind').textContent = Math.round(cur.wind_speed_10m)+' mph';
+        document.getElementById('weather-precip').textContent = cur.precipitation.toFixed(2)+'"';
+        var hourlyEl = document.getElementById('weather-hourly');
+        if (hourlyEl && hourly) {
+          var nowHr = new Date().getHours(), html = '';
+          for (var i=nowHr; i<Math.min(nowHr+8,24); i++) {
+            var t=hourly.temperature_2m[i], c=hourly.weather_code[i];
+            var hr = i===0?'12am':i<12?i+'am':i===12?'12pm':(i-12)+'pm';
+            html += '<div class="hourly-slot"><div class="hourly-time">'+hr+'</div><div class="hourly-icon">'+(WMO_ICONS[c]||'🌡️')+'</div><div class="hourly-temp">'+Math.round(t)+'°</div></div>';
+          }
+          hourlyEl.innerHTML = html;
+        }
+        document.getElementById('weather-loading').style.display='none';
+        document.getElementById('weather-content').style.display='block';
+      })
+      .catch(function(){
+        document.getElementById('weather-loading').style.display='none';
+        document.getElementById('weather-error').style.display='block';
+      });
+
+    // NWS Alerts
+    fetch('https://api.weather.gov/alerts/active?point=42.7765,-73.9278',{headers:{'User-Agent':'SchalmontPTO/1.0'}})
+      .then(function(r){return r.json();})
+      .then(function(data){
+        var alertEl=document.getElementById('weather-alert');
+        if (alertEl && data.features && data.features.length>0) {
+          var a=data.features[0].properties;
+          alertEl.innerHTML='⚠️ <strong>'+a.event+'</strong>: '+a.headline;
+          alertEl.style.display='block';
+        }
+      }).catch(function(){});
+
+    // Responsive grid
+    var grid = document.getElementById('today-widget-grid');
+    function resizeGrid(){ if(grid) grid.style.gridTemplateColumns = window.innerWidth<720?'1fr':'260px 1fr'; }
+    resizeGrid();
+    window.addEventListener('resize', resizeGrid);
+
+    // Add to Calendar modal
+    var btn = document.getElementById('add-to-cal-btn');
+    var modal = document.getElementById('add-cal-modal');
+    var closeBtn = document.getElementById('add-cal-close');
+    if (btn && modal) {
+      btn.addEventListener('click', function(){ modal.classList.remove('hidden'); buildCalLinks(); });
+      closeBtn.addEventListener('click', function(){ modal.classList.add('hidden'); });
+      modal.addEventListener('click', function(e){ if(e.target===modal) modal.classList.add('hidden'); });
+      var checks = modal.querySelectorAll('input[type=checkbox]');
+      checks.forEach(function(c){ c.addEventListener('change', buildCalLinks); });
+    }
+
+    function buildCalLinks() {
+      var names = {pto:'Schalmont Central PTO', jefferson:'Jefferson Elementary PTO', middle:'Schalmont Middle School', high:'Schalmont High School'};
+      var colors = {pto:'#295c38', jefferson:'#6bb044', middle:'#087d40', high:'#044d2a'};
+      var linksEl = document.getElementById('cal-sub-links');
+      if (!linksEl) return;
+      var modal = document.getElementById('add-cal-modal');
+      var checks = modal.querySelectorAll('input[type=checkbox]');
+      var selected = Array.from(checks).filter(function(c){return c.checked;}).map(function(c){return c.value;});
+      if (selected.length === 0) {
+        linksEl.innerHTML = '<p style="color:var(--text-light);font-size:13px">Select at least one calendar above.</p>';
+        return;
+      }
+      var html = '';
+      selected.forEach(function(key) {
+        var id = CAL_IDS[key];
+        var enc = encodeURIComponent(id);
+        html += '<div style="border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:6px">';
+        html += '<div style="font-weight:700;color:'+colors[key]+';font-size:14px;margin-bottom:8px">&#9679; '+names[key]+'</div>';
+        html += '<div style="display:flex;gap:8px;flex-wrap:wrap">';
+        html += '<a href="https://calendar.google.com/calendar/r?cid='+enc+'" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="font-size:13px;padding:6px 14px">Google Calendar</a>';
+        html += '<a href="https://calendar.google.com/calendar/ical/'+enc+'/public/basic.ics" class="btn btn-sm" style="font-size:13px;padding:6px 14px;border:1.5px solid var(--border);border-radius:var(--radius);color:var(--text)">iCal / Outlook</a>';
+        html += '</div></div>';
+      });
+      linksEl.innerHTML = html;
+    }
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jefferson Elementary PTO — Schalmont PTO</title>
+  <meta name="description" content="Events, resources, and information for Jefferson Elementary PTO families.">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="images/favicon.svg">
+  <style>
+    .coming-soon-box {
+      background: var(--light-bg);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 24px;
+      text-align: center;
+      color: var(--text-light);
+      font-size: 14px;
+    }
+    .coming-soon-box .cs-icon { font-size: 36px; margin-bottom: 10px; }
+    .past-event-box {
+      background: #f8f8f8;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--secondary);
+      border-radius: var(--radius-lg);
+      padding: 24px 22px;
+    }
+    .past-event-badge {
+      display: inline-block;
+      background: var(--secondary);
+      color: var(--primary-dark);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .school-jump-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .school-jump-btn {
+      display: inline-block;
+      padding: 8px 16px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary);
+      text-decoration: none;
+      transition: all var(--transition);
+    }
+    .school-jump-btn:hover {
+      background: var(--primary);
+      color: var(--white);
+      border-color: var(--primary);
+    }
+
+    .social-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all var(--transition);
+    }
+    .social-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+    .class-search-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #1877F2;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 7px 14px;
+      border-radius: var(--radius);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+      flex-shrink: 0;
+    }
+    .class-search-btn:hover { opacity: 0.88; }
+    .class-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: all var(--transition);
+    }
+    .class-card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+    .class-year {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+      min-width: 56px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <nav class="container nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="images/logo.png" alt="Schalmont Central PTO" class="nav-logo-img">
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li class="has-dropdown">
+          <a href="schools.html">Schools</a>
+          <ul class="nav-dropdown">
+            <li><a href="woestina.html">🌱 Woestina Pre-K</a></li>
+            <li><a href="jefferson.html">🏫 Jefferson Elementary</a></li>
+            <li><a href="middle-school.html">📚 Middle School</a></li>
+            <li><a href="high-school.html">🎓 High School</a></li>
+          </ul>
+        </li>
+        <li><a href="events.html">Events</a></li>
+        <li><a href="meetings.html">Meetings</a></li>
+        <li class="has-dropdown">
+          <a href="shop.html">Shop</a>
+          <ul class="nav-dropdown">
+            <li><a href="shop.html">👕 Spiritwear</a></li>
+            <li><a href="fundraisers.html">💰 Fundraisers</a></li>
+          </ul>
+        </li>
+        <li><a href="fundraisers.html">Fundraisers</a></li>
+        <li><a href="directory.html">Directory</a></li>
+        <li class="has-dropdown">
+          <a href="contact.html">Contact</a>
+          <ul class="nav-dropdown">
+            <li><a href="about.html">About</a></li>
+            <li><a href="social.html">Social</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+          </ul>
+        </li>
+        <li><a href="login.html" class="btn btn-primary" style="padding:6px 16px;font-size:14px;color:#000000" id="nav-login-btn">Login/Register</a></li>
+        
+        <li><a href="social.html" class="nav-social-icon" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a></li>
+        <li><a href="social.html" class="nav-social-icon" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    </nav>
+  </header>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="homepage-layout">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="homepage-sidenav">
+      <div class="sidenav-heading">Browse</div>
+      <a href="index.html" class="sidenav-item">Home</a>
+      <a href="events.html" class="sidenav-item">Events Calendar</a>
+      <a href="meetings.html" class="sidenav-item">PTO Meetings</a>
+
+      <div class="sidenav-heading">Schools</div>
+      <a href="schools.html" class="sidenav-item">All Schools</a>
+
+      <div class="sidenav-group">
+        <button class="sidenav-item sidenav-toggle" data-target="snav-woestina">Woestina Pre-K <span class="sidenav-arrow">&#9660;</span></button>
+        <div class="sidenav-submenu" id="snav-woestina">
+          <a href="woestina.html" class="sidenav-item sub">Overview</a>
+          <a href="woestina.html#book-fairs" class="sidenav-item sub">Book Fairs</a>
+          <a href="woestina.html#appreciation-days" class="sidenav-item sub">Appreciation Days</a>
+          <a href="woestina.html#fundraisers" class="sidenav-item sub">Fundraisers</a>
+          <a href="woestina.html#incoming-kindergarten" class="sidenav-item sub">Incoming Kindergarten</a>
+          <a href="woestina.html#journey-to-jefferson" class="sidenav-item sub">Journey to Jefferson</a>
+          <a href="woestina.html#picture-days" class="sidenav-item sub">Picture Days</a>
+          <a href="woestina.html#spiritwear" class="sidenav-item sub">Spiritwear</a>
+          <a href="woestina.html#yearbook" class="sidenav-item sub">Yearbook</a>
+        </div>
+      </div>
+
+      <div class="sidenav-group">
+        <button class="sidenav-item sidenav-toggle" data-target="snav-jefferson">Jefferson Elementary <span class="sidenav-arrow">&#9660;</span></button>
+        <div class="sidenav-submenu" id="snav-jefferson">
+          <a href="jefferson.html" class="sidenav-item sub">Overview</a>
+          <a href="jefferson.html#k2-dance" class="sidenav-item sub">K-2 Dance</a>
+          <a href="glitz-and-glam-dance.html" class="sidenav-item sub">3rd/4th Dance</a>
+          <a href="jefferson.html#school-banking" class="sidenav-item sub">School Banking</a>
+          <a href="jefferson.html#birthdays" class="sidenav-item sub">Birthdays</a>
+          <a href="jefferson.html#book-fairs" class="sidenav-item sub">Book Fairs</a>
+          <a href="jefferson.html#appreciation-days" class="sidenav-item sub">Appreciation Days</a>
+          <a href="fundraisers-jefferson.html" class="sidenav-item sub">Fundraisers</a>
+          <a href="jefferson.html#craft-fair" class="sidenav-item sub">Craft Fair &amp; Santa</a>
+          <a href="jefferson.html#holiday-shoppe" class="sidenav-item sub">Holiday Shoppe</a>
+          <a href="jefferson.html#journey" class="sidenav-item sub">Journey to Jefferson</a>
+          <a href="jefferson.html#incoming-k" class="sidenav-item sub">Incoming Kindergarten</a>
+          <a href="jefferson.html#kindergarten-lunch-team" class="sidenav-item sub">K Lunch Team</a>
+          <a href="jefferson.html#picture-days" class="sidenav-item sub">Picture Days</a>
+          <a href="jefferson.html#scholarships" class="sidenav-item sub">Scholarships</a>
+          <a href="jefferson.html#spiritwear" class="sidenav-item sub">Spiritwear</a>
+          <a href="jefferson.html#school-supplies" class="sidenav-item sub">School Supplies</a>
+          <a href="jefferson.html#summer-camp" class="sidenav-item sub">Summer Camp Fair</a>
+          <a href="jefferson.html#trunk-or-treat" class="sidenav-item sub">Trunk or Treat</a>
+          <a href="jefferson.html#turn-off-screens" class="sidenav-item sub">Turn Off the Screens</a>
+          <a href="jefferson.html#yearbook" class="sidenav-item sub">Yearbook</a>
+        </div>
+      </div>
+
+      <div class="sidenav-group">
+        <button class="sidenav-item sidenav-toggle" data-target="snav-middle">Middle School <span class="sidenav-arrow">&#9660;</span></button>
+        <div class="sidenav-submenu" id="snav-middle">
+          <a href="middle-school.html" class="sidenav-item sub">Overview</a>
+          <a href="middle-school.html#grade5-dance" class="sidenav-item sub">5th Grade Dance</a>
+          <a href="casino-night.html" class="sidenav-item sub">6/7 Casino Night</a>
+          <a href="middle-school.html#grade8-formal" class="sidenav-item sub">8th Grade Formal</a>
+          <a href="middle-school.html#book-fairs" class="sidenav-item sub">Book Fairs</a>
+          <a href="middle-school.html#appreciation-days" class="sidenav-item sub">Appreciation Days</a>
+          <a href="middle-school.html#fundraisers" class="sidenav-item sub">Fundraisers</a>
+          <a href="middle-school.html#sports" class="sidenav-item sub">Sports &amp; Athletics</a>
+          <a href="middle-school.html#yearbook" class="sidenav-item sub">Yearbook</a>
+          <a href="middle-school.html#picture-days" class="sidenav-item sub">Picture Days</a>
+          <a href="student-council.html" class="sidenav-item sub">Student Council</a>
+          <a href="middle-school.html#sabre-nation" class="sidenav-item sub">Sabre Nation</a>
+          <a href="middle-school.html#spiritwear" class="sidenav-item sub">Spiritwear</a>
+          <a href="middle-school.html#trail-of-treats" class="sidenav-item sub">Trail of Treats</a>
+        </div>
+      </div>
+
+      <div class="sidenav-group">
+        <button class="sidenav-item sidenav-toggle" data-target="snav-high">High School <span class="sidenav-arrow">&#9660;</span></button>
+        <div class="sidenav-submenu" id="snav-high">
+          <a href="high-school.html" class="sidenav-item sub">Overview</a>
+          <a href="high-school.html#dances" class="sidenav-item sub">Dances</a>
+          <a href="high-school.html#junior-prom" class="sidenav-item sub">Junior Prom</a>
+          <a href="high-school.html#senior-ball" class="sidenav-item sub">Senior Ball</a>
+          <a href="high-school.html#book-fairs" class="sidenav-item sub">Book Fairs</a>
+          <a href="high-school.html#appreciation-days" class="sidenav-item sub">Appreciation Days</a>
+          <a href="high-school.html#fundraisers" class="sidenav-item sub">Fundraisers</a>
+          <a href="high-school.html#sports" class="sidenav-item sub">Sports &amp; Athletics</a>
+          <a href="high-school.html#yearbook" class="sidenav-item sub">Yearbook</a>
+          <a href="high-school.html#picture-days" class="sidenav-item sub">Picture Days</a>
+          <a href="high-school.html#student-council" class="sidenav-item sub">Student Council</a>
+          <a href="high-school.html#spiritwear" class="sidenav-item sub">Spiritwear</a>
+          <a href="high-school.html#class-pages" class="sidenav-item sub">Class Facebook Pages</a>
+        </div>
+      </div>
+
+      <div class="sidenav-heading">Resources</div>
+      <a href="directory.html" class="sidenav-item">Directory</a>
+      <a href="donate.html" class="sidenav-item">Donate</a>
+      <a href="events.html" class="sidenav-item">Events</a>
+      <a href="fundraisers.html" class="sidenav-item">Fundraisers</a>
+      <a href="gallery.html" class="sidenav-item">Gallery</a>
+      <a href="meetings.html" class="sidenav-item">Meetings</a>
+      <a href="schools.html" class="sidenav-item">Schools</a>
+      <a href="family-scouts.html" class="sidenav-item">Scouts</a>
+      <a href="shop.html" class="sidenav-item">Shop</a>
+      <a href="social.html" class="sidenav-item">Social Media</a>
+      <a href="yearbooks.html" class="sidenav-item">Yearbooks</a>
+
+      <div class="sidenav-heading">Connect</div>
+      <a href="about.html" class="sidenav-item">About the PTO</a>
+      <a href="social.html" class="sidenav-item">Social Media Links</a>
+      <a href="contact.html" class="sidenav-item">Contact Us</a>
+      <div class="sidenav-donate-wrap" style="display:flex;flex-direction:column;gap:5px;padding:10px 8px 8px">
+        <a href="https://woestina-pre-k-pto-donations.cheddarup.com" target="_blank" rel="noopener" style="font-size:12px">Give back: &#127807; Woestina PTO</a>
+        <a href="https://my.cheddarup.com/c/jefferson-pto-donation" target="_blank" rel="noopener" style="font-size:12px">Give back: &#127979; Jefferson PTO</a>
+        <a href="https://schalmont-central-pto.cheddarup.com" target="_blank" rel="noopener" style="font-size:12px">Give back: &#128154; Schalmont PTO</a>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="homepage-main">
+
+
+
+  <!-- PAGE HERO -->
+  <section class="page-hero" style="background:linear-gradient(135deg,#3a7000 0%,#6bb044 50%,#88c655 100%);padding:64px 0 56px">
+    <div class="container" style="position:relative;z-index:1">
+      <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:5px 14px;margin-bottom:18px">
+        <span style="font-size:13px;font-weight:700;color:#fff;letter-spacing:0.04em">Grades K–4</span>
+      </div>
+      <h1 style="color:#fff;font-size:clamp(28px,4vw,42px);margin-bottom:12px;line-height:1.15">📖 Jefferson Elementary PTO</h1>
+      <p style="opacity:0.92;font-size:17px;max-width:560px;line-height:1.65;color:#fff">Events, resources, and community for Jefferson Elementary families.</p>
+    </div>
+  </section>
+
+  <!-- TOP BANNER AD -->
+  <div class="top-banner-ad">
+    <div class="container">
+      <div class="top-banner-ad-inner">
+        <div class="top-banner-ad-slot" style="padding:0;line-height:0">
+          <a href="https://tinyurl.com/5ac83fe9" id="banner-ad-img-1" target="_blank" rel="noopener" style="display:block"><img src="images/Ads/Banners/CW-Schalmont-leader.jpg" alt="Advertisement" style="width:100%;height:auto;display:block;border-radius:var(--radius)"></a>
+          <a href="https://www.namebubbles.com/?rfsn=8825780.ef49f8" id="banner-ad-img-2" target="_blank" rel="noopener" style="display:none"><img src="images/Ads/Banners/Name-bubbles-Schalmont-leader.jpg" alt="Advertisement" style="width:100%;height:auto;display:block;border-radius:var(--radius)"></a>
+          <a href="https://tinyurl.com/3e4rd8vr" id="banner-ad-img-3" target="_blank" rel="noopener" style="display:none"><img src="images/Ads/Banners/Leaderad-ss-2026.jpg" alt="Advertisement" style="width:100%;height:auto;display:block;border-radius:var(--radius)"></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- UPCOMING EVENTS STRIP -->
+  <div style="background:#fffbeb;border-bottom:2px solid #f59e0b">
+    <div class="container" style="padding-top:10px;padding-bottom:10px">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <span style="font-size:11px;font-weight:800;color:#92400e;text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap;flex-shrink:0">📅 Upcoming</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <a href="#dance34" style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #fcd34d;border-radius:100px;padding:5px 14px;font-size:13px;font-weight:600;color:#333;text-decoration:none">🕺 3/4 Dance <span style="color:#6bb044">— Sign Up Open</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JUMP NAV -->
+  <section class="section-sm" style="background:var(--white);border-bottom:1px solid var(--border);padding-top:16px;padding-bottom:16px">
+    <div class="container">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <label for="section-jump" style="font-size:14px;font-weight:700;color:var(--text);white-space:nowrap">Jump to:</label>
+        <select id="section-jump" onchange="if(this.value){var el=document.getElementById(this.value);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});}this.value=''}" style="padding:9px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:'Urbanist',sans-serif;background:var(--white);color:var(--text);cursor:pointer;min-width:220px;max-width:380px;flex:1">
+          <option value="">Choose a section...</option>
+          <option value="dance34">🕺 3/4 Dance</option>
+          <option value="appreciation-days">🙏 Appreciation Days</option>
+          <option value="back-to-school">🎒 Back to School</option>
+          <option value="birthdays">🎂 Birthdays</option>
+          <option value="book-fairs">📚 Book Fairs</option>
+          <option value="craft-fair">🎄 Craft Fair &amp; Lunch with Santa</option>
+          <option value="fundraisers">💰 Fundraisers</option>
+          <option value="grade3-concert">🎵 Grade 3 Concert</option>
+          <option value="grade4-concert">🎵 Grade 4 Concert</option>
+          <option value="holiday-shoppe">🎁 Holiday Shoppe</option>
+          <option value="incoming-k">🎒 Incoming Kindergarten</option>
+          <option value="kindergarten-lunch-team">🥪 Kindergarten Lunch Team</option>
+          <option value="journey">🚌 Journey to Jefferson</option>
+          <option value="k2-dance">💃 K-2 Dance</option>
+          <option value="miscellaneous">📁 Miscellaneous</option>
+          <option value="picture-days">📸 Picture Days</option>
+          <option value="scholarships">🏆 Scholarships</option>
+          <option value="school-banking">🏦 School Banking</option>
+          <option value="school-supplies">✏️ School Supplies</option>
+          <option value="snow-days">❄️ Snow Days</option>
+          <option value="spiritwear">👕 Spiritwear</option>
+          <option value="sports-cheer">🏅 Sports &amp; Cheer</option>
+          <option value="staff-appreciation">🌟 Staff Appreciation Week</option>
+          <option value="summer-camp">☀️ Summer Camp Fair</option>
+          <option value="trunk-or-treat">🎃 Trunk or Treat</option>
+          <option value="turn-off-screens">📵 Turn Off the Screens</option>
+          <option value="yearbook">📷 Yearbook</option>
+          <option value="contact">✉️ Contact</option>
+          <option value="social-media">📱 Social Media</option>
+          <option value="about">ℹ️ About</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROGRAMS & EVENTS GRID -->
+  <section class="section" style="background:var(--light-bg)">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Programs &amp; Events</h2>
+        <div class="accent-line"></div>
+      </div>
+      <div class="program-grid">
+
+        <!-- 3rd & 4th Grade Dance -->
+        <div class="program-card" id="dance34">
+          <div class="program-card-header">
+            <div class="program-card-icon">🕺</div>
+            <h3 class="program-card-title">3rd &amp; 4th Grade Dance</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge active">Active</span>
+            <p class="program-card-desc">Join us for the Jefferson Elementary 3rd and 4th Grade Dance! See the flyer for details. Volunteers needed — sign up below.</p>
+            <div class="program-card-actions" style="display:flex;flex-direction:column;gap:8px">
+              <a href="glitz-and-glam-dance.html" class="btn btn-primary" style="font-size:13px;padding:8px 16px">View Event Details →</a>
+              <a href="https://www.signupgenius.com/go/10C0448ACAC2EA2FEC52-62569165-jefferson?fbclid=IwY2xjawQRSZxleHRuA2FlbQIxMQBzcnRjBmFwcF9pZBAyMjIwMzkxNzg4MjAwODkyAAEeec0Ofqy45BTYwQG_X3fWj6HzBea9R5Lmsh9lxw5loDLjvIexwpI_7QKejD8_aem_j6a9E9D2m0reB7xAdyx92Q#/" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:13px;padding:8px 16px">Volunteer Sign-Up →</a>
+              <a href="https://www.signupgenius.com/go/10C0448ACAC2EA2FEC52-62569165-jefferson?fbclid=IwY2xjawQUTotleHRuA2FlbQIxMQBicmlkETFzRGlqMGZsYzNoVDg2WHJSc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHpzqBKiSzhKw3G4eJW1nSvOSBvcDti5LUClQ2sE07d4AM9X2reHNNRWCYUMI_aem_kN4o-9hmpKW8dd9a8OognQ#/" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:13px;padding:8px 16px">Sign Up →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Appreciation Days -->
+        <div class="program-card" id="appreciation-days">
+          <div class="program-card-header">
+            <div class="program-card-icon">🙏</div>
+            <h3 class="program-card-title">Appreciation Days</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge coming">More Info Coming Soon</span>
+            <p class="program-card-desc">Details about upcoming teacher and staff appreciation days will be posted here. Stay tuned!</p>
+            <div class="program-card-actions"></div>
+          </div>
+        </div>
+
+        <!-- Back to School -->
+        <div class="program-card" id="back-to-school">
+          <div class="program-card-header">
+            <div class="program-card-icon">🎒</div>
+            <h3 class="program-card-title">Back to School</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge past">✓ Past Event</span>
+            <p class="program-card-desc">Thank you for a great start to the school year! Share your photos from Back to School events below.</p>
+            <div class="program-card-actions">
+              <a href="https://www.dropbox.com/request/1bZYbI2Pnznr2fBdFsqa" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:13px;padding:8px 16px">Upload Photos →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Birthdays -->
+        <div class="program-card" id="birthdays">
+          <div class="program-card-header">
+            <div class="program-card-icon">🎂</div>
+            <h3 class="program-card-title">Birthdays</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge active">Active</span>
+            <p class="program-card-desc">Want to celebrate your child's birthday at school? Submit the form and we'll help make it special!</p>
+            <div class="program-card-actions">
+              <a href="https://docs.google.com/forms/d/e/1FAIpQLSfy3Cgb1EHh-b1v0Y-9AnLbT3BhsoB0vhWUWr5yV9rZryjVfA/viewform" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:13px;padding:8px 16px">Birthday Request Form →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Book Fairs -->
+        <div class="program-card" id="book-fairs">
+          <div class="program-card-header">
+            <div class="program-card-icon">📚</div>
+            <h3 class="program-card-title">Book Fairs</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge coming">More Info Coming Soon</span>
+            <p class="program-card-desc">Book fair dates and details for Jefferson Elementary will be posted here. Check back soon!</p>
+            <div class="program-card-actions"></div>
+          </div>
+        </div>
+
+        <!-- Craft Fair & Lunch with Santa -->
+        <div class="program-card" id="craft-fair">
+          <div class="program-card-header">
+            <div class="program-card-icon">🎄</div>
+            <h3 class="program-card-title">Craft Fair &amp; Lunch with Santa</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge past">✓ Past Event</span>
+            <p class="program-card-desc">Thank you to everyone who joined us for the Craft Fair and Lunch with Santa! It was a wonderful holiday tradition. We look forward to seeing you next year.</p>
+            <div class="program-card-actions">
+              <a href="https://www.dropbox.com/request/HYykmpoHL2k9z1k3ej8k" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:13px;padding:8px 16px">Upload Photos →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Holiday Shoppe -->
+        <div class="program-card" id="holiday-shoppe">
+          <div class="program-card-header">
+            <div class="program-card-icon">🎁</div>
+            <h3 class="program-card-title">Holiday Shoppe</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge past">✓ Past Event</span>
+            <p class="program-card-desc">Thank you for a wonderful Holiday Shoppe! Students had a blast shopping for their loved ones. Stay tuned for next year's event.</p>
+            <div class="program-card-actions">
+              <a href="holiday-shoppe.html" class="btn btn-primary" style="font-size:13px;padding:8px 16px">More Info →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fundraisers -->
+        <div class="program-card" id="fundraisers">
+          <div class="program-card-header">
+            <div class="program-card-icon">💰</div>
+            <h3 class="program-card-title">Fundraisers</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge active">Active</span>
+            <p class="program-card-desc">Support Jefferson Elementary students through our fundraising programs. Every purchase helps fund programs and events.</p>
+            <div class="program-card-actions">
+              <a href="fundraisers-jefferson.html" class="btn btn-primary" style="font-size:13px;padding:8px 16px">View All Fundraisers →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grade 3 Concert -->
+        <div class="program-card" id="grade3-concert">
+          <div class="program-card-header">
+            <div class="program-card-icon">🎵</div>
+            <h3 class="program-card-title">Grade 3 Concert</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge past">✓ Past Event</span>
+            <p class="program-card-desc">Thank you to all the Grade 3 performers and families who joined us! Share your concert photos below.</p>
+            <div class="program-card-actions">
+              <a href="https://www.dropbox.com/request/E5td0ypiJccyzt3LIAHg" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:13px;padding:8px 16px">Upload Photos →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grade 4 Concert -->
+        <div class="program-card" id="grade4-concert">
+          <div class="program-card-header">
+            <div class="program-card-icon">🎵</div>
+            <h3 class="program-card-title">Grade 4 Concert</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge past">✓ Past Event</span>
+            <p class="program-card-desc">Thank you to all the Grade 4 performers and families who joined us! Share your concert photos below.</p>
+            <div class="program-card-actions">
+              <a href="https://www.dropbox.com/request/9HHibhCbP0B8cVVBRgd5" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:13px;padding:8px 16px">Upload Photos →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Incoming Kindergarten -->
+        <div class="program-card" id="incoming-k">
+          <div class="program-card-header">
+            <div class="program-card-icon">🎒</div>
+            <h3 class="program-card-title">Incoming Kindergarten</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge coming">More Info Coming Soon</span>
+            <p class="program-card-desc">Resources and events for families with children entering Kindergarten at Jefferson Elementary will be posted here.</p>
+            <div class="program-card-actions"></div>
+          </div>
+        </div>
+
+        <!-- Journey to Jefferson -->
+        <div class="program-card" id="journey">
+          <div class="program-card-header">
+            <div class="program-card-icon">🚌</div>
+            <h3 class="program-card-title">Journey to Jefferson</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge active">Info Available</span>
+            <p class="program-card-desc">Learn about the Journey to Jefferson transition program for families moving from Pre-K to Jefferson Elementary.</p>
+            <div class="program-card-actions">
+  <a href="journey-to-jefferson.html" class="btn btn-primary" style="font-size:13px;padding:8px 16px">Learn More →</a>
+</div>
+          </div>
+        </div>
+
+        <!-- K-2 Dance -->
+        <div class="program-card" id="k2-dance">
+          <div class="program-card-header">
+            <div class="program-card-icon">💃</div>
+            <h3 class="program-card-title">K-2 Dance</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge past">✓ Past Event</span>
+            <p class="program-card-desc">Thank you to everyone who came out to the K-2 Dance! We had a wonderful time celebrating with our youngest Sabres. Stay tuned for future events.</p>
+            <div class="program-card-actions">
+              <a href="https://www.dropbox.com/request/kwkWz445bGoJzFX9AzHX" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:13px;padding:8px 16px">Upload Photos →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Miscellaneous -->
+        <div class="program-card" id="miscellaneous">
+          <div class="program-card-header">
+            <div class="program-card-icon">📁</div>
+            <h3 class="program-card-title">Miscellaneous</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge active">Open</span>
+            <p class="program-card-desc">Have photos from a Jefferson Elementary event not listed here? Upload them to our general photo collection!</p>
+            <div class="program-card-actions">
+              <a href="https://www.dropbox.com/request/bglkPPBPj5AbMJ7lK6P4" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:13px;padding:8px 16px">Upload Photos →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Picture Days -->
+        <div class="program-card" id="picture-days">
+          <div class="program-card-header">
+            <div class="program-card-icon">📸</div>
+            <h3 class="program-card-title">Picture Days</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge past">✓ Past Event</span>
+            <p class="program-card-desc">Thank you to all the families who participated in Picture Day! Information about ordering and retakes will be posted here when available.</p>
+            <div class="program-card-actions"></div>
+          </div>
+        </div>
+
+        <!-- Scholarships -->
+        <div class="program-card" id="scholarships">
+          <div class="program-card-header">
+            <div class="program-card-icon">🏆</div>
+            <h3 class="program-card-title">Scholarships</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge coming">More Info Coming Soon</span>
+            <p class="program-card-desc">Information about Jefferson Elementary PTO scholarship opportunities will be posted here.</p>
+            <div class="program-card-actions"></div>
+          </div>
+        </div>
+
+        <!-- Kindergarten Lunch Team -->
+        <div class="program-card" id="kindergarten-lunch-team">
+          <div class="program-card-header">
+            <div class="program-card-icon">🥪</div>
+            <h3 class="program-card-title">Kindergarten Lunch Team</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge past">✓ Past Event</span>
+            <p class="program-card-desc">Thank you to all our incredible Kindergarten Lunch Team volunteers! Your support helped our youngest Sabres feel confident and cared for at lunchtime.</p>
+            <div class="program-card-actions">
+              <a href="kindergarten-lunch-team.html" class="btn btn-primary" style="font-size:13px;padding:8px 16px">More Info →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- School Banking -->
+        <div class="program-card" id="school-banking">
+          <div class="program-card-header">
+            <div class="program-card-icon">🏦</div>
+            <h3 class="program-card-title">School Banking</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge coming">More Info Coming Soon</span>
+            <p class="program-card-desc">For questions about school banking, reach out to our Treasurer Jennifer Sitors.</p>
+            <div class="program-card-actions">
+              <a href="mailto:jennifer@jeffersonpto.com" class="btn btn-primary" style="font-size:13px;padding:8px 16px">Email Jennifer →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- School Supplies -->
+        <div class="program-card" id="school-supplies">
+          <div class="program-card-header">
+            <div class="program-card-icon">✏️</div>
+            <h3 class="program-card-title">School Supplies</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge coming">More Info Coming Soon</span>
+            <p class="program-card-desc">School supply list and ordering information for Jefferson Elementary will be posted here.</p>
+            <div class="program-card-actions"></div>
+          </div>
+        </div>
+
+        <!-- Snow Days -->
+        <div class="program-card" id="snow-days">
+          <div class="program-card-header">
+            <div class="program-card-icon">❄️</div>
+            <h3 class="program-card-title">Snow Days</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge active">Open</span>
+            <p class="program-card-desc">Share your snow day memories with the Jefferson Elementary community! Upload your photos below.</p>
+            <div class="program-card-actions">
+              <a href="https://www.dropbox.com/request/H0kwW3M9y1ZLLLMr6BoX" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:13px;padding:8px 16px">Upload Photos →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Spiritwear -->
+        <div class="program-card" id="spiritwear">
+          <div class="program-card-header">
+            <div class="program-card-icon">👕</div>
+            <h3 class="program-card-title">Spiritwear</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge coming">More Info Coming Soon</span>
+            <p class="program-card-desc">Jefferson Elementary spiritwear ordering information will be posted here. Check back soon!</p>
+            <div class="program-card-actions"></div>
+          </div>
+        </div>
+
+        <!-- Sports & Cheer -->
+        <div class="program-card" id="sports-cheer">
+          <div class="program-card-header">
+            <div class="program-card-icon">🏅</div>
+            <h3 class="program-card-title">Sports &amp; Cheer</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge active">Open</span>
+            <p class="program-card-desc">Share your photos from Jefferson Elementary sports and cheerleading events! Upload them below.</p>
+            <div class="program-card-actions">
+              <a href="https://www.dropbox.com/request/67nEPZWcJ29KI6YQNxnT" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:13px;padding:8px 16px">Upload Photos →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Staff Appreciation Week -->
+        <div class="program-card" id="staff-appreciation">
+          <div class="program-card-header">
+            <div class="program-card-icon">🌟</div>
+            <h3 class="program-card-title">Staff Appreciation Week</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge coming">More Info Coming Soon</span>
+            <p class="program-card-desc">Details about Staff Appreciation Week events and how families can participate will be posted here. Stay tuned!</p>
+            <div class="program-card-actions"></div>
+          </div>
+        </div>
+
+        <!-- Summer Camp Fair -->
+        <div class="program-card" id="summer-camp">
+          <div class="program-card-header">
+            <div class="program-card-icon">☀️</div>
+            <h3 class="program-card-title">Summer Camp Fair</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge coming">More Info Coming Soon</span>
+            <p class="program-card-desc">Details about the Summer Camp Fair will be posted here when available.</p>
+            <div class="program-card-actions"></div>
+          </div>
+        </div>
+
+        <!-- Trunk or Treat -->
+        <div class="program-card" id="trunk-or-treat">
+          <div class="program-card-header">
+            <div class="program-card-icon">🎃</div>
+            <h3 class="program-card-title">Trunk or Treat</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge past">✓ Past Event</span>
+            <p class="program-card-desc">Trunk or Treat was a great success! Thank you to all the families and volunteers who made it happen. We'll see you again next fall!</p>
+            <div class="program-card-actions">
+              <a href="https://www.dropbox.com/request/paB3bVJashA8H9KOsgPg" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:13px;padding:8px 16px">Upload Photos →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Turn Off the Screens -->
+        <div class="program-card" id="turn-off-screens">
+          <div class="program-card-header">
+            <div class="program-card-icon">📵</div>
+            <h3 class="program-card-title">Turn Off the Screens</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge past">✓ Past Event</span>
+            <p class="program-card-desc">Thank you to all the families who participated in Turn Off the Screens! We hope you enjoyed some great quality time together.</p>
+            <div class="program-card-actions">
+              <a href="https://www.dropbox.com/request/HzB7HKYoOTGEVWXULCkb" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:13px;padding:8px 16px">Upload Photos →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Yearbook -->
+        <div class="program-card" id="yearbook">
+          <div class="program-card-header">
+            <div class="program-card-icon">📷</div>
+            <h3 class="program-card-title">Yearbook</h3>
+          </div>
+          <div class="program-card-body">
+            <span class="program-badge coming">More Info Coming Soon</span>
+            <p class="program-card-desc">Yearbook ordering information and photo submission links for Jefferson Elementary will be posted here.</p>
+            <div class="program-card-actions"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section" id="contact">
+    <div class="container" style="max-width:860px">
+      <div class="section-heading">
+        <h2>👋 Meet Our Team</h2>
+        <div class="accent-line"></div>
+      </div>
+      <p style="font-size:15px;color:var(--text-light);margin-bottom:32px">Reach out to our board members with questions, ideas, or to get involved with the Jefferson Elementary PTO.</p>
+      <div class="board-grid">
+
+        <div class="board-card">
+          <div class="board-avatar">C</div>
+          <h4>Corrie Hoffman-Haddix</h4>
+          <div class="role">President</div>
+          <a href="mailto:corrie@jeffersonpto.com" class="email">corrie@jeffersonpto.com</a>
+        </div>
+
+        <div class="board-card">
+          <div class="board-avatar">C</div>
+          <h4>Christina Pelham</h4>
+          <div class="role">Vice President</div>
+          <a href="mailto:christina@jeffersonpto.com" class="email">christina@jeffersonpto.com</a>
+        </div>
+
+        <div class="board-card">
+          <div class="board-avatar">J</div>
+          <h4>Jennifer Sitors</h4>
+          <div class="role">Treasurer</div>
+          <a href="mailto:jennifer@jeffersonpto.com" class="email">jennifer@jeffersonpto.com</a>
+        </div>
+
+        <div class="board-card">
+          <div class="board-avatar">C</div>
+          <h4>Cara Ackerley</h4>
+          <div class="role">Co-Secretary</div>
+          <a href="mailto:cara@jeffersonpto.com" class="email">cara@jeffersonpto.com</a>
+        </div>
+
+        <div class="board-card">
+          <div class="board-avatar">K</div>
+          <h4>Kirstyn Galea</h4>
+          <div class="role">Co-Secretary</div>
+          <a href="mailto:kirstyn@jeffersonpto.com" class="email">kirstyn@jeffersonpto.com</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SOCIAL MEDIA -->
+  <section class="section" id="social-media" style="background:var(--light-bg)">
+    <div class="container" style="max-width:860px">
+      <div class="section-heading">
+        <h2>📱 Social Media</h2>
+        <div class="accent-line"></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:32px">
+        <a href="https://www.facebook.com/groups/1375705219253444" target="_blank" rel="noopener" class="social-card">
+          <div style="width:44px;height:44px;border-radius:10px;background:#e7f0fd;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">📘</div>
+          <div style="flex:1">
+            <strong style="display:block;font-size:15px">Jefferson Elementary PTO</strong>
+            <span style="font-size:12px;color:var(--text-light)">Facebook Group</span>
+          </div>
+          <span style="color:var(--text-light);font-size:18px">→</span>
+        </a>
+      </div>
+
+      <h3 style="font-size:17px;margin-bottom:8px">Class Parent Groups</h3>
+      <p style="font-size:14px;color:var(--text-light);margin-bottom:16px">Find your child's class year Facebook group to connect with other Jefferson families.</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+
+        <div class="class-card">
+          <div class="class-year">2034</div>
+          <div style="flex:1"><h4 style="font-size:14px;margin-bottom:2px">Parents of the Schalmont Class of 2034</h4><p style="font-size:12px;color:var(--text-light);margin:0">Current 4th Graders</p></div>
+          <a href="https://www.facebook.com/search/groups/?q=Parents%20of%20the%20Schalmont%20Class%20of%202034" target="_blank" rel="noopener" class="class-search-btn">Find on FB</a>
+        </div>
+
+        <div class="class-card">
+          <div class="class-year">2035</div>
+          <div style="flex:1"><h4 style="font-size:14px;margin-bottom:2px">Parents of the Schalmont Class of 2035</h4><p style="font-size:12px;color:var(--text-light);margin:0">Current 3rd Graders</p></div>
+          <a href="https://www.facebook.com/search/groups/?q=Parents%20of%20the%20Schalmont%20Class%20of%202035" target="_blank" rel="noopener" class="class-search-btn">Find on FB</a>
+        </div>
+
+        <div class="class-card">
+          <div class="class-year">2036</div>
+          <div style="flex:1"><h4 style="font-size:14px;margin-bottom:2px">Parents of the Schalmont Class of 2036</h4><p style="font-size:12px;color:var(--text-light);margin:0">Current 2nd Graders</p></div>
+          <a href="https://www.facebook.com/search/groups/?q=Parents%20of%20the%20Schalmont%20Class%20of%202036" target="_blank" rel="noopener" class="class-search-btn">Find on FB</a>
+        </div>
+
+        <div class="class-card">
+          <div class="class-year">2037</div>
+          <div style="flex:1"><h4 style="font-size:14px;margin-bottom:2px">Parents of the Schalmont Class of 2037</h4><p style="font-size:12px;color:var(--text-light);margin:0">Current 1st Graders</p></div>
+          <a href="https://www.facebook.com/search/groups/?q=Parents%20of%20the%20Schalmont%20Class%20of%202037" target="_blank" rel="noopener" class="class-search-btn">Find on FB</a>
+        </div>
+
+        <div class="class-card">
+          <div class="class-year">2038</div>
+          <div style="flex:1"><h4 style="font-size:14px;margin-bottom:2px">Parents of the Schalmont Class of 2038</h4><p style="font-size:12px;color:var(--text-light);margin:0">Current Kindergarteners</p></div>
+          <a href="https://www.facebook.com/search/groups/?q=Parents%20of%20the%20Schalmont%20Class%20of%202038" target="_blank" rel="noopener" class="class-search-btn">Find on FB</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="section" id="about">
+    <div class="container" style="max-width:860px">
+      <div class="section-heading">
+        <h2>ℹ️ About the Jefferson Elementary PTO</h2>
+        <div class="accent-line"></div>
+      </div>
+      <p style="font-size:15px;line-height:1.8;margin-bottom:20px">The Jefferson Elementary PTO is a dedicated group of parents, teachers, and community members working together to enrich the educational experience for all students at Jefferson Elementary School. We organize events, fundraisers, and programs that build connections between families, staff, and the broader Schalmont community.</p>
+      <p style="font-size:15px;line-height:1.8;margin-bottom:28px">Our board members are here to serve Jefferson families and welcome your ideas, feedback, and involvement.</p>
+
+    </div>
+  </section>
+
+  <!-- FOOTER AD -->
+  
+    </div><!-- /.homepage-main -->
+  </div><!-- /.homepage-layout -->
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-brand" style="margin-bottom:12px">
+            <img src="images/logo.png" alt="Schalmont Central PTO" class="nav-logo-img">
+          </div>
+          <p>Supporting students, connecting families, and building community in the Schalmont Central School District.</p>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap">
+            <a href="login.html" class="btn btn-primary" style="padding:6px 14px;font-size:13px;color:#000000">Login/Register</a>
+            <div class="footer-social-icons" style="margin-top:0">
+              <a href="social.html" class="footer-social-icon" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+              <a href="social.html" class="footer-social-icon" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+            </div>
+          </div>
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
+            <a href="https://woestina-pre-k-pto-donations.cheddarup.com" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-align:center;padding:6px 14px;font-size:13px;color:#000000">Give back: &#127807; Woestina PTO</a>
+            <a href="https://my.cheddarup.com/c/jefferson-pto-donation" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-align:center;padding:6px 14px;font-size:13px;color:#000000">Give back: &#127979; Jefferson PTO</a>
+            <a href="https://schalmont-central-pto.cheddarup.com" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-align:center;padding:6px 14px;font-size:13px;color:#000000">Give back: &#128154; Schalmont PTO</a>
+          </div>
+        </div>
+        <div>
+          <div class="footer-heading">Quick Links</div>
+          <ul class="footer-links">
+            <li><a href="events.html">Events Calendar</a></li>
+            <li><a href="directory.html">Parent Directory</a></li>
+            <li><a href="shop.html">Shop</a></li>
+            <li><a href="fundraisers.html">Fundraisers</a></li>
+            <li><a href="meetings.html">PTO Meetings</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-heading">About &amp; Help</div>
+          <ul class="footer-links">
+            <li><a href="about.html">About the PTO</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="https://www.schalmont.org" target="_blank" rel="noopener">School District Website</a></li>
+          </ul>
+        </div>
+        <div class="footer-ad-col">
+
+          <div class="footer-ad-box" style="padding:0;overflow:hidden;border-radius:var(--radius)">
+            <a href="https://tinyurl.com/5ac83fe9" id="footer-ad-img-1" target="_blank" rel="noopener" style="display:block"><img src="images/Ads/Square/CW-Schalmont-square.jpg" alt="Advertisement" class="footer-ad-img" style="width:100%;display:block"></a>
+            <a href="https://www.namebubbles.com/?rfsn=8825780.ef49f8" id="footer-ad-img-2" target="_blank" rel="noopener" style="display:none"><img src="images/Ads/Square/Name-Bubbles-Schalmont-Ad1-square.jpg" alt="Advertisement" class="footer-ad-img" style="width:100%;display:block"></a>
+            <a href="https://tinyurl.com/3e4rd8vr" id="footer-ad-img-3" target="_blank" rel="noopener" style="display:none"><img src="images/Ads/Square/Squaress-ad2026.jpg" alt="Advertisement" class="footer-ad-img" style="width:100%;display:block"></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Schalmont Central Schools PTO. All rights reserved.</span>
+        <span>Schenectady, NY</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

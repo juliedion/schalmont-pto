@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -:*)",
+      "Bash(python3 -c \"import json, sys; data = json.load\\(sys.stdin\\); text = ''''.join\\([item.get\\(''text'', ''''\\) for item in data[''message''][''content''] if isinstance\\(item, dict\\) and item.get\\(''type''\\) == ''text'']\\); print\\(text\\)\")",
+      "Bash(python3 -c \":*)",
+      "WebFetch(domain:www.dropbox.com)"
+    ]
+  }
+}
