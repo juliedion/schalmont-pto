@@ -4,7 +4,29 @@
       "Bash(python3 -:*)",
       "Bash(python3 -c \"import json, sys; data = json.load\\(sys.stdin\\); text = ''''.join\\([item.get\\(''text'', ''''\\) for item in data[''message''][''content''] if isinstance\\(item, dict\\) and item.get\\(''type''\\) == ''text'']\\); print\\(text\\)\")",
       "Bash(python3 -c \":*)",
-      "WebFetch(domain:www.dropbox.com)"
+      "WebFetch(domain:www.dropbox.com)",
+      "WebFetch(domain:www.ruscny.org)",
+      "WebFetch(domain:rotterdamny.gov)",
+      "WebFetch(domain:www.townofrotterdam.gov)",
+      "WebFetch(domain:www.rotterdampopwarner.org)",
+      "WebFetch(domain:www.bgcschenectady.org)",
+      "WebFetch(domain:www.sabrescdybl.com)",
+      "WebFetch(domain:sabrescdybl.com)",
+      "WebFetch(domain:www.sabrescdybl-gl.com)",
+      "WebFetch(domain:cdybl.teampages.com)",
+      "WebFetch(domain:teampages.com)",
+      "WebFetch(domain:cdgbl.teampages.com)",
+      "WebFetch(domain:schalmont.org)",
+      "WebFetch(domain:www.facebook.com)",
+      "WebFetch(domain:schalmonths.rschoolteams.com)",
+      "WebFetch(domain:colonialcouncil.org)",
+      "WebFetch(domain:www.zoominfo.com)",
+      "WebFetch(domain:www.schedulegalaxy.com)",
+      "WebFetch(domain:www.maxpreps.com)",
+      "WebFetch(domain:www.athletic.net)",
+      "WebFetch(domain:www.schalmontsoccer.com)",
+      "WebFetch(domain:fan.hudl.com)",
+      "WebFetch(domain:www.section2hockey.com)"
     ]
   }
 }

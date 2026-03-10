@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit --allow-empty -m \"fix deploy directory\")",
+      "Bash(git commit -m \"force full re-upload to fix deploy path\")",
+      "Bash(git remote get-url origin)",
+      "Bash(git pull origin main --rebase)",
+      "Bash(git remote set-url origin https://juliedion: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@github.com/juliedion/schalmont-pto.git)",
+      "Bash(git add .github/workflows/deploy.yml fix-permissions.php)",
+      "Bash(git commit -m \"auto-fix file permissions after deploy\")",
+      "WebSearch",
+      "WebFetch(domain:www.schalmont.org)"
+    ]
+  }
+}

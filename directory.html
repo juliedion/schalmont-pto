@@ -252,6 +252,7 @@
       <a href="meetings.html" class="sidenav-item">Meetings</a>
       <a href="schools.html" class="sidenav-item">Schools</a>
       <a href="family-scouts.html" class="sidenav-item">Scouts</a>
+      <a href="sports.html" class="sidenav-item">Sports</a>
       <a href="shop.html" class="sidenav-item">Shop</a>
       <a href="social.html" class="sidenav-item">Social Media</a>
       <a href="yearbooks.html" class="sidenav-item">Yearbooks</a>
@@ -469,33 +470,49 @@
           </div>
 
           <!-- DIRECTORY LISTING -->
-          <div>
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px">
-              <div>
-                <h2 style="font-size:20px;margin-bottom:2px">Member Families</h2>
-                <p style="font-size:13px;color:var(--text-light)" id="dir-count">Loading…</p>
+          <div id="dir-listing-panel">
+
+            <!-- Locked state — shown until user has submitted their family -->
+            <div id="dir-listing-locked" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg)">
+              <div style="font-size:52px;margin-bottom:16px">🔒</div>
+              <h3 style="font-size:20px;font-weight:800;margin-bottom:10px;color:var(--text-dark)">Join the Directory First</h3>
+              <p style="font-size:14px;color:var(--text-light);max-width:340px;line-height:1.7;margin-bottom:20px">To protect family privacy, the member directory is only visible to families who have added their own listing. Fill out the form on the left to get access.</p>
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-light)">
+                <span>🔐</span>
+                <span>Your information is only visible to other registered Schalmont PTO families.</span>
               </div>
             </div>
 
-            <!-- Search + Sort -->
-            <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
-              <div class="search-bar" style="flex:1;min-width:180px;margin-bottom:0">
-                <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-light)">🔍</span>
-                <input type="text" id="dir-search" placeholder="Search by name or grade…" style="padding-left:42px">
+            <!-- Unlocked content — shown after user has submitted -->
+            <div id="dir-listing-content" style="display:none">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px">
+                <div>
+                  <h2 style="font-size:20px;margin-bottom:2px">Member Families</h2>
+                  <p style="font-size:13px;color:var(--text-light)" id="dir-count">Loading…</p>
+                </div>
               </div>
-              <select id="dir-sort" style="padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-family:inherit;font-size:14px;background:var(--white);color:var(--text);cursor:pointer">
-                <option value="parent">Sort: Parent Last Name</option>
-                <option value="student">Sort: Student Last Name</option>
-                <option value="school">Sort: School</option>
-                <option value="grade">Sort: Grade</option>
-                <option value="teacher">Sort: Teacher</option>
-              </select>
+
+              <!-- Search + Sort -->
+              <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+                <div class="search-bar" style="flex:1;min-width:180px;margin-bottom:0">
+                  <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-light)">🔍</span>
+                  <input type="text" id="dir-search" placeholder="Search by name or grade…" style="padding-left:42px">
+                </div>
+                <select id="dir-sort" style="padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-family:inherit;font-size:14px;background:var(--white);color:var(--text);cursor:pointer">
+                  <option value="parent">Sort: Parent Last Name</option>
+                  <option value="student">Sort: Student Last Name</option>
+                  <option value="school">Sort: School</option>
+                  <option value="grade">Sort: Grade</option>
+                  <option value="teacher">Sort: Teacher</option>
+                </select>
+              </div>
+
+              <!-- Members Grid -->
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px" id="directory-list">
+                <!-- rendered by JS -->
+              </div>
             </div>
 
-            <!-- Members Grid -->
-            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px" id="directory-list">
-              <!-- rendered by JS -->
-            </div>
           </div>
 
         </div>
@@ -694,6 +711,21 @@
         btn.textContent = 'Sign In →'; btn.disabled = false;
       }
     }
+
+    // Show/hide directory listing based on whether user has submitted their family
+    function updateDirectoryVisibility() {
+      var profilePanel = document.getElementById('dir-profile-panel');
+      var hasListing = profilePanel && profilePanel.style.display !== 'none';
+      document.getElementById('dir-listing-locked').style.display = hasListing ? 'none' : 'flex';
+      document.getElementById('dir-listing-content').style.display = hasListing ? 'block' : 'none';
+    }
+    // Watch for profile panel visibility changes (app.js shows it when user has a listing)
+    var _profilePanel = document.getElementById('dir-profile-panel');
+    if (_profilePanel) {
+      new MutationObserver(updateDirectoryVisibility).observe(_profilePanel, { attributes: true, attributeFilter: ['style'] });
+    }
+    // Also run on auth state change
+    var _origAuthChanged = auth.onAuthStateChanged;
 
     async function handleGateRegister(e) {
       e.preventDefault();

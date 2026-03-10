@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sports &amp; Athletics — Schalmont PTO</title>
+  <meta name="description" content="Schalmont school sports and Rotterdam community youth sports leagues organized by sport category.">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="images/favicon.svg">
+  <style>
+    .sports-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: start;
+      margin-top: 28px;
+    }
+    @media(max-width:900px){ .sports-two-col { grid-template-columns: 1fr; } }
+    .sports-col { display: flex; flex-direction: column; }
+    .sports-col-title {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 16px 20px;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      font-size: 18px; font-weight: 800; color: white;
+      position: sticky; top: 0; z-index: 5;
+    }
+    .sports-col-title.school-col { background: var(--primary); }
+    .sports-col-title.community-col { background: #1255a4; }
+    .sports-col-title-sub { font-size: 11px; font-weight: 400; opacity: .85; margin-top: 2px; }
+    .sports-col-note {
+      background: var(--light-bg); border: 1px solid var(--border);
+      border-top: none; padding: 12px 16px;
+    }
+    .info-note {
+      background: #fff8e1; border: 1px solid #ffe082; border-radius: var(--radius);
+      padding: 9px 13px; font-size: 12px; color: #5f4600; line-height: 1.5;
+    }
+    .sport-cat {
+      border: 1px solid var(--border); border-top: none;
+      background: var(--white); overflow: hidden;
+    }
+    .sport-cat:last-child { border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+    .sport-cat-head {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 18px; background: #f3f7f3;
+      border-bottom: 1px solid var(--border);
+      font-weight: 800; font-size: 14px; color: var(--primary);
+    }
+    .sport-cat-icon { font-size: 20px; }
+    .sport-cat-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+    .school-entry {
+      display: grid; grid-template-columns: 60px 1fr;
+      gap: 10px; align-items: start;
+      padding: 9px 11px; border-radius: var(--radius);
+      border-left: 4px solid; background: var(--light-bg);
+    }
+    .school-entry.woestina { border-left-color: #8bc341; }
+    .school-entry.jefferson { border-left-color: #6bb044; }
+    .school-entry.ms { border-left-color: #087d40; }
+    .school-entry.hs { border-left-color: #044d2a; }
+    .school-label { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; padding-top: 2px; line-height: 1.4; }
+    .school-label.woestina { color: #8bc341; }
+    .school-label.jefferson { color: #6bb044; }
+    .school-label.ms { color: #087d40; }
+    .school-label.hs { color: #044d2a; }
+    .school-info { display: flex; flex-direction: column; gap: 4px; }
+    .school-name-line { font-size: 13px; font-weight: 600; color: var(--text-dark); }
+    .stag-row { display: flex; flex-wrap: wrap; gap: 3px; }
+    .stag { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 20px; text-transform: uppercase; letter-spacing: .04em; }
+    .stag-fall   { background: #fff3e0; color: #e65100; }
+    .stag-winter { background: #e3f2fd; color: #1565c0; }
+    .stag-spring { background: #e8f5e9; color: #2e7d32; }
+    .stag-boys   { background: #e8eaf6; color: #283593; }
+    .stag-girls  { background: #fce4ec; color: #880e4f; }
+    .stag-coed   { background: #f3e5f5; color: #6a1b9a; }
+    .school-entry-link { font-size: 11px; color: var(--primary); font-weight: 600; text-decoration: none; }
+    .school-entry-link:hover { text-decoration: underline; }
+    .comm-org {
+      background: var(--light-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 11px 13px;
+    }
+    .comm-org-name { font-weight: 700; font-size: 13px; color: var(--text-dark); margin-bottom: 3px; }
+    .comm-org-desc { font-size: 11px; color: var(--text-light); line-height: 1.5; margin-bottom: 7px; }
+    .comm-btns { display: flex; flex-wrap: wrap; gap: 5px; }
+    .cbtn {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-size: 11px; font-weight: 600; padding: 4px 10px;
+      border-radius: 20px; text-decoration: none; border: 1px solid;
+      transition: background .15s, color .15s; white-space: nowrap; background: white;
+    }
+    .cbtn-web   { color: var(--primary); border-color: var(--primary); }
+    .cbtn-web:hover   { background: var(--primary); color: white; }
+    .cbtn-phone { color: #1565c0; border-color: #1565c0; }
+    .cbtn-phone:hover { background: #1565c0; color: white; }
+    .cbtn-email { color: #6a1b9a; border-color: #6a1b9a; }
+    .cbtn-email:hover { background: #6a1b9a; color: white; }
+    .cbtn-fb    { color: #1877F2; border-color: #1877F2; }
+    .cbtn-fb:hover    { background: #1877F2; color: white; }
+    .sports-cta {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: var(--radius-lg); padding: 28px 32px; color: white;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 20px; flex-wrap: wrap; margin-top: 36px;
+    }
+    .sports-cta h3 { color: white; margin: 0 0 6px; font-size: 18px; }
+    .sports-cta p { margin: 0; font-size: 14px; opacity: .88; }
+    /* ── Filter bar ── */
+    .col-filter-bar {
+      background: var(--light-bg); border: 1px solid var(--border);
+      border-top: none; padding: 10px 14px;
+      display: flex; flex-direction: column; gap: 7px;
+    }
+    .filter-row { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+    .filter-label { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--text-light); white-space: nowrap; padding-right: 2px; }
+    .fbtn {
+      font-size: 11px; font-weight: 600; padding: 3px 9px;
+      border-radius: 20px; border: 1px solid var(--border);
+      background: white; cursor: pointer; color: var(--text-light);
+      font-family: inherit; transition: all .15s;
+    }
+    .fbtn:hover { border-color: var(--primary); color: var(--primary); }
+    .fbtn.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .fbtn.active.comm { background: #1255a4; border-color: #1255a4; }
+    .filter-search {
+      width: 100%; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 5px 10px; font-size: 12px; font-family: inherit; outline: none;
+    }
+    .filter-search:focus { border-color: var(--primary); }
+    /* ── Page layout with SAA sidebar ── */
+    .sports-page-grid {
+      display: grid; grid-template-columns: 1fr 230px;
+      gap: 24px; align-items: start;
+    }
+    @media(max-width:1100px) { .sports-page-grid { grid-template-columns: 1fr; } }
+    /* ── SAA sidebar ── */
+    .saa-sidebar { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 14px; }
+    .saa-ad-card {
+      background: linear-gradient(160deg, #044d2a 0%, #087d40 100%);
+      border-radius: var(--radius-lg); padding: 22px 18px; color: white; text-align: center;
+    }
+    .saa-ad-card-logo { font-size: 44px; margin-bottom: 10px; }
+    .saa-ad-card h3 { color: white; font-size: 15px; font-weight: 800; margin: 0 0 7px; line-height: 1.3; }
+    .saa-ad-card p { font-size: 12px; opacity: .88; margin: 0 0 14px; line-height: 1.6; }
+    .saa-ad-card a { display: block; background: var(--secondary); color: var(--primary-dark); font-weight: 800; font-size: 13px; padding: 9px 14px; border-radius: var(--radius); text-decoration: none; transition: opacity .15s; }
+    .saa-ad-card a:hover { opacity: .88; }
+    .sports-col-note { display: none; } /* remove the info note entirely */
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <nav class="container nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="images/logo.png" alt="Schalmont Central PTO" class="nav-logo-img">
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li class="has-dropdown">
+          <a href="schools.html">Schools</a>
+          <ul class="nav-dropdown">
+            <li><a href="woestina.html">🌱 Woestina Pre-K</a></li>
+            <li><a href="jefferson.html">🏫 Jefferson Elementary</a></li>
+            <li><a href="middle-school.html">📚 Middle School</a></li>
+            <li><a href="high-school.html">🎓 High School</a></li>
+          </ul>
+        </li>
+        <li><a href="events.html">Events</a></li>
+        <li><a href="meetings.html">Meetings</a></li>
+        <li><a href="directory.html">Directory</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="yearbooks.html">Yearbook</a></li>
+        <li class="has-dropdown">
+          <a href="contact.html">Contact</a>
+          <ul class="nav-dropdown">
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="social.html">Social Media</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+          </ul>
+        </li>
+        <li><a href="login.html" class="btn btn-primary" id="nav-login-btn" style="padding:6px 14px;font-size:13px;color:#000000">Login/Register</a></li>
+        <li><a href="donate.html" class="btn" id="nav-donate-btn" style="padding:6px 14px;font-size:13px;background:var(--primary);color:white">Donate</a></li>
+        <li><a href="social.html" class="nav-social-icon" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a></li>
+        <li><a href="social.html" class="nav-social-icon" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li>
+      </ul>
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu">&#9776;</button>
+    </nav>
+  </header>
+
+  <div class="homepage-layout">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="homepage-sidenav">
+      <div class="sidenav-heading">Browse</div>
+      <a href="index.html" class="sidenav-item">Home</a>
+      <a href="events.html" class="sidenav-item">Events Calendar</a>
+      <a href="meetings.html" class="sidenav-item">PTO Meetings</a>
+      <a href="sports.html" class="sidenav-item active">Sports</a>
+
+      <div class="sidenav-heading">Schools</div>
+      <a href="schools.html" class="sidenav-item">All Schools</a>
+
+      <div class="sidenav-group">
+        <button class="sidenav-item sidenav-toggle" data-target="snav-woestina">Woestina Pre-K <span class="sidenav-arrow">&#9660;</span></button>
+        <div class="sidenav-submenu" id="snav-woestina">
+          <a href="woestina.html" class="sidenav-item sub">Overview</a>
+        </div>
+      </div>
+
+      <div class="sidenav-group">
+        <button class="sidenav-item sidenav-toggle" data-target="snav-jefferson">Jefferson Elementary <span class="sidenav-arrow">&#9660;</span></button>
+        <div class="sidenav-submenu" id="snav-jefferson">
+          <a href="jefferson.html" class="sidenav-item sub">Overview</a>
+        </div>
+      </div>
+
+      <div class="sidenav-group">
+        <button class="sidenav-item sidenav-toggle" data-target="snav-middle">Middle School <span class="sidenav-arrow">&#9660;</span></button>
+        <div class="sidenav-submenu" id="snav-middle">
+          <a href="middle-school.html" class="sidenav-item sub">Overview</a>
+        </div>
+      </div>
+
+      <div class="sidenav-group">
+        <button class="sidenav-item sidenav-toggle" data-target="snav-high">High School <span class="sidenav-arrow">&#9660;</span></button>
+        <div class="sidenav-submenu" id="snav-high">
+          <a href="high-school.html" class="sidenav-item sub">Overview</a>
+        </div>
+      </div>
+
+      <div class="sidenav-heading">Resources</div>
+      <a href="directory.html" class="sidenav-item">Directory</a>
+      <a href="donate.html" class="sidenav-item">Donate</a>
+      <a href="events.html" class="sidenav-item">Events</a>
+      <a href="fundraisers.html" class="sidenav-item">Fundraisers</a>
+      <a href="gallery.html" class="sidenav-item">Gallery</a>
+      <a href="meetings.html" class="sidenav-item">Meetings</a>
+      <a href="schools.html" class="sidenav-item">Schools</a>
+      <a href="family-scouts.html" class="sidenav-item">Scouts</a>
+      <a href="sports.html" class="sidenav-item">Sports</a>
+      <a href="shop.html" class="sidenav-item">Shop</a>
+      <a href="social.html" class="sidenav-item">Social Media</a>
+      <a href="yearbooks.html" class="sidenav-item">Yearbooks</a>
+
+      <div class="sidenav-heading">Connect</div>
+      <a href="about.html" class="sidenav-item">About the PTO</a>
+      <a href="social.html" class="sidenav-item">Social Media Links</a>
+      <a href="contact.html" class="sidenav-item">Contact Us</a>
+      <div class="sidenav-donate-wrap" style="display:flex;flex-direction:column;gap:5px;padding:10px 8px 8px">
+        <a href="donate.html" class="btn btn-primary" style="text-align:center;font-size:13px;text-decoration:none;padding:10px">Donate to the PTO</a>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="homepage-main">
+
+      <div class="page-hero" style="background:linear-gradient(135deg,var(--primary) 0%,#087d40 100%);color:white;padding:40px 32px 36px;border-radius:var(--radius-lg);margin-bottom:8px">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,0.65);margin-bottom:8px">Schalmont Sabres</div>
+        <h1 style="color:white;font-size:clamp(24px,4vw,36px);margin-bottom:10px">Sports &amp; Athletics</h1>
+        <p style="color:rgba(255,255,255,0.88);font-size:15px;line-height:1.7;max-width:640px;margin:0">Schalmont school athletics by sport category, plus Rotterdam-area community leagues &amp; programs open to all families.</p>
+      </div>
+
+      <div class="container" style="padding:0">
+
+        <div class="sports-page-grid">
+        <div><!-- sports main -->
+
+        <!-- Don't see a sport banner -->
+        <div style="background:linear-gradient(135deg,#e8f5e9,#f0faf0);border:1.5px solid var(--primary-light);border-radius:var(--radius-lg);padding:15px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-size:22px">📢</span>
+            <div>
+              <div style="font-weight:800;font-size:14px;color:var(--primary)">Don't see a sport or have an update to give?</div>
+              <div style="font-size:12px;color:var(--text-light);margin-top:2px">Help us keep this page accurate for all Schalmont families.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <a href="contact.html" class="btn btn-primary" style="font-size:12px;padding:7px 14px;text-decoration:none;white-space:nowrap">&#9993; Contact Us</a>
+            <a href="https://www.facebook.com/schalmontsabres/" target="_blank" rel="noopener" class="btn" style="font-size:12px;padding:7px 14px;background:#1877F2;color:white;text-decoration:none;white-space:nowrap">Schalmont Sabres on Facebook ↗</a>
+          </div>
+        </div>
+
+        <div class="sports-two-col">
+
+          <!-- ═══════════════════════════════════════════
+               LEFT COLUMN — SCHALMONT SCHOOL SPORTS
+          ═══════════════════════════════════════════ -->
+          <div class="sports-col" id="school-col">
+            <div class="sports-col-title school-col">
+              <div>
+                <div>&#127941; Schalmont Sports</div>
+                <div class="sports-col-title-sub">Modified (Gr. 7–8) &nbsp;·&nbsp; Varsity / JV (Gr. 9–12)</div>
+              </div>
+            </div>
+            <div class="col-filter-bar">
+              <div class="filter-row">
+                <span class="filter-label">School:</span>
+                <button class="fbtn active" onclick="filterSchool(this,'all')">All</button>
+                <button class="fbtn" onclick="filterSchool(this,'jefferson')">Jefferson</button>
+                <button class="fbtn" onclick="filterSchool(this,'ms')">Middle</button>
+                <button class="fbtn" onclick="filterSchool(this,'hs')">High School</button>
+              </div>
+              <div class="filter-row">
+                <span class="filter-label">Season:</span>
+                <button class="fbtn active" onclick="filterSchoolSeason(this,'all')">All</button>
+                <button class="fbtn" onclick="filterSchoolSeason(this,'fall')">Fall</button>
+                <button class="fbtn" onclick="filterSchoolSeason(this,'winter')">Winter</button>
+                <button class="fbtn" onclick="filterSchoolSeason(this,'spring')">Spring</button>
+              </div>
+              <input type="text" class="filter-search" id="school-search" placeholder="Search sport…" oninput="applySchoolFilters()">
+            </div>
+
+            <!-- BASEBALL -->
+            <div class="sport-cat" data-schools="ms hs" data-seasons="spring">
+              <div class="sport-cat-head"><span class="sport-cat-icon">⚾</span> Baseball</div>
+              <div class="sport-cat-body">
+                <div class="school-entry ms">
+                  <div class="school-label ms">Middle<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Modified Baseball</div>
+                    <div class="stag-row"><span class="stag stag-spring">Spring</span><span class="stag stag-boys">Boys</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 7–8</div>
+                  </div>
+                </div>
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity &amp; JV Baseball</div>
+                    <div class="stag-row"><span class="stag stag-spring">Spring</span><span class="stag stag-boys">Boys</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12</div>
+                    <a href="https://www.schalmont.org/athletics/" target="_blank" rel="noopener" class="school-entry-link">Schalmont Athletics ↗</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- BASKETBALL -->
+            <div class="sport-cat" data-schools="jefferson ms hs" data-seasons="winter">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🏀</span> Basketball</div>
+              <div class="sport-cat-body">
+                <div class="school-entry jefferson">
+                  <div class="school-label jefferson">Jefferson<br>Elem.</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Sabres Youth Basketball (CDYBL)</div>
+                    <div class="stag-row"><span class="stag stag-winter">Winter</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 3–4 · Travel league vs. Capital District schools</div>
+                    <a href="https://www.sabrescdybl-gl.com/" target="_blank" rel="noopener" class="school-entry-link">sabrescdybl-gl.com ↗</a>
+                  </div>
+                </div>
+                <div class="school-entry ms">
+                  <div class="school-label ms">Middle<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Sabres Youth Basketball (CDYBL) &amp; Modified Basketball</div>
+                    <div class="stag-row"><span class="stag stag-winter">Winter</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 5–8 · Travel (CDYBL/CDGBL) + school Modified team</div>
+                    <a href="https://www.sabrescdybl-gl.com/" target="_blank" rel="noopener" class="school-entry-link">sabrescdybl-gl.com ↗</a>
+                  </div>
+                </div>
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity &amp; JV Basketball</div>
+                    <div class="stag-row"><span class="stag stag-winter">Winter</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12 · Boys: Greg Loiacono · Girls: Jeff VanHoesen</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:2px">
+                      <a href="mailto:jloiacono@schalmont.net" class="school-entry-link">✉ Boys coach</a>
+                      <a href="mailto:jvanhoesen@schalmont.net" class="school-entry-link">✉ Girls coach</a>
+                    </div>
+                    <a href="https://www.schalmont.org/athletics/" target="_blank" rel="noopener" class="school-entry-link">Schalmont Athletics ↗</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- BOWLING -->
+            <div class="sport-cat" data-schools="hs" data-seasons="winter">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🎳</span> Bowling</div>
+              <div class="sport-cat-body">
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity Bowling</div>
+                    <div class="stag-row"><span class="stag stag-winter">Winter</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12</div>
+                    <a href="https://www.schalmont.org/athletics/" target="_blank" rel="noopener" class="school-entry-link">Schalmont Athletics ↗</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CHEERLEADING -->
+            <div class="sport-cat" data-schools="hs" data-seasons="fall winter">
+              <div class="sport-cat-head"><span class="sport-cat-icon">📣</span> Cheerleading</div>
+              <div class="sport-cat-body">
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity &amp; JV Cheerleading (Football)</div>
+                    <div class="stag-row"><span class="stag stag-fall">Fall</span><span class="stag stag-coed">Coed</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12</div>
+                  </div>
+                </div>
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity Cheerleading (Basketball)</div>
+                    <div class="stag-row"><span class="stag stag-winter">Winter</span><span class="stag stag-coed">Coed</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12</div>
+                    <a href="https://www.schalmont.org/athletics/" target="_blank" rel="noopener" class="school-entry-link">Schalmont Athletics ↗</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CROSS COUNTRY -->
+            <div class="sport-cat" data-schools="ms hs" data-seasons="fall">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🏃</span> Cross Country</div>
+              <div class="sport-cat-body">
+                <div class="school-entry ms">
+                  <div class="school-label ms">Middle<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Modified Cross Country</div>
+                    <div class="stag-row"><span class="stag stag-fall">Fall</span><span class="stag stag-coed">Coed</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 7–8</div>
+                  </div>
+                </div>
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity Cross Country</div>
+                    <div class="stag-row"><span class="stag stag-fall">Fall</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12 · Coach: John George</div>
+                    <a href="mailto:jgeorge@schalmont.net" class="school-entry-link">✉ jgeorge@schalmont.net</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FIELD HOCKEY -->
+            <div class="sport-cat" data-schools="ms hs" data-seasons="fall">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🏑</span> Field Hockey</div>
+              <div class="sport-cat-body">
+                <div class="school-entry ms">
+                  <div class="school-label ms">Middle<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Modified Field Hockey</div>
+                    <div class="stag-row"><span class="stag stag-fall">Fall</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 7–8</div>
+                  </div>
+                </div>
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity &amp; JV Field Hockey</div>
+                    <div class="stag-row"><span class="stag stag-fall">Fall</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12</div>
+                    <a href="https://www.schalmont.org/athletics/" target="_blank" rel="noopener" class="school-entry-link">Schalmont Athletics ↗</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FOOTBALL / CHEER -->
+            <div class="sport-cat" data-schools="jefferson ms hs" data-seasons="fall">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🏈</span> Football &amp; Cheerleading</div>
+              <div class="sport-cat-body">
+                <div class="school-entry jefferson">
+                  <div class="school-label jefferson">Jefferson<br>Elem.</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Schalmont Youth Football &amp; Cheer</div>
+                    <div class="stag-row"><span class="stag stag-fall">Fall</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Youth · School-community program for elementary-age players</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:2px">
+                      <a href="mailto:sabreyouthfootball@gmail.com" class="school-entry-link">✉ Football</a>
+                      <a href="mailto:sabreyouthcheer@gmail.com" class="school-entry-link">✉ Cheer</a>
+                      <a href="tel:5188590681" class="school-entry-link">📞 (518) 859-0681</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="school-entry ms">
+                  <div class="school-label ms">Middle<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Modified Football</div>
+                    <div class="stag-row"><span class="stag stag-fall">Fall</span><span class="stag stag-coed">Coed</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 7–8</div>
+                  </div>
+                </div>
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity &amp; JV Football</div>
+                    <div class="stag-row"><span class="stag stag-fall">Fall</span><span class="stag stag-boys">Boys</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12 · Coach: Joe Whipple · JV: Patrick Houlihan</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:2px">
+                      <a href="mailto:jwhipple@schalmont.net" class="school-entry-link">✉ jwhipple@schalmont.net</a>
+                    </div>
+                    <a href="https://www.schalmont.org/athletics/" target="_blank" rel="noopener" class="school-entry-link">Schalmont Athletics ↗</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- GOLF -->
+            <div class="sport-cat" data-schools="ms hs" data-seasons="fall">
+              <div class="sport-cat-head"><span class="sport-cat-icon">⛳</span> Golf</div>
+              <div class="sport-cat-body">
+                <div class="school-entry ms">
+                  <div class="school-label ms">Middle<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Modified Golf</div>
+                    <div class="stag-row"><span class="stag stag-fall">Fall</span><span class="stag stag-coed">Coed</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 7–8</div>
+                  </div>
+                </div>
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity Golf</div>
+                    <div class="stag-row"><span class="stag stag-fall">Fall</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12</div>
+                    <a href="https://www.schalmont.org/athletics/" target="_blank" rel="noopener" class="school-entry-link">Schalmont Athletics ↗</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- HOCKEY -->
+            <div class="sport-cat" data-schools="hs" data-seasons="winter">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🏒</span> Hockey (Ice)</div>
+              <div class="sport-cat-body">
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity Ice Hockey (Co-op)</div>
+                    <div class="stag-row"><span class="stag stag-winter">Winter</span><span class="stag stag-coed">Co-op</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12</div>
+                    <a href="https://www.schalmont.org/athletics/" target="_blank" rel="noopener" class="school-entry-link">Schalmont Athletics ↗</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- INDOOR TRACK -->
+            <div class="sport-cat" data-schools="hs" data-seasons="winter">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🏟️</span> Indoor Track &amp; Field</div>
+              <div class="sport-cat-body">
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity Indoor Track &amp; Field</div>
+                    <div class="stag-row"><span class="stag stag-winter">Winter</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12</div>
+                    <a href="https://www.schalmont.org/athletics/" target="_blank" rel="noopener" class="school-entry-link">Schalmont Athletics ↗</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- LACROSSE -->
+            <div class="sport-cat" data-schools="ms hs" data-seasons="spring">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🥍</span> Lacrosse</div>
+              <div class="sport-cat-body">
+                <div class="school-entry ms">
+                  <div class="school-label ms">Middle<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Modified Lacrosse</div>
+                    <div class="stag-row"><span class="stag stag-spring">Spring</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 7–8</div>
+                  </div>
+                </div>
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity &amp; JV Lacrosse</div>
+                    <div class="stag-row"><span class="stag stag-spring">Spring</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12</div>
+                    <a href="https://www.schalmont.org/athletics/" target="_blank" rel="noopener" class="school-entry-link">Schalmont Athletics ↗</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SOCCER -->
+            <div class="sport-cat" data-schools="ms hs" data-seasons="fall">
+              <div class="sport-cat-head"><span class="sport-cat-icon">⚽</span> Soccer</div>
+              <div class="sport-cat-body">
+                <div class="school-entry ms">
+                  <div class="school-label ms">Middle<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Modified Soccer</div>
+                    <div class="stag-row"><span class="stag stag-fall">Fall</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 7–8</div>
+                  </div>
+                </div>
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity &amp; JV Soccer</div>
+                    <div class="stag-row"><span class="stag stag-fall">Fall</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12 · Boys: Vito Urbano · Girls: Maurizio Cassano</div>
+                    <a href="mailto:vitourbano@gmail.com" class="school-entry-link">✉ Boys coach</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SOFTBALL -->
+            <div class="sport-cat" data-schools="ms hs" data-seasons="spring">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🥎</span> Softball</div>
+              <div class="sport-cat-body">
+                <div class="school-entry ms">
+                  <div class="school-label ms">Middle<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Modified Softball</div>
+                    <div class="stag-row"><span class="stag stag-spring">Spring</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 7–8</div>
+                  </div>
+                </div>
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity &amp; JV Softball</div>
+                    <div class="stag-row"><span class="stag stag-spring">Spring</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12</div>
+                    <a href="https://www.schalmont.org/athletics/" target="_blank" rel="noopener" class="school-entry-link">Schalmont Athletics ↗</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SWIMMING -->
+            <div class="sport-cat" data-schools="ms hs" data-seasons="winter">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🏊</span> Swimming &amp; Diving</div>
+              <div class="sport-cat-body">
+                <div class="school-entry ms">
+                  <div class="school-label ms">Middle<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Modified Swimming</div>
+                    <div class="stag-row"><span class="stag stag-winter">Winter</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 7–8</div>
+                  </div>
+                </div>
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity Swimming &amp; Diving</div>
+                    <div class="stag-row"><span class="stag stag-winter">Winter</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12</div>
+                    <a href="https://www.schalmont.org/athletics/" target="_blank" rel="noopener" class="school-entry-link">Schalmont Athletics ↗</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TENNIS -->
+            <div class="sport-cat" data-schools="ms hs" data-seasons="fall spring">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🎾</span> Tennis</div>
+              <div class="sport-cat-body">
+                <div class="school-entry ms">
+                  <div class="school-label ms">Middle<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Modified Tennis</div>
+                    <div class="stag-row"><span class="stag stag-spring">Spring</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 7–8</div>
+                  </div>
+                </div>
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity Tennis</div>
+                    <div class="stag-row"><span class="stag stag-fall">Fall</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12</div>
+                    <a href="https://www.schalmont.org/athletics/" target="_blank" rel="noopener" class="school-entry-link">Schalmont Athletics ↗</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TRACK & FIELD -->
+            <div class="sport-cat" data-schools="ms hs" data-seasons="spring">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🏃</span> Track &amp; Field</div>
+              <div class="sport-cat-body">
+                <div class="school-entry ms">
+                  <div class="school-label ms">Middle<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Modified Track &amp; Field</div>
+                    <div class="stag-row"><span class="stag stag-spring">Spring</span><span class="stag stag-coed">Coed</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 7–8</div>
+                  </div>
+                </div>
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity Track &amp; Field</div>
+                    <div class="stag-row"><span class="stag stag-spring">Spring</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12</div>
+                    <a href="https://www.schalmont.org/athletics/" target="_blank" rel="noopener" class="school-entry-link">Schalmont Athletics ↗</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- VOLLEYBALL -->
+            <div class="sport-cat" data-schools="ms hs" data-seasons="fall spring">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🏐</span> Volleyball</div>
+              <div class="sport-cat-body">
+                <div class="school-entry ms">
+                  <div class="school-label ms">Middle<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Modified Volleyball</div>
+                    <div class="stag-row"><span class="stag stag-spring">Spring</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 7–8</div>
+                  </div>
+                </div>
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity &amp; JV Volleyball — Girls</div>
+                    <div class="stag-row"><span class="stag stag-fall">Fall</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12 · Coach: C. Monaco</div>
+                  </div>
+                </div>
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity Volleyball — Boys</div>
+                    <div class="stag-row"><span class="stag stag-spring">Spring</span><span class="stag stag-boys">Boys</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12</div>
+                    <a href="https://www.schalmont.org/athletics/" target="_blank" rel="noopener" class="school-entry-link">Schalmont Athletics ↗</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- WRESTLING -->
+            <div class="sport-cat" data-schools="woestina jefferson ms hs" data-seasons="winter">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🤼</span> Wrestling</div>
+              <div class="sport-cat-body">
+                <div class="school-entry woestina">
+                  <div class="school-label woestina">Woestina<br>Pre-K</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Youth Wrestling Club</div>
+                    <div class="stag-row"><span class="stag stag-winter">Winter</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Youth ages — contact for details</div>
+                    <a href="mailto:dagblock@aol.com" class="school-entry-link">✉ dagblock@aol.com</a>
+                  </div>
+                </div>
+                <div class="school-entry jefferson">
+                  <div class="school-label jefferson">Jefferson<br>Elem.</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Youth Wrestling Club</div>
+                    <div class="stag-row"><span class="stag stag-winter">Winter</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Elementary ages — contact for registration details</div>
+                    <a href="mailto:dagblock@aol.com" class="school-entry-link">✉ dagblock@aol.com</a>
+                  </div>
+                </div>
+                <div class="school-entry ms">
+                  <div class="school-label ms">Middle<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Modified Wrestling</div>
+                    <div class="stag-row"><span class="stag stag-winter">Winter</span><span class="stag stag-boys">Boys</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 7–8 · Coach: Ken Dagostino Sr.</div>
+                    <a href="mailto:dagblock@aol.com" class="school-entry-link">✉ dagblock@aol.com</a>
+                  </div>
+                </div>
+                <div class="school-entry hs">
+                  <div class="school-label hs">High<br>School</div>
+                  <div class="school-info">
+                    <div class="school-name-line">Varsity Wrestling (Boys) · Co-op Girls Team</div>
+                    <div class="stag-row"><span class="stag stag-winter">Winter</span><span class="stag stag-boys">Boys</span><span class="stag stag-girls">Girls</span></div>
+                    <div style="font-size:11px;color:var(--text-light)">Grades 9–12 · Girls: co-op w/ Mohonasen (Coach: Michael LaCouture)</div>
+                    <a href="https://www.schalmont.org/athletics/" target="_blank" rel="noopener" class="school-entry-link">Schalmont Athletics ↗</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /.sports-col (school) -->
+
+
+          <!-- ═══════════════════════════════════════════
+               RIGHT COLUMN — ROTTERDAM COMMUNITY SPORTS
+          ═══════════════════════════════════════════ -->
+          <div class="sports-col" id="community-col">
+            <div class="sports-col-title community-col">
+              <div>
+                <div>&#127968; Rotterdam Community Sports</div>
+                <div class="sports-col-title-sub">Independent leagues &amp; programs open to all residents</div>
+              </div>
+            </div>
+
+            <div class="col-filter-bar">
+              <div class="filter-row">
+                <span class="filter-label">Season:</span>
+                <button class="fbtn active comm" onclick="filterCommSeason(this,'all')">All</button>
+                <button class="fbtn" onclick="filterCommSeason(this,'fall')">Fall</button>
+                <button class="fbtn" onclick="filterCommSeason(this,'winter')">Winter</button>
+                <button class="fbtn" onclick="filterCommSeason(this,'spring')">Spring</button>
+                <button class="fbtn" onclick="filterCommSeason(this,'year-round')">Year-Round</button>
+              </div>
+              <input type="text" class="filter-search" id="comm-search" placeholder="Search sport…" oninput="applyCommFilters()">
+            </div>
+
+            <!-- ARCHERY -->
+            <div class="sport-cat" data-seasons="year-round">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🏹</span> Archery</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Iroquois Rod &amp; Gun Club</div>
+                  <div class="comm-org-desc">Archery target field &amp; indoor range in Rotterdam · Members only · Est. 1924</div>
+                  <div class="comm-btns">
+                    <a href="http://www.iroquoisrodandgun.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5183567273" class="cbtn cbtn-phone">📞 (518) 356-7273</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- BASEBALL -->
+            <div class="sport-cat" data-seasons="spring">
+              <div class="sport-cat-head"><span class="sport-cat-icon">⚾</span> Baseball</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">RC Little League (RCLL)</div>
+                  <div class="comm-org-desc">Spring · Ages 4–16 · T-Ball, Farm, Minors, Majors &amp; RC Clippers Travel</div>
+                  <div class="comm-btns">
+                    <a href="https://www.rclittleleague.com" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 rclittleleague.com</a>
+                    <a href="tel:5188782995" class="cbtn cbtn-phone">📞 (518) 878-2995</a>
+                    <a href="mailto:dc2154@aol.com" class="cbtn cbtn-email">✉ Email</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">Rotterdam Babe Ruth Baseball</div>
+                  <div class="comm-org-desc">Spring · Ages 13–18</div>
+                  <div class="comm-btns">
+                    <a href="https://www.facebook.com/p/Rotterdam-Babe-Ruth-100064638914393" target="_blank" rel="noopener" class="cbtn cbtn-fb">Facebook Page</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">Rotterdam Challenger Baseball</div>
+                  <div class="comm-org-desc">Adaptive baseball · All ages · Players with disabilities welcome</div>
+                  <div class="comm-btns">
+                    <a href="https://www.facebook.com/RotterdamChallengerBaseball" target="_blank" rel="noopener" class="cbtn cbtn-fb">Facebook Page</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- BASKETBALL -->
+            <div class="sport-cat" data-seasons="winter">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🏀</span> Basketball</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Sabres CDYBL / CDGBL — Schalmont Youth Basketball</div>
+                  <div class="comm-org-desc">Winter · Grades 3–8 · Competitive travel league (CDYBL boys, CDGBL girls) · Practices at Jefferson Elementary &amp; Schalmont Middle/High School gyms</div>
+                  <div class="comm-btns">
+                    <a href="https://www.sabrescdybl-gl.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 sabrescdybl-gl.com</a>
+                    <a href="mailto:sabrescdybl@gmail.com" class="cbtn cbtn-email">✉ Email</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">Capital District YMCA — Schenectady</div>
+                  <div class="comm-org-desc">Year-round · Youth leagues &amp; skills programs · NCAA regulation courts</div>
+                  <div class="comm-btns">
+                    <a href="https://cdymca.org/locations/schenectady-ymca" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5188810117" class="cbtn cbtn-phone">📞 (518) 881-0117</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">Boys &amp; Girls Club Rotterdam</div>
+                  <div class="comm-org-desc">Gymnasium open to members · 721 Curry Rd · $10/year membership</div>
+                  <div class="comm-btns">
+                    <a href="https://www.bgcschenectady.org/rotterdam" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5183557440" class="cbtn cbtn-phone">📞 (518) 355-7440</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">AAU Hoop — Capital District</div>
+                  <div class="comm-org-desc">Youth basketball training &amp; teams · Practices at Boys &amp; Girls Club</div>
+                  <div class="comm-btns">
+                    <a href="https://www.aauhoop.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- BMX -->
+            <div class="sport-cat" data-seasons="year-round">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🚵</span> BMX</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Tri-City BMX</div>
+                  <div class="comm-org-desc">USA BMX sanctioned racing track · Youth &amp; adult · 520 Burdeck St, Schenectady</div>
+                  <div class="comm-btns">
+                    <a href="https://www.usabmx.com/tracks/1889" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5183822691" class="cbtn cbtn-phone">📞 (518) 382-2691</a>
+                    <a href="mailto:tricitybmxinfo@gmail.com" class="cbtn cbtn-email">✉ Email</a>
+                    <a href="https://www.facebook.com/tricitybmxtrack" target="_blank" rel="noopener" class="cbtn cbtn-fb">Facebook</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- BOWLING -->
+            <div class="sport-cat" data-seasons="winter">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🎳</span> Bowling</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Sportsman's Bowl</div>
+                  <div class="comm-org-desc">Youth leagues: Adult/Child Sundays, Friday Bantams/Preps, Bumpers Sat/Sun AM · 1652 Crane St, Schenectady</div>
+                  <div class="comm-btns">
+                    <a href="https://www.sportsmansbowl.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5183554330" class="cbtn cbtn-phone">📞 (518) 355-4330</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">Towne Bowling Academy</div>
+                  <div class="comm-org-desc">Junior leagues Fri afternoons &amp; Sat mornings · 20 lanes · 1601 Altamont Ave, Schenectady</div>
+                  <div class="comm-btns">
+                    <a href="https://www.townebowlingacademy.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5183553939" class="cbtn cbtn-phone">📞 (518) 355-3939</a>
+                    <a href="mailto:towneacademy@yahoo.com" class="cbtn cbtn-email">✉ Email</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- BOXING -->
+            <div class="sport-cat" data-seasons="year-round">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🥊</span> Boxing</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Ring of Hope Boxing Club</div>
+                  <div class="comm-org-desc">Nonprofit · Ages 8–14 · After-school Mon–Thu 4–5:30 PM · 118 Erie Blvd, Schenectady</div>
+                  <div class="comm-btns">
+                    <a href="https://ringofhopeboxingclub.org/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5183771811" class="cbtn cbtn-phone">📞 (518) 377-1811</a>
+                    <a href="mailto:schtdyyouthbox@live.com" class="cbtn cbtn-email">✉ Email</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CHEERLEADING / FOOTBALL -->
+            <div class="sport-cat" data-seasons="fall">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🏈</span> Cheerleading &amp; Football</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Schalmont Youth Football &amp; Cheer</div>
+                  <div class="comm-org-desc">Fall · Youth football &amp; cheerleading · Affiliated with Schalmont school community · See Schalmont Sports column for details</div>
+                  <div class="comm-btns">
+                    <a href="tel:5188590681" class="cbtn cbtn-phone">📞 (518) 859-0681</a>
+                    <a href="mailto:sabreyouthfootball@gmail.com" class="cbtn cbtn-email">✉ Football</a>
+                    <a href="mailto:sabreyouthcheer@gmail.com" class="cbtn cbtn-email">✉ Cheer</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">Pop Warner Football &amp; Cheer</div>
+                  <div class="comm-org-desc">Fall · Ages 5–16 · Mohonasen/Rotterdam area · Non-school league</div>
+                  <div class="comm-btns">
+                    <a href="https://www.popwarner.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 popwarner.com</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CROSS COUNTRY / RUNNING -->
+            <div class="sport-cat" data-seasons="fall">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🏃</span> Cross Country / Running</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Hudson-Mohawk Road Runners Club (HMRRC)</div>
+                  <div class="comm-org-desc">Largest running club in Upstate NY · "Just Run" youth program in schools (fall &amp; spring) · Races year-round</div>
+                  <div class="comm-btns">
+                    <a href="https://www.hmrrc.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 hmrrc.com</a>
+                    <a href="mailto:admin@hmrrc.com" class="cbtn cbtn-email">✉ Email</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CURLING -->
+            <div class="sport-cat" data-seasons="winter">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🥌</span> Curling</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Schenectady Curling Club</div>
+                  <div class="comm-org-desc">Est. 1907 · 4-sheet facility · 300+ members · Season Oct–Apr · Youth leagues available · 1084 Balltown Rd, Schenectady</div>
+                  <div class="comm-btns">
+                    <a href="https://schenectadycurlingclub.us/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5183724063" class="cbtn cbtn-phone">📞 (518) 372-4063</a>
+                    <a href="mailto:info@schenectadycurlingclub.us" class="cbtn cbtn-email">✉ Email</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- EQUESTRIAN -->
+            <div class="sport-cat" data-seasons="year-round">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🐴</span> Equestrian / Horseback Riding</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Winter Glen Farm</div>
+                  <div class="comm-org-desc">English riding lessons · Ages 8+ · Indoor &amp; outdoor arenas · 7296 Guilderland Ave, Schenectady (Rotterdam area)</div>
+                  <div class="comm-btns">
+                    <a href="https://www.facebook.com/winterglenfarm" target="_blank" rel="noopener" class="cbtn cbtn-fb">Facebook Page</a>
+                    <a href="tel:5183312363" class="cbtn cbtn-phone">📞 (518) 331-2363</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">STEP — Saratoga Therapeutic Equestrian Program</div>
+                  <div class="comm-org-desc">Therapeutic riding for riders ages 2+ with disabilities · Glenville, NY (Schenectady County)</div>
+                  <div class="comm-btns">
+                    <a href="https://www.saratogastep.org/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FIGURE SKATING / ICE SKATING -->
+            <div class="sport-cat" data-seasons="winter">
+              <div class="sport-cat-head"><span class="sport-cat-icon">⛸️</span> Figure Skating &amp; Ice Skating</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Achilles Figure Skating Club</div>
+                  <div class="comm-org-desc">Figure skating at Schenectady County Ray Wemple Rink · 5 Tower Rd, Scotia</div>
+                  <div class="comm-btns">
+                    <a href="https://www.schenectadycountyny.gov/recreation-facility" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Rink Info</a>
+                    <a href="tel:5183842445" class="cbtn cbtn-phone">📞 (518) 384-2445</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">SYHA Learn-to-Skate</div>
+                  <div class="comm-org-desc">Skating lessons ages 4 to adult · Schenectady Youth Hockey Assoc. · Same rink</div>
+                  <div class="comm-btns">
+                    <a href="https://www.schenectadyyouthhockey.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5183939459" class="cbtn cbtn-phone">📞 (518) 393-9459</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- GOLF -->
+            <div class="sport-cat" data-seasons="fall spring">
+              <div class="sport-cat-head"><span class="sport-cat-icon">⛳</span> Golf</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Golf Bays at Rotterdam</div>
+                  <div class="comm-org-desc">Indoor golf bays for practice &amp; lessons in Rotterdam</div>
+                  <div class="comm-btns">
+                    <a href="https://golfbaysatrotterdam.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">PGA Jr. League</div>
+                  <div class="comm-org-desc">Team-format youth golf · Ages 13 and under · Find local chapters via PGA</div>
+                  <div class="comm-btns">
+                    <a href="https://www.pgajrleague.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 pgajrleague.com</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">Youth on Course / NYSGA</div>
+                  <div class="comm-org-desc">$60/year membership (ages 6–18) · Rounds at NY courses for $5 or less</div>
+                  <div class="comm-btns">
+                    <a href="https://nysga.org/foundation-youth-on-course" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- GYMNASTICS -->
+            <div class="sport-cat" data-seasons="year-round">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🤸</span> Gymnastics</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Twist'N Flip Gymnastics — Rotterdam</div>
+                  <div class="comm-org-desc">Parent &amp; Tot through competitive USAG XCEL · Year-round · 93 W Campbell Rd, Schenectady</div>
+                  <div class="comm-btns">
+                    <a href="https://www.twistnflip.com/rotterdam-gymnastics/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5189821532" class="cbtn cbtn-phone">📞 (518) 982-1532</a>
+                    <a href="mailto:rotterdam@twistnflip.com" class="cbtn cbtn-email">✉ Email</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- HOCKEY -->
+            <div class="sport-cat" data-seasons="winter">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🏒</span> Hockey (Ice)</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Schenectady Youth Hockey Association (SYHA)</div>
+                  <div class="comm-org-desc">Ages 4 to adult · Learn-to-Skate, entry-level, recreational (ages 9–13) &amp; competitive · Home rink: Wemple Rink, Glenville</div>
+                  <div class="comm-btns">
+                    <a href="https://www.schenectadyyouthhockey.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5183939459" class="cbtn cbtn-phone">📞 (518) 393-9459</a>
+                    <a href="mailto:lzahn@nycap.rr.com" class="cbtn cbtn-email">✉ Email</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- LACROSSE -->
+            <div class="sport-cat" data-seasons="spring">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🥍</span> Lacrosse</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Rotterdam/Schenectady Youth Lacrosse Club</div>
+                  <div class="comm-org-desc">Spring · Boys Grades K–6 · Girls contact Coach Pollizatto · $100 registration + $35 USA Lacrosse membership</div>
+                  <div class="comm-btns">
+                    <a href="https://sites.google.com/view/rotterdamschenectady-youth-lax/home" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="mailto:pollizattok@schenectady.k12.ny.us" class="cbtn cbtn-email">✉ Girls Contact</a>
+                    <a href="https://www.facebook.com/p/RotterdamSchenectady-Youth-Lacrosse-Club-100064680999959" target="_blank" rel="noopener" class="cbtn cbtn-fb">Facebook</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- MARTIAL ARTS -->
+            <div class="sport-cat" data-seasons="year-round">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🥋</span> Martial Arts</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Rotterdam Martial Arts</div>
+                  <div class="comm-org-desc">Tae Kwon Do &amp; Little Dragons · Kids &amp; adults · 2696 Hamburg St, Rotterdam</div>
+                  <div class="comm-btns">
+                    <a href="https://rotterdammartialarts.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5189302074" class="cbtn cbtn-phone">📞 (518) 930-2074</a>
+                    <a href="mailto:info@rotterdammartialarts.com" class="cbtn cbtn-email">✉ Email</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">Pai's Taekwondo — Schenectady</div>
+                  <div class="comm-org-desc">Ages 4+ · 1615 Union St, Schenectady</div>
+                  <div class="comm-btns">
+                    <a href="https://paitkd.com/location/schenectady-ny/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5183468444" class="cbtn cbtn-phone">📞 (518) 346-8444</a>
+                    <a href="mailto:sch_staff@paitkd.com" class="cbtn cbtn-email">✉ Email</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">Northeast Taekwon-Do Academy</div>
+                  <div class="comm-org-desc">Est. 1977 · AAU-chartered · Grand Master Les Zampino · Capital District</div>
+                  <div class="comm-btns">
+                    <a href="https://northeasttkd.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PICKLEBALL -->
+            <div class="sport-cat" data-seasons="year-round">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🏓</span> Pickleball</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">SPORTIME Capital Region</div>
+                  <div class="comm-org-desc">4 indoor hybrid courts · Open play, clinics, leagues · 2699 Curry Rd, Schenectady</div>
+                  <div class="comm-btns">
+                    <a href="https://www.sportimeny.com/schenectady" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5183560100" class="cbtn cbtn-phone">📞 (518) 356-0100</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">Schenectady Jewish Community Center</div>
+                  <div class="comm-org-desc">6 outdoor + 3 indoor courts · All levels</div>
+                  <div class="comm-btns">
+                    <a href="https://schenectadyjcc.org/Pickleball" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5183778803" class="cbtn cbtn-phone">📞 (518) 377-8803</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">Pickleball Schenectady</div>
+                  <div class="comm-org-desc">Local courts, clubs, open play &amp; tournament directory for the Schenectady area</div>
+                  <div class="comm-btns">
+                    <a href="https://pickleballschenectady.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ROWING -->
+            <div class="sport-cat" data-seasons="spring fall">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🚣</span> Rowing / Crew</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Niskayuna Rowing</div>
+                  <div class="comm-org-desc">Grades 6–12 · Rows on the Mohawk River at Aqueduct Park · Summer Learn-to-Row (3 weeks)</div>
+                  <div class="comm-btns">
+                    <a href="https://www.gomotionapp.com/team/reczznrc/page/home" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">Burnt Hills Rowing Association (BHRA)</div>
+                  <div class="comm-org-desc">Grades 6–12 · Fall, winter &amp; spring seasons · Mohawk Valley Rowing Center, Alplaus, NY</div>
+                  <div class="comm-btns">
+                    <a href="https://www.bhrow.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 bhrow.com</a>
+                    <a href="mailto:info@bhrow.com" class="cbtn cbtn-email">✉ Email</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SKIING / SNOWBOARDING -->
+            <div class="sport-cat" data-seasons="winter">
+              <div class="sport-cat-head"><span class="sport-cat-icon">⛷️</span> Skiing &amp; Snowboarding</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Schenectady Wintersports Club (SWC)</div>
+                  <div class="comm-org-desc">Founded 1932 · Group ski trips, clinics &amp; events for all ages · Membership-based</div>
+                  <div class="comm-btns">
+                    <a href="https://www.swcweb.org/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="mailto:bluesquare@msn.com" class="cbtn cbtn-email">✉ Email</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">Gore Mountain</div>
+                  <div class="comm-org-desc">NY's largest ski resort · ~1 hr from Rotterdam · Children's programs ages 4–13 · Weekend &amp; season-long options</div>
+                  <div class="comm-btns">
+                    <a href="https://goremountain.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 goremountain.com</a>
+                    <a href="tel:5182514804" class="cbtn cbtn-phone">📞 (518) 251-4804</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SOCCER -->
+            <div class="sport-cat" data-seasons="fall spring">
+              <div class="sport-cat-head"><span class="sport-cat-icon">⚽</span> Soccer</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Rotterdam United Soccer Club (RUSC)</div>
+                  <div class="comm-org-desc">Spring &amp; fall · Rec: K–Grade 6 · Travel: U8–U18 through CDYSL</div>
+                  <div class="comm-btns">
+                    <a href="https://www.ruscny.org/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 ruscny.org</a>
+                    <a href="tel:5183396224" class="cbtn cbtn-phone">📞 (518) 339-6224</a>
+                    <a href="mailto:rotterdamsoccer@gmail.com" class="cbtn cbtn-email">✉ Email</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SOFTBALL -->
+            <div class="sport-cat" data-seasons="spring">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🥎</span> Softball</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Rotterdam Girls Softball League (RGSL)</div>
+                  <div class="comm-org-desc">Spring · Ages 4–16 · Recreational &amp; travel (Rotterdam Reign) · 1160 Fayette Dr, Rotterdam</div>
+                  <div class="comm-btns">
+                    <a href="https://www.rotterdamgirlssoftball.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5183553143" class="cbtn cbtn-phone">📞 (518) 355-3143</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SWIMMING -->
+            <div class="sport-cat" data-seasons="year-round">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🏊</span> Swimming &amp; Swim Lessons</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Boys &amp; Girls Club Rotterdam (Indoor Pool)</div>
+                  <div class="comm-org-desc">Pool available to members · 721 Curry Rd · $10/year membership</div>
+                  <div class="comm-btns">
+                    <a href="https://www.bgcschenectady.org/rotterdam" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5183557440" class="cbtn cbtn-phone">📞 (518) 355-7440</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">Schenectady Jewish Community Center</div>
+                  <div class="comm-org-desc">Lessons: Parent &amp; Tot (6 mo+), children &amp; adults · Private &amp; group options</div>
+                  <div class="comm-btns">
+                    <a href="https://schenectadyjcc.org/Swimming-Lessons" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5183778803" class="cbtn cbtn-phone">📞 (518) 377-8803</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">Capital District YMCA — Schenectady</div>
+                  <div class="comm-org-desc">Swim lessons at multiple Capital District locations</div>
+                  <div class="comm-btns">
+                    <a href="https://cdymca.org/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 cdymca.org</a>
+                    <a href="tel:5188810117" class="cbtn cbtn-phone">📞 (518) 881-0117</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TENNIS -->
+            <div class="sport-cat" data-seasons="fall spring">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🎾</span> Tennis</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">SPORTIME Capital Region</div>
+                  <div class="comm-org-desc">6 indoor + 8 outdoor courts · Lessons all ages, youth summer camps (9+), leagues · 2699 Curry Rd, Schenectady</div>
+                  <div class="comm-btns">
+                    <a href="https://www.sportimeny.com/schenectady" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5183560100" class="cbtn cbtn-phone">📞 (518) 356-0100</a>
+                    <a href="mailto:schenectady@sportimeny.com" class="cbtn cbtn-email">✉ Email</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">15-LOVE (Free Youth Tennis)</div>
+                  <div class="comm-org-desc">Free lessons for ages 4–18 · Outdoor June–Aug, indoor Oct–Apr · No pre-registration required</div>
+                  <div class="comm-btns">
+                    <a href="https://www.15love.org/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 15love.org</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- VOLLEYBALL -->
+            <div class="sport-cat" data-seasons="fall spring">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🏐</span> Volleyball</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">Jaguars Volleyball Club</div>
+                  <div class="comm-org-desc">Serves Albany, Schenectady &amp; Capital Region · Skills clinics coed 5U–12U · Competitive travel teams 12U–18U girls</div>
+                  <div class="comm-btns">
+                    <a href="https://www.jaguarsvolleyballclub.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="mailto:info@jaguarsvolleyballclub.com" class="cbtn cbtn-email">✉ Email</a>
+                  </div>
+                </div>
+                <div class="comm-org">
+                  <div class="comm-org-name">SPORTIME Capital Region</div>
+                  <div class="comm-org-desc">Adult volleyball leagues · Indoor courts · 2699 Curry Rd, Schenectady</div>
+                  <div class="comm-btns">
+                    <a href="https://www.sportimeny.com/schenectady" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="tel:5183560100" class="cbtn cbtn-phone">📞 (518) 356-0100</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- WRESTLING -->
+            <div class="sport-cat" data-seasons="winter">
+              <div class="sport-cat-head"><span class="sport-cat-icon">🤼</span> Wrestling</div>
+              <div class="sport-cat-body">
+                <div class="comm-org">
+                  <div class="comm-org-name">MiniMen / Journeymen Wrestling Club</div>
+                  <div class="comm-org-desc">Grades 1–8, boys &amp; girls · Year-round structured practices · Capital Region's premier youth wrestling program</div>
+                  <div class="comm-btns">
+                    <a href="https://www.journeymenwrestling.com/" target="_blank" rel="noopener" class="cbtn cbtn-web">🌐 Website</a>
+                    <a href="mailto:info@journeymenwrestling.com" class="cbtn cbtn-email">✉ Email</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /.sports-col (community) -->
+
+        </div><!-- /.sports-two-col -->
+
+        <!-- Registration CTA -->
+        <div class="sports-cta">
+          <div>
+            <h3>&#127942; Schalmont School Sports Registration</h3>
+            <p>Register for Modified or Varsity/JV sports through FamilyID. A valid physical exam (within 1 year) must be on file before participation.</p>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <a href="https://www.familyid.com" target="_blank" rel="noopener" class="btn btn-primary" style="text-decoration:none;white-space:nowrap">Register on FamilyID ↗</a>
+            <a href="https://www.schalmont.org/athletics/" target="_blank" rel="noopener" class="btn" style="background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.3);text-decoration:none;white-space:nowrap">Schalmont Athletics ↗</a>
+          </div>
+        </div>
+
+        <p style="font-size:12px;color:var(--text-light);margin-top:20px;text-align:center">School sports sourced from schalmont.org/athletics. Community listings are independently maintained — contact organizations directly to confirm current offerings. Questions? <a href="mailto:info@schalmontpto.com" style="color:var(--primary)">info@schalmontpto.com</a></p>
+
+        </div><!-- /sports main -->
+
+        <!-- SAA SIDEBAR -->
+        <aside class="saa-sidebar">
+          <div class="saa-ad-card">
+            <div class="saa-ad-card-logo">🏅</div>
+            <h3>Schalmont Athletic Association</h3>
+            <p>The SAA supports Middle School student-athletes and promotes sportsmanship, school spirit, and athletic participation at Schalmont.</p>
+            <a href="https://www.schalmont.org/middle-school/schalmont-athletic-association/" target="_blank" rel="noopener">Learn More &amp; Join ↗</a>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;font-size:12px;color:var(--text-light);line-height:1.6">
+            <div style="font-weight:700;font-size:13px;color:var(--text-dark);margin-bottom:6px">&#9888; Missing a sport?</div>
+            Facebook often has the most up-to-date info on programs. Follow
+            <a href="https://www.facebook.com/schalmontsabres/" target="_blank" rel="noopener" style="color:#1255a4;font-weight:600">Schalmont Sabres</a>
+            for announcements.
+          </div>
+        </aside>
+
+        </div><!-- /sports-page-grid -->
+
+      </div><!-- /.container -->
+    </div><!-- /.homepage-main -->
+  </div><!-- /.homepage-layout -->
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-brand" style="margin-bottom:12px">
+            <img src="images/logo.png" alt="Schalmont Central PTO" class="nav-logo-img">
+          </div>
+          <p>Supporting students, connecting families, and building community in the Schalmont Central School District.</p>
+        </div>
+        <div class="footer-col">
+          <div class="footer-heading">Quick Links</div>
+          <ul class="footer-links">
+            <li><a href="events.html">Events Calendar</a></li>
+            <li><a href="directory.html">Directory</a></li>
+            <li><a href="shop.html">Spirit Shop</a></li>
+            <li><a href="sports.html">Sports</a></li>
+            <li><a href="meetings.html">PTO Meetings</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-heading">About &amp; Help</div>
+          <ul class="footer-links">
+            <li><a href="about.html">About the PTO</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="social.html">Social Media</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 Schalmont Central Schools PTO. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // ── School column filters ──────────────────────────────────
+    var _schoolFilter = 'all';
+    var _schoolSeason = 'all';
+
+    function filterSchool(btn, school) {
+      _schoolFilter = school;
+      btn.closest('.filter-row').querySelectorAll('.fbtn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      applySchoolFilters();
+    }
+
+    function filterSchoolSeason(btn, season) {
+      _schoolSeason = season;
+      btn.closest('.filter-row').querySelectorAll('.fbtn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      applySchoolFilters();
+    }
+
+    function applySchoolFilters() {
+      var term = (document.getElementById('school-search').value || '').toLowerCase();
+      document.querySelectorAll('#school-col .sport-cat').forEach(function(cat) {
+        var schools  = (cat.dataset.schools  || '').toLowerCase();
+        var seasons  = (cat.dataset.seasons  || '').toLowerCase();
+        var heading  = (cat.querySelector('.sport-cat-head') ? cat.querySelector('.sport-cat-head').textContent : '').toLowerCase();
+        var matchSchool = _schoolFilter === 'all' || schools.indexOf(_schoolFilter) !== -1;
+        var matchSeason = _schoolSeason === 'all' || seasons.indexOf(_schoolSeason) !== -1;
+        var matchTerm   = !term || heading.indexOf(term) !== -1;
+        cat.style.display = (matchSchool && matchSeason && matchTerm) ? '' : 'none';
+      });
+    }
+
+    // ── Community column filters ───────────────────────────────
+    var _commSeason = 'all';
+
+    function filterCommSeason(btn, season) {
+      _commSeason = season;
+      btn.closest('.filter-row').querySelectorAll('.fbtn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      applyCommFilters();
+    }
+
+    function applyCommFilters() {
+      var term = (document.getElementById('comm-search').value || '').toLowerCase();
+      document.querySelectorAll('#community-col .sport-cat').forEach(function(cat) {
+        var seasons = (cat.dataset.seasons || '').toLowerCase();
+        var heading = (cat.querySelector('.sport-cat-head') ? cat.querySelector('.sport-cat-head').textContent : '').toLowerCase();
+        var matchSeason = _commSeason === 'all' || seasons.indexOf(_commSeason) !== -1;
+        var matchTerm   = !term || heading.indexOf(term) !== -1;
+        cat.style.display = (matchSeason && matchTerm) ? '' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>
