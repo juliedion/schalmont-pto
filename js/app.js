@@ -736,6 +736,7 @@ function initDirectoryPage() {
     $('#edit-member-id').value    = m.id || '';
     $('#edit-fname').value        = m.firstName || '';
     $('#edit-lname').value        = m.lastName  || '';
+    $('#edit-email').value        = m.email     || '';
     $('#edit-phone').value        = m.phone     || '';
     $('#edit-show-email').checked = !!m.showEmail;
     $('#edit-show-phone').checked = !!m.showPhone;
@@ -798,6 +799,7 @@ function initDirectoryPage() {
       ...currentMember,
       firstName:     fd.get('firstName').trim(),
       lastName:      fd.get('lastName').trim(),
+      email:         fd.get('email').trim(),
       phone:         fd.get('phone').trim(),
       students,
       photo,
