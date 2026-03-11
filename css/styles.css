@@ -516,17 +516,39 @@ select   { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xm
 }
 .upc-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
   padding: 10px 0;
   border-bottom: 1px solid var(--light-bg);
 }
 .upc-item:last-child { border-bottom: none; }
+.upc-cal-links {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: flex;
+  gap: 4px;
+}
+.upc-cal-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 12px;
+  color: var(--text-light);
+  text-decoration: none;
+  background: none;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.upc-cal-link:hover { border-color: var(--primary); color: var(--primary); background: var(--light-bg); }
 .upc-dot {
   width: 10px; height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
-  margin-top: 4px;
+  align-self: flex-start;
+  margin-top: 5px;
 }
 .upc-item div { display: flex; flex-direction: column; gap: 2px; }
 .upc-date { font-size: 11px; font-weight: 700; color: var(--text-light); }

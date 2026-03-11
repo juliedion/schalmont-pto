@@ -531,11 +531,20 @@
                 </div>
               </div>
 
-              <!-- Search -->
-              <div style="margin-bottom:16px">
-                <div class="search-bar" style="margin-bottom:0">
+              <!-- Search + Sort -->
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center">
+                <div class="search-bar" style="margin-bottom:0;flex:1;min-width:200px">
                   <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-light)">🔍</span>
                   <input type="text" id="dir-search" placeholder="Search by name, grade, or teacher…" style="padding-left:42px">
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;white-space:nowrap">
+                  <label for="dir-sort" style="font-size:13px;color:var(--text-light);margin:0">Sort by:</label>
+                  <select id="dir-sort" style="font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--white);color:var(--text);cursor:pointer">
+                    <option value="name">Name</option>
+                    <option value="grade">Grade</option>
+                    <option value="teacher">Teacher</option>
+                    <option value="school">School</option>
+                  </select>
                 </div>
               </div>
 

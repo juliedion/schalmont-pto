@@ -356,7 +356,7 @@ function initDirectoryPage() {
 
   let currentMember  = null;
   let allMembers     = [];
-  let sortMode       = 'parent'; // kept for compatibility
+  let sortMode       = 'name';
   let directoryUnsub = null;
 
   // ── panel toggle ──────────────────────────────────────────────────────────
@@ -540,17 +540,51 @@ function initDirectoryPage() {
     let filtered = allMembers.filter(m => {
       const students = m.students || [];
       return `${m.firstName} ${m.lastName}`.toLowerCase().includes(lower) ||
+        (m.email||'').toLowerCase().includes(lower) ||
         students.some(s =>
           (s.name||'').toLowerCase().includes(lower) ||
           (s.grade||'').toLowerCase().includes(lower) ||
-          (s.teacher||'').toLowerCase().includes(lower)
+          (s.teacher||'').toLowerCase().includes(lower) ||
+          (s.school||'').toLowerCase().includes(lower) ||
+          `${s.p2FirstName||''} ${s.p2LastName||''}`.toLowerCase().includes(lower) ||
+          (s.p2Email||'').toLowerCase().includes(lower)
         );
     });
 
-    // Always sort alphabetically by parent last name
-    filtered.sort((a, b) =>
-      `${a.lastName} ${a.firstName}`.toLowerCase().localeCompare(`${b.lastName} ${b.firstName}`.toLowerCase())
-    );
+    // Grade sort order helper
+    const gradeOrder = v => {
+      const mapped = {'pre-k':0,'prek':0,'k':1}[String(v).toLowerCase().replace(/\s/g,'')];
+      if (mapped !== undefined) return mapped;
+      const n = parseInt(v);
+      return isNaN(n) ? 99 : n + 1;
+    };
+
+    const firstStudent = m => (m.students && m.students[0]) || {};
+
+    if (sortMode === 'grade') {
+      filtered.sort((a, b) => {
+        const ga = gradeOrder(firstStudent(a).grade || '');
+        const gb = gradeOrder(firstStudent(b).grade || '');
+        return ga !== gb ? ga - gb : `${a.lastName} ${a.firstName}`.toLowerCase().localeCompare(`${b.lastName} ${b.firstName}`.toLowerCase());
+      });
+    } else if (sortMode === 'teacher') {
+      filtered.sort((a, b) => {
+        const ta = (firstStudent(a).teacher || '').toLowerCase();
+        const tb = (firstStudent(b).teacher || '').toLowerCase();
+        return ta !== tb ? ta.localeCompare(tb) : `${a.lastName} ${a.firstName}`.toLowerCase().localeCompare(`${b.lastName} ${b.firstName}`.toLowerCase());
+      });
+    } else if (sortMode === 'school') {
+      filtered.sort((a, b) => {
+        const sa = (firstStudent(a).school || '').toLowerCase();
+        const sb = (firstStudent(b).school || '').toLowerCase();
+        return sa !== sb ? sa.localeCompare(sb) : `${a.lastName} ${a.firstName}`.toLowerCase().localeCompare(`${b.lastName} ${b.firstName}`.toLowerCase());
+      });
+    } else {
+      // default: sort by parent last name
+      filtered.sort((a, b) =>
+        `${a.lastName} ${a.firstName}`.toLowerCase().localeCompare(`${b.lastName} ${b.firstName}`.toLowerCase())
+      );
+    }
 
     if (filtered.length === 0) {
       list.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:32px">No members found.</p>';
@@ -558,16 +592,28 @@ function initDirectoryPage() {
       return;
     }
 
-    // Group by first letter of last name
+    // Group by sort field
     const groups = {};
     filtered.forEach(m => {
-      const letter = (m.lastName || '?')[0].toUpperCase();
-      if (!groups[letter]) groups[letter] = [];
-      groups[letter].push(m);
+      let groupKey;
+      if (sortMode === 'grade') {
+        groupKey = (firstStudent(m).grade || 'Unknown');
+      } else if (sortMode === 'teacher') {
+        groupKey = (firstStudent(m).teacher || 'Unknown');
+      } else if (sortMode === 'school') {
+        groupKey = (firstStudent(m).school || 'Unknown');
+      } else {
+        groupKey = (m.lastName || '?')[0].toUpperCase();
+      }
+      if (!groups[groupKey]) groups[groupKey] = [];
+      groups[groupKey].push(m);
     });
 
     let html = '';
-    Object.keys(groups).sort().forEach(letter => {
+    const sortedKeys = sortMode === 'name'
+      ? Object.keys(groups).sort()
+      : Object.keys(groups); // already in sort order from filtered
+    sortedKeys.forEach(letter => {
       html += `<div class="dir-letter-group"><div class="dir-letter-header">${letter}</div>`;
       groups[letter].forEach(m => {
         const students = m.students || [];
@@ -593,6 +639,7 @@ function initDirectoryPage() {
                     ${s.school ? `<span class="dir-student-school">${esc(s.school)}</span>` : ''}
                     ${s.teacher ? `<span class="dir-student-meta">Teacher: ${esc(s.teacher)}</span>` : ''}
                     ${s.relationship ? `<span class="dir-student-meta">${esc(s.relationship === 'Other' && s.relationshipOther ? s.relationshipOther : s.relationship)}</span>` : ''}
+                    ${(s.p2FirstName || s.p2LastName) ? `<span class="dir-student-meta" style="color:var(--text-light)">&#43; ${esc(((s.p2FirstName||'') + ' ' + (s.p2LastName||'')).trim())}${s.p2Email ? ' &middot; <a href="mailto:' + esc(s.p2Email) + '" style="color:var(--primary)">' + esc(s.p2Email) + '</a>' : ''}${s.p2Phone ? ' &middot; ' + esc(s.p2Phone) : ''}</span>` : ''}
                   </div>`).join('')}
               </div>` : ''}
             ${isOwner ? `<button class="btn btn-sm btn-blue" style="margin-top:10px;font-size:12px" onclick="openEditModal()">&#9998; Edit My Listing</button>` : ''}
@@ -1687,4 +1734,57 @@ document.addEventListener('DOMContentLoaded', () => {
       if (sub) { btn.classList.toggle('open'); sub.classList.toggle('open'); }
     });
   });
+
+  initUpcCalButtons();
 });
+
+// ── Upcoming Events — Add to Calendar buttons ──────────────────────────────
+function initUpcCalButtons() {
+  document.querySelectorAll('.upc-item[data-gcal-dates]').forEach(function(li) {
+    var dates = li.dataset.gcalDates || '';
+    var text  = li.dataset.gcalText  || '';
+    if (!dates || !text) return;
+
+    var gcalUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+      + '&text=' + encodeURIComponent(text)
+      + '&dates=' + dates;
+
+    var startDate = dates.split('/')[0] || '';
+    var endDate   = dates.split('/')[1] || '';
+    var icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Schalmont PTO//EN',
+      'BEGIN:VEVENT',
+      'DTSTART;VALUE=DATE:' + startDate,
+      'DTEND;VALUE=DATE:' + endDate,
+      'SUMMARY:' + text,
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+    var icsUri = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(icsContent);
+    var icsFilename = text.replace(/[^a-z0-9]/gi, '-').toLowerCase() + '.ics';
+
+    var wrap = document.createElement('div');
+    wrap.className = 'upc-cal-links';
+
+    var gcalLink = document.createElement('a');
+    gcalLink.className = 'upc-cal-link';
+    gcalLink.href = gcalUrl;
+    gcalLink.target = '_blank';
+    gcalLink.rel = 'noopener';
+    gcalLink.title = 'Add to Google Calendar';
+    gcalLink.innerHTML = '&#128197;';
+
+    var icsLink = document.createElement('a');
+    icsLink.className = 'upc-cal-link';
+    icsLink.href = icsUri;
+    icsLink.download = icsFilename;
+    icsLink.title = 'Download for iCal / Outlook';
+    icsLink.innerHTML = '&#128462;';
+
+    wrap.appendChild(gcalLink);
+    wrap.appendChild(icsLink);
+    li.appendChild(wrap);
+  });
+}
