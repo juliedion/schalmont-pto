@@ -74,12 +74,7 @@
     <!-- Prev/Next arrows -->
     <button id="hero-prev" class="hero-arrow hero-arrow-prev" aria-label="Previous slide">&#8249;</button>
     <button id="hero-next" class="hero-arrow hero-arrow-next" aria-label="Next slide">&#8250;</button>
-    <!-- Admin upload bar (only visible to admins when signed in) -->
-    <div id="hero-admin-bar" style="display:none;position:absolute;top:14px;right:14px;z-index:5;align-items:center;gap:8px">
-      <label for="hero-upload-input" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.93);color:#1a202c;font-size:12px;font-weight:700;padding:6px 14px;border-radius:var(--radius);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2)">📷 Add Photo</label>
-      <input type="file" id="hero-upload-input" accept="image/*" style="display:none">
-      <button onclick="window.heroRemoveSlide()" id="hero-remove-btn" style="display:none;align-items:center;gap:4px;background:rgba(197,48,48,0.88);color:#fff;font-size:12px;font-weight:700;padding:6px 14px;border:none;border-radius:var(--radius);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2)">✕ Remove</button>
-    </div>
+
     <!-- Content -->
     <div class="container" style="position:relative;z-index:3">
       <div class="hero-content">

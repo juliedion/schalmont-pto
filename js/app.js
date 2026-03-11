@@ -1377,9 +1377,10 @@ const HERO_MOBILE_SLIDES = [
   'images/gallery/homepage/mobile/mobile-hero-m_0000s_0010_Gradient Fill 1.jpg',
   'images/gallery/homepage/mobile/mobile-hero-m_0000s_0011_Gradient Fill 1.jpg',
   'images/gallery/homepage/mobile/mobile-hero-m_0000s_0012_Gradient Fill 1.jpg',
+  'images/gallery/homepage/mobile/mobile-hero-m_0000s_0013_Gradient Fill 1.jpg',
   'images/gallery/homepage/mobile/mobile-hero-m_0000s_0014_Gradient Fill 1.jpg',
-  'images/gallery/homepage/mobile/mobile-hero-m_0000s_0015_Gradient Fill 1.jpg',
-  'images/gallery/homepage/mobile/mobile-hero-m_0000s_0016_mobile-hero_0000s_0023_Gradient Fill 1.jpg',
+  'images/gallery/homepage/mobile/mobile-hero-m_0000s_0015_mobile-hero_0000s_0023_Gradient Fill 1.jpg',
+  'images/gallery/homepage/mobile/mobile-hero-m_0000s_0016_Gradient Fill 1.jpg',
   'images/gallery/homepage/mobile/mobile-hero-m_0000s_0017_Gradient Fill 1.jpg',
   'images/gallery/homepage/mobile/mobile-hero-m_0000s_0018_Gradient Fill 1.jpg',
   'images/gallery/homepage/mobile/mobile-hero-m_0000s_0019_Gradient Fill 1.jpg',
@@ -1395,7 +1396,6 @@ const HERO_MOBILE_SLIDES = [
   'images/gallery/homepage/mobile/mobile-hero-m_0000s_0029_Gradient Fill 1.jpg',
   'images/gallery/homepage/mobile/mobile-hero-m_0000s_0030_Gradient Fill 1.jpg',
   'images/gallery/homepage/mobile/mobile-hero-m_0000s_0031_Gradient Fill 1.jpg',
-  'images/gallery/homepage/mobile/mobile-hero-m_0000s_0032_Gradient Fill 1.jpg',
 ];
 
 function initHeroSlider() {
