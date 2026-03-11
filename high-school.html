@@ -234,18 +234,9 @@
         <div class="sidenav-item" style="background:#f0f0f0;font-weight:700;color:var(--primary);cursor:default;border-radius:6px 6px 0 0">High School</div>
         <div class="sidenav-submenu" id="snav-high" style="display:block;background:#f5f5f5;border-radius:0 0 6px 6px">
           <a href="high-school.html" class="sidenav-item sub">Overview</a>
-          <a href="high-school.html#dances" class="sidenav-item sub">Dances</a>
-          <a href="high-school.html#junior-prom" class="sidenav-item sub">Junior Prom</a>
-          <a href="high-school.html#senior-ball" class="sidenav-item sub">Senior Ball</a>
-          <a href="book-fairs-high.html" class="sidenav-item sub">Book Fairs</a>
           <a href="appreciation-days.html" class="sidenav-item sub">Appreciation Days</a>
-          <a href="high-school.html#fundraisers" class="sidenav-item sub">Fundraisers</a>
+          <a href="shop.html" class="sidenav-item sub">Spiritwear</a>
           <a href="sports.html" class="sidenav-item sub">Sports &amp; Athletics</a>
-          <a href="high-school.html#yearbook" class="sidenav-item sub">Yearbook</a>
-          <a href="high-school.html#picture-days" class="sidenav-item sub">Picture Days</a>
-          <a href="high-school.html#student-council" class="sidenav-item sub">Student Council</a>
-          <a href="high-school.html#spiritwear" class="sidenav-item sub">Spiritwear</a>
-          <a href="high-school.html#class-pages" class="sidenav-item sub">Class Facebook Pages</a>
         </div>
       </div>
 
@@ -311,20 +302,9 @@
         <select id="section-jump" onchange="if(this.value){var el=document.getElementById(this.value);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});}this.value=''}" style="padding:9px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:'Urbanist',sans-serif;background:var(--white);color:var(--text);cursor:pointer;min-width:220px;max-width:380px;flex:1">
           <option value="">Choose a section...</option>
           <option value="appreciation-days">🙏 Appreciation Days</option>
-          <option value="book-fairs">📚 Book Fairs</option>
-          <option value="dances">💃 Dances</option>
-          <option value="fundraisers">💰 Fundraisers</option>
-          <option value="junior-prom">🌸 Junior Prom</option>
-          <option value="picture-days">📸 Picture Days</option>
-          <option value="senior-ball">🏆 Senior Ball</option>
           <option value="spiritwear">👕 Spiritwear</option>
-          <option value="sports">🏅 Sports</option>
-          <option value="staff-appreciation">🌟 Staff Appreciation Week</option>
-          <option value="student-council">🏛️ Student Council</option>
-          <option value="yearbook">📷 Yearbook</option>
-          <option value="class-pages">📘 Class Facebook Pages</option>
+          <option value="sports">🏅 Sports &amp; Athletics</option>
           <option value="contact">✉️ Contact</option>
-          <option value="social-media">📱 Social Media</option>
           <option value="about">ℹ️ About</option>
         </select>
       </div>
@@ -363,6 +343,17 @@
     </div>
   </section>
 
+  <!-- PTO COMING SOON BOX -->
+  <section class="section-sm" style="background:var(--light-bg)">
+    <div class="container">
+      <div style="background:var(--white);border:2px solid #044d2a;border-radius:var(--radius-lg);padding:32px 36px;max-width:760px;margin:0 auto;text-align:center">
+        <div style="font-size:40px;margin-bottom:14px">🎓</div>
+        <h2 style="font-size:20px;color:#044d2a;margin-bottom:12px">Growing Our High School Support</h2>
+        <p style="font-size:15px;color:var(--text-light);line-height:1.75;max-width:580px;margin:0 auto">The Schalmont PTO will begin to support the high school more in the upcoming year through appreciation events, dances, and fundraisers. Stay tuned for more information!</p>
+      </div>
+    </div>
+  </section>
+
   <!-- PROGRAMS & EVENTS GRID -->
   <section class="section">
     <div class="container">
@@ -380,79 +371,9 @@
           <div class="program-card-body">
             <span class="program-badge coming">More Info Coming Soon</span>
             <p class="program-card-desc">Details about upcoming teacher and staff appreciation days will be posted here. Stay tuned!</p>
-            <div class="program-card-actions"></div>
-          </div>
-        </div>
-
-        <div class="program-card" id="book-fairs">
-          <div class="program-card-header">
-            <div class="program-card-icon">📚</div>
-            <h3 class="program-card-title">Book Fairs</h3>
-          </div>
-          <div class="program-card-body">
-            <span class="program-badge coming">More Info Coming Soon</span>
-            <p class="program-card-desc">Book fair dates and details for Schalmont High School will be posted here. Check back soon!</p>
-            <div class="program-card-actions"></div>
-          </div>
-        </div>
-
-        <div class="program-card" id="dances">
-          <div class="program-card-header">
-            <div class="program-card-icon">💃</div>
-            <h3 class="program-card-title">Dances</h3>
-          </div>
-          <div class="program-card-body">
-            <span class="program-badge coming">More Info Coming Soon</span>
-            <p class="program-card-desc">Details about upcoming High School dances will be posted here. Check back soon!</p>
-            <div class="program-card-actions"></div>
-          </div>
-        </div>
-
-        <div class="program-card" id="fundraisers">
-          <div class="program-card-header">
-            <div class="program-card-icon">💰</div>
-            <h3 class="program-card-title">Fundraisers</h3>
-          </div>
-          <div class="program-card-body">
-            <span class="program-badge active">Active</span>
-            <p class="program-card-desc">Support Schalmont High School students through our fundraising programs.</p>
-            <div class="program-card-actions"><a href="fundraisers-high-school.html" class="btn btn-primary" style="font-size:13px;padding:8px 16px">View All Fundraisers →</a></div>
-          </div>
-        </div>
-
-        <div class="program-card" id="junior-prom">
-          <div class="program-card-header">
-            <div class="program-card-icon">🌸</div>
-            <h3 class="program-card-title">Junior Prom</h3>
-          </div>
-          <div class="program-card-body">
-            <span class="program-badge coming">More Info Coming Soon</span>
-            <p class="program-card-desc">Junior Prom details including date, venue, and ticket information will be posted here when available.</p>
-            <div class="program-card-actions"></div>
-          </div>
-        </div>
-
-        <div class="program-card" id="picture-days">
-          <div class="program-card-header">
-            <div class="program-card-icon">📸</div>
-            <h3 class="program-card-title">Picture Days</h3>
-          </div>
-          <div class="program-card-body">
-            <span class="program-badge coming">More Info Coming Soon</span>
-            <p class="program-card-desc">High School picture day dates and ordering information will be posted here when available.</p>
-            <div class="program-card-actions"></div>
-          </div>
-        </div>
-
-        <div class="program-card" id="senior-ball">
-          <div class="program-card-header">
-            <div class="program-card-icon">🏆</div>
-            <h3 class="program-card-title">Senior Ball</h3>
-          </div>
-          <div class="program-card-body">
-            <span class="program-badge coming">More Info Coming Soon</span>
-            <p class="program-card-desc">Senior Ball details including date, venue, and ticket information will be posted here when available.</p>
-            <div class="program-card-actions"></div>
+            <div class="program-card-actions">
+              <a href="appreciation-days.html" class="btn btn-primary" style="font-size:13px;padding:8px 16px">View Appreciation Days →</a>
+            </div>
           </div>
         </div>
 
@@ -464,7 +385,9 @@
           <div class="program-card-body">
             <span class="program-badge coming">More Info Coming Soon</span>
             <p class="program-card-desc">High School spiritwear ordering information will be posted here. Check back soon!</p>
-            <div class="program-card-actions"></div>
+            <div class="program-card-actions">
+              <a href="shop.html" class="btn btn-primary" style="font-size:13px;padding:8px 16px">Shop Spiritwear →</a>
+            </div>
           </div>
         </div>
 
@@ -477,43 +400,6 @@
             <span class="program-badge active">Active</span>
             <p class="program-card-desc">For information about high school sports, schedules, and registration, visit our sports page.</p>
             <div class="program-card-actions"><a href="sports.html" class="btn btn-primary" style="font-size:13px;padding:8px 16px">View Sports Page →</a></div>
-          </div>
-        </div>
-
-        <!-- Staff Appreciation Week -->
-        <div class="program-card" id="staff-appreciation">
-          <div class="program-card-header">
-            <div class="program-card-icon">🌟</div>
-            <h3 class="program-card-title">Staff Appreciation Week</h3>
-          </div>
-          <div class="program-card-body">
-            <span class="program-badge coming">More Info Coming Soon</span>
-            <p class="program-card-desc">Details about Staff Appreciation Week events and how families can participate will be posted here. Stay tuned!</p>
-            <div class="program-card-actions"></div>
-          </div>
-        </div>
-
-        <div class="program-card" id="student-council">
-          <div class="program-card-header">
-            <div class="program-card-icon">🏛️</div>
-            <h3 class="program-card-title">Student Council</h3>
-          </div>
-          <div class="program-card-body">
-            <span class="program-badge active">Active</span>
-            <p class="program-card-desc">The Schalmont High School Student Council represents the student body and organizes school events and community service initiatives. Follow them on Instagram for updates.</p>
-            <div class="program-card-actions"><a href="https://www.instagram.com/schalmontscouncil/" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:13px;padding:8px 16px">Follow on Instagram →</a></div>
-          </div>
-        </div>
-
-        <div class="program-card" id="yearbook">
-          <div class="program-card-header">
-            <div class="program-card-icon">📷</div>
-            <h3 class="program-card-title">Yearbook</h3>
-          </div>
-          <div class="program-card-body">
-            <span class="program-badge coming">More Info Coming Soon</span>
-            <p class="program-card-desc">Yearbook ordering information and photo submission links for Schalmont High School will be posted here.</p>
-            <div class="program-card-actions"></div>
           </div>
         </div>
 

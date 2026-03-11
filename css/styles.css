@@ -1567,7 +1567,7 @@ select   { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xm
   background-size: 18px 18px;
   margin-top: 16px;
   flex: 1;
-  min-height: 120px;
+  min-height: 420px;
 }
 .cal-photo-slide {
   position: absolute;
