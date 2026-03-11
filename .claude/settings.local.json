@@ -26,7 +26,10 @@
       "WebFetch(domain:www.athletic.net)",
       "WebFetch(domain:www.schalmontsoccer.com)",
       "WebFetch(domain:fan.hudl.com)",
-      "WebFetch(domain:www.section2hockey.com)"
+      "WebFetch(domain:www.section2hockey.com)",
+      "Bash(grep -l 'href=\"\"\"\"fundraisers.html\"\"\"\">Fundraisers</a></li>' /Users/juliedion/Desktop/schalmont-pto/*.html)",
+      "Bash(wc -l grep -L 'href=\"\"\"\"fundraisers.html\"\"\"\">Fundraisers</a></li>' /Users/juliedion/Desktop/schalmont-pto/*.html)",
+      "Bash(head -20 grep -n 'banner-ad\\\\|top-banner\\\\|rolling\\\\|ad-slot\\\\|sponsor\\\\|advertisement\\\\|banner' /Users/juliedion/Desktop/schalmont-pto/middle-school.html)"
     ]
   }
 }

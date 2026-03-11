@@ -1449,6 +1449,41 @@ select   { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xm
   .homepage-sidenav { display: none; }
 }
 
+/* === School-specific second sidebar === */
+.homepage-layout.has-school-nav {
+  grid-template-columns: 210px 190px 1fr;
+}
+.school-sidenav {
+  align-self: start;
+  background: var(--white);
+  border-right: 1px solid var(--border);
+  padding: 0 0 24px;
+  position: sticky;
+  top: 70px;
+  max-height: calc(100vh - 70px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.school-sidenav-title {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 10px 16px;
+  margin-bottom: 4px;
+}
+@media (max-width: 1100px) {
+  .homepage-layout.has-school-nav {
+    grid-template-columns: 210px 1fr;
+  }
+  .school-sidenav { display: none; }
+}
+@media (max-width: 900px) {
+  .homepage-layout.has-school-nav {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* === Sidebar Collapsible Submenus === */
 .sidenav-toggle {
   width: 100%;
