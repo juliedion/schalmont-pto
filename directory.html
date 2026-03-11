@@ -91,6 +91,53 @@
       box-shadow: var(--shadow-sm);
     }
     @media (max-width: 480px) { .gate-body { padding: 20px; } }
+
+    /* Alphabetical directory list */
+    .dir-letter-group { margin-bottom: 8px; }
+    .dir-letter-header {
+      background: var(--primary);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 4px 14px;
+      border-radius: var(--radius);
+      margin-bottom: 2px;
+      letter-spacing: 0.06em;
+    }
+    .dir-entry { border-bottom: 1px solid var(--border); }
+    .dir-entry:last-child { border-bottom: none; }
+    .dir-entry-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 11px 14px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+      transition: background 0.15s;
+    }
+    .dir-entry-toggle:hover { background: var(--light-bg); }
+    .dir-entry-toggle[aria-expanded="true"] { background: #f0f9ea; }
+    .dir-entry-name { font-size: 15px; font-weight: 700; color: var(--text-dark); flex-shrink: 0; }
+    .dir-entry-preview { font-size: 13px; color: var(--text-light); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dir-entry-arrow { font-size: 13px; color: var(--text-light); flex-shrink: 0; transition: transform 0.2s; }
+    .dir-entry-toggle[aria-expanded="true"] .dir-entry-arrow { transform: rotate(90deg); }
+    .dir-entry-details {
+      padding: 10px 14px 16px 28px;
+      background: #fafafa;
+      border-top: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .dir-detail-row { margin-bottom: 6px; color: var(--text); }
+    .dir-students { margin-top: 10px; }
+    .dir-students-label { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+    .dir-student-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; padding: 6px 10px; background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); }
+    .dir-student-name { font-size: 14px; font-weight: 600; }
+    .dir-student-school { font-size: 12px; color: var(--primary); font-weight: 600; }
+    .dir-student-meta { font-size: 12px; color: var(--text-light); }
   </style>
 </head>
 <body>
@@ -195,12 +242,12 @@
           <a href="incoming-kindergarten.html" class="sidenav-item sub">Incoming Kindergarten</a>
           <a href="k-lunch-volunteers.html" class="sidenav-item sub">K Lunch Team</a>
           <a href="picture-days.html" class="sidenav-item sub">Picture Days</a>
-          <a href="jefferson.html#scholarships" class="sidenav-item sub">Scholarships</a>
-          <a href="jefferson.html#spiritwear" class="sidenav-item sub">Spiritwear</a>
-          <a href="jefferson.html#school-supplies" class="sidenav-item sub">School Supplies</a>
+          <a href="scholarships-jefferson.html" class="sidenav-item sub">Scholarships</a>
+          <a href="shop.html" class="sidenav-item sub">Spiritwear</a>
+          <a href="school-supplies.html" class="sidenav-item sub">School Supplies</a>
           <a href="jefferson.html#summer-camp" class="sidenav-item sub">Summer Camp Fair</a>
-          <a href="jefferson.html#trunk-or-treat" class="sidenav-item sub">Trunk or Treat</a>
-          <a href="jefferson.html#turn-off-screens" class="sidenav-item sub">Turn Off the Screens</a>
+          <a href="trunk-or-treat.html" class="sidenav-item sub">Trunk or Treat</a>
+          <a href="turn-off-screens.html" class="sidenav-item sub">Turn Off the Screens</a>
           <a href="yearbook-jefferson.html" class="sidenav-item sub">Yearbook</a>
         </div>
       </div>
@@ -493,23 +540,16 @@
                 </div>
               </div>
 
-              <!-- Search + Sort -->
-              <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
-                <div class="search-bar" style="flex:1;min-width:180px;margin-bottom:0">
+              <!-- Search -->
+              <div style="margin-bottom:16px">
+                <div class="search-bar" style="margin-bottom:0">
                   <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-light)">🔍</span>
-                  <input type="text" id="dir-search" placeholder="Search by name or grade…" style="padding-left:42px">
+                  <input type="text" id="dir-search" placeholder="Search by name, grade, or teacher…" style="padding-left:42px">
                 </div>
-                <select id="dir-sort" style="padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-family:inherit;font-size:14px;background:var(--white);color:var(--text);cursor:pointer">
-                  <option value="parent">Sort: Parent Last Name</option>
-                  <option value="student">Sort: Student Last Name</option>
-                  <option value="school">Sort: School</option>
-                  <option value="grade">Sort: Grade</option>
-                  <option value="teacher">Sort: Teacher</option>
-                </select>
               </div>
 
-              <!-- Members Grid -->
-              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px" id="directory-list">
+              <!-- Members List -->
+              <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden" id="directory-list">
                 <!-- rendered by JS -->
               </div>
             </div>

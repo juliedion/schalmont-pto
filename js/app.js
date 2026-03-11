@@ -356,7 +356,7 @@ function initDirectoryPage() {
 
   let currentMember  = null;
   let allMembers     = [];
-  let sortMode       = 'parent';
+  let sortMode       = 'parent'; // kept for compatibility
   let directoryUnsub = null;
 
   // ── panel toggle ──────────────────────────────────────────────────────────
@@ -534,8 +534,8 @@ function initDirectoryPage() {
   function renderDirectory(filter = '') {
     const list = $('#directory-list');
     if (!list) return;
-    const lower    = filter.toLowerCase();
-    const myEmail  = currentUserEmail();
+    const lower   = filter.toLowerCase();
+    const myEmail = currentUserEmail();
 
     let filtered = allMembers.filter(m => {
       const students = m.students || [];
@@ -547,78 +547,72 @@ function initDirectoryPage() {
         );
     });
 
-    if (sortMode === 'school') {
-      filtered.sort((a, b) => {
-        const aS = (a.students?.[0])?.school?.toLowerCase() || 'zzz';
-        const bS = (b.students?.[0])?.school?.toLowerCase() || 'zzz';
-        return aS.localeCompare(bS) || `${a.lastName} ${a.firstName}`.toLowerCase().localeCompare(`${b.lastName} ${b.firstName}`.toLowerCase());
-      });
-    } else if (sortMode === 'grade') {
-      filtered.sort((a, b) => {
-        const aG = (a.students?.[0])?.grade || 'zzz';
-        const bG = (b.students?.[0])?.grade || 'zzz';
-        const gradeIdx = g => { const i = GRADES.indexOf(g); return i === -1 ? 99 : i; };
-        return gradeIdx(aG) - gradeIdx(bG);
-      });
-    } else if (sortMode === 'student') {
-      filtered.sort((a, b) => {
-        const aName = (a.students?.[0])?.name?.toLowerCase() || '';
-        const bName = (b.students?.[0])?.name?.toLowerCase() || '';
-        return aName.localeCompare(bName);
-      });
-    } else if (sortMode === 'teacher') {
-      filtered.sort((a, b) => {
-        const aT = (a.students?.[0])?.teacher?.toLowerCase() || 'zzz';
-        const bT = (b.students?.[0])?.teacher?.toLowerCase() || 'zzz';
-        return aT.localeCompare(bT);
-      });
-    } else {
-      // parent (default)
-      filtered.sort((a, b) =>
-        `${a.lastName} ${a.firstName}`.toLowerCase().localeCompare(`${b.lastName} ${b.firstName}`.toLowerCase())
-      );
-    }
+    // Always sort alphabetically by parent last name
+    filtered.sort((a, b) =>
+      `${a.lastName} ${a.firstName}`.toLowerCase().localeCompare(`${b.lastName} ${b.firstName}`.toLowerCase())
+    );
 
     if (filtered.length === 0) {
-      list.innerHTML = '<p style="color:var(--text-light);text-align:center;grid-column:1/-1;padding:32px">No members found.</p>';
+      list.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:32px">No members found.</p>';
       $('#dir-count').textContent = '0 members';
       return;
     }
 
-    list.innerHTML = filtered.map(m => {
-      const initials = `${(m.firstName||'?')[0]}${(m.lastName||'?')[0]}`;
-      const students = m.students || [];
-      const avatarContent = m.photo
-        ? `<img src="${m.photo}" alt="${esc(m.firstName)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
-        : esc(initials);
-      const isOwner = myEmail && m.email === myEmail;
-      return `<div class="member-card">
-        <div class="member-avatar" style="${m.photo ? 'padding:0;overflow:hidden' : ''}">${avatarContent}</div>
-        <div class="member-info">
-          <h4>${esc(m.firstName)} ${esc(m.lastName)}</h4>
-          ${m.showEmail && m.email ? `<p>&#x2709; <a href="mailto:${esc(m.email)}" style="color:var(--primary);text-decoration:none">${esc(m.email)}</a></p>` : ''}
-          ${m.showPhone && m.phone ? `<p>&#128222; ${esc(m.phone)}</p>` : ''}
-          ${students.length > 0 ? `
-            <div style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px">
-              <p style="font-size:11px;font-weight:700;color:var(--text-light);letter-spacing:0.05em;margin-bottom:5px;text-transform:uppercase">Students</p>
-              ${students.map(s => `
-                <div style="margin-bottom:5px">
-                  <div style="display:flex;align-items:center;gap:6px">
-                    <span style="font-size:13px;font-weight:500">${esc(s.name)}</span>
-                    ${s.grade ? `<span class="badge badge-blue" style="font-size:11px;padding:2px 7px">${esc(s.grade)}</span>` : ''}
-                  </div>
-                  ${s.school ? `<div style="font-size:11px;color:var(--primary);margin-top:1px;font-weight:600">${esc(s.school)}</div>` : ''}
-                  ${s.teacher ? `<div style="font-size:11px;color:var(--text-light);margin-top:1px">Teacher: ${esc(s.teacher)}</div>` : ''}
-                  ${s.relationship ? `<div style="font-size:11px;color:var(--text-light);margin-top:1px">${esc(s.relationship === 'Other' && s.relationshipOther ? s.relationshipOther : s.relationship)}</div>` : ''}
-                </div>`).join('')}
-            </div>` : ''}
-          ${isOwner ? `<button class="btn btn-sm btn-blue" style="margin-top:10px;font-size:12px" onclick="openEditModal()">&#9998; Edit My Listing</button>` : ''}
-        </div>
-      </div>`;
-    }).join('');
+    // Group by first letter of last name
+    const groups = {};
+    filtered.forEach(m => {
+      const letter = (m.lastName || '?')[0].toUpperCase();
+      if (!groups[letter]) groups[letter] = [];
+      groups[letter].push(m);
+    });
 
+    let html = '';
+    Object.keys(groups).sort().forEach(letter => {
+      html += `<div class="dir-letter-group"><div class="dir-letter-header">${letter}</div>`;
+      groups[letter].forEach(m => {
+        const students = m.students || [];
+        const isOwner = myEmail && m.email === myEmail;
+        const studentSummary = students.map(s => s.name).filter(Boolean).join(', ');
+        const entryId = 'dir-entry-' + m.id;
+        html += `<div class="dir-entry">
+          <button class="dir-entry-toggle" onclick="toggleDirEntry('${entryId}',this)" aria-expanded="false">
+            <span class="dir-entry-name">${esc(m.lastName)}, ${esc(m.firstName)}</span>
+            ${studentSummary ? `<span class="dir-entry-preview">${esc(studentSummary)}</span>` : ''}
+            <span class="dir-entry-arrow">&#9658;</span>
+          </button>
+          <div class="dir-entry-details" id="${entryId}" style="display:none">
+            ${m.showEmail && m.email ? `<div class="dir-detail-row">&#x2709; <a href="mailto:${esc(m.email)}" style="color:var(--primary)">${esc(m.email)}</a></div>` : ''}
+            ${m.showPhone && m.phone ? `<div class="dir-detail-row">&#128222; ${esc(m.phone)}</div>` : ''}
+            ${students.length > 0 ? `
+              <div class="dir-students">
+                <div class="dir-students-label">Students</div>
+                ${students.map(s => `
+                  <div class="dir-student-row">
+                    <span class="dir-student-name">${esc(s.name)}</span>
+                    ${s.grade ? `<span class="badge badge-blue" style="font-size:11px;padding:2px 7px">${esc(s.grade)}</span>` : ''}
+                    ${s.school ? `<span class="dir-student-school">${esc(s.school)}</span>` : ''}
+                    ${s.teacher ? `<span class="dir-student-meta">Teacher: ${esc(s.teacher)}</span>` : ''}
+                    ${s.relationship ? `<span class="dir-student-meta">${esc(s.relationship === 'Other' && s.relationshipOther ? s.relationshipOther : s.relationship)}</span>` : ''}
+                  </div>`).join('')}
+              </div>` : ''}
+            ${isOwner ? `<button class="btn btn-sm btn-blue" style="margin-top:10px;font-size:12px" onclick="openEditModal()">&#9998; Edit My Listing</button>` : ''}
+          </div>
+        </div>`;
+      });
+      html += '</div>';
+    });
+
+    list.innerHTML = html;
     $('#dir-count').textContent = `${filtered.length} member${filtered.length !== 1 ? 's' : ''}`;
   }
+
+  window.toggleDirEntry = function(id, btn) {
+    const details = document.getElementById(id);
+    if (!details) return;
+    const open = details.style.display !== 'none';
+    details.style.display = open ? 'none' : 'block';
+    if (btn) btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+  };
 
   $('#dir-search')?.addEventListener('input', e => renderDirectory(e.target.value));
   $('#dir-sort')?.addEventListener('change', e => {
