@@ -81,13 +81,14 @@
 
     /* Program card grid */
     .program-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 20px;
     }
-    @media (max-width: 1100px) { .program-grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 720px)  { .program-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 480px)  { .program-grid { grid-template-columns: 1fr; } }
+    .program-card { width: 280px; flex-shrink: 0; }
+    @media (max-width: 720px)  { .program-card { width: calc(50% - 10px); } }
+    @media (max-width: 480px)  { .program-card { width: 100%; } }
     .program-card {
       background: var(--white);
       border: 1px solid var(--border);
@@ -106,7 +107,8 @@
       align-items: center;
       gap: 12px;
       padding: 18px 20px 14px;
-      border-bottom: 1px solid var(--border);
+      background: #044d2a;
+      border-bottom: none;
     }
     .program-card-icon {
       font-size: 28px;
@@ -116,7 +118,7 @@
     .program-card-title {
       font-size: 16px;
       font-weight: 700;
-      color: var(--text);
+      color: #ffffff;
       margin: 0;
     }
     .program-card-body {
