@@ -260,6 +260,14 @@
         </div>
 
         <div style="background:#fff;border-radius:var(--radius-lg);padding:32px;box-shadow:0 8px 32px rgba(0,0,0,0.18)">
+          <!-- Already submitted state -->
+          <div id="rsvp-already" style="display:none;text-align:center;padding:20px 0">
+            <div style="font-size:48px;margin-bottom:12px">✅</div>
+            <h3 style="font-size:22px;color:var(--primary);margin-bottom:8px">You're all set!</h3>
+            <p style="color:var(--text-light);font-size:15px">We already have your RSVP on file. See you on March 27!</p>
+            <button onclick="localStorage.removeItem('casinoRSVP');document.getElementById('rsvp-already').style.display='none';document.getElementById('rsvp-form').style.display='block'" style="margin-top:16px;background:none;border:1px solid var(--border);border-radius:var(--radius);padding:8px 18px;font-size:13px;cursor:pointer;color:var(--text-light)">Submit a different response</button>
+          </div>
+
           <!-- Success state -->
           <div id="rsvp-success" style="display:none;text-align:center;padding:20px 0">
             <div style="font-size:48px;margin-bottom:12px">🎉</div>
@@ -435,6 +443,7 @@
 
     fetch(RSVP_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: body })
       .then(function() {
+        localStorage.setItem('casinoRSVP', '1');
         document.getElementById('rsvp-form').style.display = 'none';
         document.getElementById('rsvp-success').style.display = 'block';
       })
@@ -444,6 +453,12 @@
         btn.disabled = false;
       });
   });
+
+  // Check if already submitted on page load
+  if (localStorage.getItem('casinoRSVP')) {
+    document.getElementById('rsvp-form').style.display = 'none';
+    document.getElementById('rsvp-already').style.display = 'block';
+  }
   </script>
 </body>
 </html>
