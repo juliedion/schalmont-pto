@@ -68,7 +68,7 @@
 
 
   <!-- HERO -->
-  <section class="home-hero" id="hero-slider" style="min-height:500px;display:flex;align-items:flex-start;position:relative">
+  <section class="home-hero" id="hero-slider" style="min-height:775px;display:flex;align-items:flex-start;position:relative">
     <!-- Slides rendered by JS (full height, right-side images) -->
     <div id="hero-slides" style="position:absolute;top:0;right:0;bottom:0;left:0;z-index:1"></div>
     <!-- Prev/Next arrows -->
@@ -308,6 +308,11 @@
         <div class="deadline-school-card">
           <div class="deadline-school-bar">&#128218; Middle School</div>
           <div class="deadline-card-body">
+            <div class="deadline-item deadline-urgent">
+              <div class="deadline-title">🍀 Lucky Bingo Night</div>
+              <div class="deadline-date">Tonight! — March 16 @ 6:30 PM</div>
+              <a href="student-council.html#lucky-bingo" class="deadline-link">View Details &rarr;</a>
+            </div>
             <div class="deadline-item deadline-urgent">
               <div class="deadline-title">6/7 Casino Night RSVP</div>
               <div class="deadline-date">March 28 by 5:00 PM</div>
@@ -600,6 +605,7 @@
           <h3 style="font-size:15px;font-weight:800;margin-bottom:4px;color:var(--primary)">Upcoming Events</h3>
           <p style="font-size:12px;color:var(--text-light);margin-bottom:16px">Dates &amp; deadlines to know</p>
           <ul style="list-style:none;display:flex;flex-direction:column;gap:0">
+            <li class="upc-item" data-gcal-dates="20260316/20260317" data-gcal-text="Lucky Bingo Night – Schalmont Middle School"><span class="upc-dot" style="background:#087d40"></span><div><span class="upc-date">Mar 16</span><span class="upc-name"><a href="student-council.html#lucky-bingo">Lucky Bingo Night</a></span><span class="upc-school" style="color:#087d40">Middle School</span></div></li>
             <li class="upc-item" data-gcal-dates="20260319/20260320" data-gcal-text="PTO Meeting"><span class="upc-dot" style="background:#0B8043"></span><div><span class="upc-date">Mar 19</span><span class="upc-name"><a href="meetings.html">PTO Meeting</a></span><span class="upc-school" style="color:#0B8043">All Schools</span></div></li>
             <li class="upc-item" data-gcal-dates="20260321/20260322" data-gcal-text="3rd/4th Grade Dance – Jefferson Elementary PTO"><span class="upc-dot" style="background:#6bb044"></span><div><span class="upc-date">Mar 21</span><span class="upc-name"><a href="glitz-and-glam-dance.html">3rd/4th Grade Dance</a></span><span class="upc-school" style="color:#6bb044">Jefferson</span></div></li>
             <li class="upc-item" data-gcal-dates="20260327/20260328" data-gcal-text="6/7 Casino Night – Schalmont Middle School"><span class="upc-dot" style="background:#087d40"></span><div><span class="upc-date">Mar 27</span><span class="upc-name"><a href="casinoroyale.html">6/7 Casino Night</a></span><span class="upc-school" style="color:#087d40">Middle School</span></div></li>
@@ -1189,6 +1195,16 @@
         ldEl.style.display = 'block';
       }
 
+      // Pinned manual events for today (Mar 16 2026)
+      var todayStr = new Date().toDateString();
+      if (todayStr === new Date('2026-03-16').toDateString()) {
+        regularEvents.unshift({
+          ev: { summary: 'Lucky Bingo Night', timeStr: '6:30 PM', isAllDay: false, startMs: new Date('2026-03-16T18:30:00').getTime() },
+          key: 'middle',
+          _manualLink: 'student-council.html#lucky-bingo'
+        });
+      }
+
       // Render regular events
       if (!regularEvents.length) {
         listEl.innerHTML = '<div class="today-events-empty" style="padding:16px">No other events today.</div>';
@@ -1200,10 +1216,11 @@
           var info  = getDayLabelInfo(item.ev.summary);
           if (info) { color = info.color; label = info.label; }
           var safeTitle = item.ev.summary.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          var titleHtml = item._manualLink ? '<a href="'+item._manualLink+'" style="color:inherit;text-decoration:none;font-weight:700">'+safeTitle+'</a>' : safeTitle;
           html += '<div class="today-event-item">'
             +'<span class="today-event-dot" style="background:'+color+'"></span>'
             +'<div class="today-event-body">'
-            +'<div class="today-event-title">'+safeTitle+'</div>'
+            +'<div class="today-event-title">'+titleHtml+'</div>'
             +'<div class="today-event-meta">';
           if (item.ev.timeStr !== 'All day') html += '<span class="today-event-time">'+item.ev.timeStr+'</span> &middot; ';
           html += '<span class="today-event-school" style="color:'+color+'">'+label+'</span>'
