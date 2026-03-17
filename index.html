@@ -254,7 +254,7 @@
             <div class="today-panel-label dark">
               Today's Events &amp; School Schedule
               <span class="today-cal-legend">
-                <span style="color:#1a73e8"><span style="color:#295c38">&#9679; PTO</span>#9679; District</span> <span style="color:#295c38"><span style="color:#295c38">&#9679; PTO</span>#9679; PTO</span>
+                <span style="color:#295c38">&#9679; PTO</span>
                 <span style="color:#8bc341">&#9679; Woestina</span>
                 <span style="color:#6bb044">&#9679; Jefferson</span>
                 <span style="color:#087d40">&#9679; Middle</span>
@@ -280,25 +280,13 @@
       </div>
       <div class="today-deadlines-grid">
 
-        <!-- Woestina Pre-K -->
+        <!-- All Schools / PTO -->
         <div class="deadline-school-card">
-          <div class="deadline-school-bar">&#127807; Woestina Pre-K</div>
+          <div class="deadline-school-bar">&#128154; All Schools</div>
           <div class="deadline-card-body">
-            <div class="deadline-item">
-              <div class="deadline-title">Jefferson PTO Meeting</div>
-              <div class="deadline-date">March 17 · Apr 21 · May 19 · Jun 16</div>
-              <a href="meetings.html" class="deadline-link">Meeting Details &rarr;</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Jefferson Elementary -->
-        <div class="deadline-school-card">
-          <div class="deadline-school-bar">&#127979; Jefferson Elementary</div>
-          <div class="deadline-card-body">
-            <div class="deadline-item">
-              <div class="deadline-title">Jefferson PTO Meeting</div>
-              <div class="deadline-date">March 17 · Apr 21 · May 19 · Jun 16</div>
+            <div class="deadline-item deadline-urgent">
+              <div class="deadline-title">PTO Meeting</div>
+              <div class="deadline-date">March 19</div>
               <a href="meetings.html" class="deadline-link">Meeting Details &rarr;</a>
             </div>
           </div>
@@ -309,19 +297,19 @@
           <div class="deadline-school-bar">&#128218; Middle School</div>
           <div class="deadline-card-body">
             <div class="deadline-item deadline-urgent">
-              <div class="deadline-title">6/7 Casino Night RSVP</div>
-              <div class="deadline-date">March 28 by 5:00 PM</div>
+              <div class="deadline-title">6/7 Casino Night</div>
+              <div class="deadline-date">March 27 @ 6:00 PM</div>
+              <a href="casinoroyale.html" class="deadline-link">View Details &rarr;</a>
+            </div>
+            <div class="deadline-item deadline-urgent">
+              <div class="deadline-title">Casino Night RSVP Deadline</div>
+              <div class="deadline-date">March 27 by 5:00 PM</div>
               <a href="casinoroyale.html#rsvp" class="deadline-link">RSVP Now &rarr;</a>
             </div>
             <div class="deadline-item">
               <div class="deadline-title">Yearbook Order Deadline</div>
               <div class="deadline-date">March 31, 2026</div>
               <a href="yearbook-middle.html" class="deadline-link">Order at Balfour &rarr;</a>
-            </div>
-            <div class="deadline-item">
-              <div class="deadline-title">PTO Meeting</div>
-              <div class="deadline-date">March 19 · Apr 14 · May 12 · Jun 9</div>
-              <a href="meetings.html" class="deadline-link">Meeting Details &rarr;</a>
             </div>
           </div>
         </div>
@@ -334,11 +322,6 @@
               <div class="deadline-title">Yearbook — Limited Supply</div>
               <div class="deadline-date">Order Now</div>
               <a href="yearbook-high.html" class="deadline-link">Order at Entourage &rarr;</a>
-            </div>
-            <div class="deadline-item">
-              <div class="deadline-title">PTO Meeting</div>
-              <div class="deadline-date">March 19 · Apr 14 · May 12 · Jun 9</div>
-              <a href="meetings.html" class="deadline-link">Meeting Details &rarr;</a>
             </div>
           </div>
         </div>
@@ -984,14 +967,13 @@
     var GCAL_API_KEY = '';  // ← paste your API key here
 
     var CAL_IDS = {
-      district: '9b60l7e14ii7jvaeee0n5q0ghk@group.calendar.google.com',
       pto:      'c_2ccf0495db5e7ffcf4129ac6965b5cbe82ec743a13050f3aeecc9a18c84a53f5@group.calendar.google.com',
       jefferson:'b8ps3245btumu5q6psc3cmvs8c@group.calendar.google.com',
       middle:   'eumk9qp2llrljnfkp64k1dgk5g@group.calendar.google.com',
       high:     '8b7ohsc70vgab6398itc7e73q0@group.calendar.google.com'
     };
-    var CAL_LABELS = { district:'Schalmont District', pto:'Schalmont PTO', jefferson:'Jefferson Elementary', middle:'Middle School', high:'High School' };
-    var CAL_COLORS = { district:'#1a73e8', pto:'#295c38', jefferson:'#6bb044', middle:'#087d40', high:'#044d2a' };
+    var CAL_LABELS = { pto:'Schalmont PTO', jefferson:'Jefferson Elementary', middle:'Middle School', high:'High School' };
+    var CAL_COLORS = { pto:'#295c38', jefferson:'#6bb044', middle:'#087d40', high:'#044d2a' };
 
     // Map school-day labels in event titles to the correct school
     function getDayLabelInfo(title) {
