@@ -217,7 +217,13 @@
           <h2 class="today-widget-title">Today at Schalmont</h2>
           <span id="today-widget-date" class="today-widget-date"></span>
         </div>
-        <button class="add-cal-btn" id="add-to-cal-btn">&#128197; Add to My Calendar</button>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:4px">
+            <button id="today-prev-btn" aria-label="Previous day" onclick="navigateTodayWidget(-1)" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);color:#fff;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:13px;font-weight:700;opacity:0.4;pointer-events:none" disabled>&#8592; Prev</button>
+            <button id="today-next-btn" aria-label="Next day" onclick="navigateTodayWidget(1)" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);color:#fff;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:13px;font-weight:700">Next &#8594;</button>
+          </div>
+          <button class="add-cal-btn" id="add-to-cal-btn">&#128197; Add to My Calendar</button>
+        </div>
       </div>
       <div class="today-widget-grid" id="today-widget-grid">
 
@@ -361,11 +367,6 @@
         <div class="deadline-school-card">
           <div class="deadline-school-bar">&#128218; Middle School</div>
           <div class="deadline-card-body">
-            <div class="deadline-item deadline-urgent">
-              <div class="deadline-title">6/7 Casino Night RSVP</div>
-              <div class="deadline-date">March 27 by 5:00 PM</div>
-              <a href="casinoroyale.html#rsvp" class="deadline-link">RSVP Now &rarr;</a>
-            </div>
             <div class="deadline-item deadline-urgent">
               <div class="deadline-title">6/7 Casino Night</div>
               <div class="deadline-date">March 27 @ 7:00 PM</div>
@@ -745,7 +746,7 @@
           <a href="shop.html" class="btn btn-primary" style="text-decoration:none">Shop Now &rarr;</a>
         </div>
         <div style="border-radius:var(--radius-lg);overflow:hidden">
-          <img src="images/gallery/bingo-night.jpg" alt="Schalmont Spiritwear" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-lg);display:block" onerror="this.style.display='none'">
+          <img src="images/CW-Schalmont-square.jpg" alt="Schalmont Spiritwear" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-lg);display:block" onerror="this.style.display='none'">
         </div>
       </div>
     </div>
@@ -1081,18 +1082,52 @@
     var WMO_ICONS = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',77:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',85:'🌨️',86:'❄️',95:'⛈️',96:'⛈️',99:'⛈️'};
     var WMO_DESCS = {0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',48:'Freezing fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',77:'Snow grains',80:'Showers',81:'Rain showers',82:'Violent showers',85:'Snow showers',86:'Heavy snow showers',95:'Thunderstorm',96:'Thunderstorm with hail',99:'Thunderstorm with hail'};
 
-    // Date setup — Eastern time
+    // Date setup — Eastern time with day navigation
     var now = new Date();
-    var dateEl = document.getElementById('today-widget-date');
-    if (dateEl) dateEl.textContent = now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric',timeZone:'America/New_York'});
+    var etTodayStr = now.toLocaleDateString('en-CA',{timeZone:'America/New_York'});
+    var dayOffset  = 0;
 
-    var etStr = now.toLocaleDateString('en-CA',{timeZone:'America/New_York'});
-    var etParts = etStr.split('-');
-    var todayParam = etParts[0]+etParts[1]+etParts[2];
-    var tomorrowDate = new Date(now); tomorrowDate.setDate(tomorrowDate.getDate()+1);
-    var etStr2 = tomorrowDate.toLocaleDateString('en-CA',{timeZone:'America/New_York'});
-    var etParts2 = etStr2.split('-');
-    var dateParam = todayParam+'%2F'+etParts2[0]+etParts2[1]+etParts2[2];
+    function getNextDayStr(s) {
+      var d = new Date(s+'T12:00:00'); d.setDate(d.getDate()+1);
+      return d.toLocaleDateString('en-CA');
+    }
+    function getViewDateStr(offset) {
+      var d = new Date(etTodayStr+'T12:00:00'); d.setDate(d.getDate()+offset);
+      return d.toLocaleDateString('en-CA');
+    }
+    var etStr  = etTodayStr;
+    var etStr2 = getNextDayStr(etStr);
+
+    function updateWidgetHeader(offset) {
+      var ds = getViewDateStr(offset);
+      var d  = new Date(ds+'T12:00:00');
+      var long = d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+      var titleEl = document.querySelector('.today-widget-title');
+      var dateEl  = document.getElementById('today-widget-date');
+      var label   = offset===0?'Today':offset===1?'Tomorrow':offset===-1?'Yesterday':d.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+      if (titleEl) titleEl.textContent = label+' at Schalmont';
+      if (dateEl)  dateEl.textContent  = long;
+      var prevBtn = document.getElementById('today-prev-btn');
+      var nextBtn = document.getElementById('today-next-btn');
+      if (prevBtn) {
+        prevBtn.disabled = (offset<=0);
+        prevBtn.style.opacity = (offset<=0)?'0.4':'1';
+        prevBtn.style.pointerEvents = (offset<=0)?'none':'auto';
+      }
+      if (nextBtn) {
+        nextBtn.disabled = (offset>=7);
+        nextBtn.style.opacity = (offset>=7)?'0.4':'1';
+        nextBtn.style.pointerEvents = (offset>=7)?'none':'auto';
+      }
+    }
+    window.navigateTodayWidget = function(delta) {
+      dayOffset = Math.max(0, Math.min(7, dayOffset+delta));
+      etStr  = getViewDateStr(dayOffset);
+      etStr2 = getNextDayStr(etStr);
+      updateWidgetHeader(dayOffset);
+      if (GCAL_API_KEY) { loadCalendarAPI(); } else { loadICSEvents(); }
+    };
+    updateWidgetHeader(0);
 
     // Detect EST vs EDT offset
     function getETOffset() {
@@ -1268,16 +1303,6 @@
         ldEl.style.display = 'block';
       }
 
-      // Pinned manual events for today (Mar 16 2026)
-      var todayStr = new Date().toDateString();
-      if (todayStr === new Date('2026-03-16').toDateString()) {
-        regularEvents.unshift({
-          ev: { summary: 'Lucky Bingo Night', timeStr: '6:30 PM', isAllDay: false, startMs: new Date('2026-03-16T18:30:00').getTime() },
-          key: 'middle',
-          _manualLink: 'bingo-night.html'
-        });
-      }
-
       // Render regular events
       if (!regularEvents.length) {
         listEl.innerHTML = '<div class="today-events-empty" style="padding:16px">No other events today.</div>';
@@ -1333,7 +1358,7 @@
                 // All failed — fall back to iframe
                 listEl.style.display = 'none';
                 iframeEl.style.display = 'block';
-                var src = 'https://calendar.google.com/calendar/embed?mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York&dates='+dateParam;
+                var _tp=etStr.replace(/-/g,''),_tp2=etStr2.replace(/-/g,''); var src = 'https://calendar.google.com/calendar/embed?mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York&dates='+_tp+'%2F'+_tp2;
                 Object.values(CAL_IDS).forEach(function(id){ src += '&src='+encodeURIComponent(id); });
                 iframeEl.src = src;
               } else {
