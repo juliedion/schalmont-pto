@@ -70,7 +70,7 @@ h1, h2, h3, h4, h5, h6 {
 .flex-center{ display: flex; align-items: center; justify-content: center; }
 .grid-2     { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
 .grid-3     { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-.grid-4     { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.grid-4     { display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; }
 .text-center{ text-align: center; }
 .mt-1  { margin-top: 8px; }
 .mt-2  { margin-top: 16px; }
@@ -606,7 +606,7 @@ select   { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xm
 /* === School Program Cards === */
 .program-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 20px;
 }
 @media (max-width: 1100px) { .program-grid { grid-template-columns: repeat(3, 1fr); } }
@@ -1933,7 +1933,7 @@ select   { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xm
 /* === Today Widget — Important Deadlines Grid === */
 .today-deadlines-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 12px;
   margin-top: 14px;
 }
@@ -1981,6 +1981,7 @@ select   { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xm
 .deadline-link { font-size: 11px; color: var(--primary-light); text-decoration: none; font-weight: 600; margin-top: 2px; display: inline-block; }
 .deadline-link:hover { text-decoration: underline; }
 .deadline-empty { font-size: 12px; color: var(--text-light); font-style: italic; padding: 6px 2px; }
+@media (max-width: 1100px) { .today-deadlines-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 900px) { .today-deadlines-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 540px) { .today-deadlines-grid { grid-template-columns: 1fr; } }
 
