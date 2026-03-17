@@ -217,13 +217,7 @@
           <h2 class="today-widget-title">Today at Schalmont</h2>
           <span id="today-widget-date" class="today-widget-date"></span>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-          <div style="display:flex;align-items:center;gap:4px">
-            <button id="today-prev-btn" aria-label="Previous day" onclick="navigateTodayWidget(-1)" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);color:#fff;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:13px;font-weight:700;opacity:0.4;pointer-events:none" disabled>&#8592; Prev</button>
-            <button id="today-next-btn" aria-label="Next day" onclick="navigateTodayWidget(1)" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);color:#fff;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:13px;font-weight:700">Next &#8594;</button>
-          </div>
-          <button class="add-cal-btn" id="add-to-cal-btn">&#128197; Add to My Calendar</button>
-        </div>
+        <button class="add-cal-btn" id="add-to-cal-btn">&#128197; Add to My Calendar</button>
       </div>
       <div class="today-widget-grid" id="today-widget-grid">
 
@@ -254,7 +248,7 @@
 
         <!-- Events Panel -->
         <div class="today-events-panel">
-          <div class="today-events-header">
+          <div class="today-events-header" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
             <div class="today-panel-label dark">
               Today's Events &amp; School Schedule
               <span class="today-cal-legend">
@@ -264,6 +258,10 @@
                 <span style="color:#087d40">&#9679; Middle</span>
                 <span style="color:#044d2a">&#9679; High</span>
               </span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
+              <button id="today-prev-btn" aria-label="Previous day" onclick="navigateTodayWidget(-1)" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-weight:700;opacity:0.4;pointer-events:none" disabled>&#8592; Prev</button>
+              <button id="today-next-btn" aria-label="Next day" onclick="navigateTodayWidget(1)" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-weight:700">Next &#8594;</button>
             </div>
           </div>
           <!-- Letter day badges (shown when detected in calendar) -->
