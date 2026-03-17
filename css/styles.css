@@ -70,7 +70,7 @@ h1, h2, h3, h4, h5, h6 {
 .flex-center{ display: flex; align-items: center; justify-content: center; }
 .grid-2     { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
 .grid-3     { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-.grid-4     { display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; }
+.grid-4     { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
 .text-center{ text-align: center; }
 .mt-1  { margin-top: 8px; }
 .mt-2  { margin-top: 16px; }
