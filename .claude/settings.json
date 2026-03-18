@@ -9,7 +9,25 @@
       "Bash(git add .github/workflows/deploy.yml fix-permissions.php)",
       "Bash(git commit -m \"auto-fix file permissions after deploy\")",
       "WebSearch",
-      "WebFetch(domain:www.schalmont.org)"
+      "WebFetch(domain:www.schalmont.org)",
+      "Read(//Users/juliedion/Desktop/Desktop - Julie's Mac mini/schalmont-pto/css/**)",
+      "Bash(cat .github/workflows/*.yml)",
+      "Bash(gh run:*)",
+      "Bash(grep -n \"banner\\\\|rolling\\\\|ticker\\\\|rotate\\\\|carousel\" js/*.js)",
+      "Bash(grep -rln \"casino-night.html\" *.html)",
+      "Bash(cp casino-night.html casinoroyale.html)",
+      "Bash(sed -i '' 's|casino-night\\\\.html|casinoroyale.html|g' about.html box-tops.html casinoroyale.html color-run.html contact.html directory.html donate.html events.html fundraisers-high-school.html fundraisers-jefferson.html fundraisers-middle-school.html fundraisers-woestina.html fundraisers.html gallery.html get-involved.html glitz-and-glam-dance.html holiday-shoppe.html index.html journey-to-jefferson.html kindergarten-lunch-team.html meetings.html middle-school.html schools.html shop.html social.html sports.html student-council.html teacher-appreciation-week.html volunteer.html yearbook-high.html yearbook-middle.html yearbooks.html)",
+      "Bash(grep -rn \"casino-night\" *.html)",
+      "Bash(grep -rn \"scout\\\\|Scout\\\\|troop\\\\|Troop\" *.html)",
+      "Bash(sed -i '' 's|https://www.beascout.scouting.org|https://www.troop3054.org/|g' family-scouts.html)",
+      "Bash(sed -i '' 's|Go to BeAScout.org →|Go to Troop3054.org →|' family-scouts.html)",
+      "Bash(sed -i '' 's|You are being redirected to the official Scouts BSA \"\"Be a Scout\"\" finder to locate a unit near you…|You are being redirected to the Schalmont Troop 3054 website…|' family-scouts.html)",
+      "Bash(grep -n \"bingo\\\\|Bingo\" *.html)"
+    ],
+    "additionalDirectories": [
+      "/Users/juliedion/Desktop/Desktop - Julie’s Mac mini/schalmont-pto/css",
+      "/Users/juliedion/Desktop/Desktop - Julie’s Mac mini/schalmont-pto",
+      "/Users/juliedion/Desktop/Desktop - Julie's Mac mini/schalmont-pto"
     ]
   }
 }
