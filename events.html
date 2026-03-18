@@ -223,7 +223,7 @@
         <div class="today-events-panel">
           <div class="today-events-header" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
             <div class="today-panel-label dark">
-              Today&#39;s Events &amp; School Schedule
+              <span id="today-panel-heading">Today's Events &amp; School Schedule</span>
               <span class="today-cal-legend">
                 <span style="color:#295c38">&#9679; PTO</span>
                 <span style="color:#8bc341">&#9679; Woestina</span>
@@ -665,6 +665,8 @@
       var label   = offset===0?'Today':d.toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'});
       if (titleEl) titleEl.textContent = label+' at Schalmont';
       if (dateEl)  dateEl.textContent  = long;
+      var panelHeading = document.getElementById('today-panel-heading');
+      if (panelHeading) panelHeading.textContent = (offset===0 ? "Today's" : d.toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'}))+' Events & School Schedule';
       var prevBtn = document.getElementById('today-prev-btn');
       var nextBtn = document.getElementById('today-next-btn');
       if (prevBtn) {
