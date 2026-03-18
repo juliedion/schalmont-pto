@@ -233,8 +233,8 @@
               </span>
             </div>
             <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
-              <button id="today-prev-btn" aria-label="Previous day" onclick="navigateTodayWidget(-1)" style="background:#e8f0eb;border:1px solid #b8d4c0;color:#045c28;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-weight:700;opacity:0.4;pointer-events:none" disabled>&#8592; Prev</button>
-              <button id="today-next-btn" aria-label="Next day" onclick="navigateTodayWidget(1)" style="background:#045c28;border:1px solid #045c28;color:#fff;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-weight:700">Next &#8594;</button>
+              <button id="today-prev-btn" class="today-nav-btn" aria-label="Previous day" onclick="navigateTodayWidget(-1)" disabled>&#8592; Prev</button>
+              <button id="today-next-btn" class="today-nav-btn active" aria-label="Next day" onclick="navigateTodayWidget(1)">Next &#8594;</button>
             </div>
           </div>
           <iframe id="today-events-iframe" class="today-events-iframe" frameborder="0" scrolling="no" title="Today&#39;s Events"></iframe>
@@ -662,23 +662,16 @@
       var long = d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
       var titleEl = document.querySelector('.today-widget-title');
       var dateEl  = document.getElementById('today-widget-date');
-      var label   = offset===0?'Today':offset===1?'Tomorrow':offset===-1?'Yesterday':d.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+      var label   = offset===0?'Today':d.toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'});
       if (titleEl) titleEl.textContent = label+' at Schalmont';
       if (dateEl)  dateEl.textContent  = long;
       var prevBtn = document.getElementById('today-prev-btn');
       var nextBtn = document.getElementById('today-next-btn');
       if (prevBtn) {
         prevBtn.disabled = (offset<=0);
-        prevBtn.style.opacity = (offset<=0)?'0.4':'1';
-        prevBtn.style.pointerEvents = (offset<=0)?'none':'auto';
-        prevBtn.style.background = (offset<=0)?'#e8f0eb':'#e8f0eb';
-        prevBtn.style.color = (offset<=0)?'#045c28':'#045c28';
+        prevBtn.disabled = (offset<=0);
       }
-      if (nextBtn) {
-        nextBtn.disabled = (offset>=7);
-        nextBtn.style.opacity = (offset>=7)?'0.4':'1';
-        nextBtn.style.pointerEvents = (offset>=7)?'none':'auto';
-      }
+      if (nextBtn) { nextBtn.disabled = (offset>=7); }
     }
     window.navigateTodayWidget = function(delta) {
       dayOffset = Math.max(0, Math.min(7, dayOffset+delta));

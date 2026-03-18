@@ -2032,3 +2032,28 @@ select   { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xm
 
 /* === Print === */
 @media print { .site-header, .site-footer, .cart-fab, .cart-sidebar, .cart-overlay, .admin-panel { display: none !important; } }
+
+/* === Day navigation buttons (Today widget) === */
+.today-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1.5px solid #b8d4c0;
+  background: #e8f0eb;
+  color: #045c28;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.today-nav-btn:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+.today-nav-btn.active {
+  background: #045c28;
+  border-color: #045c28;
+  color: #ffffff;
+}
