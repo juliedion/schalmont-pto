@@ -2057,3 +2057,12 @@ select   { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xm
   border-color: #045c28;
   color: #ffffff;
 }
+
+/* === Program card buttons — prevent bleeding off card === */
+.program-card-actions .btn {
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: center;
+  text-align: center;
+  white-space: normal;
+}
