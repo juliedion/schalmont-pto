@@ -36,12 +36,21 @@ function requireAuth(redirectTo = 'login.html') {
 
 /* ============================================================
    SIGN UP with email + password
+   New accounts are saved as "pending" in Firestore and require
+   admin approval before they can access the directory.
+   Admin emails (defined in firebase-config.js) are auto-approved.
    ============================================================ */
 async function signUp(email, password, displayName) {
   const cred = await auth.createUserWithEmailAndPassword(email, password);
   if (displayName) {
     await cred.user.updateProfile({ displayName });
   }
+  // Send email verification — user must confirm before accessing anything
+  await cred.user.sendEmailVerification();
+
+  // Sign out immediately — user must verify email then submit family info before appearing in admin panel
+  await auth.signOut();
+
   return cred.user;
 }
 
@@ -74,9 +83,9 @@ async function resetPassword(email) {
 function initLoginPage() {
   if (!document.getElementById('login-form')) return;
 
-  // If already signed in, redirect away from login page
+  // If already signed in AND email verified (or admin), redirect away from login page
   auth.onAuthStateChanged(user => {
-    if (user) {
+    if (user && (user.emailVerified || (typeof adminEmails !== 'undefined' && adminEmails.includes(user.email)))) {
       const params  = new URLSearchParams(window.location.search);
       const next    = params.get('next') || 'directory.html';
       window.location.href = next;
@@ -123,8 +132,15 @@ function initLoginPage() {
     const fd = new FormData(loginForm);
     setLoading(loginForm, true);
     try {
-      await signIn(fd.get('email'), fd.get('password'));
-      // onAuthStateChanged will handle redirect
+      const user = await signIn(fd.get('email'), fd.get('password'));
+      const isAdmin = typeof adminEmails !== 'undefined' && adminEmails.includes(user.email);
+      if (!user.emailVerified && !isAdmin) {
+        await auth.signOut();
+        alertEl.innerHTML = `<div class="alert alert-error"><span>✕</span><span>Please verify your email first. Check your inbox for the verification link sent when you registered.</span></div>`;
+        setLoading(loginForm, false);
+        return;
+      }
+      // Verified — onAuthStateChanged will handle redirect
     } catch (err) {
       alertEl.innerHTML = `<div class="alert alert-error"><span>✕</span><span>${friendlyError(err.code)}</span></div>`;
       setLoading(loginForm, false);
@@ -145,8 +161,11 @@ function initLoginPage() {
     setLoading(signupForm, true);
     try {
       const name = `${fd.get('firstName').trim()} ${fd.get('lastName').trim()}`;
-      await signUp(fd.get('email'), fd.get('password'), name);
-      // onAuthStateChanged will handle redirect
+      const email = fd.get('email');
+      await signUp(email, fd.get('password'), name);
+      // Sign-up succeeded and user is now signed out — show email verification prompt
+      signupForm.style.display = 'none';
+      alertEl.innerHTML = `<div class="alert alert-success"><span>✓</span><span><strong>Account created!</strong> We sent a verification email to <strong>${email}</strong>. Click the link in that email, then come back and sign in. A PTO admin will review your account before you can access the directory.</span></div>`;
     } catch (err) {
       alertEl.innerHTML = `<div class="alert alert-error"><span>✕</span><span>${friendlyError(err.code)}</span></div>`;
       setLoading(signupForm, false);

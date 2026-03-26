@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Directory Accounts — Schalmont PTO Admin</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="images/favicon.svg">
+  <style>
+    body { background: var(--light-bg); }
+    .admin-wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+    .admin-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+    .admin-header img { height: 48px; }
+    .admin-header h1 { font-size: 22px; color: var(--text-dark); margin: 0; }
+    .admin-header .sub { font-size: 13px; color: var(--text-light); margin: 2px 0 0; }
+    .admin-back { margin-left: auto; font-size: 13px; color: var(--primary); font-weight: 600; text-decoration: none; }
+    .admin-back:hover { text-decoration: underline; }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-light);
+      margin: 32px 0 12px;
+    }
+
+    .user-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .user-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+    .user-info { flex: 1; min-width: 180px; }
+    .user-name { font-size: 15px; font-weight: 700; color: var(--text-dark); }
+    .user-email { font-size: 13px; color: var(--text-light); }
+    .user-date { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .badge-pending  { background: #fff8e1; color: #b8860b; border: 1px solid #f0d060; }
+    .badge-approved { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+    .badge-rejected { background: #fce4ec; color: #c62828; border: 1px solid #ef9a9a; }
+
+    .user-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn-approve {
+      padding: 7px 16px;
+      background: var(--secondary);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-approve:hover { opacity: 0.85; }
+    .btn-reject {
+      padding: 7px 16px;
+      background: none;
+      color: #c62828;
+      border: 1px solid #ef9a9a;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-reject:hover { background: #fce4ec; }
+    .btn-undo {
+      padding: 7px 16px;
+      background: none;
+      color: var(--text-light);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-undo:hover { background: var(--light-bg); }
+    .btn-registry {
+      padding: 7px 14px;
+      background: none;
+      color: #1a56a0;
+      border: 1px solid #93c5fd;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      white-space: nowrap;
+    }
+    .btn-registry:hover { background: #eff6ff; }
+    .user-ip {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 3px;
+      font-family: monospace;
+    }
+    .user-ip a {
+      color: #1a56a0;
+      font-family: inherit;
+      text-decoration: none;
+      font-weight: 600;
+      margin-left: 6px;
+      font-size: 11px;
+    }
+    .user-ip a:hover { text-decoration: underline; }
+
+    .empty-state {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px 24px;
+      text-align: center;
+      color: var(--text-light);
+      font-size: 14px;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text-dark);
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 99px;
+      font-size: 14px;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+      z-index: 9999;
+      white-space: nowrap;
+    }
+    #toast.show { opacity: 1; }
+
+    /* Loading / access-denied overlays */
+    #page-loading, #access-denied {
+      position: fixed;
+      inset: 0;
+      background: var(--primary-dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 9998;
+    }
+    #page-loading p, #access-denied p { color: rgba(255,255,255,0.75); font-size: 14px; text-align: center; max-width: 300px; }
+    #access-denied h2 { color: #fff; font-size: 20px; }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 4px solid rgba(255,255,255,0.2);
+      border-top-color: var(--secondary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <!-- Loading overlay -->
+  <div id="page-loading">
+    <div class="spinner"></div>
+    <p>Checking credentials…</p>
+  </div>
+
+  <!-- Access denied overlay (shown if not admin) -->
+  <div id="access-denied" style="display:none">
+    <h2>Access Denied</h2>
+    <p>This page is only accessible to PTO admins.</p>
+    <a href="index.html" class="btn btn-primary" style="margin-top:8px">← Back to Home</a>
+  </div>
+
+  <!-- Toast notification -->
+  <div id="toast"></div>
+
+  <!-- PAGE CONTENT (hidden until auth confirmed) -->
+  <div id="admin-content" style="display:none">
+    <div class="admin-wrap">
+
+      <div class="admin-header">
+        <img src="images/logo.png" alt="Schalmont PTO">
+        <div>
+          <h1>Directory Account Approvals</h1>
+          <p class="sub">Approve or reject pending account requests for the parent directory</p>
+        </div>
+        <a href="directory.html" class="admin-back">← Back to Directory</a>
+      </div>
+
+      <div style="background:#fff8e1;border:1px solid #f0d060;border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:8px;font-size:13px;color:#7a5c00;line-height:1.6">
+        <strong>Before approving an account</strong>, use the <strong>Check Registry</strong> link on each card to search the National Sex Offender Public Website (NSOPW) for that person's name. The site will open in a new tab — search the name shown on the card. A match does not automatically mean it's the same person; use your judgment and <a href="https://www.nsopw.gov" target="_blank" rel="noopener" style="color:inherit;font-weight:700;text-decoration:underline">nsopw.gov</a> for full profile details.
+      </div>
+
+      <div id="admin-alert" style="margin-bottom:16px"></div>
+
+      <div class="section-label">Pending Approval (<span id="pending-count">0</span>)</div>
+      <div id="pending-list"><div class="empty-state">Loading…</div></div>
+
+      <div class="section-label">Approved (<span id="approved-count">0</span>)</div>
+      <div id="approved-list"><div class="empty-state">Loading…</div></div>
+
+      <div class="section-label">Rejected (<span id="rejected-count">0</span>)</div>
+      <div id="rejected-list"><div class="empty-state">Loading…</div></div>
+
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    const db = firebase.firestore();
+
+    // ── Auth gate ──────────────────────────────────────────────
+    auth.onAuthStateChanged(function(user) {
+      if (!user) {
+        window.location.href = 'login.html?next=admin-users.html';
+        return;
+      }
+      if (typeof adminEmails === 'undefined' || !adminEmails.includes(user.email)) {
+        document.getElementById('page-loading').style.display = 'none';
+        document.getElementById('access-denied').style.display = 'flex';
+        return;
+      }
+      document.getElementById('page-loading').style.display = 'none';
+      document.getElementById('admin-content').style.display = 'block';
+      loadUsers();
+    });
+
+    // ── Toast helper ───────────────────────────────────────────
+    function showToast(msg) {
+      var t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(function() { t.classList.remove('show'); }, 2800);
+    }
+
+    // ── Format timestamp ───────────────────────────────────────
+    function formatDate(ts) {
+      if (!ts) return '—';
+      var d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    // ── Approve / reject ───────────────────────────────────────
+    async function setStatus(uid, newStatus, btn) {
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+      try {
+        await db.collection('users').doc(uid).update({ status: newStatus });
+        showToast(newStatus === 'approved' ? '✓ Account approved' : 'Account rejected');
+        loadUsers();
+      } catch(e) {
+        showToast('Error: ' + e.message);
+        btn.disabled = false;
+        btn.textContent = newStatus === 'approved' ? 'Approve' : 'Reject';
+      }
+    }
+
+    // ── Build a user card element ──────────────────────────────
+    function buildCard(doc, listing) {
+      var data = doc.data();
+      var uid  = doc.id;
+      var name = data.displayName || '(no name)';
+      var initial = name.replace('(no name)','?')[0].toUpperCase();
+
+      // Build NSOPW search URL — opens the national registry pre-filled with the name
+      var nameParts = name.trim().split(/\s+/);
+      var firstName = encodeURIComponent(nameParts[0] || '');
+      var lastName  = encodeURIComponent(nameParts.slice(1).join(' ') || '');
+      var registryUrl = 'https://www.nsopw.gov/en/Search/Verify?FirstName=' + firstName + '&LastName=' + lastName + '&Territories=ny';
+
+      var statusBadge = {
+        pending:  '<span class="badge badge-pending">Pending</span>',
+        approved: '<span class="badge badge-approved">Approved</span>',
+        rejected: '<span class="badge badge-rejected">Rejected</span>'
+      }[data.status] || '<span class="badge badge-pending">Pending</span>';
+
+      var actions = '';
+      if (data.status === 'pending') {
+        actions = `
+          <a href="${registryUrl}" target="_blank" rel="noopener" class="btn-registry" title="Search NSOPW for: ${name}">🔍 Check Registry</a>
+          <button class="btn-approve" onclick="setStatus('${uid}','approved',this)">Approve</button>
+          <button class="btn-reject"  onclick="setStatus('${uid}','rejected',this)">Reject</button>`;
+      } else if (data.status === 'approved') {
+        actions = `
+          <a href="${registryUrl}" target="_blank" rel="noopener" class="btn-registry" title="Search NSOPW for: ${name}">🔍 Check Registry</a>
+          <button class="btn-undo" onclick="setStatus('${uid}','rejected',this)">Revoke</button>`;
+      } else {
+        actions = `
+          <a href="${registryUrl}" target="_blank" rel="noopener" class="btn-registry" title="Search NSOPW for: ${name}">🔍 Check Registry</a>
+          <button class="btn-approve" onclick="setStatus('${uid}','approved',this)">Approve</button>`;
+      }
+
+      var ip = data.ipAddress || '';
+      var ipHtml = ip
+        ? `<div class="user-ip">IP: ${ip}
+             <a href="https://www.abuseipdb.com/check/${ip}" target="_blank" rel="noopener" title="Check abuse/VPN/proxy history for this IP">AbuseIPDB ↗</a>
+           </div>`
+        : '';
+
+      // Build directory listing summary if submitted
+      var listingHtml = '';
+      if (listing) {
+        var lname = [listing.firstName, listing.lastName].filter(Boolean).join(' ') || '—';
+        var lphone = listing.phone || '';
+        var lemail = listing.email || '';
+        var students = Array.isArray(listing.students) ? listing.students : [];
+        var studentRows = students.map(function(s) {
+          return `<span style="display:inline-block;background:var(--light-bg);border:1px solid var(--border);border-radius:var(--radius);padding:3px 10px;font-size:12px;margin:2px">${s.name || '?'} · ${s.grade || '?'} · ${s.school || '?'}</span>`;
+        }).join('');
+        listingHtml = `
+          <div style="margin-top:10px;padding:12px 14px;background:#f0fbea;border:1px solid #a5d6a7;border-radius:var(--radius);font-size:13px">
+            <div style="font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:#2e7d32;margin-bottom:6px">Directory Submission</div>
+            <div style="margin-bottom:3px"><strong>Name:</strong> ${lname}</div>
+            ${lemail ? `<div style="margin-bottom:3px"><strong>Email:</strong> ${lemail}</div>` : ''}
+            ${lphone ? `<div style="margin-bottom:3px"><strong>Phone:</strong> ${lphone}</div>` : ''}
+            ${studentRows ? `<div style="margin-top:6px"><strong>Children:</strong><div style="margin-top:4px">${studentRows}</div></div>` : '<div style="color:#888">No children listed yet</div>'}
+          </div>`;
+      } else {
+        listingHtml = `<div style="margin-top:8px;font-size:12px;color:#b8860b;background:#fff8e1;border:1px solid #f0d060;border-radius:var(--radius);padding:8px 12px">⚠️ No directory listing submitted yet</div>`;
+      }
+
+      var card = document.createElement('div');
+      card.className = 'user-card';
+      card.dataset.uid = uid;
+      card.style.flexWrap = 'wrap';
+      card.innerHTML = `
+        <div style="display:flex;align-items:flex-start;gap:14px;width:100%">
+          <div class="user-avatar">${initial}</div>
+          <div class="user-info" style="flex:1">
+            <div class="user-name">${name} ${statusBadge}</div>
+            <div class="user-email">${data.email || '—'}</div>
+            <div class="user-date">Signed up: ${formatDate(data.createdAt)}</div>
+            ${ipHtml}
+            ${listingHtml}
+          </div>
+          <div class="user-actions" style="flex-shrink:0">${actions}</div>
+        </div>
+      `;
+      return card;
+    }
+
+    // ── Load all users + their directory listings ──────────────
+    async function loadUsers() {
+      try {
+        var [usersSnap, dirSnap] = await Promise.all([
+          db.collection('users').orderBy('createdAt', 'desc').get(),
+          db.collection('directory').get()
+        ]);
+
+        // Build a map of uid → directory listing
+        var dirMap = {};
+        dirSnap.forEach(function(doc) { dirMap[doc.id] = doc.data(); });
+
+        var pending  = [], approved = [], rejected = [];
+        usersSnap.forEach(function(doc) {
+          var s = doc.data().status || 'pending';
+          if (s === 'approved') approved.push(doc);
+          else if (s === 'rejected') rejected.push(doc);
+          else pending.push(doc);
+        });
+
+        function render(list, containerId, countId) {
+          document.getElementById(countId).textContent = list.length;
+          var el = document.getElementById(containerId);
+          el.innerHTML = '';
+          if (list.length === 0) {
+            el.innerHTML = '<div class="empty-state">None</div>';
+          } else {
+            list.forEach(function(doc) { el.appendChild(buildCard(doc, dirMap[doc.id])); });
+          }
+        }
+
+        render(pending,  'pending-list',  'pending-count');
+        render(approved, 'approved-list', 'approved-count');
+        render(rejected, 'rejected-list', 'rejected-count');
+
+      } catch(e) {
+        document.getElementById('admin-alert').innerHTML =
+          '<div class="alert alert-error"><span>✕</span><span>Failed to load users: ' + e.message + '</span></div>';
+      }
+    }
+  </script>
+</body>
+</html>

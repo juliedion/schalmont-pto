@@ -311,6 +311,42 @@
 
 
 
+  <!-- UNVERIFIED EMAIL — shown when signed in but email not yet confirmed -->
+  <section id="auth-unverified" style="display:none;background:var(--light-bg);padding:60px 20px;min-height:60vh;align-items:center;justify-content:center;flex-direction:column">
+    <div style="background:var(--white);border-radius:var(--radius-xl);box-shadow:0 20px 60px rgba(0,0,0,0.12);max-width:460px;width:100%;overflow:hidden;text-align:center">
+      <div style="background:var(--primary-dark);padding:32px 32px 24px">
+        <img src="images/logo.png" alt="Schalmont Central PTO" style="height:60px;margin:0 auto 14px;display:block">
+        <h2 style="color:var(--white);font-size:20px;margin-bottom:4px">Verify Your Email</h2>
+        <p style="color:rgba(255,255,255,0.7);font-size:14px">One more step before you can continue</p>
+      </div>
+      <div style="padding:32px">
+        <div style="font-size:52px;margin-bottom:16px">📧</div>
+        <p style="font-size:15px;color:var(--text);line-height:1.7;margin-bottom:20px">Check your inbox for a verification email from us. Click the link in that email, then sign back in here.</p>
+        <p style="font-size:13px;color:var(--text-light);margin-bottom:24px">Can't find it? Check your spam folder. If you need help, <a href="contact.html" style="color:var(--primary);font-weight:600">contact us</a>.</p>
+        <button onclick="signOut()" class="btn btn-sm" style="background:none;border:1px solid var(--border);color:var(--text-light);padding:9px 20px;border-radius:var(--radius);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer">Sign Out</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- REJECTED — shown when account has been denied -->
+  <section id="auth-rejected" style="display:none;background:var(--light-bg);padding:60px 20px;min-height:60vh;align-items:center;justify-content:center;flex-direction:column">
+    <div style="background:var(--white);border-radius:var(--radius-xl);box-shadow:0 20px 60px rgba(0,0,0,0.12);max-width:460px;width:100%;overflow:hidden;text-align:center">
+      <div style="background:var(--primary-dark);padding:32px 32px 24px">
+        <img src="images/logo.png" alt="Schalmont Central PTO" style="height:60px;margin:0 auto 14px;display:block">
+        <h2 style="color:var(--white);font-size:20px;margin-bottom:4px">Access Not Approved</h2>
+        <p style="color:rgba(255,255,255,0.7);font-size:14px">This account is not authorized to view the directory</p>
+      </div>
+      <div style="padding:32px">
+        <div style="font-size:52px;margin-bottom:16px">🚫</div>
+        <p style="font-size:15px;color:var(--text);line-height:1.7;margin-bottom:20px">Your account was not approved for directory access. If you believe this is a mistake, please contact the PTO.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <a href="contact.html" class="btn btn-primary" style="padding:9px 20px;font-size:14px">Contact Us</a>
+          <button onclick="signOut()" class="btn btn-sm" style="background:none;border:1px solid var(--border);color:var(--text-light);padding:9px 20px;border-radius:var(--radius);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer">Sign Out</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- AUTH GATE — shown when not signed in -->
   <section id="auth-gate" style="display:none;background:var(--light-bg);padding:60px 20px;min-height:60vh;display:none;align-items:center;justify-content:center;flex-direction:column">
     <div class="gate-card">
@@ -709,21 +745,45 @@
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
   <script>
-    // Check auth state — show login gate instead of redirecting
-    auth.onAuthStateChanged(function(user) {
-      document.getElementById('auth-loading').style.display = 'none';
-      if (user) {
-        document.getElementById('auth-gate').style.display = 'none';
-        document.getElementById('auth-content').style.display = 'block';
-        document.querySelectorAll('.auth-user-email').forEach(function(el) {
-          el.textContent = user.email;
-        });
-      } else {
+    // Check auth state — show login gate, unverified, rejected, or approved content
+    auth.onAuthStateChanged(async function(user) {
+      if (!user) {
+        document.getElementById('auth-loading').style.display = 'none';
         document.getElementById('auth-gate').style.display = 'flex';
         document.getElementById('auth-gate').style.flexDirection = 'column';
         document.getElementById('auth-gate').style.alignItems = 'center';
         document.getElementById('auth-gate').style.justifyContent = 'center';
+        return;
       }
+
+      // Email must be verified before anything else (admins are exempt)
+      const isAdmin = typeof adminEmails !== 'undefined' && adminEmails.includes(user.email);
+      if (!user.emailVerified && !isAdmin) {
+        document.getElementById('auth-loading').style.display = 'none';
+        document.getElementById('auth-unverified').style.display = 'flex';
+        return;
+      }
+
+      // Check approval status in Firestore
+      try {
+        var doc = await firebase.firestore().collection('users').doc(user.uid).get();
+        if (!doc.exists || (doc.data().status || 'pending') === 'pending') {
+          // No record yet or still pending — send to pending.html to submit info / wait
+          window.location.href = 'pending.html';
+          return;
+        }
+        if (doc.data().status === 'rejected') {
+          document.getElementById('auth-loading').style.display = 'none';
+          document.getElementById('auth-rejected').style.display = 'flex';
+          return;
+        }
+      } catch(e) { /* network error — fail open so approved users aren't locked out */ }
+
+      document.getElementById('auth-loading').style.display = 'none';
+      document.getElementById('auth-content').style.display = 'block';
+      document.querySelectorAll('.auth-user-email').forEach(function(el) {
+        el.textContent = user.email;
+      });
     });
 
     function switchGateTab(tab, btn) {
@@ -777,11 +837,16 @@
       var btn = document.getElementById('gate-register-btn');
       btn.textContent = 'Creating account…'; btn.disabled = true;
       try {
+        var email = document.getElementById('gate-reg-email').value;
         await signUp(
-          document.getElementById('gate-reg-email').value,
+          email,
           document.getElementById('gate-reg-password').value,
           document.getElementById('gate-reg-name').value
         );
+        // User is now signed out — show email verification prompt
+        document.getElementById('gate-register-form').style.display = 'none';
+        showGateAlert('✓ Account created! Check your inbox for a verification email. After verifying, sign in to submit your family information for review.', 'success');
+        btn.textContent = 'Create Account →'; btn.disabled = false;
       } catch(err) {
         showGateAlert(err.message || 'Registration failed. Please try again.', 'error');
         btn.textContent = 'Create Account →'; btn.disabled = false;

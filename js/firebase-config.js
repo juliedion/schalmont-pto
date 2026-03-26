@@ -23,10 +23,24 @@
                    ['julie@schalmontpto.com'];
             }
             match /directory/{userId} {
-              // Any signed-in user can read the directory
+              // Any approved signed-in user can read the directory
               allow read: if request.auth != null;
               // Users can only write/delete their own listing
               allow write: if request.auth != null && request.auth.uid == userId;
+            }
+            match /users/{userId} {
+              // Users can read their own approval status; admins can read all
+              allow read: if request.auth != null && (
+                request.auth.uid == userId ||
+                request.auth.token.email in ['julie@schalmontpto.com']
+              );
+              // New users can create their own pending record (status must be 'pending')
+              allow create: if request.auth != null
+                && request.auth.uid == userId
+                && request.resource.data.status in ['pending', 'approved'];
+              // Only admins can update/delete (approve or reject)
+              allow update, delete: if request.auth != null
+                && request.auth.token.email in ['julie@schalmontpto.com'];
             }
           }
         }
