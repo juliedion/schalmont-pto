@@ -458,8 +458,12 @@
 
         var reader = new FileReader();
         reader.onload = function(ev) {
+          var controller = new AbortController();
+          var timeout = setTimeout(function() { controller.abort(); }, 30000);
+
           fetch('https://content.dropboxapi.com/2/files/upload', {
             method: 'POST',
+            signal: controller.signal,
             headers: {
               'Authorization':   'Bearer ' + DBX_TOKEN,
               'Dropbox-API-Arg': JSON.stringify({ path: dropboxPath, mode: 'add', autorename: true }),
@@ -468,11 +472,12 @@
             body: ev.target.result
           })
           .then(function(res) {
-            if (!res.ok) { return res.text().then(function(t) { throw new Error('Dropbox error ' + res.status + ': ' + t); }); }
+            clearTimeout(timeout);
+            if (!res.ok) { return res.text().then(function(t) { throw new Error('Dropbox ' + res.status + ': ' + t); }); }
             return res.json();
           })
-          .then(function() {
-            // Success — show modal
+          .then(function(data) {
+            console.log('Dropbox upload success:', data);
             document.getElementById('bp-modal').style.display = 'flex';
             document.getElementById('baby-photo-form').reset();
             document.querySelectorAll('#baby-photo-form input, #baby-photo-form select').forEach(function(el) { el.style.color = '#bbb'; });
@@ -480,7 +485,10 @@
             btn.textContent = btn.dataset.label;
           })
           .catch(function(err) {
-            showAlert('Upload failed: ' + err.message + '. Please try again or contact the yearbook coordinator.');
+            clearTimeout(timeout);
+            var msg = err.name === 'AbortError' ? 'Upload timed out — the file may be too large. Try a smaller photo.' : err.message;
+            console.error('Dropbox upload error:', err);
+            showAlert('Upload failed: ' + msg + ' Please try again or contact the yearbook coordinator.');
             btn.disabled = false;
             btn.textContent = btn.dataset.label;
           });
