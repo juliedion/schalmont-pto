@@ -366,10 +366,8 @@
       <div id="bp-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;padding:20px">
         <div style="background:#fff;border-radius:var(--radius-xl);box-shadow:0 24px 64px rgba(0,0,0,0.25);max-width:440px;width:100%;padding:36px 32px;text-align:center">
           <div style="font-size:52px;margin-bottom:16px">✅</div>
-          <h3 style="font-size:20px;font-weight:800;margin-bottom:10px;color:var(--text-dark)">Submission Received!</h3>
-          <p style="font-size:14px;color:var(--text);line-height:1.7;margin-bottom:8px">Thank you! Your photo and information have been submitted to the yearbook team.</p>
-          <p id="bp-modal-filename" style="font-size:12px;color:var(--text-light);font-family:monospace;background:var(--light-bg);border-radius:var(--radius);padding:8px 12px;margin:12px 0 20px;word-break:break-all"></p>
-          <p style="font-size:13px;color:var(--text-light);margin-bottom:24px">If the Dropbox page didn't open, <a href="https://www.dropbox.com/request/Dt6ejka4tA6qFGadhqJj" target="_blank" rel="noopener" style="color:#7c3aed;font-weight:600">click here to upload manually</a>.</p>
+          <h3 style="font-size:20px;font-weight:800;margin-bottom:10px;color:var(--text-dark)">Photo Submitted!</h3>
+          <p style="font-size:14px;color:var(--text);line-height:1.7;margin-bottom:20px">Your photo has been uploaded to the yearbook team. No further action needed — thank you!</p>
           <button id="bp-modal-close" class="btn btn-primary" style="background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;padding:10px 28px">Done</button>
         </div>
       </div>
@@ -382,14 +380,22 @@
   <!-- BOTTOM BANNER AD -->
 
   <script>
+    var DBX_TOKEN = 'sl.u.AGZ8UZ9AdTj_6J8Rti7LSPFky_2TIRBK4fuQxIBAE3Ln7frfGujKdf3DLxpifnxv9e-o_eHrZHv_goNYDq8ixbWmjNQfgysXrEaBM92W4DR3OrRVDqYH1LhIWrWYV8OdwF8LKMJxwTqnSZhLk4FkYF6o5jxMCN2crzygg8QwT2_MZrLZh67VNqENMXC8uwREmbEGMAJPa1LyL814uUKbTiGxNXOIn27RZDYO7KT5VBQBGl3c3v6-cCf17hZPn4EdRGP3RmR4gqc5UWwgAb1oBn1llqu4UHFj-PprJj0zlaK7u2dBHvBahTUYfJ3e3GxqR5mkLQR0QOh2MLgU8-1uJRAUhAGlLDTduQCPQllvjtcPTdvk0cA2JUuOVNwp1a8iPfN5UY0rSIq9QDrd7_52ounBUsOGRGwyw1bLCYjLlXXFBR35IIb3PpkFuY8ipJ9lFG9k-T12MmRDmTkmoIQf_Zl3O0C8dQIRj-hwG2tFhUU9S4QVrLADjHApDaPsXUffJ-OxsQ_I_TqWJVjvG_dTdUXUYkVXpeRnCHjfjwz2ZxpY-DJ35bzeQDQpT8mG1BcwU2gxkovEFx3FJQi6teM_fbOX0OcQXwVOgsfKWjJyBm6rSp0us5lqAsGFLGiguwabm1f7izrSGrIGfctnCESpKBXleVJg4o8kOJUVuK14xBgHEmMkHyfPVFmXj-KkYLOZ4TYYOJCO9g2MS4ytpWaDEcXCzGMGhkGUp03jLT9_E-KnbkSrYUJEvMHQXmd2t4yXA1kbwrkZIH8f0sMSxokKLBMaqaGnHFbctUv82maoA-SY5nvqTsBwMlAj9jBx4JVSpr9CVu7fIeXX8YTXniKJDXluCa-0ZnuJdsIDAkodO1MBsP6dOja1WF0cf7SKeiljuFgiCe2un7B6hkmVCUdpx_yy2DGphTOSZKNSs3uhciQh4ecLi5TKzGxWrnRzpCg4cR-f6Hrt3nzhv8Teva79rRwOemJNs0uxcQACSXj2BBg5kaeZIJ_ibRrNUOIpKKEkFrwtvCLyvtvP5pRL4QKbVUwNe6Z0F_yyVpfStW8C-LLdIdJIRuLjD4DJ3hxNs2w0UL-NHEBFnpsdjf5VcuRCSo7PXli5EcfkHFZ9wJNcA1yCunWJ2fdxmqyHwaXSaxT-abrIcizRIV9B-Lka4fvJp4fhIdgCznLXMPwrvrCRlI79HoW8CQTgSCFgAhuxsDsTkHNH4iYg3KWDQga_KVXAC4zS8oXzdk_hLuivw7h7XVmvJq7NFJK7Q6zl4SsPbvO7z05oZnTu6gPk49oJLtpNBLM8J_iQQwwhWL5A86Y0uo1zStmTETCfb0XuWTjFFNpbzh9ZuJQa1UcadLet5cp_haIIhDEVlBq2E1NVp5_n6bPNH24w6yNp7LZMvOX-uYUJ7vEgb9nFoCV_6fpq7cww-n8VELLPSvz4hX6GkcbDnlW4lPeEUTZrLPi30F8lA2qEil3qoR4NjafRkd33JSeK6yo1MeCC6vWIeANs7diK1lcwygyLEvSCXc-ZwbyeZPe5UiIo7RJS_f2rdm0NvKw3muqopxb0LR3jWf3MVfRUuc-vw';
+    var MIN_PX = 800; // minimum width or height in pixels
+
     // Turn input text dark when user types
     document.querySelectorAll('#baby-photo-form input, #baby-photo-form select').forEach(function(el) {
-      el.addEventListener('input', function() { this.style.color = this.value ? 'var(--text-dark)' : '#bbb'; });
+      el.addEventListener('input',  function() { this.style.color = this.value ? 'var(--text-dark)' : '#bbb'; });
       el.addEventListener('change', function() { this.style.color = this.value ? 'var(--text-dark)' : '#bbb'; });
     });
 
     function clean(str) {
       return str.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    }
+
+    function showAlert(msg) {
+      document.getElementById('baby-photo-alert').innerHTML =
+        '<div class="alert alert-error" style="margin-bottom:16px"><span>✕</span><span>' + msg + '</span></div>';
     }
 
     document.getElementById('baby-photo-form').addEventListener('submit', function(e) {
@@ -405,57 +411,87 @@
       var pemail  = document.getElementById('bp-pemail').value.trim();
       var file    = document.getElementById('bp-photo').files[0];
 
-      var alertEl = document.getElementById('baby-photo-alert');
-      alertEl.innerHTML = '';
+      document.getElementById('baby-photo-alert').innerHTML = '';
 
       if (!file) {
-        alertEl.innerHTML = '<div class="alert alert-error" style="margin-bottom:16px"><span>✕</span><span>Please select a photo before submitting.</span></div>';
+        showAlert('Please select a photo before submitting.');
         return;
       }
 
       var btn = document.getElementById('bp-submit-btn');
       btn.disabled = true;
-      btn.textContent = 'Submitting…';
+      btn.textContent = 'Checking photo…';
 
-      // Build filename with all info encoded
-      var parts = [slast, sfirst];
-      if (smiddle) parts.push(smiddle);
-      if (byear || bmonth) parts.push((byear || 'YYYY') + (bmonth ? '-' + bmonth : ''));
-      parts.push('Parent-' + plast + '-' + pfirst);
-      parts.push(clean(pemail));
-      var ext     = file.name.includes('.') ? file.name.split('.').pop() : 'jpg';
-      var newName = parts.map(clean).join('_') + '.' + ext;
-
-      var reader = new FileReader();
-      reader.onload = function(ev) {
-        // Download renamed file
-        var blob = new Blob([ev.target.result], { type: file.type });
-        var url  = URL.createObjectURL(blob);
-        var a    = document.createElement('a');
-        a.href = url; a.download = newName;
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
-
-        // Open Dropbox file request
-        window.open('https://www.dropbox.com/request/Dt6ejka4tA6qFGadhqJj', '_blank');
-
-        // Show confirmation modal
-        document.getElementById('bp-modal-filename').textContent = newName;
-        var modal = document.getElementById('bp-modal');
-        modal.style.display = 'flex';
-
-        // Reset form
-        document.getElementById('baby-photo-form').reset();
-        document.querySelectorAll('#baby-photo-form input, #baby-photo-form select').forEach(function(el) { el.style.color = '#bbb'; });
+      // ── Step 1: resolution check ───────────────────────────
+      var imgUrl = URL.createObjectURL(file);
+      var img    = new Image();
+      img.onload = function() {
+        URL.revokeObjectURL(imgUrl);
+        if (img.width < MIN_PX && img.height < MIN_PX) {
+          showAlert('This photo is too small (' + img.width + '×' + img.height + ' px). Please use a higher-resolution image — at least ' + MIN_PX + 'px on one side.');
+          btn.disabled = false;
+          btn.textContent = btn.dataset.label;
+          return;
+        }
+        uploadFile();
+      };
+      img.onerror = function() {
+        URL.revokeObjectURL(imgUrl);
+        showAlert('Could not read the image. Please try a different file.');
         btn.disabled = false;
         btn.textContent = btn.dataset.label;
       };
-      reader.onerror = function() {
-        alertEl.innerHTML = '<div class="alert alert-error" style="margin-bottom:16px"><span>✕</span><span>Could not read the photo. Please try again.</span></div>';
-        btn.disabled = false;
-        btn.textContent = btn.dataset.label;
-      };
-      reader.readAsArrayBuffer(file);
+      img.src = imgUrl;
+
+      // ── Step 2: upload to Dropbox ──────────────────────────
+      function uploadFile() {
+        btn.textContent = 'Uploading…';
+
+        var parts = [slast, sfirst];
+        if (smiddle) parts.push(smiddle);
+        if (byear || bmonth) parts.push((byear || 'YYYY') + (bmonth ? '-' + bmonth : ''));
+        parts.push('Parent-' + plast + '-' + pfirst);
+        parts.push(clean(pemail));
+        var ext     = file.name.includes('.') ? file.name.split('.').pop() : 'jpg';
+        var newName = parts.map(clean).join('_') + '.' + ext;
+        var dropboxPath = '/4th Grade Baby Photos/' + newName;
+
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          fetch('https://content.dropboxapi.com/2/files/upload', {
+            method: 'POST',
+            headers: {
+              'Authorization':   'Bearer ' + DBX_TOKEN,
+              'Dropbox-API-Arg': JSON.stringify({ path: dropboxPath, mode: 'add', autorename: true }),
+              'Content-Type':    'application/octet-stream'
+            },
+            body: ev.target.result
+          })
+          .then(function(res) {
+            if (!res.ok) { return res.json().then(function(d) { throw new Error(d.error_summary || res.status); }); }
+            return res.json();
+          })
+          .then(function() {
+            // Success — show modal
+            document.getElementById('bp-modal').style.display = 'flex';
+            document.getElementById('baby-photo-form').reset();
+            document.querySelectorAll('#baby-photo-form input, #baby-photo-form select').forEach(function(el) { el.style.color = '#bbb'; });
+            btn.disabled = false;
+            btn.textContent = btn.dataset.label;
+          })
+          .catch(function(err) {
+            showAlert('Upload failed: ' + err.message + '. Please try again or contact the yearbook coordinator.');
+            btn.disabled = false;
+            btn.textContent = btn.dataset.label;
+          });
+        };
+        reader.onerror = function() {
+          showAlert('Could not read the photo. Please try again.');
+          btn.disabled = false;
+          btn.textContent = btn.dataset.label;
+        };
+        reader.readAsArrayBuffer(file);
+      }
     });
 
     document.getElementById('bp-modal-close').addEventListener('click', function() {
