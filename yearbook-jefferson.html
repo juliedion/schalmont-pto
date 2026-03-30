@@ -272,8 +272,13 @@
       <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
         <div style="background:linear-gradient(135deg,#7c3aed 0%,#a855f7 100%);padding:28px 32px">
           <h2 style="color:#fff;font-size:22px;margin-bottom:6px">👶 4th Grade Parents: Submit Your Child's Baby Photo</h2>
-          <p style="color:rgba(255,255,255,0.85);font-size:14px;line-height:1.6;margin:0">We're adding a "Then &amp; Now" feature to the yearbook! Fill out the form below and upload your child's baby photo. Your photo will be saved with all the information attached to the filename so the yearbook team has everything they need.</p>
+          <p style="color:rgba(255,255,255,0.85);font-size:14px;line-height:1.6;margin:0">Fill out the form below and select your child's baby photo. No Dropbox account needed.</p>
         </div>
+
+        <style>
+          #baby-photo-form input::placeholder { color: #bbb; }
+          #baby-photo-form select option:first-child { color: #bbb; }
+        </style>
 
         <div style="padding:32px">
 
@@ -286,22 +291,22 @@
               <div class="form-row">
                 <div class="form-group">
                   <label for="bp-sfirst">Student First Name *</label>
-                  <input type="text" id="bp-sfirst" required placeholder="Alex">
+                  <input type="text" id="bp-sfirst" required placeholder="First name" style="color:#bbb">
                 </div>
                 <div class="form-group">
                   <label for="bp-smiddle">Middle Name <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
-                  <input type="text" id="bp-smiddle" placeholder="Jordan">
+                  <input type="text" id="bp-smiddle" placeholder="Middle name" style="color:#bbb">
                 </div>
               </div>
               <div class="form-group">
                 <label for="bp-slast">Student Last Name *</label>
-                <input type="text" id="bp-slast" required placeholder="Smith">
+                <input type="text" id="bp-slast" required placeholder="Last name" style="color:#bbb">
               </div>
               <div class="form-row">
                 <div class="form-group">
                   <label for="bp-bmonth">Birth Month <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
-                  <select id="bp-bmonth" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-family:inherit;font-size:14px;background:var(--white);color:var(--text)">
-                    <option value="">Select…</option>
+                  <select id="bp-bmonth" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-family:inherit;font-size:14px;background:var(--white);color:#bbb">
+                    <option value="">Month</option>
                     <option value="01">January</option>
                     <option value="02">February</option>
                     <option value="03">March</option>
@@ -318,8 +323,8 @@
                 </div>
                 <div class="form-group">
                   <label for="bp-byear">Birth Year <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
-                  <select id="bp-byear" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-family:inherit;font-size:14px;background:var(--white);color:var(--text)">
-                    <option value="">Select…</option>
+                  <select id="bp-byear" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-family:inherit;font-size:14px;background:var(--white);color:#bbb">
+                    <option value="">Year</option>
                     <option>2014</option><option>2015</option><option>2016</option>
                     <option>2017</option><option>2018</option>
                   </select>
@@ -332,41 +337,40 @@
               <div class="form-row">
                 <div class="form-group">
                   <label for="bp-pfirst">Parent First Name *</label>
-                  <input type="text" id="bp-pfirst" required placeholder="Jane">
+                  <input type="text" id="bp-pfirst" required placeholder="First name" style="color:#bbb">
                 </div>
                 <div class="form-group">
                   <label for="bp-plast">Parent Last Name *</label>
-                  <input type="text" id="bp-plast" required placeholder="Smith">
+                  <input type="text" id="bp-plast" required placeholder="Last name" style="color:#bbb">
                 </div>
               </div>
               <div class="form-group">
                 <label for="bp-pemail">Parent Email Address *</label>
-                <input type="email" id="bp-pemail" required placeholder="jane.smith@email.com">
+                <input type="email" id="bp-pemail" required placeholder="Email address" style="color:#bbb">
               </div>
             </div>
 
             <div class="form-group">
               <label for="bp-photo">Baby Photo *</label>
-              <p style="font-size:12px;color:var(--text-light);margin-bottom:8px">Upload a clear photo — JPG, PNG, or HEIC. Higher resolution is better.</p>
-              <input type="file" id="bp-photo" accept="image/*" required style="display:block;width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-family:inherit;font-size:13px;background:var(--white);cursor:pointer">
-              <div id="bp-photo-name" style="margin-top:6px;font-size:12px;color:var(--text-light)"></div>
+              <p style="font-size:12px;color:var(--text-light);margin-bottom:8px">Choose a clear photo — JPG, PNG, or HEIC. Higher resolution is better.</p>
+              <input type="file" id="bp-photo" accept="image/*" required style="display:block;width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-family:inherit;font-size:13px;background:var(--white);cursor:pointer;color:#bbb">
             </div>
 
-            <div style="background:#f5f0ff;border:1px solid #d8b4fe;border-radius:var(--radius);padding:14px 16px;margin-bottom:20px;font-size:13px;color:#5b21b6;line-height:1.6">
-              <strong>How it works:</strong> When you click Submit, your photo will download with a filename that includes all the information you entered. Then the Dropbox upload page will open automatically — just upload that downloaded file. No Dropbox account needed.
-            </div>
-
-            <button type="submit" id="bp-submit-btn" class="btn btn-primary" style="width:100%;justify-content:center;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none" data-label="Submit Photo">Submit Photo</button>
+            <button type="submit" id="bp-submit-btn" class="btn btn-primary" style="width:100%;justify-content:center;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff" data-label="Submit Photo">Submit Photo</button>
           </form>
 
-          <div id="baby-photo-success" style="display:none;text-align:center;padding:24px 0">
-            <div style="font-size:48px;margin-bottom:14px">✅</div>
-            <h3 style="font-size:18px;font-weight:800;margin-bottom:8px;color:var(--text-dark)">Your photo is ready to upload!</h3>
-            <p style="font-size:14px;color:var(--text);line-height:1.7;margin-bottom:6px">Your renamed photo has been downloaded to your device. The Dropbox upload page should have opened in a new tab — find the downloaded file and upload it there.</p>
-            <p style="font-size:13px;color:var(--text-light);margin-bottom:20px">Didn't see the Dropbox page open? <a href="https://www.dropbox.com/request/Dt6ejka4tA6qFGadhqJj" target="_blank" rel="noopener" style="color:#7c3aed;font-weight:600">Click here to open it.</a></p>
-            <button onclick="document.getElementById('baby-photo-success').style.display='none';document.getElementById('baby-photo-form').style.display='block';document.getElementById('baby-photo-form').reset();document.getElementById('bp-photo-name').textContent=''" class="btn btn-sm" style="background:none;border:1px solid var(--border);color:var(--text-light);padding:8px 18px;border-radius:var(--radius);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer">Submit another photo</button>
-          </div>
+        </div>
+      </div>
 
+      <!-- Baby photo confirmation modal -->
+      <div id="bp-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;padding:20px">
+        <div style="background:#fff;border-radius:var(--radius-xl);box-shadow:0 24px 64px rgba(0,0,0,0.25);max-width:440px;width:100%;padding:36px 32px;text-align:center">
+          <div style="font-size:52px;margin-bottom:16px">✅</div>
+          <h3 style="font-size:20px;font-weight:800;margin-bottom:10px;color:var(--text-dark)">Submission Received!</h3>
+          <p style="font-size:14px;color:var(--text);line-height:1.7;margin-bottom:8px">Thank you! Your photo and information have been submitted to the yearbook team.</p>
+          <p id="bp-modal-filename" style="font-size:12px;color:var(--text-light);font-family:monospace;background:var(--light-bg);border-radius:var(--radius);padding:8px 12px;margin:12px 0 20px;word-break:break-all"></p>
+          <p style="font-size:13px;color:var(--text-light);margin-bottom:24px">If the Dropbox page didn't open, <a href="https://www.dropbox.com/request/Dt6ejka4tA6qFGadhqJj" target="_blank" rel="noopener" style="color:#7c3aed;font-weight:600">click here to upload manually</a>.</p>
+          <button id="bp-modal-close" class="btn btn-primary" style="background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;padding:10px 28px">Done</button>
         </div>
       </div>
 
@@ -378,11 +382,15 @@
   <!-- BOTTOM BANNER AD -->
 
   <script>
-    // Show selected filename
-    document.getElementById('bp-photo').addEventListener('change', function() {
-      var name = this.files[0] ? this.files[0].name : '';
-      document.getElementById('bp-photo-name').textContent = name ? 'Selected: ' + name : '';
+    // Turn input text dark when user types
+    document.querySelectorAll('#baby-photo-form input, #baby-photo-form select').forEach(function(el) {
+      el.addEventListener('input', function() { this.style.color = this.value ? 'var(--text-dark)' : '#bbb'; });
+      el.addEventListener('change', function() { this.style.color = this.value ? 'var(--text-dark)' : '#bbb'; });
     });
+
+    function clean(str) {
+      return str.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    }
 
     document.getElementById('baby-photo-form').addEventListener('submit', function(e) {
       e.preventDefault();
@@ -401,58 +409,60 @@
       alertEl.innerHTML = '';
 
       if (!file) {
-        alertEl.innerHTML = '<div class="alert alert-error" style="margin-bottom:16px"><span>✕</span><span>Please select a photo to upload.</span></div>';
+        alertEl.innerHTML = '<div class="alert alert-error" style="margin-bottom:16px"><span>✕</span><span>Please select a photo before submitting.</span></div>';
         return;
       }
 
-      // Sanitize a string for use in a filename
-      function clean(str) {
-        return str.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-      }
-
-      // Build filename parts
-      var nameParts = [slast, sfirst];
-      if (smiddle) nameParts.push(smiddle);
-      if (byear || bmonth) nameParts.push((byear || 'YYYY') + (bmonth ? '-' + bmonth : ''));
-      nameParts.push('Parent-' + plast + '-' + pfirst);
-      nameParts.push(clean(pemail));
-
-      var ext      = file.name.includes('.') ? file.name.split('.').pop() : 'jpg';
-      var newName  = nameParts.map(clean).join('_') + '.' + ext;
-
-      // Create a renamed copy and trigger download
       var btn = document.getElementById('bp-submit-btn');
       btn.disabled = true;
-      btn.textContent = 'Preparing…';
+      btn.textContent = 'Submitting…';
+
+      // Build filename with all info encoded
+      var parts = [slast, sfirst];
+      if (smiddle) parts.push(smiddle);
+      if (byear || bmonth) parts.push((byear || 'YYYY') + (bmonth ? '-' + bmonth : ''));
+      parts.push('Parent-' + plast + '-' + pfirst);
+      parts.push(clean(pemail));
+      var ext     = file.name.includes('.') ? file.name.split('.').pop() : 'jpg';
+      var newName = parts.map(clean).join('_') + '.' + ext;
 
       var reader = new FileReader();
       reader.onload = function(ev) {
-        var blob     = new Blob([ev.target.result], { type: file.type });
-        var url      = URL.createObjectURL(blob);
-        var a        = document.createElement('a');
-        a.href       = url;
-        a.download   = newName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        // Download renamed file
+        var blob = new Blob([ev.target.result], { type: file.type });
+        var url  = URL.createObjectURL(blob);
+        var a    = document.createElement('a');
+        a.href = url; a.download = newName;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
         setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
 
-        // Open Dropbox file request in new tab
+        // Open Dropbox file request
         window.open('https://www.dropbox.com/request/Dt6ejka4tA6qFGadhqJj', '_blank');
 
-        // Show success state
-        document.getElementById('baby-photo-form').style.display = 'none';
-        document.getElementById('baby-photo-success').style.display = 'block';
+        // Show confirmation modal
+        document.getElementById('bp-modal-filename').textContent = newName;
+        var modal = document.getElementById('bp-modal');
+        modal.style.display = 'flex';
 
+        // Reset form
+        document.getElementById('baby-photo-form').reset();
+        document.querySelectorAll('#baby-photo-form input, #baby-photo-form select').forEach(function(el) { el.style.color = '#bbb'; });
         btn.disabled = false;
         btn.textContent = btn.dataset.label;
       };
       reader.onerror = function() {
-        alertEl.innerHTML = '<div class="alert alert-error" style="margin-bottom:16px"><span>✕</span><span>Could not read the photo file. Please try again.</span></div>';
+        alertEl.innerHTML = '<div class="alert alert-error" style="margin-bottom:16px"><span>✕</span><span>Could not read the photo. Please try again.</span></div>';
         btn.disabled = false;
         btn.textContent = btn.dataset.label;
       };
       reader.readAsArrayBuffer(file);
+    });
+
+    document.getElementById('bp-modal-close').addEventListener('click', function() {
+      document.getElementById('bp-modal').style.display = 'none';
+    });
+    document.getElementById('bp-modal').addEventListener('click', function(e) {
+      if (e.target === this) this.style.display = 'none';
     });
   </script>
   <div class="top-banner-ad">
