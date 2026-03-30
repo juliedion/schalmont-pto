@@ -454,7 +454,7 @@
         parts.push(clean(pemail));
         var ext     = file.name.includes('.') ? file.name.split('.').pop() : 'jpg';
         var newName = parts.map(clean).join('_') + '.' + ext;
-        var dropboxPath = '/4th Grade Baby Photos/' + newName;
+        var dropboxPath = '/File requests/4th Grade Baby Photos/' + newName;
 
         var reader = new FileReader();
         reader.onload = function(ev) {
@@ -468,7 +468,7 @@
             body: ev.target.result
           })
           .then(function(res) {
-            if (!res.ok) { return res.json().then(function(d) { throw new Error(d.error_summary || res.status); }); }
+            if (!res.ok) { return res.text().then(function(t) { throw new Error('Dropbox error ' + res.status + ': ' + t); }); }
             return res.json();
           })
           .then(function() {
