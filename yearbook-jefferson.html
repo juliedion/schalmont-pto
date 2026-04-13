@@ -381,8 +381,6 @@
 
   <script>
     var DBX_TOKEN = 'sl.u.AGaorfU67gOYtVeHVopsMEL7UEYxxI5A0rmrTswYdN7Ba4TygYd6SrLRKd9PFfWWJbjzYf6OkmUKjkkZ_qzQl3tCeNoyU_JFV-1aoRt18sTSk7Z0rvB6yb-8aRbWTgs_fV4BfEPXVrTvlZoYSBnCxMtd6L91o7VFS094iam7-ULmvyVqLJ5_XBN7v_wgIA9mhysEbkqVb3nrOuIOdqpUejohT5DId_TorLepuf4H55VtB3D7SAIu_wbYK17-QixQQmVLX6m6eY-etqH1wpw9Wav0YqOA6sVC9wXR8D71a95s7bVnwE_tlqsv-YGOJSC9DwJsnAZOVM5Z7NqXyXe3PyqZmwhn1EZr7qmM0w823D4255JCebdO6shAtcWnmTBmY3SIICHD1U20syFDSKcqCH2dV0S74sehO-4RG_8ljx51e9ZUicwrFC8JW-gLUJG7z3Gv09CWrfygSSR7kYhbvcpkt_jOnCKxNDQgrb5tnNUrBvrtc5Je1sFdhq-Fkbcrm2uI6RUjviPHo0FHoRh4XRHLiLE7wk-QsYSAd9EJBi3OPXJtk8-qzPI28b5DU1Amd1iTKoh064GSXPRJYrxdBzXCZE4Ib3sq6dpvxnavMeS6RR6yQmxVHcGk1hfB-dIEKAbecLZTzy2VDogJTLqkZDWbRGFL2mwV79Eufm2x7lCiUoY6fiJ5NiMLhR5MWvFPUSZxL0C2ZCNVtztS_8AzPK018jNeq1MMOEh5H0svZFRuXEISYwhSNXfaOZ_7agFeqnLt1pIs3SdITQxX1eppEMfeHSDu-l02B7p27PdEFUyuxxog5E6HoS67VmJTd88CcK_tHAH72xjO6NaktHbYVgUewcfqhAWImqIiQ_Ti_bSTjFSb0DyyXHy3Hnlp7h7xS6iqNwV83pB-UoxK5ZlihK5Ef98i18oBlR1KIzcgtJpRPqo7UZ626Cx5mpLYNkGuDrhOztjnQMIbitBuyj70fy54pK7wdS-tEJbZl3vR_KhTO0opCKdehOJ-M1nmzxiPS3wbZvk_hESyRjhPE_rFGRdqaLXRRL_TZSdK6DuZgY8lS5Nd2CunW9errB9xnioLu86lXGHmddHvxl4kzQczGVcBGy3E8YP78tGA1RGOxBkUdbbo6zoX0qZS-dWAdZEkslATCwz0EAvt9rw4tytgMW0G9BVmsDgqFqiwFkaQbqdlmPBGCpuV50mjQhXqh7p7A89bONAKKqh2TZAe2EpuwNx-Zo9wMBCmZn8dmnuqR1u_KymJU9JC5ldYBt2q77QF09tl8iUf25MMCzWpAHGM2d3tZS2onMkaZpCRhE-XCLEb1lEaLqM8zoa5ZrCdA3Xd-ujsPzeNBLKelq53cO8KxoKXTfR51j9yUmWhWQ7ZCXoOwqj8IkFiKLyik_KxLMMwYfml_0oxZMelWIgNj_Xuzdda2k8qyOZFKiYV_GVXeEe02vo-MoCSU-tlPWN4XYuqumuZWxIanv3dZtO3mIuuXx7MWhcnPUAOdw_Y0y2bdsuRyCnczCcbZpxwR4sOBEH9yj60whAzH231nEqHmwDYLm5wr_m1_LTNKfJFNKNwUlmD2Q';
-    var MIN_PX = 800; // minimum width or height in pixels
-
     // Turn input text dark when user types
     document.querySelectorAll('#baby-photo-form input, #baby-photo-form select').forEach(function(el) {
       el.addEventListener('input',  function() { this.style.color = this.value ? 'var(--text-dark)' : '#bbb'; });
@@ -420,47 +418,9 @@
 
       var btn = document.getElementById('bp-submit-btn');
       btn.disabled = true;
-      btn.textContent = 'Checking photo…';
+      btn.textContent = 'Uploading…';
 
-      // ── Step 1: resolution check ───────────────────────────
-      // HEIC/HEIF files (common iPhone format) can't be decoded by the browser,
-      // so skip the resolution check for those and upload directly.
-      var fileExt = (file.name.split('.').pop() || '').toLowerCase();
-      var isHeic  = fileExt === 'heic' || fileExt === 'heif' ||
-                    file.type === 'image/heic' || file.type === 'image/heif';
-      if (isHeic) {
-        uploadFile();
-      } else {
-        var imgUrl = URL.createObjectURL(file);
-        var img    = new Image();
-        var imgTimer = setTimeout(function() {
-          // Fallback: if onload/onerror never fires (e.g. unsupported format),
-          // just proceed to upload rather than hanging forever.
-          URL.revokeObjectURL(imgUrl);
-          uploadFile();
-        }, 5000);
-        img.onload = function() {
-          clearTimeout(imgTimer);
-          URL.revokeObjectURL(imgUrl);
-          if (img.width < MIN_PX && img.height < MIN_PX) {
-            showAlert('This photo is too small (' + img.width + '×' + img.height + ' px). Please use a higher-resolution image — at least ' + MIN_PX + 'px on one side.');
-            btn.disabled = false;
-            btn.textContent = btn.dataset.label;
-            return;
-          }
-          uploadFile();
-        };
-        img.onerror = function() {
-          clearTimeout(imgTimer);
-          URL.revokeObjectURL(imgUrl);
-          showAlert('Could not read the image. Please try a different file.');
-          btn.disabled = false;
-          btn.textContent = btn.dataset.label;
-        };
-        img.src = imgUrl;
-      }
-
-      // ── Step 2: upload to Dropbox ──────────────────────────
+      // ── Upload to Dropbox ──────────────────────────
       function uploadFile() {
         btn.textContent = 'Uploading…';
 
