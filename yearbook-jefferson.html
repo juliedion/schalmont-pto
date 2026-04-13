@@ -423,25 +423,42 @@
       btn.textContent = 'Checking photo…';
 
       // ── Step 1: resolution check ───────────────────────────
-      var imgUrl = URL.createObjectURL(file);
-      var img    = new Image();
-      img.onload = function() {
-        URL.revokeObjectURL(imgUrl);
-        if (img.width < MIN_PX && img.height < MIN_PX) {
-          showAlert('This photo is too small (' + img.width + '×' + img.height + ' px). Please use a higher-resolution image — at least ' + MIN_PX + 'px on one side.');
+      // HEIC/HEIF files (common iPhone format) can't be decoded by the browser,
+      // so skip the resolution check for those and upload directly.
+      var fileExt = (file.name.split('.').pop() || '').toLowerCase();
+      var isHeic  = fileExt === 'heic' || fileExt === 'heif' ||
+                    file.type === 'image/heic' || file.type === 'image/heif';
+      if (isHeic) {
+        uploadFile();
+      } else {
+        var imgUrl = URL.createObjectURL(file);
+        var img    = new Image();
+        var imgTimer = setTimeout(function() {
+          // Fallback: if onload/onerror never fires (e.g. unsupported format),
+          // just proceed to upload rather than hanging forever.
+          URL.revokeObjectURL(imgUrl);
+          uploadFile();
+        }, 5000);
+        img.onload = function() {
+          clearTimeout(imgTimer);
+          URL.revokeObjectURL(imgUrl);
+          if (img.width < MIN_PX && img.height < MIN_PX) {
+            showAlert('This photo is too small (' + img.width + '×' + img.height + ' px). Please use a higher-resolution image — at least ' + MIN_PX + 'px on one side.');
+            btn.disabled = false;
+            btn.textContent = btn.dataset.label;
+            return;
+          }
+          uploadFile();
+        };
+        img.onerror = function() {
+          clearTimeout(imgTimer);
+          URL.revokeObjectURL(imgUrl);
+          showAlert('Could not read the image. Please try a different file.');
           btn.disabled = false;
           btn.textContent = btn.dataset.label;
-          return;
-        }
-        uploadFile();
-      };
-      img.onerror = function() {
-        URL.revokeObjectURL(imgUrl);
-        showAlert('Could not read the image. Please try a different file.');
-        btn.disabled = false;
-        btn.textContent = btn.dataset.label;
-      };
-      img.src = imgUrl;
+        };
+        img.src = imgUrl;
+      }
 
       // ── Step 2: upload to Dropbox ──────────────────────────
       function uploadFile() {
