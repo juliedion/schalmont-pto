@@ -712,6 +712,7 @@
       });
       var html = '';
       allEvents.forEach(function(item) {
+        if (item.key === 'middle' && /pto meeting/i.test(item.ev.summary)) return;
         var ev=item.ev, k=item.key, color=CAL_COLORS[k], label=CAL_LABELS[k];
         var title = (ev.summary||'(No title)').replace(/</g,'&lt;').replace(/>/g,'&gt;');
         html += '<div class="today-event-item">';
@@ -797,12 +798,14 @@
       });
       var html = '';
       allEvents.forEach(function(item) {
+        if (item.key === 'middle' && /pto meeting/i.test(item.ev.summary)) return;
         var color = CAL_COLORS[item.key], label = CAL_LABELS[item.key];
         var safeTitle = item.ev.summary.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        var titleHtml = /casino night/i.test(item.ev.summary) ? '<a href="casinoroyale.html" style="color:inherit;text-decoration:none;font-weight:700">'+safeTitle+'</a>' : safeTitle;
         html += '<div class="today-event-item">'
           +'<span class="today-event-dot" style="background:'+color+'"></span>'
           +'<div class="today-event-body">'
-          +'<div class="today-event-title">'+safeTitle+'</div>'
+          +'<div class="today-event-title">'+titleHtml+'</div>'
           +'<div class="today-event-meta">';
         if (item.ev.timeStr !== 'All day') html += '<span class="today-event-time">'+item.ev.timeStr+'</span> &middot; ';
         html += '<span class="today-event-school-badge" style="background:'+color+'22;color:'+color+';border:1px solid '+color+'44;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;letter-spacing:.03em">'+label+'</span>'

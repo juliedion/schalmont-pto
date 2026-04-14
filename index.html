@@ -1155,6 +1155,7 @@
       });
       var html = '';
       allEvents.forEach(function(item) {
+        if (item.key === 'middle' && /pto meeting/i.test(item.ev.summary)) return;
         var ev=item.ev, k=item.key;
         var rawTitle = ev.summary||'(No title)';
         var title = rawTitle.replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -1309,6 +1310,7 @@
           var label = CAL_LABELS[item.key];
           var info  = getDayLabelInfo(item.ev.summary);
           if (info) { color = info.color; label = info.label; }
+          if (/casino night/i.test(item.ev.summary)) { item._manualLink = 'casinoroyale.html'; }
           var safeTitle = item.ev.summary.replace(/</g,'&lt;').replace(/>/g,'&gt;');
           var titleHtml = item._manualLink ? '<a href="'+item._manualLink+'" style="color:inherit;text-decoration:none;font-weight:700">'+safeTitle+'</a>' : safeTitle;
           html += '<div class="today-event-item">'
