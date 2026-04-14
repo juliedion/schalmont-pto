@@ -280,12 +280,27 @@
           <p style="font-size:14px;color:var(--text);line-height:1.7;margin-bottom:8px">Please name your file with your child's name before uploading (e.g. <strong>Smith_Emma.jpg</strong>) so the yearbook team can identify it.</p>
           <p style="font-size:14px;color:var(--text);line-height:1.7;margin-bottom:24px">Higher resolution photos look better in print — use the original from your phone if possible.</p>
 
-          <a href="https://www.dropbox.com/request/Dt6ejka4tA6qFGadhqJj" target="_blank" rel="noopener" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;font-size:16px;padding:14px 28px;border-radius:var(--radius);text-decoration:none">
+          <button id="bp-upload-btn" onclick="document.getElementById('bp-warn-modal').style.display='flex'" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;font-size:16px;padding:14px 28px;border-radius:var(--radius);cursor:pointer;font-family:inherit">
             📤 Upload Baby Photo
-          </a>
+          </button>
 
           <p style="font-size:12px;color:var(--text-light);margin-top:16px">Opens in a new tab. No Dropbox account required.</p>
 
+        </div>
+      </div>
+
+      <!-- Warning modal -->
+      <div id="bp-warn-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;padding:20px">
+        <div style="background:#fff;border-radius:var(--radius-xl);box-shadow:0 24px 64px rgba(0,0,0,0.25);max-width:420px;width:100%;padding:36px 32px;text-align:center">
+          <div style="font-size:48px;margin-bottom:16px">⚠️</div>
+          <h3 style="font-size:18px;font-weight:800;margin-bottom:12px;color:var(--text-dark)">Before you upload…</h3>
+          <p style="font-size:14px;color:var(--text);line-height:1.75;margin-bottom:8px">Have you named your photo file with your child's name?</p>
+          <p style="font-size:13px;color:var(--text-light);margin-bottom:10px">Example: <strong style="color:var(--text-dark)">john-doe.jpg</strong></p>
+          <p style="font-size:13px;color:#c0392b;font-weight:600;margin-bottom:24px">Lack of a name may result in omission from the yearbook.</p>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+            <button onclick="document.getElementById('bp-warn-modal').style.display='none'" style="background:none;border:1px solid var(--border);color:var(--text-light);padding:10px 22px;border-radius:var(--radius);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer">Go Back</button>
+            <button onclick="document.getElementById('bp-warn-modal').style.display='none';window.open('https://www.dropbox.com/request/Dt6ejka4tA6qFGadhqJj','_blank')" class="btn btn-primary" style="background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;padding:10px 22px;cursor:pointer;font-family:inherit">Yes, Continue</button>
+          </div>
         </div>
       </div>
 
