@@ -30,7 +30,8 @@
       "Bash(grep -l 'href=\"\"\"\"fundraisers.html\"\"\"\">Fundraisers</a></li>' /Users/juliedion/Desktop/schalmont-pto/*.html)",
       "Bash(wc -l grep -L 'href=\"\"\"\"fundraisers.html\"\"\"\">Fundraisers</a></li>' /Users/juliedion/Desktop/schalmont-pto/*.html)",
       "Bash(head -20 grep -n 'banner-ad\\\\|top-banner\\\\|rolling\\\\|ad-slot\\\\|sponsor\\\\|advertisement\\\\|banner' /Users/juliedion/Desktop/schalmont-pto/middle-school.html)",
-      "Bash(xargs sed:*)"
+      "Bash(xargs sed:*)",
+      "Bash(GIT_CURL_VERBOSE=0 git push origin main)"
     ]
   }
 }
