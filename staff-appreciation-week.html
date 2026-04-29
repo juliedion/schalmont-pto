@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Appreciation Week — Schalmont PTO</title>
+  <meta name="description" content="Teacher &amp; Staff Appreciation Week activities, raffle sign-ups, and donation wishlist for Schalmont Central School District.">
+  <link rel="stylesheet" href="css/styles.css?v=5">
+  <link rel="icon" href="images/favicon.svg">
+  <style>
+    /* ── Tabs ────────────────────────────────────────────── */
+    .school-tabs {
+      display: flex;
+      gap: 4px;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .school-tab-btn {
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--text-light);
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      border-radius: 4px 4px 0 0;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .school-tab-btn:hover { color: var(--primary); }
+    .school-tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: var(--light-bg);
+    }
+    .school-tab-panel { display: none; }
+    .school-tab-panel.active { display: block; }
+
+    /* ── Flyer card ──────────────────────────────────────── */
+    .flyer-wrap {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+    .flyer-wrap img {
+      width: 100%;
+      max-width: 520px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+    .flyer-actions {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: var(--light-bg);
+    }
+
+    /* ── Raffle card ─────────────────────────────────────── */
+    .raffle-card {
+      background: linear-gradient(135deg, #295c38 0%, #60b256 100%);
+      border-radius: var(--radius-lg);
+      padding: 28px 28px 24px;
+      color: var(--white);
+      margin-bottom: 28px;
+    }
+    .raffle-card h3 { font-size: 20px; margin-bottom: 8px; color: var(--white); }
+    .raffle-card p  { font-size: 14px; color: rgba(255,255,255,0.85); margin-bottom: 0; line-height: 1.6; }
+    .raffle-details {
+      display: flex;
+      gap: 16px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+    .raffle-detail-pill {
+      background: rgba(255,255,255,0.18);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+    }
+    .raffle-card .btn-raffle {
+      display: inline-block;
+      margin-top: 16px;
+      background: var(--white);
+      color: var(--primary-dark);
+      font-weight: 700;
+      font-size: 14px;
+      padding: 10px 24px;
+      border-radius: var(--radius);
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .raffle-card .btn-raffle:hover { opacity: 0.9; }
+
+    /* ── Donation wishlist ───────────────────────────────── */
+    .wishlist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .wishlist-item {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .wishlist-item::before {
+      content: "🎁";
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    a.wishlist-item { cursor: pointer; transition: box-shadow 0.15s, border-color 0.15s; }
+    a.wishlist-item:hover { border-color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+    /* ── "Coming soon" placeholder ───────────────────────── */
+    .coming-soon-banner {
+      background: #fffbea;
+      border: 1px solid #f0d060;
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      font-size: 14px;
+      color: #7a5c00;
+      margin-bottom: 24px;
+    }
+
+    /* ── General intro card ──────────────────────────────── */
+    .intro-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 26px;
+      margin-bottom: 24px;
+    }
+    .intro-card h3 { font-size: 17px; color: var(--primary-dark); margin-bottom: 8px; }
+    .intro-card p  { font-size: 14px; color: var(--text); line-height: 1.65; margin: 0; }
+
+    /* ── Monetary donation CTA ───────────────────────────── */
+    .donate-cta {
+      background: #f0f8ef;
+      border: 1px solid #c8e6c0;
+      border-radius: var(--radius-lg);
+      padding: 24px 26px;
+      text-align: center;
+      margin-top: 32px;
+      margin-bottom: 8px;
+    }
+    .donate-cta h3 { font-size: 18px; color: var(--primary-dark); margin-bottom: 8px; }
+    .donate-cta p  { font-size: 14px; color: var(--text); margin-bottom: 18px; line-height: 1.6; }
+
+    /* ── Flyer + raffle two-column layout ── */
+    .flyer-raffle-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+      align-items: start;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 800px) {
+      .flyer-raffle-grid { grid-template-columns: 1fr; }
+    }
+    .flyer-large { cursor: zoom-in; margin-bottom: 0; transition: box-shadow 0.2s; }
+    .flyer-large:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.22); }
+    .flyer-large img { max-width: 100%; }
+
+    /* ── Flyer lightbox ── */
+    #saw-lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+      padding: 20px;
+    }
+    #saw-lightbox.open { display: flex; }
+    #saw-lightbox img {
+      max-width: 94vw;
+      max-height: 92vh;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 8px 48px rgba(0,0,0,0.6);
+      cursor: default;
+    }
+    #saw-lightbox-close {
+      position: absolute;
+      top: 16px;
+      right: 24px;
+      color: #fff;
+      font-size: 44px;
+      font-weight: 300;
+      cursor: pointer;
+      background: none;
+      border: none;
+      line-height: 1;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <nav class="container nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="images/logo.png" alt="Schalmont Central PTO" class="nav-logo-img">
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li class="has-dropdown">
+          <a href="schools.html">Schools</a>
+          <ul class="nav-dropdown">
+            <li><a href="woestina.html">🌱 Woestina Pre-K</a></li>
+            <li><a href="jefferson.html">🏫 Jefferson Elementary</a></li>
+            <li><a href="middle-school.html">📚 Middle School</a></li>
+            <li><a href="high-school.html">🎓 High School</a></li>
+          </ul>
+        </li>
+        <li><a href="events.html">Events</a></li>
+        <li><a href="meetings.html">Meetings</a></li>
+        <li class="has-dropdown">
+          <a href="shop.html">Shop</a>
+          <ul class="nav-dropdown">
+            <li><a href="shop.html">👕 Spiritwear</a></li>
+            <li><a href="fundraisers.html">💰 Fundraisers</a></li>
+          </ul>
+        </li>
+        <li><a href="fundraisers.html">Fundraisers</a></li>
+        <li><a href="yearbooks.html">Yearbook</a></li>
+        <li><a href="directory.html">Directory</a></li>
+        <li class="has-dropdown">
+          <a href="contact.html">Contact</a>
+          <ul class="nav-dropdown">
+            <li><a href="about.html">About</a></li>
+            <li><a href="social.html">Social</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+          </ul>
+        </li>
+        <li><a href="login.html" class="btn btn-primary" style="padding:6px 16px;font-size:14px;color:#000000" id="nav-login-btn">Login/Register</a></li>
+        <li><a href="social.html" class="nav-social-icon" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a></li>
+        <li><a href="social.html" class="nav-social-icon" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    </nav>
+  </header>
+
+  <div class="homepage-layout">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="homepage-sidenav">
+      <div class="sidenav-heading">Browse</div>
+      <a href="index.html" class="sidenav-item">Home</a>
+      <a href="events.html" class="sidenav-item">Events Calendar</a>
+      <a href="staff-appreciation-week.html" class="sidenav-item" style="font-weight:700;background:#e8f3e0;color:#6bb044">Staff Appreciation Week</a>
+      <a href="meetings.html" class="sidenav-item">PTO Meetings</a>
+
+      <div class="sidenav-heading">Schools</div>
+      <a href="schools.html" class="sidenav-item">All Schools</a>
+      <a href="woestina.html" class="sidenav-item">Woestina Pre-K</a>
+      <a href="jefferson.html" class="sidenav-item">Jefferson Elementary</a>
+      <a href="middle-school.html" class="sidenav-item">Middle School</a>
+      <a href="high-school.html" class="sidenav-item">High School</a>
+
+      <div class="sidenav-heading">Resources</div>
+      <a href="directory.html" class="sidenav-item">Directory</a>
+      <a href="donate.html" class="sidenav-item">Donate</a>
+      <a href="events.html" class="sidenav-item">Events</a>
+      <a href="fundraisers.html" class="sidenav-item">Fundraisers</a>
+      <a href="gallery.html" class="sidenav-item">Gallery</a>
+      <a href="meetings.html" class="sidenav-item">Meetings</a>
+      <a href="schools.html" class="sidenav-item">Schools</a>
+      <a href="family-scouts.html" class="sidenav-item">Scouts</a>
+      <a href="shop.html" class="sidenav-item">Shop</a>
+      <a href="social.html" class="sidenav-item">Social Media</a>
+      <a href="sports.html" class="sidenav-item">Sports</a>
+      <a href="yearbooks.html" class="sidenav-item">Yearbooks</a>
+
+      <div class="sidenav-heading">Connect</div>
+      <a href="about.html" class="sidenav-item">About the PTO</a>
+      <a href="social.html" class="sidenav-item">Social Media Links</a>
+      <a href="contact.html" class="sidenav-item">Contact Us</a>
+      <div class="sidenav-donate-wrap" style="display:flex;flex-direction:column;gap:5px;padding:10px 8px 8px">
+        <a href="https://woestina-pre-k-pto-donations.cheddarup.com" target="_blank" rel="noopener" style="font-size:12px">Give back: &#127807; Woestina PTO</a>
+        <a href="https://my.cheddarup.com/c/jefferson-pto-donation" target="_blank" rel="noopener" style="font-size:12px">Give back: &#127979; Jefferson PTO</a>
+        <a href="https://schalmont-central-pto.cheddarup.com" target="_blank" rel="noopener" style="font-size:12px">Give back: &#128154; Schalmont PTO</a>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="homepage-main">
+
+      <!-- PAGE HERO -->
+      <section class="page-hero" style="background:linear-gradient(135deg,#295c38 0%,#60b256 100%)">
+        <div class="container">
+          <p style="color:rgba(255,255,255,0.75);font-size:14px;margin-bottom:8px"><a href="events.html" style="color:rgba(255,255,255,0.75);text-decoration:none">← Back to Events</a></p>
+          <h1>🌟 Staff Appreciation Week</h1>
+          <p>May 4–8, 2026 · Thank you to our incredible staff!</p>
+        </div>
+      </section>
+
+      <!-- TABBED CONTENT -->
+      <section class="section">
+        <div class="container">
+
+          <!-- School tabs -->
+          <div class="school-tabs" role="tablist">
+            <button class="school-tab-btn active" role="tab" data-tab="tab-woestina" aria-selected="true">🌱 Woestina</button>
+            <button class="school-tab-btn" role="tab" data-tab="tab-jefferson" aria-selected="false">🏫 Jefferson</button>
+            <button class="school-tab-btn" role="tab" data-tab="tab-ms-hs" aria-selected="false">📚🎓 Middle &amp; High School</button>
+          </div>
+
+          <!-- ── WOESTINA ── -->
+          <div class="school-tab-panel active" id="tab-woestina">
+            <div class="intro-card">
+              <h3>🌱 Woestina Pre-K Appreciation</h3>
+              <p>We are so grateful for the teachers, aides, and staff at Woestina who give so much to our youngest learners every day. During Staff Appreciation Week (May 4–8), show them some love!</p>
+            </div>
+
+            <div style="background:#fff8f0;border:1px solid #fdd09e;border-radius:var(--radius-lg);padding:22px 26px;margin-bottom:20px">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                <span style="font-size:28px">🥔</span>
+                <div>
+                  <div style="font-weight:800;font-size:16px;color:#7a3800">Outback Steakhouse Loaded Baked Potato Bar</div>
+                  <div style="font-size:13px;color:#c05a00;font-weight:600">Wednesday, May 6</div>
+                </div>
+              </div>
+              <p style="font-size:14px;color:var(--text);line-height:1.65;margin:0">Outback Steakhouse will be donating a fully loaded baked potato bar for our Woestina staff. A delicious treat to say thank you!</p>
+            </div>
+
+            <div class="coming-soon-banner">
+              For questions about Woestina Staff Appreciation Week activities, please contact <strong>Corrie Haddix</strong> at <a href="mailto:corrie@jeffersonpto.com" style="color:#7a5c00;font-weight:600">corrie@jeffersonpto.com</a>.
+            </div>
+          </div>
+
+          <!-- ── JEFFERSON ── -->
+          <div class="school-tab-panel" id="tab-jefferson">
+            <div class="intro-card">
+              <h3>🏫 Jefferson Elementary Appreciation</h3>
+              <p>Our Jefferson teachers and staff work tirelessly to create a nurturing, fun learning environment. Let's show them how much we appreciate everything they do during Teacher Appreciation Week, May 4–8!</p>
+            </div>
+
+            <div style="background:#fff8f0;border:1px solid #fdd09e;border-radius:var(--radius-lg);padding:22px 26px;margin-bottom:20px">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                <span style="font-size:28px">🥔</span>
+                <div>
+                  <div style="font-weight:800;font-size:16px;color:#7a3800">Outback Steakhouse Loaded Baked Potato Bar</div>
+                  <div style="font-size:13px;color:#c05a00;font-weight:600">Wednesday, May 6</div>
+                </div>
+              </div>
+              <p style="font-size:14px;color:var(--text);line-height:1.65;margin:0">Outback Steakhouse will be donating a fully loaded baked potato bar for our Jefferson staff. A delicious thank you to our incredible team!</p>
+            </div>
+
+            <div class="coming-soon-banner">
+              For questions about Jefferson Staff Appreciation Week activities, please contact <strong>Corrie Haddix</strong> at <a href="mailto:corrie@jeffersonpto.com" style="color:#7a5c00;font-weight:600">corrie@jeffersonpto.com</a>.
+            </div>
+          </div>
+
+          <!-- ── MIDDLE & HIGH SCHOOL (combined) ── -->
+          <div class="school-tab-panel" id="tab-ms-hs">
+
+            <div class="intro-card">
+              <h3>📚🎓 Middle &amp; High School Appreciation</h3>
+              <p>Help us celebrate the incredible staff at both Schalmont Middle School and High School during Staff Appreciation Week, May 4–8! Check the flyer for the full week schedule and enter the raffle for a 10-minute massage.</p>
+            </div>
+
+            <!-- Row 1: Flyer + Middle School Raffle -->
+            <div class="flyer-raffle-grid">
+              <div class="flyer-wrap flyer-large" onclick="openFlyerLightbox()" title="Click image to enlarge">
+                <img src="images/TAW-Cal-Flyer.jpg" alt="Teacher Appreciation Week Calendar Flyer">
+                <div class="flyer-actions">
+                  <span style="font-size:13px;color:var(--text-light)">🔍 Click image to enlarge</span>
+                  <a href="https://www.dropbox.com/scl/fi/dxg6hiu2qo9q06jtfs7c9/TAW-Cal-Flyer.pdf?rlkey=z5q05dhibfvvfp7gh1qpit2r4&dl=0"
+                     target="_blank" rel="noopener" class="btn btn-primary"
+                     style="display:inline-flex;align-items:center;gap:8px;font-size:14px"
+                     onclick="event.stopPropagation()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Download Flyer (PDF)
+                  </a>
+                </div>
+              </div>
+
+              <div style="border-radius:var(--radius-lg);overflow:hidden">
+                <div style="background:linear-gradient(90deg,#1a3d24 0%,#245930 100%);padding:12px 20px;text-align:center">
+                  <div style="font-size:13px;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:#fff">📚 Middle School Raffle</div>
+                </div>
+                <div class="raffle-card" style="border-radius:0;margin-bottom:0">
+                  <h3>💆 10-Minute Massage</h3>
+                  <p>Middle School staff can enter to win a relaxing 10-minute massage during Staff Appreciation Week. Limited spots available!</p>
+                  <div class="raffle-details">
+                    <span class="raffle-detail-pill">📅 Thursday, May 7</span>
+                    <span class="raffle-detail-pill">48 spots available</span>
+                  </div>
+                  <a href="raffle-signup.html#middle-school" class="btn-raffle">Enter Raffle Sign-Up →</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Row 2: High School Raffle (full width) -->
+            <div style="border-radius:var(--radius-lg);overflow:hidden;margin-bottom:28px">
+              <div style="background:linear-gradient(90deg,#0f1e33 0%,#1a3055 100%);padding:12px 20px;text-align:center">
+                <div style="font-size:13px;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:#fff">🎓 High School Raffle</div>
+              </div>
+              <div class="raffle-card" style="border-radius:0;margin-bottom:0;background:linear-gradient(135deg,#1a2e4a 0%,#2d5f8a 100%)">
+                <h3>💆 10-Minute Massage</h3>
+                <p>High School staff can enter to win a relaxing 10-minute massage during Staff Appreciation Week. Limited spots available!</p>
+                <div class="raffle-details">
+                  <span class="raffle-detail-pill">📅 Wednesday, May 6</span>
+                  <span class="raffle-detail-pill">18 spots available</span>
+                </div>
+                <a href="raffle-signup.html#high-school" class="btn-raffle">Enter Raffle Sign-Up →</a>
+              </div>
+            </div>
+
+            <!-- Donation section -->
+            <div style="border-top:2px solid var(--border);padding-top:28px">
+              <h2 style="font-size:22px;color:var(--primary);margin-bottom:6px">🎁 Donation Wishlist</h2>
+              <p style="color:var(--text-light);font-size:14px;margin-bottom:20px">Help us stock the staff lounges! We're looking for donations of the items below for all schools.</p>
+              <div style="margin-bottom:14px">
+                <a href="https://www.amazon.com/hz/wishlist/ls/1PHBRS235L2XE?ref_=wl_share" target="_blank" rel="noopener" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:10px 22px">
+                  🛒 View Our Amazon Wishlist →
+                </a>
+              </div>
+              <div class="wishlist-grid">
+                <a href="https://www.amazon.com/hz/wishlist/ls/1PHBRS235L2XE?ref_=wl_share" target="_blank" rel="noopener" class="wishlist-item" style="text-decoration:none;color:inherit">Sodas &amp; Seltzers</a>
+                <a href="https://www.amazon.com/hz/wishlist/ls/1PHBRS235L2XE?ref_=wl_share" target="_blank" rel="noopener" class="wishlist-item" style="text-decoration:none;color:inherit">Snacks</a>
+                <a href="https://www.amazon.com/hz/wishlist/ls/1PHBRS235L2XE?ref_=wl_share" target="_blank" rel="noopener" class="wishlist-item" style="text-decoration:none;color:inherit">Candy</a>
+                <a href="https://www.amazon.com/hz/wishlist/ls/1PHBRS235L2XE?ref_=wl_share" target="_blank" rel="noopener" class="wishlist-item" style="text-decoration:none;color:inherit">Cookies</a>
+                <a href="https://www.amazon.com/hz/wishlist/ls/1PHBRS235L2XE?ref_=wl_share" target="_blank" rel="noopener" class="wishlist-item" style="text-decoration:none;color:inherit">Soup</a>
+                <a href="https://www.amazon.com/hz/wishlist/ls/1PHBRS235L2XE?ref_=wl_share" target="_blank" rel="noopener" class="wishlist-item" style="text-decoration:none;color:inherit">Teas</a>
+                <a href="https://www.amazon.com/hz/wishlist/ls/1PHBRS235L2XE?ref_=wl_share" target="_blank" rel="noopener" class="wishlist-item" style="text-decoration:none;color:inherit">Granola Bars</a>
+                <a href="https://www.amazon.com/hz/wishlist/ls/1PHBRS235L2XE?ref_=wl_share" target="_blank" rel="noopener" class="wishlist-item" style="text-decoration:none;color:inherit">Breakfast Bars</a>
+                <a href="https://www.amazon.com/hz/wishlist/ls/1PHBRS235L2XE?ref_=wl_share" target="_blank" rel="noopener" class="wishlist-item" style="text-decoration:none;color:inherit">Bottled Waters</a>
+                <a href="https://www.amazon.com/hz/wishlist/ls/1PHBRS235L2XE?ref_=wl_share" target="_blank" rel="noopener" class="wishlist-item" style="text-decoration:none;color:inherit">Trail Mix</a>
+                <a href="https://www.amazon.com/hz/wishlist/ls/1PHBRS235L2XE?ref_=wl_share" target="_blank" rel="noopener" class="wishlist-item" style="text-decoration:none;color:inherit">Paper Products</a>
+                <a href="https://www.amazon.com/hz/wishlist/ls/1PHBRS235L2XE?ref_=wl_share" target="_blank" rel="noopener" class="wishlist-item" style="text-decoration:none;color:inherit">K-Cups</a>
+                <a href="https://www.amazon.com/hz/wishlist/ls/1PHBRS235L2XE?ref_=wl_share" target="_blank" rel="noopener" class="wishlist-item" style="text-decoration:none;color:inherit">Coffee Flavoring</a>
+                <a href="https://www.amazon.com/hz/wishlist/ls/1PHBRS235L2XE?ref_=wl_share" target="_blank" rel="noopener" class="wishlist-item" style="text-decoration:none;color:inherit">Coffee Creamers</a>
+                <a href="https://www.amazon.com/hz/wishlist/ls/1PHBRS235L2XE?ref_=wl_share" target="_blank" rel="noopener" class="wishlist-item" style="text-decoration:none;color:inherit">Sugar &amp; Sweeteners</a>
+              </div>
+              <p style="font-size:13px;color:var(--text-light);margin-top:10px">Feel free to drop off any donations at the school labeled <strong>PTO Staff Appreciation</strong>.</p>
+              <p style="font-size:13px;color:var(--text-light)">If you would like to contribute items, please email or call or text <strong>Julie Dion</strong> at <a href="tel:5188927495" style="color:var(--primary);font-weight:600">518.892.7495</a> or <a href="mailto:julie@schalmontpto.com" style="color:var(--primary);font-weight:600">julie@schalmontpto.com</a>.</p>
+              <div class="donate-cta">
+                <h3>💚 Make a Monetary Donation</h3>
+                <p>Prefer to contribute financially? Every dollar goes directly toward celebrating our amazing staff during Appreciation Week.</p>
+                <a href="https://financial-donations-schalmont-staff-appreciation-week.cheddarup.com"
+                   target="_blank" rel="noopener"
+                   class="btn btn-primary"
+                   style="display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:12px 28px">
+                  Donate Now →
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- BOTTOM BANNER AD -->
+      <div class="top-banner-ad">
+        <div class="container">
+          <div class="top-banner-ad-inner">
+            <div class="top-banner-ad-slot" style="padding:0;line-height:0">
+              <a href="https://tinyurl.com/5ac83fe9" id="banner-ad-img-1" target="_blank" rel="noopener" style="display:block"><img src="images/Ads/Banners/CW-Schalmont-leader.jpg" alt="Advertisement" style="width:100%;height:auto;display:block;border-radius:var(--radius)"></a>
+              <a href="https://www.namebubbles.com/?rfsn=8825780.ef49f8" id="banner-ad-img-2" target="_blank" rel="noopener" style="display:none"><img src="images/Ads/Banners/Name-bubbles-Schalmont-leader.jpg" alt="Advertisement" style="width:100%;height:auto;display:block;border-radius:var(--radius)"></a>
+              <a href="https://tinyurl.com/3e4rd8vr" id="banner-ad-img-3" target="_blank" rel="noopener" style="display:none"><img src="images/Ads/Banners/Leaderad-ss-2026.jpg" alt="Advertisement" style="width:100%;height:auto;display:block;border-radius:var(--radius)"></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.homepage-main -->
+  </div><!-- /.homepage-layout -->
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-brand" style="margin-bottom:12px">
+            <img src="images/logo.png" alt="Schalmont Central PTO" class="nav-logo-img">
+          </div>
+          <p>Supporting students, connecting families, and building community in the Schalmont Central School District.</p>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap">
+            <a href="login.html" class="btn btn-primary" style="padding:6px 14px;font-size:13px;color:#000000">Login/Register</a>
+            <div class="footer-social-icons" style="margin-top:0">
+              <a href="social.html" class="footer-social-icon" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+              <a href="social.html" class="footer-social-icon" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+            </div>
+          </div>
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
+            <a href="https://woestina-pre-k-pto-donations.cheddarup.com" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-align:center;padding:6px 14px;font-size:13px;color:#000000">Give back: &#127807; Woestina PTO</a>
+            <a href="https://my.cheddarup.com/c/jefferson-pto-donation" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-align:center;padding:6px 14px;font-size:13px;color:#000000">Give back: &#127979; Jefferson PTO</a>
+            <a href="https://schalmont-central-pto.cheddarup.com" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-align:center;padding:6px 14px;font-size:13px;color:#000000">Give back: &#128154; Schalmont PTO</a>
+          </div>
+        </div>
+        <div>
+          <div class="footer-heading">Quick Links</div>
+          <ul class="footer-links">
+            <li><a href="events.html">Events Calendar</a></li>
+            <li><a href="directory.html">Parent Directory</a></li>
+            <li><a href="shop.html">Shop</a></li>
+            <li><a href="fundraisers.html">Fundraisers</a></li>
+            <li><a href="meetings.html">PTO Meetings</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-heading">About &amp; Help</div>
+          <ul class="footer-links">
+            <li><a href="about.html">About the PTO</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="https://www.schalmont.org" target="_blank" rel="noopener">School District Website</a></li>
+          </ul>
+        </div>
+        <div class="footer-ad-col">
+          <div class="footer-ad-box" style="padding:0;overflow:hidden;border-radius:var(--radius)">
+            <a href="https://tinyurl.com/5ac83fe9" id="footer-ad-img-1" target="_blank" rel="noopener" style="display:block"><img src="images/Ads/Square/CW-Schalmont-square.jpg" alt="Advertisement" class="footer-ad-img" style="width:100%;display:block"></a>
+            <a href="https://www.namebubbles.com/?rfsn=8825780.ef49f8" id="footer-ad-img-2" target="_blank" rel="noopener" style="display:none"><img src="images/Ads/Square/Name-Bubbles-Schalmont-Ad1-square.jpg" alt="Advertisement" class="footer-ad-img" style="width:100%;display:block"></a>
+            <a href="https://tinyurl.com/3e4rd8vr" id="footer-ad-img-3" target="_blank" rel="noopener" style="display:none"><img src="images/Ads/Square/Squaress-ad2026.jpg" alt="Advertisement" class="footer-ad-img" style="width:100%;display:block"></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Schalmont Central Schools PTO. All rights reserved.</span>
+        <span>Schenectady, NY</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- FLYER LIGHTBOX -->
+  <div id="saw-lightbox" onclick="closeFlyerLightbox()">
+    <button id="saw-lightbox-close" onclick="closeFlyerLightbox()" aria-label="Close">×</button>
+    <img src="images/TAW-Cal-Flyer.jpg" alt="Teacher Appreciation Week Calendar Flyer" onclick="event.stopPropagation()">
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    function activateTab(tabId) {
+      document.querySelectorAll('.school-tab-btn').forEach(function(b) {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      document.querySelectorAll('.school-tab-panel').forEach(function(p) {
+        p.classList.remove('active');
+      });
+      var panel = document.getElementById(tabId);
+      if (panel) {
+        panel.classList.add('active');
+        var btn = document.querySelector('[data-tab="' + tabId + '"]');
+        if (btn) { btn.classList.add('active'); btn.setAttribute('aria-selected', 'true'); }
+      }
+    }
+
+    // Tab switching
+    document.querySelectorAll('.school-tab-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() { activateTab(btn.dataset.tab); });
+    });
+
+    // Hash-based tab selection on page load
+    var hashMap = { '#woestina':'tab-woestina', '#jefferson':'tab-jefferson', '#middle-school':'tab-ms-hs', '#high-school':'tab-ms-hs' };
+    if (hashMap[window.location.hash]) { activateTab(hashMap[window.location.hash]); }
+
+    // Flyer lightbox
+    function openFlyerLightbox() {
+      document.getElementById('saw-lightbox').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeFlyerLightbox() {
+      document.getElementById('saw-lightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeFlyerLightbox();
+    });
+  </script>
+</body>
+</html>
