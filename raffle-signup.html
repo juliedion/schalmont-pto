@@ -8,9 +8,13 @@
   <link rel="icon" href="images/favicon.svg">
   <style>
     .raffle-page-wrap {
-      max-width: 680px;
+      max-width: 960px;
       margin: 0 auto;
       padding: 40px 20px 80px;
+    }
+    .raffle-form-inner {
+      max-width: 680px;
+      margin: 0 auto;
     }
     .raffle-hero {
       background: linear-gradient(135deg,#295c38 0%,#60b256 100%);
@@ -87,36 +91,70 @@
     .confirm-card h2 { font-size:22px; color:var(--primary); margin-bottom:10px; }
     .confirm-card p { font-size:14px; color:var(--text-light); line-height:1.7; margin:0; }
 
-    /* Admin section */
-    #admin-section { display:none; }
-    .admin-header {
-      background: #044d2a;
-      color: #fff;
-      padding: 16px 24px;
-      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-      font-weight: 700;
-      font-size: 15px;
+    /* Public entry lists */
+    .entry-lists-section {
+      margin-top: 48px;
+      border-top: 2px solid var(--border);
+      padding-top: 32px;
     }
+    .entry-lists-section h2 {
+      font-size: 20px;
+      color: var(--primary-dark);
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .entry-lists-section > p {
+      font-size: 13px;
+      color: var(--text-light);
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .entry-lists-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 640px) {
+      .entry-lists-grid { grid-template-columns: 1fr; }
+    }
+    .entry-list-wrap { border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); }
+    .entry-list-header {
+      padding: 14px 20px;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #fff;
+      text-align: center;
+    }
+    .entry-list-header.ms { background: linear-gradient(90deg,#1a3d24 0%,#245930 100%); }
+    .entry-list-header.hs { background: linear-gradient(90deg,#0f1e33 0%,#1a3055 100%); }
+    .entry-list-count {
+      padding: 7px 16px;
+      background: var(--light-bg);
+      font-size: 12px;
+      color: var(--text-light);
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Shared table styles */
     .entries-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 13px;
       background: var(--white);
-      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-      overflow: hidden;
-      border: 1px solid var(--border);
-      border-top: none;
     }
     .entries-table th {
       background: var(--light-bg);
-      padding: 10px 14px;
+      padding: 9px 14px;
       text-align: left;
       font-weight: 700;
       color: var(--text);
       border-bottom: 1px solid var(--border);
     }
     .entries-table td {
-      padding: 10px 14px;
+      padding: 9px 14px;
       border-bottom: 1px solid var(--border);
       color: var(--text);
       vertical-align: top;
@@ -131,7 +169,24 @@
       font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;
     }
 
-    /* Admin login (unobtrusive, bottom of page) */
+    /* Admin section */
+    #admin-section { display:none; margin-top:48px; }
+    .admin-header {
+      background: #044d2a;
+      color: #fff;
+      padding: 16px 24px;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .admin-table-wrap {
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      overflow: hidden;
+    }
+
+    /* Admin login */
     .admin-login-wrap {
       margin-top: 60px;
       border-top: 1px solid var(--border);
@@ -175,77 +230,110 @@
 
   <div class="raffle-page-wrap">
 
-    <div class="raffle-hero">
-      <div style="font-size:36px;margin-bottom:12px">💆</div>
-      <h1>Massage Raffle Sign-Up</h1>
-      <p>Staff Appreciation Week · May 4–8, 2026</p>
-    </div>
+    <div class="raffle-form-inner">
 
-    <!-- RAFFLE FORM -->
-    <div id="raffle-form-section">
-      <div class="form-card">
-        <h2>Enter the Raffle</h2>
+      <div class="raffle-hero">
+        <div style="font-size:36px;margin-bottom:12px">💆</div>
+        <h1>Massage Raffle Sign-Up</h1>
+        <p>Staff Appreciation Week · May 4–8, 2026</p>
+      </div>
 
-        <div class="form-group">
-          <label>Your Name</label>
-          <input type="text" id="entry-name" placeholder="First and last name">
-        </div>
+      <!-- RAFFLE FORM -->
+      <div id="raffle-form-section">
+        <div class="form-card">
+          <h2>Enter the Raffle</h2>
 
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="entry-email" placeholder="Your email address">
-        </div>
-
-        <div class="form-group">
-          <label>Phone (optional)</label>
-          <input type="tel" id="entry-phone" placeholder="555-555-5555">
-        </div>
-
-        <div class="form-group">
-          <label>Which raffle would you like to enter?</label>
-          <div class="raffle-choice-grid">
-            <label class="raffle-choice-card" id="card-ms" onclick="selectRaffle('middle-school')">
-              <input type="radio" name="raffle" value="middle-school">
-              <div class="choice-icon">📚</div>
-              <div class="choice-label">Middle School</div>
-              <div class="choice-detail">Thursday, May 7 · 48 spots</div>
-            </label>
-            <label class="raffle-choice-card" id="card-hs" onclick="selectRaffle('high-school')">
-              <input type="radio" name="raffle" value="high-school">
-              <div class="choice-icon">🎓</div>
-              <div class="choice-label">High School</div>
-              <div class="choice-detail">Wednesday, May 6 · 18 spots</div>
-            </label>
+          <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" id="entry-name" placeholder="First and last name">
           </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="entry-email" placeholder="Your email address">
+          </div>
+
+          <div class="form-group">
+            <label>Phone (optional)</label>
+            <input type="tel" id="entry-phone" placeholder="555-555-5555">
+          </div>
+
+          <div class="form-group">
+            <label>Which raffle would you like to enter?</label>
+            <div class="raffle-choice-grid">
+              <label class="raffle-choice-card" id="card-ms" onclick="selectRaffle('middle-school')">
+                <input type="radio" name="raffle" value="middle-school">
+                <div class="choice-icon">📚</div>
+                <div class="choice-label">Middle School</div>
+                <div class="choice-detail">Thursday, May 7</div>
+              </label>
+              <label class="raffle-choice-card" id="card-hs" onclick="selectRaffle('high-school')">
+                <input type="radio" name="raffle" value="high-school">
+                <div class="choice-icon">🎓</div>
+                <div class="choice-label">High School</div>
+                <div class="choice-detail">Wednesday, May 6</div>
+              </label>
+            </div>
+          </div>
+
+          <div id="form-error" style="color:#c0392b;font-size:13px;margin-bottom:12px;display:none"></div>
+          <button id="submit-btn" onclick="submitEntry()" class="btn btn-primary" style="width:100%;padding:13px;font-size:15px">Submit Raffle Entry →</button>
+        </div>
+      </div>
+
+      <!-- ALREADY ENTERED -->
+      <div id="already-entered-section" style="display:none">
+        <div class="already-entered">
+          <div class="check">✅</div>
+          <h3>You're already entered!</h3>
+          <p id="already-entered-detail">Your raffle entry has been received. We'll reach out if you're selected.</p>
+        </div>
+      </div>
+
+      <!-- CONFIRMATION -->
+      <div id="confirmation">
+        <div class="confirm-card">
+          <div class="confirm-icon">🎉</div>
+          <h2>You're in the raffle!</h2>
+          <p>Your entry has been saved. If you're selected for a massage, we'll reach out to schedule your appointment. Good luck!</p>
+          <a href="staff-appreciation-week.html" class="btn btn-primary" style="display:inline-block;margin-top:24px;padding:12px 28px">← Back to Staff Appreciation Week</a>
+        </div>
+      </div>
+
+    </div><!-- /.raffle-form-inner -->
+
+    <!-- PUBLIC ENTRY LISTS -->
+    <div class="entry-lists-section">
+      <h2>💆 Who's Entered</h2>
+      <p>Updates in real time as staff sign up.</p>
+      <div class="entry-lists-grid">
+
+        <!-- Middle School -->
+        <div class="entry-list-wrap">
+          <div class="entry-list-header ms">📚 Middle School Staff Raffle</div>
+          <div class="entry-list-count" id="ms-count">Loading…</div>
+          <table class="entries-table">
+            <thead><tr><th>Name</th><th>Entered</th></tr></thead>
+            <tbody id="ms-tbody"></tbody>
+          </table>
         </div>
 
-        <div id="form-error" style="color:#c0392b;font-size:13px;margin-bottom:12px;display:none"></div>
-        <button id="submit-btn" onclick="submitEntry()" class="btn btn-primary" style="width:100%;padding:13px;font-size:15px">Submit Raffle Entry →</button>
+        <!-- High School -->
+        <div class="entry-list-wrap">
+          <div class="entry-list-header hs">🎓 High School Staff Raffle</div>
+          <div class="entry-list-count" id="hs-count">Loading…</div>
+          <table class="entries-table">
+            <thead><tr><th>Name</th><th>Entered</th></tr></thead>
+            <tbody id="hs-tbody"></tbody>
+          </table>
+        </div>
+
       </div>
     </div>
 
-    <!-- ALREADY ENTERED -->
-    <div id="already-entered-section" style="display:none">
-      <div class="already-entered">
-        <div class="check">✅</div>
-        <h3>You're already entered!</h3>
-        <p id="already-entered-detail">Your raffle entry has been received. We'll reach out if you're selected.</p>
-      </div>
-    </div>
-
-    <!-- CONFIRMATION -->
-    <div id="confirmation">
-      <div class="confirm-card">
-        <div class="confirm-icon">🎉</div>
-        <h2>You're in the raffle!</h2>
-        <p>Your entry has been saved. If you're selected for a massage, we'll reach out to schedule your appointment. Good luck!</p>
-        <a href="staff-appreciation-week.html" class="btn btn-primary" style="display:inline-block;margin-top:24px;padding:12px 28px">← Back to Staff Appreciation Week</a>
-      </div>
-    </div>
-
-    <!-- ADMIN SECTION (visible only when admin is logged in) -->
-    <div id="admin-section" style="margin-top:48px">
-      <div class="admin-header">🔐 Admin — Raffle Entries</div>
+    <!-- ADMIN SECTION (full details, login-gated) -->
+    <div id="admin-section">
+      <div class="admin-header">🔐 Admin — Full Entry Details</div>
       <div style="padding:14px 24px;background:var(--light-bg);border:1px solid var(--border);border-top:none;border-bottom:none">
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button onclick="filterAdmin('all')" class="btn btn-primary" style="font-size:12px;padding:6px 14px" id="filter-all">All Entries</button>
@@ -254,21 +342,23 @@
           <span id="entry-count" style="font-size:13px;color:var(--text-light);line-height:1;align-self:center"></span>
         </div>
       </div>
-      <table class="entries-table" id="entries-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Raffle</th>
-            <th>Entered</th>
-          </tr>
-        </thead>
-        <tbody id="entries-tbody"></tbody>
-      </table>
+      <div class="admin-table-wrap">
+        <table class="entries-table" id="entries-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Raffle</th>
+              <th>Entered</th>
+            </tr>
+          </thead>
+          <tbody id="entries-tbody"></tbody>
+        </table>
+      </div>
     </div>
 
-    <!-- ADMIN LOGIN (unobtrusive, only shown when not logged in as admin) -->
+    <!-- ADMIN LOGIN -->
     <div class="admin-login-wrap" id="admin-login-wrap">
       <p>Admin Access</p>
       <input type="email" id="admin-email" class="admin-login-input" placeholder="Admin email">
@@ -297,7 +387,39 @@
       else if (hash === '#high-school') selectRaffle('high-school');
     })();
 
-    // Show admin section if an admin is already logged in
+    // Public real-time entry lists (no auth required — needs Firestore rules: allow read: if true)
+    firebase.firestore().collection('raffle_entries')
+      .orderBy('enteredAt', 'asc')
+      .onSnapshot(function(snap) {
+        var msEntries = [], hsEntries = [];
+        snap.docs.forEach(function(d) {
+          var data = d.data();
+          if (data.raffle === 'middle-school') msEntries.push(data);
+          else if (data.raffle === 'high-school') hsEntries.push(data);
+        });
+        renderPublicTable('ms', msEntries);
+        renderPublicTable('hs', hsEntries);
+      }, function(err) {
+        document.getElementById('ms-count').textContent = 'Unable to load — check Firestore rules';
+        document.getElementById('hs-count').textContent = 'Unable to load — check Firestore rules';
+      });
+
+    function renderPublicTable(school, entries) {
+      var tbody   = document.getElementById(school + '-tbody');
+      var countEl = document.getElementById(school + '-count');
+      countEl.textContent = entries.length + (entries.length === 1 ? ' entry' : ' entries');
+      tbody.innerHTML = entries.map(function(e) {
+        var date = e.enteredAt
+          ? new Date(e.enteredAt.seconds * 1000).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})
+          : '—';
+        return '<tr><td>' + (e.name || '—') + '</td><td style="color:var(--text-light);font-size:12px">' + date + '</td></tr>';
+      }).join('');
+      if (!entries.length) {
+        tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;color:var(--text-light);padding:20px">No entries yet — be the first!</td></tr>';
+      }
+    }
+
+    // Show admin full-detail section if logged in as admin
     firebase.auth().onAuthStateChanged(function(user) {
       if (user && ADMIN_EMAILS.indexOf(user.email) >= 0) {
         document.getElementById('admin-login-wrap').style.display = 'none';
@@ -327,7 +449,6 @@
       btn.disabled = true;
       btn.textContent = 'Submitting…';
 
-      // Check for duplicate entry by email + raffle
       firebase.firestore().collection('raffle_entries')
         .where('email', '==', email)
         .where('raffle', '==', selectedRaffle)
@@ -376,13 +497,13 @@
         .orderBy('enteredAt', 'desc')
         .onSnapshot(function(snap) {
           allEntries = snap.docs.map(function(d) { return Object.assign({id:d.id}, d.data()); });
-          renderEntries(allEntries);
+          renderAdminEntries(allEntries);
         });
     }
 
     function filterAdmin(type) {
       var filtered = type === 'all' ? allEntries : allEntries.filter(function(e){ return e.raffle === type; });
-      renderEntries(filtered);
+      renderAdminEntries(filtered);
       ['all','ms','hs'].forEach(function(k){
         document.getElementById('filter-'+k).classList.remove('btn-primary');
         document.getElementById('filter-'+k).style.background = 'var(--white)';
@@ -391,7 +512,7 @@
       document.getElementById(activeId).classList.add('btn-primary');
     }
 
-    function renderEntries(entries) {
+    function renderAdminEntries(entries) {
       var tbody = document.getElementById('entries-tbody');
       document.getElementById('entry-count').textContent = entries.length + ' entries';
       tbody.innerHTML = entries.map(function(e) {
