@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Staff Appreciation Week â Schalmont PTO</title>
+  <title>Staff Appreciation Week — Schalmont PTO</title>
   <meta name="description" content="Teacher &amp; Staff Appreciation Week activities, raffle sign-ups, and donation wishlist for Schalmont Central School District.">
   <link rel="stylesheet" href="css/styles.css?v=5">
   <link rel="icon" href="images/favicon.svg">
   <style>
-    /* ââ Tabs ââââââââââââââââââââââââââââââââââââââââââââââ */
+    /* ── Tabs ────────────────────────────────────────────── */
     .school-tabs {
       display: flex;
       gap: 4px;
@@ -39,7 +39,7 @@
     .school-tab-panel { display: none; }
     .school-tab-panel.active { display: block; }
 
-    /* ââ Flyer card ââââââââââââââââââââââââââââââââââââââââ */
+    /* ── Flyer card ──────────────────────────────────────── */
     .flyer-wrap {
       background: var(--white);
       border: 1px solid var(--border);
@@ -66,7 +66,7 @@
       background: var(--light-bg);
     }
 
-    /* ââ Raffle card âââââââââââââââââââââââââââââââââââââââ */
+    /* ── Raffle card ─────────────────────────────────────── */
     .raffle-card {
       background: linear-gradient(135deg, #295c38 0%, #60b256 100%);
       border-radius: var(--radius-lg);
@@ -104,7 +104,7 @@
     }
     .raffle-card .btn-raffle:hover { opacity: 0.9; }
 
-    /* ââ Donation wishlist âââââââââââââââââââââââââââââââââ */
+    /* ── Donation wishlist ───────────────────────────────── */
     .wishlist-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -124,14 +124,14 @@
       gap: 8px;
     }
     .wishlist-item::before {
-      content: "ð";
+      content: "🎁";
       font-size: 16px;
       flex-shrink: 0;
     }
     a.wishlist-item { cursor: pointer; transition: box-shadow 0.15s, border-color 0.15s; }
     a.wishlist-item:hover { border-color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 
-    /* ââ "Coming soon" placeholder âââââââââââââââââââââââââ */
+    /* ── "Coming soon" placeholder ───────────────────────── */
     .coming-soon-banner {
       background: #fffbea;
       border: 1px solid #f0d060;
@@ -142,7 +142,7 @@
       margin-bottom: 24px;
     }
 
-    /* ââ General intro card ââââââââââââââââââââââââââââââââ */
+    /* ── General intro card ──────────────────────────────── */
     .intro-card {
       background: var(--white);
       border: 1px solid var(--border);
@@ -153,7 +153,7 @@
     .intro-card h3 { font-size: 17px; color: var(--primary-dark); margin-bottom: 8px; }
     .intro-card p  { font-size: 14px; color: var(--text); line-height: 1.65; margin: 0; }
 
-    /* ââ Monetary donation CTA âââââââââââââââââââââââââââââ */
+    /* ── Monetary donation CTA ───────────────────────────── */
     .donate-cta {
       background: #f0f8ef;
       border: 1px solid #c8e6c0;
@@ -166,7 +166,7 @@
     .donate-cta h3 { font-size: 18px; color: var(--primary-dark); margin-bottom: 8px; }
     .donate-cta p  { font-size: 14px; color: var(--text); margin-bottom: 18px; line-height: 1.6; }
 
-    /* ââ Flyer + raffle two-column layout ââ */
+    /* ── Flyer + raffle two-column layout ── */
     .flyer-raffle-grid {
       display: grid;
       grid-template-columns: 1fr 320px;
@@ -181,7 +181,7 @@
     .flyer-large:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.22); }
     .flyer-large img { max-width: 100%; }
 
-    /* ââ Flyer lightbox ââ */
+    /* ── Flyer lightbox ── */
     #saw-lightbox {
       display: none;
       position: fixed;
@@ -230,19 +230,23 @@
         <li class="has-dropdown">
           <a href="schools.html">Schools</a>
           <ul class="nav-dropdown">
-            <li><a href="woestina.html">ð± Woestina Pre-K</a></li>
-            <li><a href="jefferson.html">ð« Jefferson Elementary</a></li>
-            <li><a href="middle-school.html">ð Middle School</a></li>
-            <li><a href="high-school.html">ð High School</a></li>
+            <li><a href="woestina.html">🌱 Woestina Pre-K</a></li>
+            <li><a href="jefferson.html">🏫 Jefferson Elementary</a></li>
+            <li><a href="middle-school.html">📚 Middle School</a></li>
+            <li><a href="high-school.html">🎓 High School</a></li>
           </ul>
         </li>
-        <li class="has-dropdown"><a href="events.html">Events</a><ul class="nav-dropdown"><li><a href="staff-appreciation-week.html">🌟 Staff Appreciation Week</a></li></ul></li>
+        <li class="has-dropdown"><a href="events.html">Events</a>
+            <ul class="nav-dropdown">
+              <li><a href="staff-appreciation-week.html">&#x1F31F; Staff Appreciation Week</a></li>
+            </ul>
+          </li>
         <li><a href="meetings.html">Meetings</a></li>
         <li class="has-dropdown">
           <a href="shop.html">Shop</a>
           <ul class="nav-dropdown">
-            <li><a href="shop.html">ð Spiritwear</a></li>
-            <li><a href="fundraisers.html">ð° Fundraisers</a></li>
+            <li><a href="shop.html">👕 Spiritwear</a></li>
+            <li><a href="fundraisers.html">💰 Fundraisers</a></li>
           </ul>
         </li>
         <li><a href="fundraisers.html">Fundraisers</a></li>
@@ -260,7 +264,7 @@
         <li><a href="social.html" class="nav-social-icon" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a></li>
         <li><a href="social.html" class="nav-social-icon" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li>
       </ul>
-      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">â°</button>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
     </nav>
   </header>
 
@@ -312,9 +316,9 @@
       <!-- PAGE HERO -->
       <section class="page-hero" style="background:linear-gradient(135deg,#295c38 0%,#60b256 100%)">
         <div class="container">
-          <p style="color:rgba(255,255,255,0.75);font-size:14px;margin-bottom:8px"><a href="events.html" style="color:rgba(255,255,255,0.75);text-decoration:none">â Back to Events</a></p>
-          <h1>ð Staff Appreciation Week</h1>
-          <p>May 4â8, 2026 Â· Thank you to our incredible staff!</p>
+          <p style="color:rgba(255,255,255,0.75);font-size:14px;margin-bottom:8px"><a href="events.html" style="color:rgba(255,255,255,0.75);text-decoration:none">← Back to Events</a></p>
+          <h1>🌟 Staff Appreciation Week</h1>
+          <p>May 4–8, 2026 · Thank you to our incredible staff!</p>
         </div>
       </section>
 
@@ -324,23 +328,23 @@
 
           <!-- School tabs -->
           <div class="school-tabs" role="tablist">
-            <button class="school-tab-btn active" role="tab" data-tab="tab-ms-hs" aria-selected="true">ðð Middle &amp; High School</button>
-            <button class="school-tab-btn" role="tab" data-tab="tab-jefferson" aria-selected="false">ð« Jefferson</button>
-            <button class="school-tab-btn" role="tab" data-tab="tab-woestina" aria-selected="false">ð± Woestina</button>
+            <button class="school-tab-btn active" role="tab" data-tab="tab-ms-hs" aria-selected="true">📚🎓 Middle &amp; High School</button>
+            <button class="school-tab-btn" role="tab" data-tab="tab-jefferson" aria-selected="false">🏫 Jefferson</button>
+            <button class="school-tab-btn" role="tab" data-tab="tab-woestina" aria-selected="false">🌱 Woestina</button>
           </div>
 
-          <!-- ââ WOESTINA ââ -->
+          <!-- ── WOESTINA ── -->
           <div class="school-tab-panel" id="tab-woestina">
             <h2 style="text-align:center;font-size:clamp(20px,3vw,28px);color:var(--primary-dark);margin-bottom:24px">Woestina</h2>
 
             <div class="intro-card">
-              <h3>ð± Woestina Pre-K Appreciation</h3>
-              <p>We are so grateful for the teachers, aides, and staff at Woestina who give so much to our youngest learners every day. During Staff Appreciation Week (May 4â8), show them some love!</p>
+              <h3>🌱 Woestina Pre-K Appreciation</h3>
+              <p>We are so grateful for the teachers, aides, and staff at Woestina who give so much to our youngest learners every day. During Staff Appreciation Week (May 4–8), show them some love!</p>
             </div>
 
             <div style="background:#fff8f0;border:1px solid #fdd09e;border-radius:var(--radius-lg);padding:22px 26px;margin-bottom:20px">
               <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-                <span style="font-size:28px">ð¥</span>
+                <span style="font-size:28px">🥔</span>
                 <div>
                   <div style="font-weight:800;font-size:16px;color:#7a3800">Outback Steakhouse Loaded Baked Potato Bar</div>
                   <div style="font-size:13px;color:#c05a00;font-weight:600">Wednesday, May 6</div>
@@ -354,18 +358,18 @@
             </div>
           </div>
 
-          <!-- ââ JEFFERSON ââ -->
+          <!-- ── JEFFERSON ── -->
           <div class="school-tab-panel" id="tab-jefferson">
             <h2 style="text-align:center;font-size:clamp(20px,3vw,28px);color:var(--primary-dark);margin-bottom:24px">Jefferson Elementary</h2>
 
             <div class="intro-card">
-              <h3>ð« Jefferson Elementary Appreciation</h3>
-              <p>Our Jefferson teachers and staff work tirelessly to create a nurturing, fun learning environment. Let's show them how much we appreciate everything they do during Teacher Appreciation Week, May 4â8!</p>
+              <h3>🏫 Jefferson Elementary Appreciation</h3>
+              <p>Our Jefferson teachers and staff work tirelessly to create a nurturing, fun learning environment. Let's show them how much we appreciate everything they do during Teacher Appreciation Week, May 4–8!</p>
             </div>
 
             <div style="background:#fff8f0;border:1px solid #fdd09e;border-radius:var(--radius-lg);padding:22px 26px;margin-bottom:20px">
               <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-                <span style="font-size:28px">ð¥</span>
+                <span style="font-size:28px">🥔</span>
                 <div>
                   <div style="font-weight:800;font-size:16px;color:#7a3800">Outback Steakhouse Loaded Baked Potato Bar</div>
                   <div style="font-size:13px;color:#c05a00;font-weight:600">Wednesday, May 6</div>
@@ -379,14 +383,14 @@
             </div>
           </div>
 
-          <!-- ââ MIDDLE & HIGH SCHOOL (combined) ââ -->
+          <!-- ── MIDDLE & HIGH SCHOOL (combined) ── -->
           <div class="school-tab-panel active" id="tab-ms-hs">
 
             <h2 style="text-align:center;font-size:clamp(20px,3vw,28px);color:var(--primary-dark);margin-bottom:24px">Schalmont Middle and High School</h2>
 
             <div class="intro-card">
-              <h3>ðð Middle &amp; High School Appreciation</h3>
-              <p>Help us celebrate the incredible staff at both Schalmont Middle School and High School during Staff Appreciation Week, May 4â8! Check the flyer for the full week schedule and enter the raffle for a 10-minute massage.</p>
+              <h3>📚🎓 Middle &amp; High School Appreciation</h3>
+              <p>Help us celebrate the incredible staff at both Schalmont Middle School and High School during Staff Appreciation Week, May 4–8! Check the flyer for the full week schedule and enter the raffle for a 10-minute massage.</p>
             </div>
 
             <!-- Flyer + Raffle Cards -->
@@ -394,7 +398,7 @@
               <div class="flyer-wrap flyer-large" onclick="openFlyerLightbox()" title="Click image to enlarge">
                 <img src="images/TAW-Cal-Flyer.jpg" alt="Teacher Appreciation Week Calendar Flyer">
                 <div class="flyer-actions">
-                  <span style="font-size:13px;color:var(--text-light)">ð Click image to enlarge</span>
+                  <span style="font-size:13px;color:var(--text-light)">🔍 Click image to enlarge</span>
                   <a href="https://www.dropbox.com/scl/fi/dxg6hiu2qo9q06jtfs7c9/TAW-Cal-Flyer.pdf?rlkey=z5q05dhibfvvfp7gh1qpit2r4&dl=0"
                      target="_blank" rel="noopener" class="btn btn-primary"
                      style="display:inline-flex;align-items:center;gap:8px;font-size:14px"
@@ -410,32 +414,32 @@
                 <!-- Middle School Staff Raffle -->
                 <div style="border-radius:var(--radius-lg);overflow:hidden">
                   <div style="background:linear-gradient(90deg,#1a3d24 0%,#245930 100%);padding:12px 20px;text-align:center">
-                    <div style="font-size:13px;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:#fff">ð Middle School Staff Raffle</div>
+                    <div style="font-size:13px;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:#fff">📚 Middle School Staff Raffle</div>
                   </div>
                   <div class="raffle-card" style="border-radius:0;margin-bottom:0">
-                    <h3>ð 10-Minute Massage</h3>
+                    <h3>💆 10-Minute Massage</h3>
                     <p>Middle School staff can enter to win a relaxing 10-minute massage during Staff Appreciation Week. Limited spots available!</p>
                     <div class="raffle-details">
-                      <span class="raffle-detail-pill">ð Thursday, May 7</span>
+                      <span class="raffle-detail-pill">📅 Thursday, May 7</span>
                       <span class="raffle-detail-pill">48 spots available</span>
                     </div>
-                    <a href="raffle-signup.html#middle-school" class="btn-raffle">Enter Raffle Sign-Up â</a>
+                    <a href="raffle-signup.html#middle-school" class="btn-raffle">Enter Raffle Sign-Up →</a>
                   </div>
                 </div>
 
                 <!-- High School Staff Raffle -->
                 <div style="border-radius:var(--radius-lg);overflow:hidden">
                   <div style="background:linear-gradient(90deg,#0f1e33 0%,#1a3055 100%);padding:12px 20px;text-align:center">
-                    <div style="font-size:13px;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:#fff">ð High School Staff Raffle</div>
+                    <div style="font-size:13px;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:#fff">🎓 High School Staff Raffle</div>
                   </div>
                   <div class="raffle-card" style="border-radius:0;margin-bottom:0;background:linear-gradient(135deg,#1a2e4a 0%,#2d5f8a 100%)">
-                    <h3>ð 10-Minute Massage</h3>
+                    <h3>💆 10-Minute Massage</h3>
                     <p>High School staff can enter to win a relaxing 10-minute massage during Staff Appreciation Week. Limited spots available!</p>
                     <div class="raffle-details">
-                      <span class="raffle-detail-pill">ð Wednesday, May 6</span>
+                      <span class="raffle-detail-pill">📅 Wednesday, May 6</span>
                       <span class="raffle-detail-pill">18 spots available</span>
                     </div>
-                    <a href="raffle-signup.html#high-school" class="btn-raffle">Enter Raffle Sign-Up â</a>
+                    <a href="raffle-signup.html#high-school" class="btn-raffle">Enter Raffle Sign-Up →</a>
                   </div>
                 </div>
 
@@ -444,11 +448,11 @@
 
             <!-- Donation section -->
             <div style="border-top:2px solid var(--border);padding-top:28px">
-              <h2 style="font-size:22px;color:var(--primary);margin-bottom:6px">ð Donation Wishlist</h2>
+              <h2 style="font-size:22px;color:var(--primary);margin-bottom:6px">🎁 Donation Wishlist</h2>
               <p style="color:var(--text-light);font-size:14px;margin-bottom:20px">Help us stock the staff lounges! We're looking for donations of the items below for all schools.</p>
               <div style="margin-bottom:14px">
                 <a href="https://www.amazon.com/hz/wishlist/ls/1PHBRS235L2XE?ref_=wl_share" target="_blank" rel="noopener" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:10px 22px">
-                  ð View Our Amazon Wishlist â
+                  🛒 View Our Amazon Wishlist →
                 </a>
               </div>
               <div class="wishlist-grid">
@@ -471,13 +475,13 @@
               <p style="font-size:13px;color:var(--text-light);margin-top:10px">Feel free to drop off any donations at the school labeled <strong>PTO Staff Appreciation</strong>.</p>
               <p style="font-size:13px;color:var(--text-light)">If you would like to contribute items, please email or call or text <strong>Julie Dion</strong> at <a href="tel:5188927495" style="color:var(--primary);font-weight:600">518.892.7495</a> or <a href="mailto:julie@schalmontpto.com" style="color:var(--primary);font-weight:600">julie@schalmontpto.com</a>.</p>
               <div class="donate-cta">
-                <h3>ð Make a Monetary Donation</h3>
+                <h3>💚 Make a Monetary Donation</h3>
                 <p>Prefer to contribute financially? Every dollar goes directly toward celebrating our amazing staff during Appreciation Week.</p>
                 <a href="https://financial-donations-schalmont-staff-appreciation-week.cheddarup.com"
                    target="_blank" rel="noopener"
                    class="btn btn-primary"
                    style="display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:12px 28px">
-                  Donate Now â
+                  Donate Now →
                 </a>
               </div>
             </div>
@@ -551,7 +555,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span>Â© 2026 Schalmont Central Schools PTO. All rights reserved.</span>
+        <span>© 2026 Schalmont Central Schools PTO. All rights reserved.</span>
         <span>Schenectady, NY</span>
       </div>
     </div>
@@ -559,7 +563,7 @@
 
   <!-- FLYER LIGHTBOX -->
   <div id="saw-lightbox" onclick="closeFlyerLightbox()">
-    <button id="saw-lightbox-close" onclick="closeFlyerLightbox()" aria-label="Close">Ã</button>
+    <button id="saw-lightbox-close" onclick="closeFlyerLightbox()" aria-label="Close">×</button>
     <img src="images/TAW-Cal-Flyer.jpg" alt="Teacher Appreciation Week Calendar Flyer" onclick="event.stopPropagation()">
   </div>
 

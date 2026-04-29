@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Photo Gallery â Schalmont PTO</title>
+  <title>Photo Gallery — Schalmont PTO</title>
   <meta name="description" content="Browse photos from Schalmont PTO events, dances, fundraisers, and more.">
   <link rel="stylesheet" href="css/styles.css?v=5">
   <link rel="icon" href="images/favicon.svg">
   <style>
-    /* ââ Year label ââ */
+    /* ── Year label ── */
     .gallery-year-label {
       font-size: 24px;
       font-weight: 800;
@@ -26,7 +26,7 @@
       border-radius: 2px;
     }
 
-    /* ââ Card grid ââ */
+    /* ── Card grid ── */
     .album-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -37,7 +37,7 @@
     @media (max-width: 720px)  { .album-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 440px)  { .album-grid { grid-template-columns: 1fr; } }
 
-    /* ââ Album card ââ */
+    /* ── Album card ── */
     .album-card {
       background: var(--white);
       border: 1px solid var(--border);
@@ -54,7 +54,7 @@
       border-color: var(--secondary);
     }
 
-    /* ââ Card cover ââ */
+    /* ── Card cover ── */
     .album-cover {
       height: 180px;
       position: relative;
@@ -78,7 +78,7 @@
       font-size: 56px;
     }
 
-    /* ââ Card body ââ */
+    /* ── Card body ── */
     .album-card-body {
       padding: 16px 18px 18px;
       flex: 1;
@@ -130,7 +130,7 @@
       white-space: nowrap;
     }
 
-    /* ââ Community photos modal ââ */
+    /* ── Community photos modal ── */
     #community-modal {
       display: none;
       position: fixed;
@@ -187,7 +187,7 @@
     }
     .community-thumb:hover img { transform: scale(1.06); }
 
-    /* ââ Lightbox ââ */
+    /* ── Lightbox ── */
     #lightbox {
       display: none;
       position: fixed;
@@ -232,7 +232,7 @@
       pointer-events: none;
     }
 
-    /* ââ Upload modal ââ */
+    /* ── Upload modal ── */
     .upload-progress-bar {
       height: 8px;
       background: var(--light-bg);
@@ -271,19 +271,23 @@
         <li class="has-dropdown">
           <a href="schools.html">Schools</a>
           <ul class="nav-dropdown">
-            <li><a href="woestina.html">ð± Woestina Pre-K</a></li>
-            <li><a href="jefferson.html">ð« Jefferson Elementary</a></li>
-            <li><a href="middle-school.html">ð Middle School</a></li>
-            <li><a href="high-school.html">ð High School</a></li>
+            <li><a href="woestina.html">🌱 Woestina Pre-K</a></li>
+            <li><a href="jefferson.html">🏫 Jefferson Elementary</a></li>
+            <li><a href="middle-school.html">📚 Middle School</a></li>
+            <li><a href="high-school.html">🎓 High School</a></li>
           </ul>
         </li>
-        <li class="has-dropdown"><a href="events.html">Events</a><ul class="nav-dropdown"><li><a href="staff-appreciation-week.html">🌟 Staff Appreciation Week</a></li></ul></li>
+        <li class="has-dropdown"><a href="events.html">Events</a>
+            <ul class="nav-dropdown">
+              <li><a href="staff-appreciation-week.html">&#x1F31F; Staff Appreciation Week</a></li>
+            </ul>
+          </li>
         <li><a href="meetings.html">Meetings</a></li>
         <li class="has-dropdown">
           <a href="shop.html">Shop</a>
           <ul class="nav-dropdown">
-            <li><a href="shop.html">ð Spiritwear</a></li>
-            <li><a href="fundraisers.html">ð° Fundraisers</a></li>
+            <li><a href="shop.html">👕 Spiritwear</a></li>
+            <li><a href="fundraisers.html">💰 Fundraisers</a></li>
           </ul>
         </li>
         <li><a href="fundraisers.html">Fundraisers</a></li>
@@ -302,7 +306,7 @@
         <li><a href="social.html" class="nav-social-icon" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a></li>
         <li><a href="social.html" class="nav-social-icon" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li>
       </ul>
-      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">â°</button>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
     </nav>
   </header>
 
@@ -426,7 +430,7 @@
   <!-- PAGE HERO -->
   <section class="page-hero">
     <div class="container">
-      <h1>ð¸ Photo Gallery</h1>
+      <h1>📸 Photo Gallery</h1>
       <p>Relive the memories from Schalmont PTO events, dances, fundraisers, and activities throughout the year.</p>
     </div>
   </section>
@@ -439,12 +443,12 @@
     </div>
   </section>
 
-  <!-- ââ COMMUNITY PHOTOS MODAL ââ -->
+  <!-- ── COMMUNITY PHOTOS MODAL ── -->
   <div id="community-modal" role="dialog" aria-modal="true">
     <div id="community-modal-inner">
       <div id="community-modal-header">
         <h3 id="community-modal-title">Community Photos</h3>
-        <button class="modal-close" onclick="closeCommunityModal()">â</button>
+        <button class="modal-close" onclick="closeCommunityModal()">✕</button>
       </div>
       <div id="community-modal-body">
         <div id="community-modal-grid" class="community-grid"></div>
@@ -452,21 +456,21 @@
     </div>
   </div>
 
-  <!-- ââ LIGHTBOX ââ -->
+  <!-- ── LIGHTBOX ── -->
   <div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
-    <button class="lb-btn" id="lightbox-close" aria-label="Close" onclick="closeLightbox()">â</button>
-    <button class="lb-btn" id="lightbox-prev" aria-label="Previous" onclick="shiftLightbox(-1)">â¹</button>
+    <button class="lb-btn" id="lightbox-close" aria-label="Close" onclick="closeLightbox()">✕</button>
+    <button class="lb-btn" id="lightbox-prev" aria-label="Previous" onclick="shiftLightbox(-1)">‹</button>
     <img id="lightbox-img" src="" alt="Gallery photo">
-    <button class="lb-btn" id="lightbox-next" aria-label="Next" onclick="shiftLightbox(1)">âº</button>
+    <button class="lb-btn" id="lightbox-next" aria-label="Next" onclick="shiftLightbox(1)">›</button>
     <div id="lightbox-caption"></div>
   </div>
 
-  <!-- ââ UPLOAD MODAL ââ -->
+  <!-- ── UPLOAD MODAL ── -->
   <div class="modal-overlay hidden" id="upload-modal">
     <div class="modal" style="max-width:480px">
       <div class="modal-header">
-        <h3>ð· Add Your Photos</h3>
-        <button class="modal-close" id="upload-modal-close" onclick="closeUploadModal()">â</button>
+        <h3>📷 Add Your Photos</h3>
+        <button class="modal-close" id="upload-modal-close" onclick="closeUploadModal()">✕</button>
       </div>
       <div class="modal-body">
         <div style="background:var(--light-bg);border-radius:var(--radius);padding:12px 16px;margin-bottom:18px;font-size:14px">
@@ -496,12 +500,12 @@
     </div>
   </div>
 
-  <!-- ââ CREATE ALBUM MODAL ââ -->
+  <!-- ── CREATE ALBUM MODAL ── -->
   <div class="modal-overlay hidden" id="create-album-modal">
     <div class="modal" style="max-width:480px">
       <div class="modal-header">
-        <h3>â Create Album</h3>
-        <button class="modal-close" onclick="closeCreateAlbumModal()">â</button>
+        <h3>➕ Create Album</h3>
+        <button class="modal-close" onclick="closeCreateAlbumModal()">✕</button>
       </div>
       <div class="modal-body">
         <div id="create-album-alert"></div>
@@ -608,7 +612,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span>Â© 2026 Schalmont Central Schools PTO. All rights reserved.</span>
+        <span>© 2026 Schalmont Central Schools PTO. All rights reserved.</span>
         <span>Schenectady, NY</span>
       </div>
     </div>
@@ -623,12 +627,12 @@
   <script src="js/app.js"></script>
 
   <script>
-    // âââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ─────────────────────────────────────────────────
     // ALBUM DATA
     // To add a cover photo: paste a direct image URL
     // into the "cover" field (e.g. a Dropbox ?raw=1 link).
     // Leave cover as '' to show the emoji placeholder.
-    // âââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ─────────────────────────────────────────────────
     var YEAR_GROUPS = [
       {
         year: '2025/2026',
@@ -636,7 +640,7 @@
           {
             id: 'trail-of-treats',
             title: 'Haunted Trail of Treats',
-            emoji: 'ð',
+            emoji: '🎃',
             cover: '',
             gradient: 'linear-gradient(135deg,#4a1942 0%,#7b2d8b 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/kmx26fbyzyf371fli5mi0/AEveHD20NW0OHIO5LPfkmO0?rlkey=20t7vjs2fqwu8w803ov5tbf53&st=svsk0iwy&dl=0'
@@ -644,7 +648,7 @@
           {
             id: 'lasso-the-night',
             title: 'Lasso the Night Dance',
-            emoji: 'ð¤ ',
+            emoji: '🤠',
             cover: '',
             gradient: 'linear-gradient(135deg,#7c4a03 0%,#c47c1a 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/8qu6bnz9npz8rj0qf5sqh/AO1J9lr85CICXC8mMP8JDHM?rlkey=tvg6xnbnfydc9gogh8l4185o6&st=9cv6vy5b&dl=0'
@@ -652,7 +656,7 @@
           {
             id: 'outofthisworld-dance',
             title: 'Out of this World 3/4 Dance',
-            emoji: 'ð',
+            emoji: '🚀',
             cover: '',
             gradient: 'linear-gradient(135deg,#1a237e 0%,#3949ab 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/vodu4slyze59z2lf5o5ma/AMvCsDLZbqJpkeKt_FF96p4?rlkey=1flmvsvbker4cc6blzni7lo5d&st=61t6ffys&dl=0'
@@ -665,7 +669,7 @@
           {
             id: 'summer-in-the-snow',
             title: 'Summer in the Snow Dance',
-            emoji: 'âï¸',
+            emoji: '❄️',
             cover: '',
             gradient: 'linear-gradient(135deg,#1565c0 0%,#42a5f5 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/6mllooexk8uyy9v7p2047/ALbW2d8uu13ACUjm0Vm_nWI?rlkey=hestuhidf0bey8ns6de2dc21v&st=csteekad&dl=0'
@@ -673,7 +677,7 @@
           {
             id: 'back-to-school-2024',
             title: 'Back to School',
-            emoji: 'ð',
+            emoji: '🎒',
             cover: '',
             gradient: 'linear-gradient(135deg,#e65100 0%,#ff8f00 100%)',
             dropbox: 'https://web.treering.com/school/251517/2025/school-content/school-photos/364630525'
@@ -681,7 +685,7 @@
           {
             id: 'dance-34-2024',
             title: '3/4 Dance',
-            emoji: 'ð',
+            emoji: '💃',
             cover: '',
             gradient: 'linear-gradient(135deg,#6a1b9a 0%,#ab47bc 100%)',
             dropbox: 'https://web.treering.com/school/251517/2025/school-content/school-photos/364630811'
@@ -689,7 +693,7 @@
           {
             id: 'grade4-concert-2024',
             title: 'Grade 4 Concert',
-            emoji: 'ð¶',
+            emoji: '🎶',
             cover: '',
             gradient: 'linear-gradient(135deg,#4527a0 0%,#7b1fa2 100%)',
             dropbox: 'https://web.treering.com/school/251517/2025/school-content/school-photos/364630778'
@@ -697,7 +701,7 @@
           {
             id: 'go-pink-day-2024',
             title: 'Go Pink Day',
-            emoji: 'ð©·',
+            emoji: '🩷',
             cover: '',
             gradient: 'linear-gradient(135deg,#c2185b 0%,#f48fb1 100%)',
             dropbox: 'https://web.treering.com/school/251517/2025/school-content/school-photos/364630790'
@@ -705,7 +709,7 @@
           {
             id: 'k2-dance-2024',
             title: 'K-2 Dance',
-            emoji: 'ðº',
+            emoji: '🕺',
             cover: '',
             gradient: 'linear-gradient(135deg,#00695c 0%,#4db6ac 100%)',
             dropbox: 'https://web.treering.com/school/251517/2025/school-content/school-photos/364630809'
@@ -713,7 +717,7 @@
           {
             id: 'lunch-with-santa-2024',
             title: 'Lunch with Santa',
-            emoji: 'ð',
+            emoji: '🎅',
             cover: '',
             gradient: 'linear-gradient(135deg,#b71c1c 0%,#e53935 100%)',
             dropbox: 'https://web.treering.com/school/251517/2025/school-content/school-photos/364630804'
@@ -721,7 +725,7 @@
           {
             id: 'snow-days-2024',
             title: 'Snow Days',
-            emoji: 'ð¨ï¸',
+            emoji: '🌨️',
             cover: '',
             gradient: 'linear-gradient(135deg,#546e7a 0%,#90a4ae 100%)',
             dropbox: 'https://web.treering.com/school/251517/2025/school-content/school-photos/364630968'
@@ -729,7 +733,7 @@
           {
             id: 'sports-2024',
             title: 'Sports',
-            emoji: 'ð',
+            emoji: '🏆',
             cover: '',
             gradient: 'linear-gradient(135deg,#1a237e 0%,#1565c0 100%)',
             dropbox: 'https://web.treering.com/school/251517/2025/school-content/school-photos/364630541'
@@ -737,7 +741,7 @@
           {
             id: 'grade3-concert-2024',
             title: 'Grade 3 Concert',
-            emoji: 'ðµ',
+            emoji: '🎵',
             cover: '',
             gradient: 'linear-gradient(135deg,#004d40 0%,#26a69a 100%)',
             dropbox: 'https://web.treering.com/school/251517/2025/school-content/school-photos/364630776'
@@ -745,7 +749,7 @@
           {
             id: 'trunk-or-treat-2024',
             title: 'Trunk or Treat',
-            emoji: 'ð',
+            emoji: '🎃',
             cover: '',
             gradient: 'linear-gradient(135deg,#4a1942 0%,#bf360c 100%)',
             dropbox: 'https://web.treering.com/school/251517/2025/school-content/school-photos/364630545'
@@ -758,7 +762,7 @@
           {
             id: '3rd-grade-concerts',
             title: '3rd Grade Concerts',
-            emoji: 'ðµ',
+            emoji: '🎵',
             cover: '',
             gradient: 'linear-gradient(135deg,#004d40 0%,#26a69a 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/6it7vq3ovzfqetfyjb7p0/AHj42iqK6aKCz-8lVkobccs?rlkey=5ar14fxlj595es7z83nmck2nn&st=uuvnawjo&dl=0'
@@ -766,7 +770,7 @@
           {
             id: 'grade4-concert-2023',
             title: 'Grade 4 Concert',
-            emoji: 'ð¶',
+            emoji: '🎶',
             cover: '',
             gradient: 'linear-gradient(135deg,#4527a0 0%,#7b1fa2 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/8jptpb6mmujm4njubce7t/AMk3Bw2I8atFKWFCUoswGmE?rlkey=eicvzwvf20vmfq0zvg38lgqyl&st=9fdf1exm&dl=0'
@@ -774,7 +778,7 @@
           {
             id: 'snow-days-2023',
             title: 'Snow Days',
-            emoji: 'ð¨ï¸',
+            emoji: '🌨️',
             cover: '',
             gradient: 'linear-gradient(135deg,#546e7a 0%,#90a4ae 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/ifsm7e64lodj935w0ri0m/AHmLtO_N3FwgfBVxaSpBIwc?rlkey=xpy856nt48belf87c96vv9i1l&st=4qgso0hn&dl=0'
@@ -782,7 +786,7 @@
           {
             id: 'back-to-school-2023',
             title: 'Back to School',
-            emoji: 'ð',
+            emoji: '🎒',
             cover: '',
             gradient: 'linear-gradient(135deg,#e65100 0%,#ff8f00 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/50cvrtu4qz3fwx3t8bvhv/AJEA371rRvwjhyYRwkoqDOM?rlkey=smgyk03vb8q1f0j0x8vybtpo3&st=iwomiri8&dl=0'
@@ -790,7 +794,7 @@
           {
             id: 'sports-2023',
             title: 'Sports',
-            emoji: 'ð',
+            emoji: '🏆',
             cover: '',
             gradient: 'linear-gradient(135deg,#1a237e 0%,#1565c0 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/2a4d6cjpiinclf5fffanm/AOuoLV2U-iunkQZKWIDktEw?rlkey=a22e3hhyja9pgfntibzm2mhmz&st=f4xy61z0&dl=0'
@@ -798,7 +802,7 @@
           {
             id: 'concerts-2023',
             title: 'Concerts',
-            emoji: 'ðµ',
+            emoji: '🎵',
             cover: '',
             gradient: 'linear-gradient(135deg,#880e4f 0%,#e91e63 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/zuudp4wpjd5jp16sfz5ti/AAywmOZBfBdaisXgWFwyO2U?rlkey=e7qq1luxq8bzrnnwfnwmkkfdl&st=r4nkvyt6&dl=0'
@@ -806,7 +810,7 @@
           {
             id: 'lego-club-2023',
             title: 'Lego Club',
-            emoji: 'ð§±',
+            emoji: '🧱',
             cover: '',
             gradient: 'linear-gradient(135deg,#e53935 0%,#fdd835 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/ccuxyyc23pcp3y7adrk40/AJWZIkQ6WjSFsOY47cF9MKA?rlkey=fecw15bq2cnrxgvbat5xdnrgx&st=lu01t8a3&dl=0'
@@ -814,7 +818,7 @@
           {
             id: 'go-pink-day-2023',
             title: 'Go Pink Day at Jefferson',
-            emoji: 'ð©·',
+            emoji: '🩷',
             cover: '',
             gradient: 'linear-gradient(135deg,#c2185b 0%,#f48fb1 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/qhbkfkxuqaaato8vlipnc/AMmZ0SXlvjDl3IPPFOTZSBY?rlkey=9i9na5abrbxlogiu1rfxiqrbl&st=s61d17lz&dl=0'
@@ -822,7 +826,7 @@
           {
             id: 'glow-gala-2023',
             title: 'Glow Gala',
-            emoji: 'â¨',
+            emoji: '✨',
             cover: '',
             gradient: 'linear-gradient(135deg,#311b92 0%,#7c4dff 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/i5p667z2etyqs80rhtt7k/AEsrwAlEYx1QL23Zqc66Qsw?rlkey=m6lpeu5ug7mk4r3uxnmlyi4y4&st=p59qa4hy&dl=0'
@@ -830,7 +834,7 @@
           {
             id: 'lunch-with-santa-2023',
             title: 'Lunch with Santa',
-            emoji: 'ð',
+            emoji: '🎅',
             cover: '',
             gradient: 'linear-gradient(135deg,#b71c1c 0%,#e53935 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/9kn30rbymgeotfe052jys/AF2KWXdMRVM6s-3ynWvhVfk?rlkey=hcy80vnylfcnr9jb4a4ioi626&st=bpmecbkh&dl=0'
@@ -838,7 +842,7 @@
           {
             id: 'grade3-concert-2023',
             title: 'Grade 3 Concert',
-            emoji: 'ðµ',
+            emoji: '🎵',
             cover: '',
             gradient: 'linear-gradient(135deg,#004d40 0%,#26a69a 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/e7zxxpj4161k5bnee4nlv/AAT-54fR7S-YNlSZoi2AB6E?rlkey=tu4e2wkake46dqnisrlv521c3&st=207vdpja&dl=0'
@@ -846,7 +850,7 @@
           {
             id: 'turn-off-screens-2023',
             title: 'Turn Off the Screen',
-            emoji: 'ðµ',
+            emoji: '📵',
             cover: '',
             gradient: 'linear-gradient(135deg,#37474f 0%,#78909c 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/rzjcf8adkj6l2b8ouznmy/AOu6Su844sWx-1-iUROqv-E?rlkey=vzybt8fyvjgqh9mfuelwr6bnr&st=p0q9nw53&dl=0'
@@ -859,7 +863,7 @@
           {
             id: 'lunch-with-santa',
             title: 'Lunch with Santa & Craft Fair',
-            emoji: 'ð',
+            emoji: '🎅',
             cover: '',
             gradient: 'linear-gradient(135deg,#b71c1c 0%,#e53935 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/o09kfe1w8wivlh1t4sd4z/AN21-h7EXVxErl8_p7bBCDs?rlkey=r8qztnme23pgaa78z9x9vexqz&st=ymro7ol7&dl=0'
@@ -867,7 +871,7 @@
           {
             id: 'back-to-school-2022',
             title: 'Back to School',
-            emoji: 'ð',
+            emoji: '🎒',
             cover: '',
             gradient: 'linear-gradient(135deg,#e65100 0%,#ff8f00 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/4nkdmfpshumianv9mhpxj/AGZedSp1cdjiWzu2NB4EtWw?rlkey=hy0p7xx0np3ymwkur3bfkufjd&dl=0'
@@ -875,7 +879,7 @@
           {
             id: 'fall-2022',
             title: 'Fall',
-            emoji: 'ð',
+            emoji: '🍂',
             cover: '',
             gradient: 'linear-gradient(135deg,#bf360c 0%,#e64a19 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/tznm396p1z2mt2hqtjjpx/APNelN12d6xQNilCDnK5ycU?rlkey=cg30jcc95nisdagljli3ddlvi&dl=0'
@@ -883,7 +887,7 @@
           {
             id: 'holidays-2022',
             title: 'Holidays',
-            emoji: 'ð',
+            emoji: '🎄',
             cover: '',
             gradient: 'linear-gradient(135deg,#1b5e20 0%,#43a047 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/wv3z3ffibvm095yb9ug4c/AEgefni9Nz3y6YJj0lzOHhE?rlkey=y1oax3jfanvzyp39zg2anwd4o&st=9ubtul40&dl=0'
@@ -891,7 +895,7 @@
           {
             id: 'sports-2022',
             title: 'Sports',
-            emoji: 'ð',
+            emoji: '🏆',
             cover: '',
             gradient: 'linear-gradient(135deg,#1a237e 0%,#1565c0 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/6bht6ohyx80vae59yugun/AIB7QlK4TAU8AHYDl92MGIk?rlkey=zgted6iqyzxyasb253x4r0o73&st=phg0b0kw&dl=0'
@@ -899,7 +903,7 @@
           {
             id: 'trunk-or-treat-2022',
             title: 'Trunk or Treat',
-            emoji: 'ð',
+            emoji: '🎃',
             cover: '',
             gradient: 'linear-gradient(135deg,#4a1942 0%,#bf360c 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/3w68z9p8s6yynsgxs51sr/AGmxH6uHthpkRioOLQp5wlM?rlkey=dv31q4ut1z57t58wd3jg4a7sa&st=cnvzb17m&dl=0'
@@ -907,7 +911,7 @@
           {
             id: 'turn-off-screens-2022',
             title: 'Turn Off the Screen',
-            emoji: 'ðµ',
+            emoji: '📵',
             cover: '',
             gradient: 'linear-gradient(135deg,#37474f 0%,#78909c 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/b9v0qgbtyfajx1df4pto1/AK0H2-FGM-VvgxxoAHuGkFU?rlkey=3ofvcdcf5yjepy7yf9u044bpi&st=s4zxh7cu&dl=0'
@@ -915,7 +919,7 @@
           {
             id: 'grade4-concert-2022',
             title: 'Grade 4 Concert',
-            emoji: 'ð¶',
+            emoji: '🎶',
             cover: 'https://www.dropbox.com/scl/fi/515zt1hj0p5k3qbkf88x5/4concert.png?rlkey=n91rp0uj1c3o63s4srwofsnmp&st=7qjw600o&raw=1',
             gradient: 'linear-gradient(135deg,#4527a0 0%,#7b1fa2 100%)',
             dropbox: ''
@@ -928,7 +932,7 @@
           {
             id: 'mr-gifford',
             title: 'Mr. Gifford Through the Years',
-            emoji: 'â­',
+            emoji: '⭐',
             cover: '',
             gradient: 'linear-gradient(135deg,#295c38 0%,#60b256 100%)',
             dropbox: 'https://www.dropbox.com/scl/fo/ur75x7it00p1ev6st0y39/AJa_oaFwJyE_Kv1GAXEG4hY?rlkey=u66efroufpn4auktutjvyer8g&st=8o1y53pl&dl=0'
@@ -937,7 +941,7 @@
       }
     ];
 
-    // ââ Render gallery cards ââ
+    // ── Render gallery cards ──
     function renderGallery() {
       var root = document.getElementById('gallery-root');
       YEAR_GROUPS.forEach(function(group) {
@@ -1011,13 +1015,13 @@
         viewBtn.target = '_blank';
         viewBtn.rel = 'noopener';
         viewBtn.className = 'btn btn-blue';
-        viewBtn.textContent = 'ð View Album';
+        viewBtn.textContent = '📁 View Album';
         actions.appendChild(viewBtn);
       }
 
       var addBtn = document.createElement('button');
       addBtn.className = 'btn btn-primary';
-      addBtn.textContent = 'ð· Add Photos';
+      addBtn.textContent = '📷 Add Photos';
       addBtn.onclick = (function(a){ return function(){ openUploadModal(a.id, a.title); }; })(album);
       actions.appendChild(addBtn);
 
@@ -1026,7 +1030,7 @@
       return card;
     }
 
-    // ââ Community photos cache ââ
+    // ── Community photos cache ──
     var _communityCache = {};
 
     function loadAllCommunityPhotos() {
@@ -1045,7 +1049,7 @@
             _communityCache[album.id] = urls;
             var badge = document.getElementById('badge-' + album.id);
             if (badge) {
-              badge.textContent = 'ð· ' + urls.length + ' community photo' + (urls.length === 1 ? '' : 's');
+              badge.textContent = '📷 ' + urls.length + ' community photo' + (urls.length === 1 ? '' : 's');
               badge.style.display = '';
             }
           })
@@ -1053,12 +1057,12 @@
       });
     }
 
-    // ââ Community photos modal ââ
+    // ── Community photos modal ──
     var _communityAlbum = null;
 
     function openCommunityModal(album) {
       _communityAlbum = album;
-      document.getElementById('community-modal-title').textContent = album.title + ' â Community Photos';
+      document.getElementById('community-modal-title').textContent = album.title + ' — Community Photos';
       var grid = document.getElementById('community-modal-grid');
       grid.innerHTML = '';
       var urls = _communityCache[album.id] || [];
@@ -1082,7 +1086,7 @@
       if (e.target === this) closeCommunityModal();
     });
 
-    // ââ Lightbox ââ
+    // ── Lightbox ──
     var _lbUrls = [], _lbIdx = 0;
 
     function openLightbox(urls, idx) {
@@ -1117,7 +1121,7 @@
       }
     });
 
-    // ââ Upload modal ââ
+    // ── Upload modal ──
     var _uploadAlbumId = '', _uploadAlbumName = '';
 
     function openUploadModal(albumId, albumName) {
@@ -1148,7 +1152,7 @@
       if (!input.files || !input.files.length) { list.style.display = 'none'; return; }
       Array.from(input.files).forEach(function(f){
         var li = document.createElement('li');
-        li.textContent = 'ð ' + f.name + ' (' + (f.size/1024/1024).toFixed(1) + ' MB)';
+        li.textContent = '📎 ' + f.name + ' (' + (f.size/1024/1024).toFixed(1) + ' MB)';
         list.appendChild(li);
       });
       list.style.display = '';
@@ -1192,7 +1196,7 @@
           var uid  = Date.now() + '_' + Math.random().toString(36).slice(2, 8);
           var ext  = file.name.split('.').pop();
           var path = 'gallery/' + _uploadAlbumId + '/' + uid + '.' + ext;
-          statusEl.textContent = 'Uploading ' + (j+1) + ' of ' + total + 'â¦';
+          statusEl.textContent = 'Uploading ' + (j+1) + ' of ' + total + '…';
           var ref      = storage.ref(path);
           var snapshot = await ref.put(file);
           var url      = await snapshot.ref.getDownloadURL();
@@ -1209,7 +1213,7 @@
 
         statusEl.style.display = 'none';
         barEl.style.display = 'none';
-        setUploadAlert('â Thank you, ' + name + '! Your ' + (total === 1 ? 'photo has' : total + ' photos have') + ' been added.', 'success');
+        setUploadAlert('✅ Thank you, ' + name + '! Your ' + (total === 1 ? 'photo has' : total + ' photos have') + ' been added.', 'success');
         submitBtn.disabled = false;
         document.getElementById('upload-form').reset();
         document.getElementById('upload-file-list').style.display = 'none';
@@ -1220,7 +1224,7 @@
         var badge = document.getElementById('badge-' + _uploadAlbumId);
         if (badge) {
           var n = _communityCache[_uploadAlbumId].length;
-          badge.textContent = 'ð· ' + n + ' community photo' + (n === 1 ? '' : 's');
+          badge.textContent = '📷 ' + n + ' community photo' + (n === 1 ? '' : 's');
           badge.style.display = '';
         }
       } catch (err) {
@@ -1232,7 +1236,7 @@
       }
     }
 
-    // ââ Year grid map (built during renderGallery, keyed by year string) ââ
+    // ── Year grid map (built during renderGallery, keyed by year string) ──
     var _yearGrids = {};
 
     // Patch renderGallery to track year grids
@@ -1256,7 +1260,7 @@
       });
     };
 
-    // ââ Load user-created albums from Firestore ââ
+    // ── Load user-created albums from Firestore ──
     function loadUserAlbums() {
       var db = firebase.firestore();
       db.collection('gallery_albums')
@@ -1269,7 +1273,7 @@
             var album = {
               id: doc.id,
               title: data.title,
-              emoji: data.emoji || 'ð¸',
+              emoji: data.emoji || '📸',
               cover: data.cover || '',
               gradient: data.gradient || 'linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%)',
               dropbox: data.dropbox || ''
@@ -1300,7 +1304,7 @@
       _yearGrids[year].appendChild(buildCard(album));
     }
 
-    // ââ Create album modal ââ
+    // ── Create album modal ──
     function openCreateAlbumModal() {
       document.getElementById('create-album-form').reset();
       document.getElementById('create-album-alert').innerHTML = '';
@@ -1326,19 +1330,19 @@
     // Emoji map for common keywords in album titles
     function guessEmoji(title) {
       var t = title.toLowerCase();
-      if (t.includes('halloween') || t.includes('trail') || t.includes('treat')) return 'ð';
-      if (t.includes('dance') || t.includes('lasso') || t.includes('night')) return 'ð';
-      if (t.includes('concert') || t.includes('music') || t.includes('sing')) return 'ðµ';
-      if (t.includes('santa') || t.includes('holiday') || t.includes('christmas')) return 'ð';
-      if (t.includes('spring') || t.includes('garden')) return 'ð¸';
-      if (t.includes('summer') || t.includes('sun')) return 'âï¸';
-      if (t.includes('fall') || t.includes('autumn')) return 'ð';
-      if (t.includes('winter') || t.includes('snow')) return 'âï¸';
-      if (t.includes('back to school') || t.includes('school')) return 'ð';
-      if (t.includes('graduation') || t.includes('grad')) return 'ð';
-      if (t.includes('sport') || t.includes('game') || t.includes('team')) return 'ð';
-      if (t.includes('art') || t.includes('craft') || t.includes('fair')) return 'ð¨';
-      return 'ð¸';
+      if (t.includes('halloween') || t.includes('trail') || t.includes('treat')) return '🎃';
+      if (t.includes('dance') || t.includes('lasso') || t.includes('night')) return '🎉';
+      if (t.includes('concert') || t.includes('music') || t.includes('sing')) return '🎵';
+      if (t.includes('santa') || t.includes('holiday') || t.includes('christmas')) return '🎄';
+      if (t.includes('spring') || t.includes('garden')) return '🌸';
+      if (t.includes('summer') || t.includes('sun')) return '☀️';
+      if (t.includes('fall') || t.includes('autumn')) return '🍂';
+      if (t.includes('winter') || t.includes('snow')) return '❄️';
+      if (t.includes('back to school') || t.includes('school')) return '🎒';
+      if (t.includes('graduation') || t.includes('grad')) return '🎓';
+      if (t.includes('sport') || t.includes('game') || t.includes('team')) return '🏆';
+      if (t.includes('art') || t.includes('craft') || t.includes('fair')) return '🎨';
+      return '📸';
     }
 
     var GRADIENTS = [
@@ -1376,7 +1380,7 @@
         var coverUrl = '';
         if (coverFile) {
           if (!coverFile.type.startsWith('image/')) { setCreateAlert('Cover must be an image file.'); submitBtn.disabled = false; statusEl.style.display = 'none'; return; }
-          statusEl.textContent = 'Uploading cover photoâ¦';
+          statusEl.textContent = 'Uploading cover photo…';
           barEl.style.display = '';
           var uid  = Date.now() + '_' + Math.random().toString(36).slice(2, 8);
           var ext  = coverFile.name.split('.').pop();
@@ -1390,7 +1394,7 @@
         var emoji    = guessEmoji(title);
         var gradient = GRADIENTS[Math.floor(Math.random() * GRADIENTS.length)];
 
-        statusEl.textContent = 'Saving albumâ¦';
+        statusEl.textContent = 'Saving album…';
         var docRef = await firebase.firestore().collection('gallery_albums').add({
           title:       title,
           year:        year,
@@ -1405,7 +1409,7 @@
 
         barEl.style.display = 'none';
         statusEl.style.display = 'none';
-        setCreateAlert('â Album "' + title + '" created! You can now add photos to it.', 'success');
+        setCreateAlert('✅ Album "' + title + '" created! You can now add photos to it.', 'success');
         submitBtn.disabled = false;
         document.getElementById('create-album-form').reset();
 
@@ -1421,7 +1425,7 @@
       }
     }
 
-    // ââ Init ââ
+    // ── Init ──
     document.addEventListener('DOMContentLoaded', function() {
       renderGallery();
       loadUserAlbums();

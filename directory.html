@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Parent Directory â Schalmont PTO</title>
+  <title>Parent Directory — Schalmont PTO</title>
   <meta name="description" content="Connect with other Schalmont families in the PTO parent directory.">
   <link rel="stylesheet" href="css/styles.css?v=5">
   <link rel="icon" href="images/favicon.svg">
@@ -142,13 +142,13 @@
 </head>
 <body>
 
-  <!-- AUTH LOADING OVERLAY â visible until Firebase confirms auth state -->
+  <!-- AUTH LOADING OVERLAY — visible until Firebase confirms auth state -->
   <div id="auth-loading">
     <div class="auth-spinner"></div>
-    <p>Checking your credentialsâ¦</p>
+    <p>Checking your credentials…</p>
   </div>
 
-  <!-- HEADER â always visible -->
+  <!-- HEADER — always visible -->
   <header class="site-header">
     <nav class="container nav-inner">
       <a href="index.html" class="nav-brand">
@@ -159,19 +159,23 @@
         <li class="has-dropdown">
           <a href="schools.html">Schools</a>
           <ul class="nav-dropdown">
-            <li><a href="woestina.html">ð± Woestina Pre-K</a></li>
-            <li><a href="jefferson.html">ð« Jefferson Elementary</a></li>
-            <li><a href="middle-school.html">ð Middle School</a></li>
-            <li><a href="high-school.html">ð High School</a></li>
+            <li><a href="woestina.html">🌱 Woestina Pre-K</a></li>
+            <li><a href="jefferson.html">🏫 Jefferson Elementary</a></li>
+            <li><a href="middle-school.html">📚 Middle School</a></li>
+            <li><a href="high-school.html">🎓 High School</a></li>
           </ul>
         </li>
-        <li class="has-dropdown"><a href="events.html">Events</a><ul class="nav-dropdown"><li><a href="staff-appreciation-week.html">🌟 Staff Appreciation Week</a></li></ul></li>
+        <li class="has-dropdown"><a href="events.html">Events</a>
+            <ul class="nav-dropdown">
+              <li><a href="staff-appreciation-week.html">&#x1F31F; Staff Appreciation Week</a></li>
+            </ul>
+          </li>
         <li><a href="meetings.html">Meetings</a></li>
         <li class="has-dropdown">
           <a href="shop.html">Shop</a>
           <ul class="nav-dropdown">
-            <li><a href="shop.html">ð Spiritwear</a></li>
-            <li><a href="fundraisers.html">ð° Fundraisers</a></li>
+            <li><a href="shop.html">👕 Spiritwear</a></li>
+            <li><a href="fundraisers.html">💰 Fundraisers</a></li>
           </ul>
         </li>
         <li><a href="fundraisers.html">Fundraisers</a></li>
@@ -190,7 +194,7 @@
         <li><a href="social.html" class="nav-social-icon" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a></li>
         <li><a href="social.html" class="nav-social-icon" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li>
       </ul>
-      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">â°</button>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
     </nav>
   </header>
 
@@ -311,7 +315,7 @@
 
 
 
-  <!-- UNVERIFIED EMAIL â shown when signed in but email not yet confirmed -->
+  <!-- UNVERIFIED EMAIL — shown when signed in but email not yet confirmed -->
   <section id="auth-unverified" style="display:none;background:var(--light-bg);padding:60px 20px;min-height:60vh;align-items:center;justify-content:center;flex-direction:column">
     <div style="background:var(--white);border-radius:var(--radius-xl);box-shadow:0 20px 60px rgba(0,0,0,0.12);max-width:460px;width:100%;overflow:hidden;text-align:center">
       <div style="background:var(--primary-dark);padding:32px 32px 24px">
@@ -320,7 +324,7 @@
         <p style="color:rgba(255,255,255,0.7);font-size:14px">One more step before you can continue</p>
       </div>
       <div style="padding:32px">
-        <div style="font-size:52px;margin-bottom:16px">ð§</div>
+        <div style="font-size:52px;margin-bottom:16px">📧</div>
         <p style="font-size:15px;color:var(--text);line-height:1.7;margin-bottom:20px">Check your inbox for a verification email from us. Click the link in that email, then sign back in here.</p>
         <p style="font-size:13px;color:var(--text-light);margin-bottom:24px">Can't find it? Check your spam folder. If you need help, <a href="contact.html" style="color:var(--primary);font-weight:600">contact us</a>.</p>
         <button onclick="signOut()" class="btn btn-sm" style="background:none;border:1px solid var(--border);color:var(--text-light);padding:9px 20px;border-radius:var(--radius);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer">Sign Out</button>
@@ -328,7 +332,7 @@
     </div>
   </section>
 
-  <!-- REJECTED â shown when account has been denied -->
+  <!-- REJECTED — shown when account has been denied -->
   <section id="auth-rejected" style="display:none;background:var(--light-bg);padding:60px 20px;min-height:60vh;align-items:center;justify-content:center;flex-direction:column">
     <div style="background:var(--white);border-radius:var(--radius-xl);box-shadow:0 20px 60px rgba(0,0,0,0.12);max-width:460px;width:100%;overflow:hidden;text-align:center">
       <div style="background:var(--primary-dark);padding:32px 32px 24px">
@@ -337,7 +341,7 @@
         <p style="color:rgba(255,255,255,0.7);font-size:14px">This account is not authorized to view the directory</p>
       </div>
       <div style="padding:32px">
-        <div style="font-size:52px;margin-bottom:16px">ð«</div>
+        <div style="font-size:52px;margin-bottom:16px">🚫</div>
         <p style="font-size:15px;color:var(--text);line-height:1.7;margin-bottom:20px">Your account was not approved for directory access. If you believe this is a mistake, please contact the PTO.</p>
         <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
           <a href="contact.html" class="btn btn-primary" style="padding:9px 20px;font-size:14px">Contact Us</a>
@@ -347,7 +351,7 @@
     </div>
   </section>
 
-  <!-- AUTH GATE â shown when not signed in -->
+  <!-- AUTH GATE — shown when not signed in -->
   <section id="auth-gate" style="display:none;background:var(--light-bg);padding:60px 20px;min-height:60vh;display:none;align-items:center;justify-content:center;flex-direction:column">
     <div class="gate-card">
       <div class="gate-header">
@@ -371,9 +375,9 @@
           </div>
           <div class="form-group">
             <label for="gate-password">Password</label>
-            <input type="password" id="gate-password" placeholder="â¢â¢â¢â¢â¢â¢â¢â¢" required autocomplete="current-password">
+            <input type="password" id="gate-password" placeholder="••••••••" required autocomplete="current-password">
           </div>
-          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center" id="gate-signin-btn">Sign In â</button>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center" id="gate-signin-btn">Sign In →</button>
         </form>
 
         <!-- Register Form -->
@@ -390,7 +394,7 @@
             <label for="gate-reg-password">Password</label>
             <input type="password" id="gate-reg-password" placeholder="Min. 6 characters" required autocomplete="new-password" minlength="6">
           </div>
-          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center" id="gate-register-btn">Create Account â</button>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center" id="gate-register-btn">Create Account →</button>
         </form>
       </div>
     </div>
@@ -410,7 +414,7 @@
     <!-- PAGE HERO -->
     <section class="page-hero">
       <div class="container">
-        <h1>ð Parent Directory</h1>
+        <h1>📋 Parent Directory</h1>
         <p>Connect with other Schalmont families. Add your contact information to make it easy for other parents and guardians to reach you.</p>
       </div>
     </section>
@@ -420,13 +424,13 @@
       <div class="container">
         <div style="display:grid;grid-template-columns:400px 1fr;gap:40px;align-items:start" class="dir-layout">
 
-          <!-- LEFT PANEL â shows join form or profile card depending on auth state -->
+          <!-- LEFT PANEL — shows join form or profile card depending on auth state -->
           <div id="dir-form-panel">
             <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px">
               <h2 style="font-size:20px;margin-bottom:8px">Join the Directory</h2>
 
               <div style="background:#fffbea;border:1px solid #f0d060;border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;font-size:13px;color:#7a5c00;line-height:1.55">
-                <strong>Why does this exist?</strong> Schools are not permitted to release contact information for other children or families. This directory was created because parents repeatedly struggled to gather information for things like birthday party invitations, playdates, and carpools. <strong>Joining is completely optional</strong> â only share what you're comfortable with.
+                <strong>Why does this exist?</strong> Schools are not permitted to release contact information for other children or families. This directory was created because parents repeatedly struggled to gather information for things like birthday party invitations, playdates, and carpools. <strong>Joining is completely optional</strong> — only share what you're comfortable with.
               </div>
 
               <div id="dir-alert"></div>
@@ -446,7 +450,7 @@
                 <div class="form-group" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px;background:var(--light-bg);border-radius:var(--radius)">
                   <label style="align-self:flex-start;margin-bottom:0">Profile Photo <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
                   <div id="photo-preview-wrap" style="width:80px;height:80px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;overflow:hidden;border:3px solid var(--white);box-shadow:0 2px 8px rgba(0,0,0,0.15)">
-                    <span style="color:white;font-size:26px;font-weight:700;line-height:1" id="dir-photo-initials">ð·</span>
+                    <span style="color:white;font-size:26px;font-weight:700;line-height:1" id="dir-photo-initials">📷</span>
                     <img id="dir-photo-preview" style="display:none;width:100%;height:100%;object-fit:cover" alt="Preview">
                   </div>
                   <label for="dir-photo" class="btn btn-sm btn-blue" style="cursor:pointer;margin:0">Choose Photo</label>
@@ -483,7 +487,7 @@
                 </div>
 
                 <div class="form-group" style="background:linear-gradient(135deg,var(--light-bg),#f0fbea);border:1px solid var(--secondary);padding:16px;border-radius:var(--radius)">
-                  <p style="font-size:13px;font-weight:700;margin-bottom:6px;color:var(--primary)">ð± PTO Text Reminders</p>
+                  <p style="font-size:13px;font-weight:700;margin-bottom:6px;color:var(--primary)">📱 PTO Text Reminders</p>
                   <p style="font-size:12px;color:var(--text-light);margin-bottom:10px">Opt in to receive occasional text reminders about PTO events, meetings, and announcements.</p>
                   <label class="form-check">
                     <input type="checkbox" name="textReminders" id="dir-text-reminders">
@@ -501,18 +505,18 @@
                 <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Add My Family to the Directory</button>
 
                 <div class="privacy-notice" style="margin-top:14px">
-                  <span>ð</span>
+                  <span>🔒</span>
                   <span><strong>Privacy Notice:</strong> Your information is only visible to other registered Schalmont PTO families. You control what contact details are shown. Your email is used only for PTO communications.</span>
                 </div>
               </form>
             </div>
           </div>
 
-          <!-- PROFILE PANEL â shown after user has a listing -->
+          <!-- PROFILE PANEL — shown after user has a listing -->
           <div id="dir-profile-panel" style="display:none">
             <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px">
               <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-                <span style="font-size:22px">â</span>
+                <span style="font-size:22px">✅</span>
                 <h2 style="font-size:20px;margin:0">You've already joined the directory!</h2>
               </div>
               <p style="font-size:14px;color:var(--text-light);margin-bottom:20px">Other Schalmont families can see your listing below. Need to make a change?</p>
@@ -533,31 +537,31 @@
           <!-- DIRECTORY LISTING -->
           <div id="dir-listing-panel">
 
-            <!-- Locked state â shown until user has submitted their family -->
+            <!-- Locked state — shown until user has submitted their family -->
             <div id="dir-listing-locked" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg)">
-              <div style="font-size:52px;margin-bottom:16px">ð</div>
+              <div style="font-size:52px;margin-bottom:16px">🔒</div>
               <h3 style="font-size:20px;font-weight:800;margin-bottom:10px;color:var(--text-dark)">Join the Directory First</h3>
               <p style="font-size:14px;color:var(--text-light);max-width:340px;line-height:1.7;margin-bottom:20px">To protect family privacy, the member directory is only visible to families who have added their own listing. Fill out the form on the left to get access.</p>
               <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-light)">
-                <span>ð</span>
+                <span>🔐</span>
                 <span>Your information is only visible to other registered Schalmont PTO families.</span>
               </div>
             </div>
 
-            <!-- Unlocked content â shown after user has submitted -->
+            <!-- Unlocked content — shown after user has submitted -->
             <div id="dir-listing-content" style="display:none">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px">
                 <div>
                   <h2 style="font-size:20px;margin-bottom:2px">Member Families</h2>
-                  <p style="font-size:13px;color:var(--text-light)" id="dir-count">Loadingâ¦</p>
+                  <p style="font-size:13px;color:var(--text-light)" id="dir-count">Loading…</p>
                 </div>
               </div>
 
               <!-- Search + Sort -->
               <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center">
                 <div class="search-bar" style="margin-bottom:0;flex:1;min-width:200px">
-                  <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-light)">ð</span>
-                  <input type="text" id="dir-search" placeholder="Search by name, grade, or teacherâ¦" style="padding-left:42px">
+                  <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-light)">🔍</span>
+                  <input type="text" id="dir-search" placeholder="Search by name, grade, or teacher…" style="padding-left:42px">
                 </div>
                 <div style="display:flex;align-items:center;gap:6px;white-space:nowrap">
                   <label for="dir-sort" style="font-size:13px;color:var(--text-light);margin:0">Sort by:</label>
@@ -651,7 +655,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span>Â© 2026 Schalmont Central Schools PTO. All rights reserved.</span>
+        <span>© 2026 Schalmont Central Schools PTO. All rights reserved.</span>
         <span>Schenectady, NY</span>
       </div>
     </div>
@@ -662,7 +666,7 @@
     <div class="modal" style="max-width:520px;width:100%">
       <div class="modal-header">
         <h3>Edit My Listing</h3>
-        <button class="modal-close" id="edit-modal-close">â</button>
+        <button class="modal-close" id="edit-modal-close">✕</button>
       </div>
       <div class="modal-body" style="padding:24px">
         <div id="edit-alert"></div>
@@ -672,7 +676,7 @@
           <div class="form-group" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px;background:var(--light-bg);border-radius:var(--radius)">
             <label style="align-self:flex-start;margin-bottom:0">Profile Photo <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
             <div id="edit-photo-wrap" style="width:80px;height:80px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;overflow:hidden;border:3px solid var(--white);box-shadow:0 2px 8px rgba(0,0,0,0.15)">
-              <span style="color:white;font-size:26px;font-weight:700;line-height:1" id="edit-photo-initials">ð·</span>
+              <span style="color:white;font-size:26px;font-weight:700;line-height:1" id="edit-photo-initials">📷</span>
               <img id="edit-photo-preview" style="display:none;width:100%;height:100%;object-fit:cover" alt="Preview">
             </div>
             <label for="edit-photo" class="btn btn-sm btn-blue" style="cursor:pointer;margin:0">Change Photo</label>
@@ -720,7 +724,7 @@
           </div>
 
           <div class="form-group" style="background:linear-gradient(135deg,var(--light-bg),#f0fbea);border:1px solid var(--secondary);padding:14px;border-radius:var(--radius)">
-            <p style="font-size:13px;font-weight:700;margin-bottom:6px;color:var(--primary)">ð± PTO Text Reminders</p>
+            <p style="font-size:13px;font-weight:700;margin-bottom:6px;color:var(--primary)">📱 PTO Text Reminders</p>
             <label class="form-check">
               <input type="checkbox" name="textReminders" id="edit-text-reminders">
               <span style="font-size:14px">Yes, I'd like to receive PTO text reminders</span>
@@ -745,7 +749,7 @@
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
   <script>
-    // Check auth state â show login gate, unverified, rejected, or approved content
+    // Check auth state — show login gate, unverified, rejected, or approved content
     auth.onAuthStateChanged(async function(user) {
       if (!user) {
         document.getElementById('auth-loading').style.display = 'none';
@@ -768,7 +772,7 @@
       try {
         var doc = await firebase.firestore().collection('users').doc(user.uid).get();
         if (!doc.exists || (doc.data().status || 'pending') === 'pending') {
-          // No record yet or still pending â send to pending.html to submit info / wait
+          // No record yet or still pending — send to pending.html to submit info / wait
           window.location.href = 'pending.html';
           return;
         }
@@ -777,7 +781,7 @@
           document.getElementById('auth-rejected').style.display = 'flex';
           return;
         }
-      } catch(e) { /* network error â fail open so approved users aren't locked out */ }
+      } catch(e) { /* network error — fail open so approved users aren't locked out */ }
 
       document.getElementById('auth-loading').style.display = 'none';
       document.getElementById('auth-content').style.display = 'block';
@@ -805,7 +809,7 @@
     async function handleGateSignin(e) {
       e.preventDefault();
       var btn = document.getElementById('gate-signin-btn');
-      btn.textContent = 'Signing inâ¦'; btn.disabled = true;
+      btn.textContent = 'Signing in…'; btn.disabled = true;
       try {
         await signIn(
           document.getElementById('gate-email').value,
@@ -813,7 +817,7 @@
         );
       } catch(err) {
         showGateAlert(err.message || 'Sign in failed. Please check your email and password.', 'error');
-        btn.textContent = 'Sign In â'; btn.disabled = false;
+        btn.textContent = 'Sign In →'; btn.disabled = false;
       }
     }
 
@@ -835,7 +839,7 @@
     async function handleGateRegister(e) {
       e.preventDefault();
       var btn = document.getElementById('gate-register-btn');
-      btn.textContent = 'Creating accountâ¦'; btn.disabled = true;
+      btn.textContent = 'Creating account…'; btn.disabled = true;
       try {
         var email = document.getElementById('gate-reg-email').value;
         await signUp(
@@ -843,13 +847,13 @@
           document.getElementById('gate-reg-password').value,
           document.getElementById('gate-reg-name').value
         );
-        // User is now signed out â show email verification prompt
+        // User is now signed out — show email verification prompt
         document.getElementById('gate-register-form').style.display = 'none';
-        showGateAlert('â Account created! Check your inbox for a verification email. After verifying, sign in to submit your family information for review.', 'success');
-        btn.textContent = 'Create Account â'; btn.disabled = false;
+        showGateAlert('✓ Account created! Check your inbox for a verification email. After verifying, sign in to submit your family information for review.', 'success');
+        btn.textContent = 'Create Account →'; btn.disabled = false;
       } catch(err) {
         showGateAlert(err.message || 'Registration failed. Please try again.', 'error');
-        btn.textContent = 'Create Account â'; btn.disabled = false;
+        btn.textContent = 'Create Account →'; btn.disabled = false;
       }
     }
   </script>
