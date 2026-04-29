@@ -53,13 +53,13 @@
    ============================================================ */
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCaH3Xo14pCxhxgvtg31Co2gDi1VuAHoFk",
-  authDomain: "schalmont-pto.firebaseapp.com",
-  projectId: "schalmont-pto",
-  storageBucket: "schalmont-pto.firebasestorage.app",
-  messagingSenderId: "121905023545",
-  appId: "1:121905023545:web:de5aadcaff55023ca49be8",
-  measurementId: "G-EYKHCN25PJ"
+  apiKey: "AIzaSyDoXpCExMLd7TgxvkFlUKvUtGasVAaUgUo",
+  authDomain: "staff-appreciation-week-c9863.firebaseapp.com",
+  projectId: "staff-appreciation-week-c9863",
+  storageBucket: "staff-appreciation-week-c9863.firebasestorage.app",
+  messagingSenderId: "983549713367",
+  appId: "1:983549713367:web:24ccef732a75c7b41c0992",
+  measurementId: "G-E6VXS2618W"
 };
 
 /* ============================================================
