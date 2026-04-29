@@ -468,6 +468,8 @@
               raffle:    selectedRaffle,
               enteredAt: firebase.firestore.FieldValue.serverTimestamp()
             }).then(function() {
+              var backBtn = document.querySelector('#confirmation a.btn');
+              if (backBtn) backBtn.href = 'staff-appreciation-week.html#' + selectedRaffle;
               document.getElementById('raffle-form-section').style.display = 'none';
               document.getElementById('confirmation').style.display = 'block';
             });
