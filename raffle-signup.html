@@ -388,22 +388,30 @@
       else if (hash === '#high-school') selectRaffle('high-school');
     })();
 
-    // Public real-time entry lists (no auth required — needs Firestore rules: allow read: if true)
-    firebase.firestore().collection('raffle_entries')
-      .orderBy('enteredAt', 'asc')
-      .onSnapshot(function(snap) {
-        var msEntries = [], hsEntries = [];
-        snap.docs.forEach(function(d) {
-          var data = d.data();
-          if (data.raffle === 'middle-school') msEntries.push(data);
-          else if (data.raffle === 'high-school') hsEntries.push(data);
+    // Sign in anonymously so Firestore reads/writes are authenticated.
+    // Requires Anonymous sign-in enabled in Firebase Console →
+    // Authentication → Sign-in method → Anonymous → Enable.
+    firebase.auth().signInAnonymously()
+      .catch(function() {}) // silently ignore if anonymous auth is disabled
+      .finally(startPublicListeners);
+
+    function startPublicListeners() {
+      firebase.firestore().collection('raffle_entries')
+        .orderBy('enteredAt', 'asc')
+        .onSnapshot(function(snap) {
+          var msEntries = [], hsEntries = [];
+          snap.docs.forEach(function(d) {
+            var data = d.data();
+            if (data.raffle === 'middle-school') msEntries.push(data);
+            else if (data.raffle === 'high-school') hsEntries.push(data);
+          });
+          renderPublicTable('ms', msEntries);
+          renderPublicTable('hs', hsEntries);
+        }, function(err) {
+          document.getElementById('ms-count').textContent = 'Unable to load entries';
+          document.getElementById('hs-count').textContent = 'Unable to load entries';
         });
-        renderPublicTable('ms', msEntries);
-        renderPublicTable('hs', hsEntries);
-      }, function(err) {
-        document.getElementById('ms-count').textContent = 'Unable to load — check Firestore rules';
-        document.getElementById('hs-count').textContent = 'Unable to load — check Firestore rules';
-      });
+    }
 
     function renderPublicTable(school, entries) {
       var tbody   = document.getElementById(school + '-tbody');
@@ -450,11 +458,17 @@
       btn.disabled = true;
       btn.textContent = 'Submitting…';
 
-      firebase.firestore().collection('raffle_entries')
-        .where('email', '==', email)
-        .where('raffle', '==', selectedRaffle)
-        .get()
-        .then(function(snap) {
+      // Ensure authenticated (anonymous is fine) before hitting Firestore
+      var authPromise = firebase.auth().currentUser
+        ? Promise.resolve()
+        : firebase.auth().signInAnonymously().catch(function() {});
+
+      authPromise.then(function() {
+        return firebase.firestore().collection('raffle_entries')
+          .where('email', '==', email)
+          .where('raffle', '==', selectedRaffle)
+          .get();
+      }).then(function(snap) {
           if (!snap.empty) {
             var school = selectedRaffle === 'middle-school' ? 'Middle School' : 'High School';
             document.getElementById('already-entered-detail').textContent =

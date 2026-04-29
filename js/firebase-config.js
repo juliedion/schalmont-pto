@@ -16,6 +16,9 @@
         rules_version = '2';
         service cloud.firestore {
           match /databases/{database}/documents {
+            match /raffle_entries/{docId} {
+              allow read, write: if true;
+            }
             match /events/{eventId} {
               allow read: if true;
               allow write: if request.auth != null
