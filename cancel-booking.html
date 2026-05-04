@@ -289,8 +289,16 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js"></script>
   <script>
-    firebase.initializeApp(firebaseConfig);
-    var db = firebase.firestore();
+    var db;
+    try {
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      db = firebase.firestore();
+    } catch(e) {
+      document.getElementById('state-loading').innerHTML =
+        '<div style="color:#c00;font-size:14px">Firebase error: ' + e.message + '</div>';
+    }
 
     var params  = new URLSearchParams(window.location.search);
     var token   = params.get('token');
@@ -348,11 +356,20 @@
     var currentSlotId  = null;
 
     // ── Load page ─────────────────────────────────────────────────────────
-    if (!token || !slotId) { show('state-error'); }
-    else {
+    // Safety timeout — if still loading after 8s, show error
+    var loadTimeout = setTimeout(function() { show('state-error'); }, 8000);
+
+    if (!token || !slotId || !db) {
+      clearTimeout(loadTimeout);
+      show('state-error');
+    } else {
       db.collection('massage_signups').doc(slotId).get()
         .then(function(docSnap) {
-          if (!docSnap.exists || docSnap.data().cancelToken !== token) { show('state-error'); return; }
+          clearTimeout(loadTimeout);
+          if (!docSnap.exists || docSnap.data().cancelToken !== token) {
+            show('state-error');
+            return;
+          }
 
           currentData   = docSnap.data();
           currentSlotId = docSnap.id;
@@ -374,7 +391,11 @@
 
           show('state-found');
         })
-        .catch(function() { show('state-error'); });
+        .catch(function(err) {
+          clearTimeout(loadTimeout);
+          document.getElementById('state-loading').innerHTML =
+            '<div style="color:#c00;font-size:14px;padding:20px">Error: ' + (err && err.message ? err.message : 'Unknown error') + '</div>';
+        });
     }
 
     // ── Cancel view ───────────────────────────────────────────────────────
