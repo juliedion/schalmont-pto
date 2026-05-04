@@ -294,6 +294,7 @@
 
     var params  = new URLSearchParams(window.location.search);
     var token   = params.get('token');
+    var slotId  = params.get('slot');
     var action  = params.get('action'); // 'cancel' or 'change'
 
     // ── Slot definitions (must match massage-signup.html) ─────────────────
@@ -347,16 +348,12 @@
     var currentSlotId  = null;
 
     // ── Load page ─────────────────────────────────────────────────────────
-    if (!token) { show('state-error'); }
+    if (!token || !slotId) { show('state-error'); }
     else {
-      db.collection('massage_signups')
-        .where('cancelToken', '==', token)
-        .limit(1)
-        .get()
-        .then(function(snap) {
-          if (snap.empty) { show('state-error'); return; }
+      db.collection('massage_signups').doc(slotId).get()
+        .then(function(docSnap) {
+          if (!docSnap.exists || docSnap.data().cancelToken !== token) { show('state-error'); return; }
 
-          var docSnap   = snap.docs[0];
           currentData   = docSnap.data();
           currentSlotId = docSnap.id;
 
@@ -403,7 +400,7 @@
       });
 
       var changeLink = document.createElement('a');
-      changeLink.href      = 'cancel-booking.html?token=' + token + '&action=change';
+      changeLink.href      = 'cancel-booking.html?token=' + token + '&slot=' + encodeURIComponent(currentSlotId) + '&action=change';
       changeLink.className = 'btn-primary-action';
       changeLink.textContent = '🔄 Change My Time Instead';
 
@@ -474,7 +471,7 @@
         keepBtn.textContent = '← Keep My Current Appointment';
 
         var cancelLink = document.createElement('a');
-        cancelLink.href        = 'cancel-booking.html?token=' + token + '&action=cancel';
+        cancelLink.href        = 'cancel-booking.html?token=' + token + '&slot=' + encodeURIComponent(currentSlotId) + '&action=cancel';
         cancelLink.className   = 'btn-back';
         cancelLink.textContent = '✕ Cancel My Appointment Instead';
         cancelLink.style.color = '#9b2c2c';
@@ -545,7 +542,7 @@
       keepBtn.textContent = '← Keep My Appointment';
 
       var cancelLink = document.createElement('a');
-      cancelLink.href        = 'cancel-booking.html?token=' + token + '&action=cancel';
+      cancelLink.href        = 'cancel-booking.html?token=' + token + '&slot=' + encodeURIComponent(currentSlotId) + '&action=cancel';
       cancelLink.className   = 'btn-back';
       cancelLink.textContent = '✕ Cancel My Appointment';
       cancelLink.style.color = '#9b2c2c';

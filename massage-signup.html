@@ -722,8 +722,8 @@
         });
       }).then(function() {
         // Send confirmation email
-        var cancelUrl = SITE_BASE + 'cancel-booking.html?token=' + cancelToken + '&action=cancel';
-        var changeUrl = SITE_BASE + 'cancel-booking.html?token=' + cancelToken + '&action=change';
+        var cancelUrl = SITE_BASE + 'cancel-booking.html?token=' + cancelToken + '&slot=' + encodeURIComponent(slot.id) + '&action=cancel';
+        var changeUrl = SITE_BASE + 'cancel-booking.html?token=' + cancelToken + '&slot=' + encodeURIComponent(slot.id) + '&action=change';
         emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
           to_name:   name,
           to_email:  email,
