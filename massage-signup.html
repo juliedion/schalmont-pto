@@ -61,37 +61,38 @@
       cursor: not-allowed;
     }
     .slot-btn.taken .slot-status { color: #bbb; }
-    .slot-btn.partial {
-      background: #f0f8ef;
-      border-color: #a8d89e;
-      color: var(--primary-dark);
+    /* Thursday paired rows */
+    .thu-slots-list { display: flex; flex-direction: column; gap: 8px; }
+    .thu-time-group { display: flex; align-items: center; gap: 10px; }
+    .thu-time-label {
+      width: 72px;
+      flex-shrink: 0;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      text-align: right;
     }
-
-    /* Therapist spot dots (Thursday) */
-    .spot-dots {
-      display: flex;
-      justify-content: center;
-      gap: 5px;
-      margin: 4px 0 2px;
+    .thu-pair { display: flex; gap: 8px; flex: 1; }
+    .thu-pair .slot-btn {
+      flex: 1;
+      font-size: 13px;
+      padding: 10px 6px;
     }
-    .spot-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #fff;
-      border: 2px solid var(--primary);
-      display: inline-block;
+    .therapist-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-light);
+      margin-bottom: 3px;
     }
-    .spot-dot-filled {
-      background: #aaa;
-      border-color: #aaa;
-    }
-    .slot-btn.taken .spot-dot { border-color: #ccc; }
-    .slot-btn.taken .spot-dot-filled { background: #ccc; border-color: #ccc; }
+    .slot-btn.taken .therapist-label { color: #ccc; }
 
     /* Break indicator */
     .break-block {
       grid-column: 1 / -1;
+      width: 100%;
       background: #fffbea;
       border: 1px dashed #f0d060;
       border-radius: var(--radius);
@@ -389,10 +390,13 @@
             <div class="day-section" id="section-thursday">
               <div class="day-header day-header-thu">
                 <h2>🗓️ Thursday, May 7</h2>
-                <span class="day-meta">1:30 PM – 3:40 PM · 24 spots · 2 therapists · Middle School</span>
+                <span class="day-meta">1:30 PM – 3:40 PM · Middle School</span>
               </div>
               <div class="day-slots">
-                <div class="slots-grid" id="slots-thu"></div>
+                <div style="background:#e8eef8;border:1px solid #b8cce8;border-radius:var(--radius);padding:10px 14px;font-size:13px;color:#1a3055;font-weight:600;margin-bottom:16px">
+                  💆💆 2 massage therapists are available — each time slot has <strong>2 spots</strong>, one per therapist.
+                </div>
+                <div class="thu-slots-list" id="slots-thu"></div>
                 <div class="slots-summary" id="summary-thu">Loading…</div>
               </div>
             </div>
@@ -460,11 +464,10 @@
       <div class="alert-box" id="modal-alert"></div>
       <label for="input-name">Your Full Name</label>
       <input type="text" id="input-name" placeholder="Jane Smith" autocomplete="name">
-      <label for="input-email">
-        Email Address
-        <span style="font-weight:400;color:var(--text-light)">(optional)</span>
-      </label>
+      <label for="input-email">Email Address</label>
       <input type="email" id="input-email" placeholder="you@example.com" autocomplete="email">
+      <label for="input-phone">Cell Phone</label>
+      <input type="tel" id="input-phone" placeholder="518-555-1234" autocomplete="tel">
       <div class="modal-actions">
         <button class="btn-cancel" id="modal-cancel-btn">Cancel</button>
         <button class="btn-confirm" id="modal-confirm-btn">Confirm Slot →</button>
@@ -479,126 +482,141 @@
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
   <script>
-    // ── Slot generation ───────────────────────────────────────────────────
-    function makeSlots(startH, startM, endH, endM, dayKey, capacity) {
-      var slots = [];
-      var h = startH, m = startM;
-      while (h < endH || (h === endH && m < endM)) {
-        var id = dayKey + '_' + h + '_' + (m < 10 ? '0' + m : m);
-        slots.push({ id: id, label: fmtTime(h, m), dayKey: dayKey, capacity: capacity });
-        m += 10;
-        if (m >= 60) { m -= 60; h++; }
-      }
-      return slots;
-    }
-
-    function makeBreak(label) { return { isBreak: true, label: label }; }
-
+    // ── Helpers ───────────────────────────────────────────────────────────
     function fmtTime(h, m) {
       var ampm = h < 12 ? 'AM' : 'PM';
       var dh = h > 12 ? h - 12 : (h === 0 ? 12 : h);
       return dh + ':' + (m < 10 ? '0' + m : m) + ' ' + ampm;
     }
+    function makeBreak(label) { return { isBreak: true, label: label }; }
 
-    // Wednesday: 9 slots → break 11:30–12:00 → 9 slots = 18 spots (capacity 1 each)
-    var WED_SLOTS = [].concat(
-      makeSlots(10, 0, 11, 30, 'wed', 1),
+    // ── Wednesday: flat slots, capacity 1 ─────────────────────────────────
+    function makeWedSlots(startH, startM, endH, endM) {
+      var slots = [];
+      var h = startH, m = startM;
+      while (h < endH || (h === endH && m < endM)) {
+        var id = 'wed_' + h + '_' + (m < 10 ? '0' + m : m);
+        slots.push({ id: id, label: fmtTime(h, m), dayKey: 'wed' });
+        m += 10; if (m >= 60) { m -= 60; h++; }
+      }
+      return slots;
+    }
+
+    // ── Thursday: paired groups (2 cards per time) ────────────────────────
+    function makeThuGroups(startH, startM, endH, endM) {
+      var groups = [];
+      var h = startH, m = startM;
+      while (h < endH || (h === endH && m < endM)) {
+        var base = 'thu_' + h + '_' + (m < 10 ? '0' + m : m);
+        groups.push({
+          label: fmtTime(h, m),
+          slots: [
+            { id: base + '_a', label: fmtTime(h, m), dayKey: 'thu', therapist: 'Therapist 1' },
+            { id: base + '_b', label: fmtTime(h, m), dayKey: 'thu', therapist: 'Therapist 2' }
+          ]
+        });
+        m += 10; if (m >= 60) { m -= 60; h++; }
+      }
+      return groups;
+    }
+
+    var WED_ITEMS = [].concat(
+      makeWedSlots(10, 0, 11, 30),
       [makeBreak('☕  Break  11:30 – 12:00')],
-      makeSlots(12, 0, 13, 30, 'wed', 1)
+      makeWedSlots(12, 0, 13, 30)
     );
 
-    // Thursday: 6 slots → break 2:30–2:40 → 6 slots = 12 time slots × 2 therapists = 24 spots
-    var THU_SLOTS = [].concat(
-      makeSlots(13, 30, 14, 30, 'thu', 2),
+    var THU_GROUPS = [].concat(
+      makeThuGroups(13, 30, 14, 30),
       [makeBreak('☕  Break  2:30 – 2:40')],
-      makeSlots(14, 40, 15, 40, 'thu', 2)
+      makeThuGroups(14, 40, 15, 40)
     );
 
-    // ── Firebase init ─────────────────────────────────────────────────────
+    // ── Firebase ──────────────────────────────────────────────────────────
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
     var COLLECTION = 'massage_signups';
 
-    var slotState = {};  // id → { filled, capacity }
+    var slotState = {};
     var pendingSlot = null;
 
-    // ── Render grids ──────────────────────────────────────────────────────
-    function renderGrid(gridId, summaryId, slots) {
-      var grid = document.getElementById(gridId);
-      if (!grid) return;
+    // ── Render Wednesday (flat grid) ──────────────────────────────────────
+    function renderWed() {
+      var grid = document.getElementById('slots-wed');
       grid.innerHTML = '';
-      var availSpots = 0, totalSpots = 0;
-
-      slots.forEach(function(slot) {
-        if (slot.isBreak) {
-          var brk = document.createElement('div');
-          brk.className = 'break-block';
-          brk.textContent = slot.label;
-          grid.appendChild(brk);
-          return;
+      var avail = 0, total = 0;
+      WED_ITEMS.forEach(function(item) {
+        if (item.isBreak) {
+          var b = document.createElement('div');
+          b.className = 'break-block'; b.textContent = item.label;
+          grid.appendChild(b); return;
         }
-
-        var state   = slotState[slot.id] || { filled: 0 };
-        var filled  = state.filled || 0;
-        var cap     = slot.capacity;
-        var open    = cap - filled;
-        totalSpots += cap;
-        availSpots += open;
-
+        total++;
+        var taken = !!slotState[item.id];
+        if (!taken) avail++;
         var btn = document.createElement('button');
-        var statusText, cls;
-        if (open <= 0) {
-          cls = 'taken'; statusText = '✓ Taken';
-        } else if (cap > 1 && open < cap) {
-          cls = 'partial'; statusText = '1 spot left';
-        } else {
-          cls = ''; statusText = cap > 1 ? '2 spots open' : 'Available';
-        }
-
-        // For capacity-2 slots, render dot indicators showing filled vs. open
-        var dotsHtml = '';
-        if (cap > 1) {
-          var dots = '';
-          for (var i = 0; i < cap; i++) {
-            dots += '<span class="spot-dot' + (i < filled ? ' spot-dot-filled' : '') + '"></span>';
-          }
-          dotsHtml = '<span class="spot-dots">' + dots + '</span>';
-        }
-
-        btn.className = 'slot-btn' + (cls ? ' ' + cls : '');
-        btn.innerHTML =
-          '<span>' + slot.label + '</span>' +
-          dotsHtml +
-          '<span class="slot-status">' + statusText + '</span>';
-        if (open > 0) btn.addEventListener('click', function() { openModal(slot); });
+        btn.className = 'slot-btn' + (taken ? ' taken' : '');
+        btn.innerHTML = '<span>' + item.label + '</span><span class="slot-status">' + (taken ? '✓ Taken' : 'Available') + '</span>';
+        if (!taken) btn.addEventListener('click', function() { openModal(item); });
         grid.appendChild(btn);
       });
-
-      var summary = document.getElementById(summaryId);
-      if (summary) summary.innerHTML = '<strong>' + availSpots + '</strong> of ' + totalSpots + ' spots available';
+      document.getElementById('summary-wed').innerHTML = '<strong>' + avail + '</strong> of ' + total + ' spots available';
     }
 
-    function refreshAll() {
-      renderGrid('slots-wed', 'summary-wed', WED_SLOTS);
-      renderGrid('slots-thu', 'summary-thu', THU_SLOTS);
+    // ── Render Thursday (paired rows) ─────────────────────────────────────
+    function renderThu() {
+      var list = document.getElementById('slots-thu');
+      list.innerHTML = '';
+      var avail = 0, total = 0;
+      THU_GROUPS.forEach(function(group) {
+        if (group.isBreak) {
+          var b = document.createElement('div');
+          b.className = 'break-block'; b.textContent = group.label;
+          list.appendChild(b); return;
+        }
+        var row = document.createElement('div');
+        row.className = 'thu-time-group';
+        var lbl = document.createElement('div');
+        lbl.className = 'thu-time-label';
+        lbl.textContent = group.label;
+        var pair = document.createElement('div');
+        pair.className = 'thu-pair';
+        group.slots.forEach(function(slot) {
+          total++;
+          var taken = !!slotState[slot.id];
+          if (!taken) avail++;
+          var btn = document.createElement('button');
+          btn.className = 'slot-btn' + (taken ? ' taken' : '');
+          btn.innerHTML = '<span class="therapist-label">' + slot.therapist + '</span>' +
+            '<span class="slot-status">' + (taken ? '✓ Taken' : 'Available') + '</span>';
+          if (!taken) btn.addEventListener('click', (function(s) { return function() { openModal(s); }; })(slot));
+          pair.appendChild(btn);
+        });
+        row.appendChild(lbl);
+        row.appendChild(pair);
+        list.appendChild(row);
+      });
+      document.getElementById('summary-thu').innerHTML = '<strong>' + avail + '</strong> of ' + total + ' spots available';
     }
+
+    function refreshAll() { renderWed(); renderThu(); }
 
     // ── Real-time listener ────────────────────────────────────────────────
     db.collection(COLLECTION).onSnapshot(function(snap) {
       Object.keys(slotState).forEach(function(k) { delete slotState[k]; });
       snap.forEach(function(doc) { slotState[doc.id] = doc.data(); });
       refreshAll();
-    }, function(err) {
-      console.error('Firestore error:', err);
-    });
+    }, function(err) { console.error('Firestore error:', err); });
 
-    // ── Modal logic ───────────────────────────────────────────────────────
+    // ── Modal ─────────────────────────────────────────────────────────────
     function openModal(slot) {
       pendingSlot = slot;
       var dayLabel = slot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Thursday, May 7';
-      document.getElementById('modal-slot-info').textContent = dayLabel + ' · ' + slot.label;
+      var therapistInfo = slot.therapist ? ' · ' + slot.therapist : '';
+      document.getElementById('modal-slot-info').textContent = dayLabel + ' · ' + slot.label + therapistInfo;
       document.getElementById('input-name').value = '';
       document.getElementById('input-email').value = '';
+      document.getElementById('input-phone').value = '';
       document.getElementById('modal-confirm-btn').disabled = false;
       document.getElementById('modal-confirm-btn').textContent = 'Confirm Slot →';
       hideAlert();
@@ -615,46 +633,36 @@
 
     document.getElementById('modal-close-btn').addEventListener('click', closeModal);
     document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
-    document.getElementById('booking-modal').addEventListener('click', function(e) {
-      if (e.target === this) closeModal();
-    });
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') closeModal();
-    });
+    document.getElementById('booking-modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
 
     // ── Confirm booking ───────────────────────────────────────────────────
     document.getElementById('modal-confirm-btn').addEventListener('click', function() {
       var name  = document.getElementById('input-name').value.trim();
       var email = document.getElementById('input-email').value.trim();
-      if (!name) { showAlert('Please enter your name.', 'error'); return; }
+      var phone = document.getElementById('input-phone').value.trim();
+      if (!name)  { showAlert('Please enter your name.', 'error'); return; }
+      if (!email) { showAlert('Please enter your email address.', 'error'); return; }
+      if (!phone) { showAlert('Please enter your cell phone number.', 'error'); return; }
       if (!pendingSlot) { closeModal(); return; }
 
-      var btn  = document.getElementById('modal-confirm-btn');
-      btn.disabled = true;
-      btn.textContent = 'Saving…';
+      var btn = document.getElementById('modal-confirm-btn');
+      btn.disabled = true; btn.textContent = 'Saving…';
       hideAlert();
 
       var slot = pendingSlot;
-      var cap  = slot.capacity;
       var ref  = db.collection(COLLECTION).doc(slot.id);
-      var booking = { name: name, email: email || '', bookedAt: firebase.firestore.FieldValue.serverTimestamp() };
 
       db.runTransaction(function(tx) {
         return tx.get(ref).then(function(doc) {
-          if (!doc.exists) {
-            // First booking for this slot
-            var data = { capacity: cap, filled: 1, slot: slot.label,
-              date: slot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Thursday, May 7',
-              booking0: booking };
-            tx.set(ref, data);
-          } else {
-            var d = doc.data();
-            var filled = d.filled || 0;
-            if (filled >= cap) throw new Error('taken');
-            var update = { filled: filled + 1 };
-            update['booking' + filled] = booking;
-            tx.update(ref, update);
-          }
+          if (doc.exists) throw new Error('taken');
+          tx.set(ref, {
+            name: name, email: email, phone: phone,
+            slot: slot.label,
+            therapist: slot.therapist || '',
+            date: slot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Thursday, May 7',
+            bookedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
         });
       }).then(function() {
         var dayLabel = slot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Thursday, May 7';
@@ -666,27 +674,22 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }).catch(function(err) {
         if (err.message === 'taken') {
-          showAlert('That slot just filled up — please choose another time.', 'error');
+          showAlert('That spot was just taken — please choose another.', 'error');
         } else {
           showAlert('Something went wrong. Please try again.', 'error');
           console.error(err);
         }
-        btn.disabled = false;
-        btn.textContent = 'Confirm Slot →';
+        btn.disabled = false; btn.textContent = 'Confirm Slot →';
       });
     });
 
     function showAlert(msg, type) {
       var el = document.getElementById('modal-alert');
-      el.textContent = msg;
-      el.className   = 'alert-box ' + type;
-      el.style.display = 'block';
+      el.textContent = msg; el.className = 'alert-box ' + type; el.style.display = 'block';
     }
-    function hideAlert() {
-      document.getElementById('modal-alert').style.display = 'none';
-    }
+    function hideAlert() { document.getElementById('modal-alert').style.display = 'none'; }
 
-    // ── Scroll to correct day from hash ───────────────────────────────────
+    // ── Hash scroll ───────────────────────────────────────────────────────
     var hashMap = { '#high-school': 'section-wednesday', '#middle-school': 'section-thursday',
                     '#wednesday': 'section-wednesday', '#thursday': 'section-thursday' };
     if (hashMap[window.location.hash]) {
