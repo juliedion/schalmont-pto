@@ -22,7 +22,8 @@
             match /massage_signups/{docId} {
               allow read: if true;
               allow create: if true;
-              allow update, delete: if request.auth != null
+              allow delete: if true;
+              allow update: if request.auth != null
                 && request.auth.token.email in ['julie@schalmontpto.com'];
             }
             match /events/{eventId} {

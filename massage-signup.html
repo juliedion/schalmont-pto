@@ -61,6 +61,15 @@
       cursor: not-allowed;
     }
     .slot-btn.taken .slot-status { color: #b94040; }
+    .slot-btn .booked-name {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
     /* Thursday paired rows */
     .thu-slots-list { display: flex; flex-direction: column; gap: 8px; }
     .thu-time-group { display: flex; align-items: center; gap: 10px; }
@@ -478,10 +487,45 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
   <script>
+    // ── EmailJS setup ─────────────────────────────────────────────────────
+    // SETUP INSTRUCTIONS:
+    // 1. Create a free account at https://www.emailjs.com
+    // 2. Add an Email Service (connect your Gmail): Email Services → Add New Service
+    // 3. Create an Email Template (Email Templates → Create New Template).
+    //    Use these template variables:
+    //      {{to_name}}   {{to_email}}   {{slot}}   {{date}}   {{therapist}}
+    //      {{cancel_url}}   {{change_url}}
+    //    Subject suggestion: Your massage is confirmed for {{slot}} on {{date}}!
+    //    Body suggestion (copy/paste):
+    //      Hi {{to_name}},
+    //
+    //      Your 10-minute massage is confirmed!
+    //
+    //      📅 Date: {{date}}
+    //      ⏰ Time: {{slot}}  {{therapist}}
+    //
+    //      Need to cancel or pick a different time? Use the links below — no login needed.
+    //
+    //      ❌ Cancel my appointment: {{cancel_url}}
+    //      🔄 Change my time: {{change_url}}
+    //
+    //      Questions? Contact Julie Dion at julie@schalmontpto.com or 518.892.7495
+    //
+    //      — Schalmont PTO Staff Appreciation Week
+    // 4. Copy your Public Key from Account → General tab
+    // 5. Fill in the three values below:
+    var EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';   // e.g. 'abc123XYZ'
+    var EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // e.g. 'service_xxxxxxx'
+    var EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // e.g. 'template_xxxxxxx'
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
+    var SITE_BASE = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/');
+
     // ── Helpers ───────────────────────────────────────────────────────────
     function fmtTime(h, m) {
       var ampm = h < 12 ? 'AM' : 'PM';
@@ -489,6 +533,10 @@
       return dh + ':' + (m < 10 ? '0' + m : m) + ' ' + ampm;
     }
     function makeBreak(label) { return { isBreak: true, label: label }; }
+    function generateToken() {
+      return Math.random().toString(36).substr(2, 10) + Math.random().toString(36).substr(2, 10);
+    }
+    function firstName(full) { return full ? full.split(' ')[0] : ''; }
 
     // ── Wednesday: flat slots, capacity 1 ─────────────────────────────────
     function makeWedSlots(startH, startM, endH, endM) {
@@ -552,11 +600,13 @@
           grid.appendChild(b); return;
         }
         total++;
-        var taken = !!slotState[item.id];
+        var state = slotState[item.id];
+        var taken = !!state;
         if (!taken) avail++;
         var btn = document.createElement('button');
         btn.className = 'slot-btn' + (taken ? ' taken' : '');
-        btn.innerHTML = '<span>' + item.label + '</span><span class="slot-status">' + (taken ? '✓ Taken' : 'Available') + '</span>';
+        var nameHtml = taken && state.name ? '<span class="booked-name">' + firstName(state.name) + '</span>' : '';
+        btn.innerHTML = '<span>' + item.label + '</span>' + nameHtml + '<span class="slot-status">' + (taken ? '✓ Booked' : 'Available') + '</span>';
         if (!taken) btn.addEventListener('click', function() { openModal(item); });
         grid.appendChild(btn);
       });
@@ -583,12 +633,15 @@
         pair.className = 'thu-pair';
         group.slots.forEach(function(slot) {
           total++;
-          var taken = !!slotState[slot.id];
+          var tState = slotState[slot.id];
+          var taken = !!tState;
           if (!taken) avail++;
           var btn = document.createElement('button');
           btn.className = 'slot-btn' + (taken ? ' taken' : '');
+          var tNameHtml = taken && tState.name ? '<span class="booked-name">' + firstName(tState.name) + '</span>' : '';
           btn.innerHTML = '<span class="therapist-label">' + slot.therapist + '</span>' +
-            '<span class="slot-status">' + (taken ? '✓ Taken' : 'Available') + '</span>';
+            tNameHtml +
+            '<span class="slot-status">' + (taken ? '✓ Booked' : 'Available') + '</span>';
           if (!taken) btn.addEventListener('click', (function(s) { return function() { openModal(s); }; })(slot));
           pair.appendChild(btn);
         });
@@ -651,7 +704,9 @@
       hideAlert();
 
       var slot = pendingSlot;
-      var ref  = db.collection(COLLECTION).doc(slot.id);
+      var dayLabel = slot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Thursday, May 7';
+      var cancelToken = generateToken();
+      var ref = db.collection(COLLECTION).doc(slot.id);
 
       db.runTransaction(function(tx) {
         return tx.get(ref).then(function(doc) {
@@ -660,14 +715,27 @@
             name: name, email: email, phone: phone,
             slot: slot.label,
             therapist: slot.therapist || '',
-            date: slot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Thursday, May 7',
+            date: dayLabel,
+            cancelToken: cancelToken,
             bookedAt: firebase.firestore.FieldValue.serverTimestamp()
           });
         });
       }).then(function() {
-        var dayLabel = slot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Thursday, May 7';
+        // Send confirmation email
+        var cancelUrl = SITE_BASE + 'cancel-booking.html?token=' + cancelToken + '&action=cancel';
+        var changeUrl = SITE_BASE + 'cancel-booking.html?token=' + cancelToken + '&action=change';
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          to_name:   name,
+          to_email:  email,
+          slot:      slot.label,
+          date:      dayLabel,
+          therapist: slot.therapist ? '(' + slot.therapist + ')' : '',
+          cancel_url: cancelUrl,
+          change_url: changeUrl
+        }).catch(function(e) { console.warn('Email failed:', e); });
+
         document.getElementById('confirm-text').textContent =
-          name + ', you are confirmed for ' + slot.label + ' on ' + dayLabel + '. See you there!';
+          name + ', you are confirmed for ' + slot.label + ' on ' + dayLabel + '. A confirmation email has been sent to ' + email + '.';
         document.getElementById('confirm-banner').style.display = 'block';
         document.getElementById('signup-content').style.display = 'none';
         closeModal();
