@@ -67,6 +67,28 @@
       color: var(--primary-dark);
     }
 
+    /* Therapist spot dots (Thursday) */
+    .spot-dots {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 4px 0 2px;
+    }
+    .spot-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid var(--primary);
+      display: inline-block;
+    }
+    .spot-dot-filled {
+      background: #aaa;
+      border-color: #aaa;
+    }
+    .slot-btn.taken .spot-dot { border-color: #ccc; }
+    .slot-btn.taken .spot-dot-filled { background: #ccc; border-color: #ccc; }
+
     /* Break indicator */
     .break-block {
       grid-column: 1 / -1;
@@ -528,14 +550,25 @@
         if (open <= 0) {
           cls = 'taken'; statusText = '✓ Taken';
         } else if (cap > 1 && open < cap) {
-          cls = 'partial'; statusText = open + ' spot' + (open > 1 ? 's' : '') + ' left';
+          cls = 'partial'; statusText = '1 spot left';
         } else {
-          cls = ''; statusText = cap > 1 ? cap + ' spots open' : 'Available';
+          cls = ''; statusText = cap > 1 ? '2 spots open' : 'Available';
+        }
+
+        // For capacity-2 slots, render dot indicators showing filled vs. open
+        var dotsHtml = '';
+        if (cap > 1) {
+          var dots = '';
+          for (var i = 0; i < cap; i++) {
+            dots += '<span class="spot-dot' + (i < filled ? ' spot-dot-filled' : '') + '"></span>';
+          }
+          dotsHtml = '<span class="spot-dots">' + dots + '</span>';
         }
 
         btn.className = 'slot-btn' + (cls ? ' ' + cls : '');
         btn.innerHTML =
           '<span>' + slot.label + '</span>' +
+          dotsHtml +
           '<span class="slot-status">' + statusText + '</span>';
         if (open > 0) btn.addEventListener('click', function() { openModal(slot); });
         grid.appendChild(btn);
