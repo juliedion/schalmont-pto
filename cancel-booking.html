@@ -285,27 +285,51 @@
     </div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
   <script>
-    var db;
-    try {
-      if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-      }
-      db = firebase.firestore();
-    } catch(e) {
-      document.getElementById('state-loading').innerHTML =
-        '<div style="color:#c00;font-size:14px">Firebase error: ' + e.message + '</div>';
+    // ── Firebase REST config ──────────────────────────────────────────────
+    var FB_PROJECT = 'staff-appreciation-week-c9863';
+    var FB_API_KEY = 'AIzaSyDoXpCExMLd7TgxvkFlUKvUtGasVAaUgUo';
+    var FB_BASE    = 'https://firestore.googleapis.com/v1/projects/' + FB_PROJECT + '/databases/(default)/documents/';
+
+    function fsGet(docPath) {
+      return fetch(FB_BASE + docPath + '?key=' + FB_API_KEY).then(function(r) { return r.json(); });
+    }
+    function fsDelete(docPath) {
+      return fetch(FB_BASE + docPath + '?key=' + FB_API_KEY, { method: 'DELETE' }).then(function(r) {
+        if (!r.ok && r.status !== 404) throw new Error('Delete failed: ' + r.status);
+      });
+    }
+    function fsPatch(docPath, fields) {
+      // Build Firestore REST field mask + value map
+      var fieldNames = Object.keys(fields);
+      var fsMask = fieldNames.map(function(k) { return 'updateMask.fieldPaths=' + encodeURIComponent(k); }).join('&');
+      var fsFields = {};
+      fieldNames.forEach(function(k) {
+        var v = fields[k];
+        if (typeof v === 'string') fsFields[k] = { stringValue: v };
+        else if (typeof v === 'number') fsFields[k] = { integerValue: v };
+      });
+      var url = FB_BASE + docPath + '?' + fsMask + '&key=' + FB_API_KEY;
+      return fetch(url, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fields: fsFields })
+      }).then(function(r) { if (!r.ok) throw new Error('Write failed: ' + r.status); return r.json(); });
+    }
+    function fsListAll(collPath) {
+      return fetch(FB_BASE + collPath + '?key=' + FB_API_KEY + '&pageSize=200').then(function(r) { return r.json(); });
+    }
+    function getStr(doc, field) {
+      return doc.fields && doc.fields[field] ? (doc.fields[field].stringValue || '') : '';
     }
 
+    // ── URL params ────────────────────────────────────────────────────────
     var params  = new URLSearchParams(window.location.search);
     var token   = params.get('token');
     var slotId  = params.get('slot');
-    var action  = params.get('action'); // 'cancel' or 'change'
+    var action  = params.get('action');
 
-    // ── Slot definitions (must match massage-signup.html) ─────────────────
+    // ── Slot definitions ──────────────────────────────────────────────────
     function fmtTime(h, m) {
       var ampm = h < 12 ? 'AM' : 'PM';
       var dh = h > 12 ? h - 12 : (h === 0 ? 12 : h);
@@ -326,14 +350,6 @@
       }
       return slots;
     }
-
-    var ALL_SLOTS = [].concat(
-      buildSlots(10, 0, 11, 30, 'wed'),
-      buildSlots(12, 0, 13, 30, 'wed'),
-      buildSlots(13, 30, 14, 30, 'thu'),
-      buildSlots(14, 40, 15, 40, 'thu')
-    );
-
     var WED_BLOCKS = [
       { type: 'slots', slots: buildSlots(10, 0, 11, 30, 'wed') },
       { type: 'break', label: '☕ Break  11:30 – 12:00' },
@@ -356,23 +372,25 @@
     var currentSlotId  = null;
 
     // ── Load page ─────────────────────────────────────────────────────────
-    // Safety timeout — if still loading after 8s, show error
-    var loadTimeout = setTimeout(function() { show('state-error'); }, 8000);
-
-    if (!token || !slotId || !db) {
-      clearTimeout(loadTimeout);
+    if (!token || !slotId) {
       show('state-error');
     } else {
-      db.collection('massage_signups').doc(slotId).get()
-        .then(function(docSnap) {
-          clearTimeout(loadTimeout);
-          if (!docSnap.exists || docSnap.data().cancelToken !== token) {
-            show('state-error');
-            return;
-          }
+      fsGet('massage_signups/' + slotId)
+        .then(function(doc) {
+          if (doc.error || !doc.fields) { show('state-error'); return; }
+          var storedToken = getStr(doc, 'cancelToken');
+          if (storedToken !== token) { show('state-error'); return; }
 
-          currentData   = docSnap.data();
-          currentSlotId = docSnap.id;
+          currentData = {
+            name:        getStr(doc, 'name'),
+            email:       getStr(doc, 'email'),
+            phone:       getStr(doc, 'phone'),
+            slot:        getStr(doc, 'slot'),
+            therapist:   getStr(doc, 'therapist'),
+            date:        getStr(doc, 'date'),
+            cancelToken: storedToken
+          };
+          currentSlotId = slotId;
 
           var therapistLine = currentData.therapist ? '<br><strong>Therapist:</strong> ' + currentData.therapist : '';
           document.getElementById('booking-detail').innerHTML =
@@ -382,19 +400,16 @@
             therapistLine;
 
           var content = document.getElementById('action-content');
-
           if (action === 'cancel') {
             renderCancelView(content);
           } else {
             renderChangeView(content);
           }
-
           show('state-found');
         })
         .catch(function(err) {
-          clearTimeout(loadTimeout);
           document.getElementById('state-loading').innerHTML =
-            '<div style="color:#c00;font-size:14px;padding:20px">Error: ' + (err && err.message ? err.message : 'Unknown error') + '</div>';
+            '<div style="color:#c00;font-size:14px;padding:20px">Error loading appointment: ' + (err && err.message ? err.message : String(err)) + '</div>';
         });
     }
 
@@ -412,7 +427,7 @@
       cancelBtn.addEventListener('click', function() {
         cancelBtn.disabled    = true;
         cancelBtn.textContent = 'Cancelling…';
-        db.collection('massage_signups').doc(currentSlotId).delete()
+        fsDelete('massage_signups/' + currentSlotId)
           .then(function() { show('state-cancelled'); })
           .catch(function() {
             cancelBtn.disabled    = false;
@@ -421,8 +436,8 @@
       });
 
       var changeLink = document.createElement('a');
-      changeLink.href      = 'cancel-booking.html?token=' + token + '&slot=' + encodeURIComponent(currentSlotId) + '&action=change';
-      changeLink.className = 'btn-primary-action';
+      changeLink.href        = 'cancel-booking.html?token=' + token + '&slot=' + encodeURIComponent(currentSlotId) + '&action=change';
+      changeLink.className   = 'btn-primary-action';
       changeLink.textContent = '🔄 Change My Time Instead';
 
       var backLink = document.createElement('a');
@@ -441,12 +456,14 @@
       document.getElementById('action-title').textContent = 'Change Your Time Slot';
       document.getElementById('action-desc').textContent  = 'Select a new time below. Your current slot will be released and the new one confirmed.';
 
-      // Load all taken slots, then show available ones
-      db.collection('massage_signups').get().then(function(snap) {
+      fsListAll('massage_signups').then(function(result) {
         var takenIds = {};
-        snap.forEach(function(d) { takenIds[d.id] = true; });
-
-        // Remove the person's own current slot from taken (it will be freed)
+        if (result.documents) {
+          result.documents.forEach(function(d) {
+            var parts = d.name.split('/');
+            takenIds[parts[parts.length - 1]] = true;
+          });
+        }
         delete takenIds[currentSlotId];
 
         var availWed = WED_BLOCKS.map(function(block) {
@@ -462,38 +479,31 @@
         var totalAvail = availWed.reduce(function(n, b) { return n + (b.type === 'slots' ? b.slots.length : 0); }, 0)
                        + availThu.reduce(function(n, b) { return n + (b.type === 'slots' ? b.slots.length : 0); }, 0);
 
-        if (totalAvail === 0) {
-          renderNoSlotsAvailable(container);
-          return;
-        }
+        if (totalAvail === 0) { renderNoSlotsAvailable(container); return; }
 
         var section = document.createElement('div');
         section.className = 'slots-section';
-
         var heading = document.createElement('h3');
         heading.textContent = 'Available Time Slots';
         section.appendChild(heading);
 
-        if (availWed.some(function(b) { return b.type === 'slots' && b.slots.length > 0; })) {
+        if (availWed.some(function(b) { return b.type === 'slots' && b.slots.length > 0; }))
           section.appendChild(buildDayGroup('🗓️ Wednesday, May 6', availWed));
-        }
-        if (availThu.some(function(b) { return b.type === 'slots' && b.slots.length > 0; })) {
+        if (availThu.some(function(b) { return b.type === 'slots' && b.slots.length > 0; }))
           section.appendChild(buildDayGroup('🗓️ Thursday, May 7', availThu));
-        }
 
-        // Cancel link at bottom
         var btns = document.createElement('div');
         btns.className = 'action-buttons';
         btns.style.marginTop = '20px';
 
         var keepBtn = document.createElement('a');
-        keepBtn.href        = 'staff-appreciation-week.html';
-        keepBtn.className   = 'btn-back';
+        keepBtn.href = 'staff-appreciation-week.html';
+        keepBtn.className = 'btn-back';
         keepBtn.textContent = '← Keep My Current Appointment';
 
         var cancelLink = document.createElement('a');
-        cancelLink.href        = 'cancel-booking.html?token=' + token + '&slot=' + encodeURIComponent(currentSlotId) + '&action=cancel';
-        cancelLink.className   = 'btn-back';
+        cancelLink.href = 'cancel-booking.html?token=' + token + '&slot=' + encodeURIComponent(currentSlotId) + '&action=cancel';
+        cancelLink.className = 'btn-back';
         cancelLink.textContent = '✕ Cancel My Appointment Instead';
         cancelLink.style.color = '#9b2c2c';
 
@@ -501,25 +511,22 @@
         btns.appendChild(cancelLink);
         section.appendChild(btns);
         container.appendChild(section);
-      });
+      }).catch(function() { renderNoSlotsAvailable(container); });
     }
 
     function buildDayGroup(label, blocks) {
       var group = document.createElement('div');
       group.className = 'day-group';
-
       var lbl = document.createElement('div');
-      lbl.className   = 'day-group-label';
+      lbl.className = 'day-group-label';
       lbl.textContent = label;
       group.appendChild(lbl);
-
       var grid = document.createElement('div');
       grid.className = 'avail-slots-grid';
-
       blocks.forEach(function(block) {
         if (block.type === 'break') {
           var brk = document.createElement('div');
-          brk.className   = 'break-divider';
+          brk.className = 'break-divider';
           brk.textContent = block.label;
           grid.appendChild(brk);
           return;
@@ -533,7 +540,6 @@
           grid.appendChild(btn);
         });
       });
-
       group.appendChild(grid);
       return group;
     }
@@ -547,7 +553,7 @@
         '• <strong>Keep your current appointment</strong> — your spot is still reserved.<br>' +
         '• <strong>Cancel your appointment</strong> — your slot will be freed up for others.<br><br>' +
         'Want to try swapping with another staff member? Reach out directly to a colleague ' +
-        'and ask if they'd be willing to trade times. They can use the change link in their ' +
+        'and ask if they\'d be willing to trade times. They can use the change link in their ' +
         'confirmation email to release their slot, and then you can grab it.<br><br>' +
         'Questions? Contact <strong>Julie Dion</strong> at ' +
         '<a href="mailto:julie@schalmontpto.com" style="color:var(--primary);font-weight:600">julie@schalmontpto.com</a> ' +
@@ -558,19 +564,18 @@
       btns.style.marginTop = '20px';
 
       var keepBtn = document.createElement('a');
-      keepBtn.href        = 'staff-appreciation-week.html';
-      keepBtn.className   = 'btn-primary-action';
+      keepBtn.href = 'staff-appreciation-week.html';
+      keepBtn.className = 'btn-primary-action';
       keepBtn.textContent = '← Keep My Appointment';
 
       var cancelLink = document.createElement('a');
-      cancelLink.href        = 'cancel-booking.html?token=' + token + '&slot=' + encodeURIComponent(currentSlotId) + '&action=cancel';
-      cancelLink.className   = 'btn-back';
+      cancelLink.href = 'cancel-booking.html?token=' + token + '&slot=' + encodeURIComponent(currentSlotId) + '&action=cancel';
+      cancelLink.className = 'btn-back';
       cancelLink.textContent = '✕ Cancel My Appointment';
       cancelLink.style.color = '#9b2c2c';
 
       btns.appendChild(keepBtn);
       btns.appendChild(cancelLink);
-
       container.appendChild(box);
       container.appendChild(btns);
     }
@@ -588,7 +593,6 @@
       document.getElementById('confirm-modal').classList.add('open');
       document.body.style.overflow = 'hidden';
     }
-
     function closeModal() {
       document.getElementById('confirm-modal').classList.remove('open');
       document.body.style.overflow = '';
@@ -605,26 +609,22 @@
       document.getElementById('modal-error').style.display = 'none';
 
       var newSlot  = pendingNewSlot;
-      var newRef   = db.collection('massage_signups').doc(newSlot.id);
-      var oldRef   = db.collection('massage_signups').doc(currentSlotId);
       var dayLabel = newSlot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Thursday, May 7';
 
-      db.runTransaction(function(tx) {
-        return tx.get(newRef).then(function(doc) {
-          if (doc.exists) throw new Error('taken');
-          // Book the new slot with all the same details, new date/slot/therapist
-          tx.set(newRef, {
-            name:        currentData.name,
-            email:       currentData.email,
-            phone:       currentData.phone,
-            slot:        newSlot.label,
-            therapist:   newSlot.therapist || '',
-            date:        dayLabel,
-            cancelToken: currentData.cancelToken,
-            bookedAt:    firebase.firestore.FieldValue.serverTimestamp()
-          });
-          tx.delete(oldRef);
+      // Check new slot isn't taken, then write new + delete old
+      fsGet('massage_signups/' + newSlot.id).then(function(doc) {
+        if (!doc.error && doc.fields) throw new Error('taken');
+        return fsPatch('massage_signups/' + newSlot.id, {
+          name:        currentData.name,
+          email:       currentData.email,
+          phone:       currentData.phone,
+          slot:        newSlot.label,
+          therapist:   newSlot.therapist || '',
+          date:        dayLabel,
+          cancelToken: currentData.cancelToken
         });
+      }).then(function() {
+        return fsDelete('massage_signups/' + currentSlotId);
       }).then(function() {
         closeModal();
         document.getElementById('changed-text').textContent =
@@ -632,7 +632,7 @@
         show('state-changed');
       }).catch(function(err) {
         var errEl = document.getElementById('modal-error');
-        errEl.textContent = err.message === 'taken'
+        errEl.textContent = err && err.message === 'taken'
           ? 'That slot was just taken — please choose another.'
           : 'Something went wrong. Please try again.';
         errEl.style.display = 'block';
