@@ -61,6 +61,25 @@
       cursor: not-allowed;
     }
     .slot-btn.taken .slot-status { color: #bbb; }
+    .slot-btn.partial {
+      background: #f0f8ef;
+      border-color: #a8d89e;
+      color: var(--primary-dark);
+    }
+
+    /* Break indicator */
+    .break-block {
+      grid-column: 1 / -1;
+      background: #fffbea;
+      border: 1px dashed #f0d060;
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #7a5c00;
+      text-align: center;
+      margin: 4px 0;
+    }
 
     .slots-summary {
       font-size: 13px;
@@ -336,7 +355,7 @@
             <div class="day-section" id="section-wednesday">
               <div class="day-header day-header-wed">
                 <h2>🗓️ Wednesday, May 6</h2>
-                <span class="day-meta">10:00 AM – 1:30 PM · High School</span>
+                <span class="day-meta">10:00 AM – 1:30 PM · 18 spots · High School</span>
               </div>
               <div class="day-slots">
                 <div class="slots-grid" id="slots-wed"></div>
@@ -348,7 +367,7 @@
             <div class="day-section" id="section-thursday">
               <div class="day-header day-header-thu">
                 <h2>🗓️ Thursday, May 7</h2>
-                <span class="day-meta">1:30 PM – 3:30 PM · Middle School</span>
+                <span class="day-meta">1:30 PM – 3:40 PM · 24 spots · 2 therapists · Middle School</span>
               </div>
               <div class="day-slots">
                 <div class="slots-grid" id="slots-thu"></div>
@@ -439,17 +458,19 @@
   <script src="js/app.js"></script>
   <script>
     // ── Slot generation ───────────────────────────────────────────────────
-    function buildSlots(startH, startM, endH, endM, dayKey) {
+    function makeSlots(startH, startM, endH, endM, dayKey, capacity) {
       var slots = [];
       var h = startH, m = startM;
       while (h < endH || (h === endH && m < endM)) {
         var id = dayKey + '_' + h + '_' + (m < 10 ? '0' + m : m);
-        slots.push({ id: id, label: fmtTime(h, m), dayKey: dayKey });
+        slots.push({ id: id, label: fmtTime(h, m), dayKey: dayKey, capacity: capacity });
         m += 10;
         if (m >= 60) { m -= 60; h++; }
       }
       return slots;
     }
+
+    function makeBreak(label) { return { isBreak: true, label: label }; }
 
     function fmtTime(h, m) {
       var ampm = h < 12 ? 'AM' : 'PM';
@@ -457,15 +478,26 @@
       return dh + ':' + (m < 10 ? '0' + m : m) + ' ' + ampm;
     }
 
-    var WED_SLOTS = buildSlots(10, 0,  13, 30, 'wed'); // 10:00 AM – last start 1:20 PM
-    var THU_SLOTS = buildSlots(13, 30, 15, 30, 'thu'); // 1:30 PM  – last start 3:20 PM
+    // Wednesday: 9 slots → break 11:30–12:00 → 9 slots = 18 spots (capacity 1 each)
+    var WED_SLOTS = [].concat(
+      makeSlots(10, 0, 11, 30, 'wed', 1),
+      [makeBreak('☕  Break  11:30 – 12:00')],
+      makeSlots(12, 0, 13, 30, 'wed', 1)
+    );
+
+    // Thursday: 6 slots → break 2:30–2:40 → 6 slots = 12 time slots × 2 therapists = 24 spots
+    var THU_SLOTS = [].concat(
+      makeSlots(13, 30, 14, 30, 'thu', 2),
+      [makeBreak('☕  Break  2:30 – 2:40')],
+      makeSlots(14, 40, 15, 40, 'thu', 2)
+    );
 
     // ── Firebase init ─────────────────────────────────────────────────────
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
     var COLLECTION = 'massage_signups';
 
-    var takenMap = {};
+    var slotState = {};  // id → { filled, capacity }
     var pendingSlot = null;
 
     // ── Render grids ──────────────────────────────────────────────────────
@@ -473,20 +505,44 @@
       var grid = document.getElementById(gridId);
       if (!grid) return;
       grid.innerHTML = '';
-      var avail = 0;
+      var availSpots = 0, totalSpots = 0;
+
       slots.forEach(function(slot) {
-        var taken = !!takenMap[slot.id];
-        if (!taken) avail++;
+        if (slot.isBreak) {
+          var brk = document.createElement('div');
+          brk.className = 'break-block';
+          brk.textContent = slot.label;
+          grid.appendChild(brk);
+          return;
+        }
+
+        var state   = slotState[slot.id] || { filled: 0 };
+        var filled  = state.filled || 0;
+        var cap     = slot.capacity;
+        var open    = cap - filled;
+        totalSpots += cap;
+        availSpots += open;
+
         var btn = document.createElement('button');
-        btn.className = 'slot-btn' + (taken ? ' taken' : '');
+        var statusText, cls;
+        if (open <= 0) {
+          cls = 'taken'; statusText = '✓ Taken';
+        } else if (cap > 1 && open < cap) {
+          cls = 'partial'; statusText = open + ' spot' + (open > 1 ? 's' : '') + ' left';
+        } else {
+          cls = ''; statusText = cap > 1 ? cap + ' spots open' : 'Available';
+        }
+
+        btn.className = 'slot-btn' + (cls ? ' ' + cls : '');
         btn.innerHTML =
           '<span>' + slot.label + '</span>' +
-          '<span class="slot-status">' + (taken ? '✓ Taken' : 'Available') + '</span>';
-        if (!taken) btn.addEventListener('click', function() { openModal(slot); });
+          '<span class="slot-status">' + statusText + '</span>';
+        if (open > 0) btn.addEventListener('click', function() { openModal(slot); });
         grid.appendChild(btn);
       });
+
       var summary = document.getElementById(summaryId);
-      if (summary) summary.innerHTML = '<strong>' + avail + '</strong> of ' + slots.length + ' slots available';
+      if (summary) summary.innerHTML = '<strong>' + availSpots + '</strong> of ' + totalSpots + ' spots available';
     }
 
     function refreshAll() {
@@ -496,8 +552,8 @@
 
     // ── Real-time listener ────────────────────────────────────────────────
     db.collection(COLLECTION).onSnapshot(function(snap) {
-      Object.keys(takenMap).forEach(function(k) { delete takenMap[k]; });
-      snap.forEach(function(doc) { takenMap[doc.id] = doc.data(); });
+      Object.keys(slotState).forEach(function(k) { delete slotState[k]; });
+      snap.forEach(function(doc) { slotState[doc.id] = doc.data(); });
       refreshAll();
     }, function(err) {
       console.error('Firestore error:', err);
@@ -540,24 +596,32 @@
       if (!name) { showAlert('Please enter your name.', 'error'); return; }
       if (!pendingSlot) { closeModal(); return; }
 
-      var btn = document.getElementById('modal-confirm-btn');
+      var btn  = document.getElementById('modal-confirm-btn');
       btn.disabled = true;
       btn.textContent = 'Saving…';
       hideAlert();
 
       var slot = pendingSlot;
+      var cap  = slot.capacity;
       var ref  = db.collection(COLLECTION).doc(slot.id);
+      var booking = { name: name, email: email || '', bookedAt: firebase.firestore.FieldValue.serverTimestamp() };
 
       db.runTransaction(function(tx) {
         return tx.get(ref).then(function(doc) {
-          if (doc.exists) throw new Error('taken');
-          tx.set(ref, {
-            name:     name,
-            email:    email || '',
-            slot:     slot.label,
-            date:     slot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Thursday, May 7',
-            bookedAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
+          if (!doc.exists) {
+            // First booking for this slot
+            var data = { capacity: cap, filled: 1, slot: slot.label,
+              date: slot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Thursday, May 7',
+              booking0: booking };
+            tx.set(ref, data);
+          } else {
+            var d = doc.data();
+            var filled = d.filled || 0;
+            if (filled >= cap) throw new Error('taken');
+            var update = { filled: filled + 1 };
+            update['booking' + filled] = booking;
+            tx.update(ref, update);
+          }
         });
       }).then(function() {
         var dayLabel = slot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Thursday, May 7';
@@ -569,7 +633,7 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }).catch(function(err) {
         if (err.message === 'taken') {
-          showAlert('That slot was just taken — please choose another time.', 'error');
+          showAlert('That slot just filled up — please choose another time.', 'error');
         } else {
           showAlert('Something went wrong. Please try again.', 'error');
           console.error(err);
@@ -590,7 +654,8 @@
     }
 
     // ── Scroll to correct day from hash ───────────────────────────────────
-    var hashMap = { '#high-school': 'section-wednesday', '#middle-school': 'section-thursday', '#wednesday': 'section-wednesday', '#thursday': 'section-thursday' };
+    var hashMap = { '#high-school': 'section-wednesday', '#middle-school': 'section-thursday',
+                    '#wednesday': 'section-wednesday', '#thursday': 'section-thursday' };
     if (hashMap[window.location.hash]) {
       var target = document.getElementById(hashMap[window.location.hash]);
       if (target) setTimeout(function() { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 400);
