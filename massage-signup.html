@@ -63,12 +63,13 @@
     .slot-btn.taken .slot-status { color: #b94040; }
     .slot-btn .booked-name {
       display: block;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       margin-top: 2px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      max-width: 100%;
     }
     /* Thursday paired rows */
     .thu-slots-list { display: flex; flex-direction: column; gap: 8px; }
@@ -536,7 +537,6 @@
     function generateToken() {
       return Math.random().toString(36).substr(2, 10) + Math.random().toString(36).substr(2, 10);
     }
-    function firstName(full) { return full ? full.split(' ')[0] : ''; }
 
     // ── Wednesday: flat slots, capacity 1 ─────────────────────────────────
     function makeWedSlots(startH, startM, endH, endM) {
@@ -605,7 +605,7 @@
         if (!taken) avail++;
         var btn = document.createElement('button');
         btn.className = 'slot-btn' + (taken ? ' taken' : '');
-        var nameHtml = taken && state.name ? '<span class="booked-name">' + firstName(state.name) + '</span>' : '';
+        var nameHtml = taken && state.name ? '<span class="booked-name">' + state.name + '</span>' : '';
         btn.innerHTML = '<span>' + item.label + '</span>' + nameHtml + '<span class="slot-status">' + (taken ? '✓ Booked' : 'Available') + '</span>';
         if (!taken) btn.addEventListener('click', function() { openModal(item); });
         grid.appendChild(btn);
@@ -638,7 +638,7 @@
           if (!taken) avail++;
           var btn = document.createElement('button');
           btn.className = 'slot-btn' + (taken ? ' taken' : '');
-          var tNameHtml = taken && tState.name ? '<span class="booked-name">' + firstName(tState.name) + '</span>' : '';
+          var tNameHtml = taken && tState.name ? '<span class="booked-name">' + tState.name + '</span>' : '';
           btn.innerHTML = '<span class="therapist-label">' + slot.therapist + '</span>' +
             tNameHtml +
             '<span class="slot-status">' + (taken ? '✓ Booked' : 'Available') + '</span>';
