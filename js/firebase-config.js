@@ -19,6 +19,12 @@
             match /raffle_entries/{docId} {
               allow read, write: if true;
             }
+            match /massage_signups/{docId} {
+              allow read: if true;
+              allow create: if true;
+              allow update, delete: if request.auth != null
+                && request.auth.token.email in ['julie@schalmontpto.com'];
+            }
             match /events/{eventId} {
               allow read: if true;
               allow write: if request.auth != null

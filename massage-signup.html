@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Massage Time Slot Sign-Up — Staff Appreciation Week</title>
+  <meta name="description" content="Sign up for a 10-minute massage time slot during Staff Appreciation Week at Schalmont Central School District.">
+  <link rel="stylesheet" href="css/styles.css?v=5">
+  <link rel="icon" href="images/favicon.svg">
+  <style>
+    .day-section {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .day-header {
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .day-header-wed { background: linear-gradient(90deg, #1a3d24 0%, #245930 100%); }
+    .day-header-thu { background: linear-gradient(90deg, #0f1e33 0%, #1a3055 100%); }
+    .day-header h2 { font-size: 18px; color: #fff; margin: 0; }
+    .day-header .day-meta { font-size: 13px; color: rgba(255,255,255,0.8); }
+    .day-slots { padding: 20px 24px 24px; }
+
+    .slots-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+    }
+    .slot-btn {
+      padding: 12px 8px;
+      border-radius: var(--radius);
+      border: 2px solid var(--border);
+      background: #f8fbf7;
+      cursor: pointer;
+      text-align: center;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+      line-height: 1.3;
+    }
+    .slot-btn:hover:not(.taken):not(.loading) {
+      border-color: var(--primary);
+      background: #e8f5e4;
+      transform: translateY(-1px);
+    }
+    .slot-btn .slot-status { display: block; font-size: 11px; font-weight: 500; margin-top: 3px; }
+    .slot-btn.taken {
+      background: #f2f2f2;
+      border-color: #ddd;
+      color: #aaa;
+      cursor: not-allowed;
+    }
+    .slot-btn.taken .slot-status { color: #bbb; }
+
+    .slots-summary {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-top: 14px;
+    }
+    .slots-summary strong { color: var(--primary-dark); }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: var(--text-light);
+      margin-bottom: 20px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-swatch {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 2px solid;
+    }
+    .legend-swatch.available { background: #f8fbf7; border-color: var(--border); }
+    .legend-swatch.taken     { background: #f2f2f2; border-color: #ddd; }
+
+    /* Intro callout */
+    .intro-callout {
+      background: #f0f8ef;
+      border: 1px solid #c8e6c0;
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-bottom: 28px;
+    }
+    .intro-callout h3 { font-size: 17px; color: var(--primary-dark); margin-bottom: 6px; }
+    .intro-callout p { font-size: 14px; color: var(--text); line-height: 1.65; margin: 0; }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 9000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      max-width: 440px;
+      width: 100%;
+      padding: 28px 28px 24px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: var(--text-light);
+      cursor: pointer;
+      line-height: 1;
+    }
+    .modal-title { font-size: 20px; font-weight: 800; color: var(--primary-dark); margin-bottom: 4px; }
+    .modal-slot-info { font-size: 14px; color: var(--text-light); margin-bottom: 20px; }
+    .modal-box label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+    .modal-box input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 12px;
+      font-size: 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-family: inherit;
+      margin-bottom: 14px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .modal-box input:focus { border-color: var(--primary); }
+    .modal-actions { display: flex; gap: 10px; }
+    .btn-cancel {
+      flex: 1;
+      padding: 11px;
+      border-radius: var(--radius);
+      background: var(--light-bg);
+      border: 1px solid var(--border);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-cancel:hover { background: #e8e8e8; }
+    .btn-confirm {
+      flex: 2;
+      padding: 11px;
+      border-radius: var(--radius);
+      background: var(--primary);
+      border: none;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+    .btn-confirm:hover { background: var(--primary-dark); }
+    .btn-confirm:disabled { opacity: 0.6; cursor: wait; }
+
+    .alert-box {
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      margin-bottom: 14px;
+      display: none;
+    }
+    .alert-box.success { background: #e8f5e4; border: 1px solid #b2dba8; color: #2a5c1e; }
+    .alert-box.error   { background: #fdecea; border: 1px solid #f5c6c2; color: #8b1a14; }
+
+    /* Confirmation view */
+    .confirm-banner {
+      background: #e8f5e4;
+      border: 1px solid #b2dba8;
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .confirm-banner .icon { font-size: 40px; margin-bottom: 10px; }
+    .confirm-banner h3 { font-size: 20px; color: var(--primary-dark); margin-bottom: 6px; }
+    .confirm-banner p { font-size: 14px; color: var(--text); line-height: 1.65; margin: 0; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <nav class="container nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="images/logo.png" alt="Schalmont Central PTO" class="nav-logo-img">
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li class="has-dropdown">
+          <a href="schools.html">Schools</a>
+          <ul class="nav-dropdown">
+            <li><a href="woestina.html">🌱 Woestina Pre-K</a></li>
+            <li><a href="jefferson.html">🏫 Jefferson Elementary</a></li>
+            <li><a href="middle-school.html">📚 Middle School</a></li>
+            <li><a href="high-school.html">🎓 High School</a></li>
+          </ul>
+        </li>
+        <li class="has-dropdown">
+          <a href="events.html">Events</a>
+          <ul class="nav-dropdown">
+            <li><a href="staff-appreciation-week.html">&#x1F31F; Staff Appreciation Week</a></li>
+          </ul>
+        </li>
+        <li><a href="meetings.html">Meetings</a></li>
+        <li class="has-dropdown">
+          <a href="shop.html">Shop</a>
+          <ul class="nav-dropdown">
+            <li><a href="shop.html">👕 Spiritwear</a></li>
+            <li><a href="fundraisers.html">💰 Fundraisers</a></li>
+          </ul>
+        </li>
+        <li><a href="fundraisers.html">Fundraisers</a></li>
+        <li><a href="yearbooks.html">Yearbook</a></li>
+        <li><a href="directory.html">Directory</a></li>
+        <li class="has-dropdown">
+          <a href="contact.html">Contact</a>
+          <ul class="nav-dropdown">
+            <li><a href="about.html">About</a></li>
+            <li><a href="social.html">Social</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+          </ul>
+        </li>
+        <li><a href="login.html" class="btn btn-primary" style="padding:6px 16px;font-size:14px;color:#000000" id="nav-login-btn">Login/Register</a></li>
+        <li><a href="social.html" class="nav-social-icon" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a></li>
+        <li><a href="social.html" class="nav-social-icon" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    </nav>
+  </header>
+
+  <div class="homepage-layout">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="homepage-sidenav">
+      <div class="sidenav-heading">Browse</div>
+      <a href="index.html" class="sidenav-item">Home</a>
+      <a href="events.html" class="sidenav-item">Events Calendar</a>
+      <a href="staff-appreciation-week.html" class="sidenav-item">Staff Appreciation Week</a>
+      <a href="massage-signup.html" class="sidenav-item" style="font-weight:700;background:#e8f3e0;color:#6bb044">Massage Sign-Up</a>
+      <a href="meetings.html" class="sidenav-item">PTO Meetings</a>
+
+      <div class="sidenav-heading">Schools</div>
+      <a href="schools.html" class="sidenav-item">All Schools</a>
+      <a href="woestina.html" class="sidenav-item">Woestina Pre-K</a>
+      <a href="jefferson.html" class="sidenav-item">Jefferson Elementary</a>
+      <a href="middle-school.html" class="sidenav-item">Middle School</a>
+      <a href="high-school.html" class="sidenav-item">High School</a>
+
+      <div class="sidenav-heading">Resources</div>
+      <a href="directory.html" class="sidenav-item">Directory</a>
+      <a href="donate.html" class="sidenav-item">Donate</a>
+      <a href="events.html" class="sidenav-item">Events</a>
+      <a href="fundraisers.html" class="sidenav-item">Fundraisers</a>
+      <a href="gallery.html" class="sidenav-item">Gallery</a>
+      <a href="meetings.html" class="sidenav-item">Meetings</a>
+      <a href="schools.html" class="sidenav-item">Schools</a>
+      <a href="family-scouts.html" class="sidenav-item">Scouts</a>
+      <a href="shop.html" class="sidenav-item">Shop</a>
+      <a href="social.html" class="sidenav-item">Social Media</a>
+      <a href="sports.html" class="sidenav-item">Sports</a>
+      <a href="yearbooks.html" class="sidenav-item">Yearbooks</a>
+
+      <div class="sidenav-heading">Connect</div>
+      <a href="about.html" class="sidenav-item">About the PTO</a>
+      <a href="social.html" class="sidenav-item">Social Media Links</a>
+      <a href="contact.html" class="sidenav-item">Contact Us</a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="homepage-main">
+
+      <section class="page-hero" style="background:linear-gradient(135deg,#295c38 0%,#60b256 100%)">
+        <div class="container">
+          <p style="color:rgba(255,255,255,0.75);font-size:14px;margin-bottom:8px">
+            <a href="staff-appreciation-week.html" style="color:rgba(255,255,255,0.75);text-decoration:none">← Back to Staff Appreciation Week</a>
+          </p>
+          <h1>💆 Massage Sign-Up</h1>
+          <p>Pick your 10-minute massage time slot — Staff Appreciation Week 2026</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+
+          <!-- Confirmation banner (hidden until booked) -->
+          <div class="confirm-banner" id="confirm-banner" style="display:none">
+            <div class="icon">🎉</div>
+            <h3>You're all set!</h3>
+            <p id="confirm-text">Your time slot has been reserved.</p>
+            <a href="staff-appreciation-week.html" class="btn btn-primary" style="display:inline-block;margin-top:16px;padding:10px 24px;font-size:14px">← Back to Staff Appreciation Week</a>
+          </div>
+
+          <div id="signup-content">
+            <div class="intro-callout">
+              <h3>How it works</h3>
+              <p>Select an available time slot below, enter your name, and click Confirm. Slots are first-come, first-served and update in real time. Questions? Contact <strong>Julie Dion</strong> at <a href="mailto:julie@schalmontpto.com" style="color:var(--primary);font-weight:600">julie@schalmontpto.com</a> or <a href="tel:5188927495" style="color:var(--primary);font-weight:600">518.892.7495</a>.</p>
+            </div>
+
+            <div class="legend">
+              <div class="legend-item"><div class="legend-swatch available"></div> Available — click to book</div>
+              <div class="legend-item"><div class="legend-swatch taken"></div> Already taken</div>
+            </div>
+
+            <!-- Wednesday May 6 -->
+            <div class="day-section" id="section-wednesday">
+              <div class="day-header day-header-wed">
+                <h2>🗓️ Wednesday, May 6</h2>
+                <span class="day-meta">10:00 AM – 1:30 PM · High School</span>
+              </div>
+              <div class="day-slots">
+                <div class="slots-grid" id="slots-wed"></div>
+                <div class="slots-summary" id="summary-wed">Loading…</div>
+              </div>
+            </div>
+
+            <!-- Thursday May 7 -->
+            <div class="day-section" id="section-thursday">
+              <div class="day-header day-header-thu">
+                <h2>🗓️ Thursday, May 7</h2>
+                <span class="day-meta">1:30 PM – 3:30 PM · Middle School</span>
+              </div>
+              <div class="day-slots">
+                <div class="slots-grid" id="slots-thu"></div>
+                <div class="slots-summary" id="summary-thu">Loading…</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- BOTTOM BANNER AD -->
+      <div class="top-banner-ad">
+        <div class="container">
+          <div class="top-banner-ad-inner">
+            <div class="top-banner-ad-slot" style="padding:0;line-height:0">
+              <a href="https://tinyurl.com/5ac83fe9" target="_blank" rel="noopener" style="display:block">
+                <img src="images/Ads/Banners/CW-Schalmont-leader.jpg" alt="Advertisement" style="width:100%;height:auto;display:block;border-radius:var(--radius)">
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.homepage-main -->
+  </div><!-- /.homepage-layout -->
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-brand" style="margin-bottom:12px">
+            <img src="images/logo.png" alt="Schalmont Central PTO" class="nav-logo-img">
+          </div>
+          <p>Supporting students, connecting families, and building community in the Schalmont Central School District.</p>
+        </div>
+        <div>
+          <div class="footer-heading">Quick Links</div>
+          <ul class="footer-links">
+            <li><a href="staff-appreciation-week.html">Staff Appreciation Week</a></li>
+            <li><a href="events.html">Events Calendar</a></li>
+            <li><a href="meetings.html">PTO Meetings</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-heading">About &amp; Help</div>
+          <ul class="footer-links">
+            <li><a href="about.html">About the PTO</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="https://www.schalmont.org" target="_blank" rel="noopener">School District Website</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Schalmont Central Schools PTO. All rights reserved.</span>
+        <span>Schenectady, NY</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- BOOKING MODAL -->
+  <div class="modal-overlay" id="booking-modal">
+    <div class="modal-box">
+      <button class="modal-close" id="modal-close-btn" aria-label="Close">×</button>
+      <div class="modal-title">Reserve Your Slot</div>
+      <div class="modal-slot-info" id="modal-slot-info"></div>
+      <div class="alert-box" id="modal-alert"></div>
+      <label for="input-name">Your Full Name</label>
+      <input type="text" id="input-name" placeholder="Jane Smith" autocomplete="name">
+      <label for="input-email">
+        Email Address
+        <span style="font-weight:400;color:var(--text-light)">(optional)</span>
+      </label>
+      <input type="email" id="input-email" placeholder="you@example.com" autocomplete="email">
+      <div class="modal-actions">
+        <button class="btn-cancel" id="modal-cancel-btn">Cancel</button>
+        <button class="btn-confirm" id="modal-confirm-btn">Confirm Slot →</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // ── Slot generation ───────────────────────────────────────────────────
+    function buildSlots(startH, startM, endH, endM, dayKey) {
+      var slots = [];
+      var h = startH, m = startM;
+      while (h < endH || (h === endH && m < endM)) {
+        var id = dayKey + '_' + h + '_' + (m < 10 ? '0' + m : m);
+        slots.push({ id: id, label: fmtTime(h, m), dayKey: dayKey });
+        m += 10;
+        if (m >= 60) { m -= 60; h++; }
+      }
+      return slots;
+    }
+
+    function fmtTime(h, m) {
+      var ampm = h < 12 ? 'AM' : 'PM';
+      var dh = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+      return dh + ':' + (m < 10 ? '0' + m : m) + ' ' + ampm;
+    }
+
+    var WED_SLOTS = buildSlots(10, 0,  13, 30, 'wed'); // 10:00 AM – last start 1:20 PM
+    var THU_SLOTS = buildSlots(13, 30, 15, 30, 'thu'); // 1:30 PM  – last start 3:20 PM
+
+    // ── Firebase init ─────────────────────────────────────────────────────
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.firestore();
+    var COLLECTION = 'massage_signups';
+
+    var takenMap = {};
+    var pendingSlot = null;
+
+    // ── Render grids ──────────────────────────────────────────────────────
+    function renderGrid(gridId, summaryId, slots) {
+      var grid = document.getElementById(gridId);
+      if (!grid) return;
+      grid.innerHTML = '';
+      var avail = 0;
+      slots.forEach(function(slot) {
+        var taken = !!takenMap[slot.id];
+        if (!taken) avail++;
+        var btn = document.createElement('button');
+        btn.className = 'slot-btn' + (taken ? ' taken' : '');
+        btn.innerHTML =
+          '<span>' + slot.label + '</span>' +
+          '<span class="slot-status">' + (taken ? '✓ Taken' : 'Available') + '</span>';
+        if (!taken) btn.addEventListener('click', function() { openModal(slot); });
+        grid.appendChild(btn);
+      });
+      var summary = document.getElementById(summaryId);
+      if (summary) summary.innerHTML = '<strong>' + avail + '</strong> of ' + slots.length + ' slots available';
+    }
+
+    function refreshAll() {
+      renderGrid('slots-wed', 'summary-wed', WED_SLOTS);
+      renderGrid('slots-thu', 'summary-thu', THU_SLOTS);
+    }
+
+    // ── Real-time listener ────────────────────────────────────────────────
+    db.collection(COLLECTION).onSnapshot(function(snap) {
+      Object.keys(takenMap).forEach(function(k) { delete takenMap[k]; });
+      snap.forEach(function(doc) { takenMap[doc.id] = doc.data(); });
+      refreshAll();
+    }, function(err) {
+      console.error('Firestore error:', err);
+    });
+
+    // ── Modal logic ───────────────────────────────────────────────────────
+    function openModal(slot) {
+      pendingSlot = slot;
+      var dayLabel = slot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Thursday, May 7';
+      document.getElementById('modal-slot-info').textContent = dayLabel + ' · ' + slot.label;
+      document.getElementById('input-name').value = '';
+      document.getElementById('input-email').value = '';
+      document.getElementById('modal-confirm-btn').disabled = false;
+      document.getElementById('modal-confirm-btn').textContent = 'Confirm Slot →';
+      hideAlert();
+      document.getElementById('booking-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      setTimeout(function() { document.getElementById('input-name').focus(); }, 60);
+    }
+
+    function closeModal() {
+      document.getElementById('booking-modal').classList.remove('open');
+      document.body.style.overflow = '';
+      pendingSlot = null;
+    }
+
+    document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+    document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
+    document.getElementById('booking-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // ── Confirm booking ───────────────────────────────────────────────────
+    document.getElementById('modal-confirm-btn').addEventListener('click', function() {
+      var name  = document.getElementById('input-name').value.trim();
+      var email = document.getElementById('input-email').value.trim();
+      if (!name) { showAlert('Please enter your name.', 'error'); return; }
+      if (!pendingSlot) { closeModal(); return; }
+
+      var btn = document.getElementById('modal-confirm-btn');
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+      hideAlert();
+
+      var slot = pendingSlot;
+      var ref  = db.collection(COLLECTION).doc(slot.id);
+
+      db.runTransaction(function(tx) {
+        return tx.get(ref).then(function(doc) {
+          if (doc.exists) throw new Error('taken');
+          tx.set(ref, {
+            name:     name,
+            email:    email || '',
+            slot:     slot.label,
+            date:     slot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Thursday, May 7',
+            bookedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        });
+      }).then(function() {
+        var dayLabel = slot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Thursday, May 7';
+        document.getElementById('confirm-text').textContent =
+          name + ', you are confirmed for ' + slot.label + ' on ' + dayLabel + '. See you there!';
+        document.getElementById('confirm-banner').style.display = 'block';
+        document.getElementById('signup-content').style.display = 'none';
+        closeModal();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }).catch(function(err) {
+        if (err.message === 'taken') {
+          showAlert('That slot was just taken — please choose another time.', 'error');
+        } else {
+          showAlert('Something went wrong. Please try again.', 'error');
+          console.error(err);
+        }
+        btn.disabled = false;
+        btn.textContent = 'Confirm Slot →';
+      });
+    });
+
+    function showAlert(msg, type) {
+      var el = document.getElementById('modal-alert');
+      el.textContent = msg;
+      el.className   = 'alert-box ' + type;
+      el.style.display = 'block';
+    }
+    function hideAlert() {
+      document.getElementById('modal-alert').style.display = 'none';
+    }
+
+    // ── Scroll to correct day from hash ───────────────────────────────────
+    var hashMap = { '#high-school': 'section-wednesday', '#middle-school': 'section-thursday', '#wednesday': 'section-wednesday', '#thursday': 'section-thursday' };
+    if (hashMap[window.location.hash]) {
+      var target = document.getElementById(hashMap[window.location.hash]);
+      if (target) setTimeout(function() { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 400);
+    }
+  </script>
+</body>
+</html>
