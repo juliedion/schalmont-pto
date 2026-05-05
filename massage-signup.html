@@ -584,6 +584,7 @@
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
     var COLLECTION = 'massage_signups';
+    var MAX_SIGNUPS = 21;
 
     var slotState = {};
     var pendingSlot = null;
@@ -659,6 +660,27 @@
       Object.keys(slotState).forEach(function(k) { delete slotState[k]; });
       snap.forEach(function(doc) { slotState[doc.id] = doc.data(); });
       refreshAll();
+
+      // Show full banner and disable all available buttons if cap reached
+      var totalBooked = snap.size;
+      var fullBanner = document.getElementById('signups-full-banner');
+      if (totalBooked >= MAX_SIGNUPS) {
+        if (!fullBanner) {
+          var banner = document.createElement('div');
+          banner.id = 'signups-full-banner';
+          banner.style.cssText = 'background:#fdecea;border:1px solid #f5b8b4;border-radius:var(--radius-lg);padding:18px 24px;margin-bottom:24px;font-size:14px;font-weight:600;color:#8b1a14;text-align:center';
+          banner.textContent = 'All available spots have been filled. Please contact Julie Dion at julie@schalmontpto.com if you have questions.';
+          var introCallout = document.querySelector('.intro-callout');
+          introCallout.parentNode.insertBefore(banner, introCallout);
+        }
+        document.querySelectorAll('.slot-btn:not(.taken)').forEach(function(btn) {
+          btn.disabled = true;
+          btn.style.opacity = '0.5';
+          btn.style.cursor = 'not-allowed';
+        });
+      } else {
+        if (fullBanner) fullBanner.remove();
+      }
     }, function(err) { console.error('Firestore error:', err); });
 
     // ── Modal ─────────────────────────────────────────────────────────────
@@ -711,6 +733,7 @@
       db.runTransaction(function(tx) {
         return tx.get(ref).then(function(doc) {
           if (doc.exists) throw new Error('taken');
+          if (Object.keys(slotState).length >= MAX_SIGNUPS) throw new Error('full');
           tx.set(ref, {
             name: name, email: email, phone: phone,
             slot: slot.label,
@@ -743,6 +766,8 @@
       }).catch(function(err) {
         if (err.message === 'taken') {
           showAlert('That spot was just taken — please choose another.', 'error');
+        } else if (err.message === 'full') {
+          showAlert('Sorry, all spots have been filled.', 'error');
         } else {
           showAlert('Something went wrong. Please try again.', 'error');
           console.error(err);
