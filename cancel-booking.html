@@ -339,26 +339,14 @@
       var slots = [];
       var h = startH, m = startM;
       while (h < endH || (h === endH && m < endM)) {
-        var base = dayKey + '_' + h + '_' + (m < 10 ? '0' + m : m);
-        if (dayKey === 'thu') {
-          slots.push({ id: base + '_a', label: fmtTime(h, m), dayKey: 'thu', therapist: 'Therapist 1' });
-          slots.push({ id: base + '_b', label: fmtTime(h, m), dayKey: 'thu', therapist: 'Therapist 2' });
-        } else {
-          slots.push({ id: base, label: fmtTime(h, m), dayKey: 'wed' });
-        }
+        var id = dayKey + '_' + h + '_' + (m < 10 ? '0' + m : m);
+        slots.push({ id: id, label: fmtTime(h, m), dayKey: dayKey });
         m += 10; if (m >= 60) { m -= 60; h++; }
       }
       return slots;
     }
-    var WED_BLOCKS = [
-      { type: 'slots', slots: buildSlots(10, 0, 11, 30, 'wed') },
-      { type: 'break', label: '☕ Break  11:30 – 12:00' },
-      { type: 'slots', slots: buildSlots(12, 0, 13, 30, 'wed') }
-    ];
-    var THU_BLOCKS = [
-      { type: 'slots', slots: buildSlots(13, 30, 14, 30, 'thu') },
-      { type: 'break', label: '☕ Break  2:30 – 2:40' },
-      { type: 'slots', slots: buildSlots(14, 40, 15, 40, 'thu') }
+    var MAY13_BLOCKS = [
+      { type: 'slots', slots: buildSlots(10, 0, 13, 0, 'may13') }
     ];
 
     // ── Helpers ───────────────────────────────────────────────────────────
@@ -466,18 +454,12 @@
         }
         delete takenIds[currentSlotId];
 
-        var availWed = WED_BLOCKS.map(function(block) {
+        var availMay13 = MAY13_BLOCKS.map(function(block) {
           if (block.type === 'break') return block;
           return { type: 'slots', slots: block.slots.filter(function(s) { return !takenIds[s.id]; }) };
         }).filter(function(b) { return b.type === 'break' || b.slots.length > 0; });
 
-        var availThu = THU_BLOCKS.map(function(block) {
-          if (block.type === 'break') return block;
-          return { type: 'slots', slots: block.slots.filter(function(s) { return !takenIds[s.id]; }) };
-        }).filter(function(b) { return b.type === 'break' || b.slots.length > 0; });
-
-        var totalAvail = availWed.reduce(function(n, b) { return n + (b.type === 'slots' ? b.slots.length : 0); }, 0)
-                       + availThu.reduce(function(n, b) { return n + (b.type === 'slots' ? b.slots.length : 0); }, 0);
+        var totalAvail = availMay13.reduce(function(n, b) { return n + (b.type === 'slots' ? b.slots.length : 0); }, 0);
 
         if (totalAvail === 0) { renderNoSlotsAvailable(container); return; }
 
@@ -487,10 +469,8 @@
         heading.textContent = 'Available Time Slots';
         section.appendChild(heading);
 
-        if (availWed.some(function(b) { return b.type === 'slots' && b.slots.length > 0; }))
-          section.appendChild(buildDayGroup('🗓️ Wednesday, May 6', availWed));
-        if (availThu.some(function(b) { return b.type === 'slots' && b.slots.length > 0; }))
-          section.appendChild(buildDayGroup('🗓️ Thursday, May 7', availThu));
+        if (availMay13.some(function(b) { return b.type === 'slots' && b.slots.length > 0; }))
+          section.appendChild(buildDayGroup('🗓️ Wednesday, May 13', availMay13));
 
         var btns = document.createElement('div');
         btns.className = 'action-buttons';
@@ -583,7 +563,7 @@
     // ── Confirm new slot modal ────────────────────────────────────────────
     function openConfirmModal(slot) {
       pendingNewSlot = slot;
-      var dayLabel = slot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Thursday, May 7';
+      var dayLabel = 'Wednesday, May 13';
       var therapistInfo = slot.therapist ? ' (' + slot.therapist + ')' : '';
       document.getElementById('modal-desc').textContent =
         'Switch to ' + slot.label + therapistInfo + ' on ' + dayLabel + '?';

@@ -374,6 +374,12 @@
           </div>
 
           <div id="signup-content">
+            <div style="background:#fdecea;border:1px solid #f5b8b4;border-radius:var(--radius-lg);padding:18px 24px;margin-bottom:16px;font-size:14px;color:#7a1a14">
+              <strong style="font-size:15px">⚠️ Important Notice Regarding Thursday, May 7</strong><br><br>
+              We sincerely apologize, but due to circumstances beyond our control, <strong>Albany Massage will not be able to attend on Thursday, May 7</strong>.<br><br>
+              If you had a Thursday appointment, we have automatically moved it to the <strong>same time on Wednesday, May 13</strong> with <strong>Body Labyrinth Massage Therapy</strong>. If that date doesn't work for you, please click the change or cancel link in your original email confirmation to update your appointment.
+            </div>
+
             <div style="background:#fff8e1;border:1px solid #f0c040;border-radius:var(--radius-lg);padding:16px 24px;margin-bottom:20px;font-size:14px;font-weight:600;color:#5a4000;text-align:center">
               📍 The massage therapist will be located on the <strong>High School Stage</strong>.
             </div>
@@ -389,7 +395,7 @@
             </div>
 
             <!-- Wednesday May 6 -->
-            <div class="day-section" id="section-wednesday">
+            <div class="day-section" id="section-wednesday" style="display:none">
               <div class="day-header day-header-wed">
                 <h2>🗓️ Wednesday, May 6</h2>
                 <span class="day-meta">10:00 AM – 1:30 PM · 18 spots</span>
@@ -403,14 +409,11 @@
             <!-- Thursday May 7 -->
             <div class="day-section" id="section-thursday">
               <div class="day-header day-header-thu">
-                <h2>🗓️ Thursday, May 7</h2>
-                <span class="day-meta">1:30 PM – 3:40 PM · 24 spots</span>
+                <h2>🗓️ Wednesday, May 13</h2>
+                <span class="day-meta">10:00 AM – 1:00 PM · 18 spots</span>
               </div>
               <div class="day-slots">
-                <div style="background:#e8eef8;border:1px solid #b8cce8;border-radius:var(--radius);padding:10px 14px;font-size:13px;color:#1a3055;font-weight:600;margin-bottom:16px">
-                  💆💆 2 massage therapists are available — each time slot has <strong>2 spots</strong>, one per therapist.
-                </div>
-                <div class="thu-slots-list" id="slots-thu"></div>
+                <div class="slots-grid" id="slots-thu"></div>
                 <div class="slots-summary" id="summary-thu">Loading…</div>
               </div>
             </div>
@@ -554,22 +557,16 @@
       return slots;
     }
 
-    // ── Thursday: paired groups (2 cards per time) ────────────────────────
-    function makeThuGroups(startH, startM, endH, endM) {
-      var groups = [];
+    // ── May 13: flat single-therapist slots ───────────────────────────────
+    function makeMay13Slots(startH, startM, endH, endM) {
+      var slots = [];
       var h = startH, m = startM;
       while (h < endH || (h === endH && m < endM)) {
-        var base = 'thu_' + h + '_' + (m < 10 ? '0' + m : m);
-        groups.push({
-          label: fmtTime(h, m),
-          slots: [
-            { id: base + '_a', label: fmtTime(h, m), dayKey: 'thu', therapist: 'Therapist 1' },
-            { id: base + '_b', label: fmtTime(h, m), dayKey: 'thu', therapist: 'Therapist 2' }
-          ]
-        });
+        var id = 'may13_' + h + '_' + (m < 10 ? '0' + m : m);
+        slots.push({ id: id, label: fmtTime(h, m), dayKey: 'may13' });
         m += 10; if (m >= 60) { m -= 60; h++; }
       }
-      return groups;
+      return slots;
     }
 
     var WED_ITEMS = [].concat(
@@ -578,11 +575,8 @@
       makeWedSlots(12, 0, 13, 30)
     );
 
-    var THU_GROUPS = [].concat(
-      makeThuGroups(13, 30, 14, 30),
-      [makeBreak('☕  Break  2:30 – 2:40')],
-      makeThuGroups(14, 40, 15, 40)
-    );
+    var MAY13_ITEMS = makeMay13Slots(10, 0, 13, 0);
+    var MAY13_OPEN = false; // set to true when ready to accept new bookings
 
     // ── Firebase ──────────────────────────────────────────────────────────
     firebase.initializeApp(firebaseConfig);
@@ -618,41 +612,24 @@
       document.getElementById('summary-wed').innerHTML = '<strong>' + avail + '</strong> of ' + total + ' spots available';
     }
 
-    // ── Render Thursday (paired rows) ─────────────────────────────────────
+    // ── Render May 13 (flat single-therapist grid) ────────────────────────
     function renderThu() {
-      var list = document.getElementById('slots-thu');
-      list.innerHTML = '';
+      var grid = document.getElementById('slots-thu');
+      grid.innerHTML = '';
       var avail = 0, total = 0;
-      THU_GROUPS.forEach(function(group) {
-        if (group.isBreak) {
-          var b = document.createElement('div');
-          b.className = 'break-block'; b.textContent = group.label;
-          list.appendChild(b); return;
-        }
-        var row = document.createElement('div');
-        row.className = 'thu-time-group';
-        var lbl = document.createElement('div');
-        lbl.className = 'thu-time-label';
-        lbl.textContent = group.label;
-        var pair = document.createElement('div');
-        pair.className = 'thu-pair';
-        group.slots.forEach(function(slot) {
-          total++;
-          var tState = slotState[slot.id];
-          var taken = !!tState;
-          if (!taken) avail++;
-          var btn = document.createElement('button');
-          btn.className = 'slot-btn' + (taken ? ' taken' : '');
-          var tNameHtml = taken && tState.name ? '<span class="booked-name">' + tState.name + '</span>' : '';
-          btn.innerHTML = '<span class="therapist-label">' + slot.therapist + '</span>' +
-            tNameHtml +
-            '<span class="slot-status">' + (taken ? '✓ Booked' : 'Available') + '</span>';
-          if (!taken) btn.addEventListener('click', (function(s) { return function() { openModal(s); }; })(slot));
-          pair.appendChild(btn);
-        });
-        row.appendChild(lbl);
-        row.appendChild(pair);
-        list.appendChild(row);
+      MAY13_ITEMS.forEach(function(item) {
+        total++;
+        var state = slotState[item.id];
+        var taken = !!state;
+        if (!taken) avail++;
+        var btn = document.createElement('button');
+        btn.className = 'slot-btn' + (taken ? ' taken' : '');
+        var nameHtml = taken && state.name ? '<span class="booked-name">' + state.name + '</span>' : '';
+        var statusText = taken ? '✓ Booked' : (MAY13_OPEN ? 'Available' : 'Coming soon');
+        btn.innerHTML = '<span>' + item.label + '</span>' + nameHtml + '<span class="slot-status">' + statusText + '</span>';
+        if (!taken && MAY13_OPEN) btn.addEventListener('click', function() { openModal(item); });
+        if (!taken && !MAY13_OPEN) { btn.style.opacity = '0.6'; btn.style.cursor = 'default'; }
+        grid.appendChild(btn);
       });
       document.getElementById('summary-thu').innerHTML = '<strong>' + avail + '</strong> of ' + total + ' spots available';
     }
@@ -690,7 +667,7 @@
     // ── Modal ─────────────────────────────────────────────────────────────
     function openModal(slot) {
       pendingSlot = slot;
-      var dayLabel = slot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Thursday, May 7';
+      var dayLabel = slot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Wednesday, May 13';
       var therapistInfo = slot.therapist ? ' · ' + slot.therapist : '';
       document.getElementById('modal-slot-info').textContent = dayLabel + ' · ' + slot.label + therapistInfo;
       document.getElementById('input-name').value = '';
@@ -730,7 +707,7 @@
       hideAlert();
 
       var slot = pendingSlot;
-      var dayLabel = slot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Thursday, May 7';
+      var dayLabel = slot.dayKey === 'wed' ? 'Wednesday, May 6' : 'Wednesday, May 13';
       var cancelToken = generateToken();
       var ref = db.collection(COLLECTION).doc(slot.id);
 
