@@ -452,8 +452,6 @@
             takenIds[parts[parts.length - 1]] = true;
           });
         }
-        delete takenIds[currentSlotId];
-
         var availMay13 = MAY13_BLOCKS.map(function(block) {
           if (block.type === 'break') return block;
           return { type: 'slots', slots: block.slots.filter(function(s) { return !takenIds[s.id]; }) };
