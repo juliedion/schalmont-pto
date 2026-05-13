@@ -381,6 +381,10 @@
     var selectedRaffle = null;
     var allEntries = [];
 
+    // SAW project holds raffle_entries — use a secondary Firebase app
+    var sawApp = firebase.apps.find(function(a){return a.name==='saw';}) || firebase.initializeApp(sawFirebaseConfig,'saw');
+    var sawDb = sawApp.firestore();
+
     // Pre-select raffle from URL hash on load
     (function() {
       var hash = window.location.hash;
@@ -388,15 +392,10 @@
       else if (hash === '#high-school') selectRaffle('high-school');
     })();
 
-    // Sign in anonymously so Firestore reads/writes are authenticated.
-    // Requires Anonymous sign-in enabled in Firebase Console →
-    // Authentication → Sign-in method → Anonymous → Enable.
-    firebase.auth().signInAnonymously()
-      .catch(function() {}) // silently ignore if anonymous auth is disabled
-      .finally(startPublicListeners);
+    startPublicListeners();
 
     function startPublicListeners() {
-      firebase.firestore().collection('raffle_entries')
+      sawDb.collection('raffle_entries')
         .orderBy('enteredAt', 'asc')
         .onSnapshot(function(snap) {
           var msEntries = [], hsEntries = [];
@@ -458,17 +457,11 @@
       btn.disabled = true;
       btn.textContent = 'Submitting…';
 
-      // Ensure authenticated (anonymous is fine) before hitting Firestore
-      var authPromise = firebase.auth().currentUser
-        ? Promise.resolve()
-        : firebase.auth().signInAnonymously().catch(function() {});
-
-      authPromise.then(function() {
-        return firebase.firestore().collection('raffle_entries')
-          .where('email', '==', email)
-          .where('raffle', '==', selectedRaffle)
-          .get();
-      }).then(function(snap) {
+      sawDb.collection('raffle_entries')
+        .where('email', '==', email)
+        .where('raffle', '==', selectedRaffle)
+        .get()
+        .then(function(snap) {
           if (!snap.empty) {
             var school = selectedRaffle === 'middle-school' ? 'Middle School' : 'High School';
             document.getElementById('already-entered-detail').textContent =
@@ -476,7 +469,7 @@
             document.getElementById('raffle-form-section').style.display = 'none';
             document.getElementById('already-entered-section').style.display = 'block';
           } else {
-            return firebase.firestore().collection('raffle_entries').add({
+            return sawDb.collection('raffle_entries').add({
               name:      name,
               email:     email,
               phone:     phone,
@@ -510,7 +503,7 @@
     }
 
     function loadAdminEntries() {
-      firebase.firestore().collection('raffle_entries')
+      sawDb.collection('raffle_entries')
         .orderBy('enteredAt', 'desc')
         .onSnapshot(function(snap) {
           allEntries = snap.docs.map(function(d) { return Object.assign({id:d.id}, d.data()); });

@@ -60,6 +60,17 @@
    ============================================================ */
 
 const firebaseConfig = {
+  apiKey: "AIzaSyCaH3Xo14pCxhxgvtg31Co2gDi1VuAHoFk",
+  authDomain: "schalmont-pto.firebaseapp.com",
+  projectId: "schalmont-pto",
+  storageBucket: "schalmont-pto.firebasestorage.app",
+  messagingSenderId: "121905023545",
+  appId: "1:121905023545:web:de5aadcaff55023ca49be8",
+  measurementId: "G-EYKHCN25PJ"
+};
+
+// Secondary config for SAW raffle + massage Firestore data
+const sawFirebaseConfig = {
   apiKey: "AIzaSyDoXpCExMLd7TgxvkFlUKvUtGasVAaUgUo",
   authDomain: "staff-appreciation-week-c9863.firebaseapp.com",
   projectId: "staff-appreciation-week-c9863",

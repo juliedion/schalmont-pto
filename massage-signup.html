@@ -569,7 +569,8 @@
 
     // ── Firebase ──────────────────────────────────────────────────────────
     firebase.initializeApp(firebaseConfig);
-    var db = firebase.firestore();
+    var sawApp = firebase.apps.find(function(a){return a.name==='saw';}) || firebase.initializeApp(sawFirebaseConfig,'saw');
+    var db = sawApp.firestore();
     var COLLECTION = 'massage_signups';
     var MAX_SIGNUPS = 42;
 
