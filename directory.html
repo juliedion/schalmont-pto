@@ -768,20 +768,22 @@
         return;
       }
 
-      // Check approval status in Firestore
-      try {
-        var doc = await firebase.firestore().collection('users').doc(user.uid).get();
-        if (!doc.exists || (doc.data().status || 'pending') === 'pending') {
-          // No record yet or still pending — send to pending.html to submit info / wait
-          window.location.href = 'pending.html';
-          return;
-        }
-        if (doc.data().status === 'rejected') {
-          document.getElementById('auth-loading').style.display = 'none';
-          document.getElementById('auth-rejected').style.display = 'flex';
-          return;
-        }
-      } catch(e) { /* network error — fail open so approved users aren't locked out */ }
+      // Check approval status in Firestore (admins bypass this)
+      if (!isAdmin) {
+        try {
+          var doc = await firebase.firestore().collection('users').doc(user.uid).get();
+          if (!doc.exists || (doc.data().status || 'pending') === 'pending') {
+            // No record yet or still pending — send to pending.html to submit info / wait
+            window.location.href = 'pending.html';
+            return;
+          }
+          if (doc.data().status === 'rejected') {
+            document.getElementById('auth-loading').style.display = 'none';
+            document.getElementById('auth-rejected').style.display = 'flex';
+            return;
+          }
+        } catch(e) { /* network error — fail open so approved users aren't locked out */ }
+      }
 
       document.getElementById('auth-loading').style.display = 'none';
       document.getElementById('auth-content').style.display = 'block';
