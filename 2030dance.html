@@ -5,225 +5,175 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>8th Grade Dance 2026 — Schalmont Class of 2026</title>
   <meta name="description" content="Schalmont 8th Grade Dance — Class of 2026. Saturday, June 13, 7:00–9:00 PM at Schalmont Middle School.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css?v=5">
   <link rel="icon" href="images/favicon.svg">
   <style>
-    /* ── DANCE PAGE THEME ────────────────────────────────── */
-    :root {
-      --dance-navy:   #040c1e;
-      --dance-silver: #c8d4e8;
-      --dance-white:  #f0f4ff;
+
+    /* ── PAGE BACKGROUND ─────────────────────────────────── */
+    body {
+      margin: 0;
+      padding: 0;
+      background: #071a3e url('images/dance-bg.png') center top / cover repeat-y;
     }
 
-    /* Sparkle canvas — fixed, behind everything */
+    /* Sparkle canvas fixed on top of background */
     #sparkle-canvas {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      inset: 0;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
       z-index: 0;
     }
 
-    .dance-page { position: relative; z-index: 1; background: transparent; }
-
-    /* ── HERO — invitation image IS the hero ── */
-    .dance-hero {
-      background: #040c1e;
-      text-align: center;
+    /* Everything above the canvas */
+    .page-wrap {
       position: relative;
+      z-index: 1;
     }
-    .dance-hero-img {
+
+    /* ── HERO — invitation image ─────────────────────────── */
+    .dance-hero {
+      padding: 32px 20px 24px;
+      text-align: center;
+    }
+    .dance-hero img {
       width: 100%;
-      max-width: 680px;
+      max-width: 560px;
+      border-radius: 12px;
+      box-shadow: 0 16px 60px rgba(0,0,0,0.7);
       display: block;
-      margin: 0 auto;
+      margin: 0 auto 28px;
     }
-    .dance-hero-ctas {
-      background: #040c1e;
-      padding: 28px 20px 36px;
-    }
-
-    /* Info pills in hero */
-    .hero-pills {
-      display: flex;
-      justify-content: center;
-      gap: 14px;
-      flex-wrap: wrap;
-      margin-bottom: 32px;
-    }
-    .hero-pill {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(200,212,232,0.25);
-      border-radius: 50px;
-      padding: 10px 20px;
-      color: var(--dance-white);
-      font-size: 14px;
-      font-weight: 600;
-      backdrop-filter: blur(6px);
-    }
-    .hero-pill span:first-child { font-size: 18px; }
-
-    /* CTA buttons */
     .hero-ctas {
       display: flex;
       justify-content: center;
       gap: 14px;
       flex-wrap: wrap;
     }
-    .btn-dance-primary {
+
+    /* ── BUTTONS ─────────────────────────────────────────── */
+    .btn-d {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: linear-gradient(135deg, #2a6bd4 0%, #1a4fa8 100%);
-      color: #fff;
       font-family: 'Urbanist', sans-serif;
       font-weight: 800;
       font-size: 15px;
-      padding: 14px 28px;
+      padding: 13px 26px;
       border-radius: 50px;
       text-decoration: none;
       border: none;
       cursor: pointer;
-      box-shadow: 0 4px 20px rgba(42,107,212,0.5);
       transition: transform .2s, box-shadow .2s;
     }
-    .btn-dance-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(42,107,212,0.65); }
-
-    .btn-dance-outline {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: transparent;
-      color: var(--dance-silver);
-      font-family: 'Urbanist', sans-serif;
-      font-weight: 700;
-      font-size: 15px;
-      padding: 13px 28px;
-      border-radius: 50px;
-      text-decoration: none;
+    .btn-d:hover { transform: translateY(-2px); }
+    .btn-d-blue {
+      background: linear-gradient(135deg, #2a6bd4, #1a4fa8);
+      color: #fff;
+      box-shadow: 0 4px 18px rgba(42,107,212,0.5);
+    }
+    .btn-d-blue:hover { box-shadow: 0 8px 28px rgba(42,107,212,0.65); }
+    .btn-d-outline {
+      background: rgba(255,255,255,0.08);
+      color: #c8d4e8;
       border: 2px solid rgba(200,212,232,0.4);
-      cursor: pointer;
-      transition: border-color .2s, color .2s, background .2s;
+      backdrop-filter: blur(6px);
     }
-    .btn-dance-outline:hover { border-color: var(--dance-silver); color: #fff; background: rgba(255,255,255,0.06); }
+    .btn-d-outline:hover { background: rgba(255,255,255,0.14); border-color: #c8d4e8; color: #fff; }
 
-    .btn-dance-silver {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: linear-gradient(135deg, #8aadd4 0%, #5880b0 100%);
-      color: #fff;
-      font-family: 'Urbanist', sans-serif;
-      font-weight: 800;
-      font-size: 15px;
-      padding: 14px 28px;
-      border-radius: 50px;
-      text-decoration: none;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 4px 20px rgba(100,150,210,0.45);
-      transition: transform .2s, box-shadow .2s;
-    }
-    .btn-dance-silver:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(100,150,210,0.6); }
-
-    /* Solid background so content never shows the invitation through it */
+    /* ── CONTENT SECTIONS ────────────────────────────────── */
     .dance-body {
-      background: #040c1e;
-      position: relative;
-      z-index: 1;
+      background: rgba(4, 14, 38, 0.92);
+      backdrop-filter: blur(2px);
+      padding-bottom: 60px;
     }
 
-    .dance-section {
-      padding: 60px 20px;
-      max-width: 1000px;
+    .d-section {
+      max-width: 860px;
       margin: 0 auto;
+      padding: 52px 24px 0;
     }
-    .dance-section-title {
-      font-size: 28px;
+    .d-section-title {
+      font-size: 26px;
       font-weight: 900;
-      color: var(--dance-white);
+      color: #f0f4ff;
       margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
     }
-    .dance-section-desc {
-      color: var(--dance-silver);
+    .d-section-desc {
       font-size: 15px;
-      margin-bottom: 32px;
-      opacity: .85;
+      color: #a0b8d8;
+      margin-bottom: 28px;
+      line-height: 1.6;
     }
-    .dance-divider {
+    .d-divider {
       border: none;
-      border-top: 1px solid rgba(200,212,232,0.15);
-      margin: 0 20px;
+      border-top: 1px solid rgba(200,212,232,0.12);
+      max-width: 860px;
+      margin: 52px auto 0;
     }
 
-    /* Flyer card */
-    .flyer-card {
-      background: rgba(255,255,255,0.04);
+    /* ── CARDS ───────────────────────────────────────────── */
+    .d-card {
+      background: rgba(255,255,255,0.05);
       border: 1px solid rgba(200,212,232,0.15);
-      border-radius: 20px;
-      overflow: hidden;
-      max-width: 480px;
-      margin: 0 auto 40px;
-      box-shadow: 0 12px 48px rgba(0,0,0,0.5);
-    }
-    .flyer-card img {
-      width: 100%;
-      display: block;
-    }
-    .flyer-actions {
-      padding: 20px;
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-      background: rgba(0,0,0,0.2);
+      border-radius: 18px;
+      padding: 28px;
+      margin-bottom: 20px;
     }
 
-    /* Form cards */
-    .dance-card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(200,212,232,0.15);
-      border-radius: 20px;
-      padding: 32px;
+    /* ── PAYMENT BOX ─────────────────────────────────────── */
+    .payment-box {
+      background: linear-gradient(135deg, rgba(42,107,212,0.25), rgba(10,30,80,0.6));
+      border: 1px solid rgba(42,107,212,0.4);
+      border-radius: 18px;
+      padding: 36px;
+      text-align: center;
+    }
+    .payment-amount {
+      font-size: 64px;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .payment-amount sup { font-size: 32px; vertical-align: super; }
+    .payment-sub {
+      font-size: 14px;
+      color: #a0b8d8;
+      margin-bottom: 28px;
+    }
+
+    /* ── DEADLINE BANNER ─────────────────────────────────── */
+    .deadline-banner {
+      background: rgba(210,140,0,0.18);
+      border: 1px solid rgba(210,160,0,0.4);
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #f0c850;
       margin-bottom: 24px;
     }
-    .dance-card h3 {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--dance-white);
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
 
-    /* Form elements */
-    .dance-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-    @media(max-width:560px) { .dance-form-row { grid-template-columns: 1fr; } }
-    .dance-form-group { margin-bottom: 16px; }
-    .dance-label {
+    /* ── FORM ELEMENTS ───────────────────────────────────── */
+    .d-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    @media(max-width:540px) { .d-row { grid-template-columns: 1fr; } }
+    .d-group { margin-bottom: 16px; }
+    .d-label {
       display: block;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .08em;
-      color: var(--dance-silver);
+      letter-spacing: .1em;
+      color: #8aadd4;
       margin-bottom: 6px;
     }
-    .dance-input, .dance-select {
+    .d-input, .d-select {
       width: 100%;
       box-sizing: border-box;
       background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(200,212,232,0.25);
+      border: 1px solid rgba(200,212,232,0.22);
       border-radius: 10px;
       padding: 11px 14px;
       color: #fff;
@@ -233,104 +183,21 @@
       transition: border-color .2s, background .2s;
       appearance: none;
     }
-    .dance-input:focus, .dance-select:focus {
+    .d-input:focus, .d-select:focus {
       border-color: #4a90e2;
       background: rgba(255,255,255,0.1);
     }
-    .dance-input::placeholder { color: rgba(200,212,232,0.4); }
-    .dance-select option { background: #102756; color: #fff; }
-
-    /* Volunteer grid */
-    .vol-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-    }
-    .vol-slot {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(200,212,232,0.15);
-      border-radius: 14px;
-      padding: 20px;
-    }
-    .vol-slot-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-    .vol-slot-title {
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--dance-white);
-    }
-    .vol-badge {
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 50px;
-      background: rgba(42,107,212,0.3);
-      color: #8ab4e0;
-      border: 1px solid rgba(42,107,212,0.4);
-    }
-    .vol-badge.full {
-      background: rgba(200,80,80,0.2);
-      color: #f08080;
-      border-color: rgba(200,80,80,0.3);
-    }
-
-    /* Alert/success */
-    .dance-alert {
-      border-radius: 10px;
-      padding: 14px 18px;
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      display: none;
-    }
-    .dance-alert.show { display: block; }
-    .dance-alert-success { background: rgba(50,180,100,0.2); border: 1px solid rgba(50,180,100,0.4); color: #6adba0; }
-    .dance-alert-error   { background: rgba(220,60,60,0.2);  border: 1px solid rgba(220,60,60,0.4);  color: #f08080; }
-
-    /* Sizing search */
-    .student-search-wrap { position: relative; }
-    .student-dropdown {
-      position: absolute;
-      top: calc(100% + 4px);
-      left: 0; right: 0;
-      background: #102756;
-      border: 1px solid rgba(200,212,232,0.3);
-      border-radius: 10px;
-      max-height: 220px;
-      overflow-y: auto;
-      z-index: 100;
-      display: none;
-    }
-    .student-dropdown.open { display: block; }
-    .student-option {
-      padding: 10px 14px;
-      cursor: pointer;
-      color: var(--dance-white);
-      font-size: 14px;
-      border-bottom: 1px solid rgba(200,212,232,0.1);
-      transition: background .15s;
-    }
-    .student-option:last-child { border-bottom: none; }
-    .student-option:hover, .student-option.highlighted { background: rgba(42,107,212,0.3); }
-    .student-option.not-listed { color: var(--dance-silver); font-style: italic; }
+    .d-input::placeholder { color: rgba(160,184,216,0.45); }
+    .d-select option { background: #0c1e45; color: #fff; }
 
     /* Size buttons */
-    .size-grid {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 4px;
-    }
+    .size-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
     .size-btn {
-      padding: 8px 18px;
+      padding: 8px 16px;
       border-radius: 8px;
-      border: 2px solid rgba(200,212,232,0.25);
+      border: 2px solid rgba(200,212,232,0.22);
       background: transparent;
-      color: var(--dance-silver);
+      color: #a0b8d8;
       font-family: 'Urbanist', sans-serif;
       font-weight: 700;
       font-size: 14px;
@@ -340,75 +207,45 @@
     .size-btn:hover { border-color: #4a90e2; color: #fff; }
     .size-btn.selected { background: #2a6bd4; border-color: #2a6bd4; color: #fff; }
 
-    /* Slot tabs (bathroom monitors) */
-    .slot-table { width: 100%; border-collapse: collapse; }
-    .slot-table th {
-      text-align: left;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      color: var(--dance-silver);
-      padding: 8px 12px;
-      border-bottom: 1px solid rgba(200,212,232,0.15);
+    /* Student search */
+    .student-wrap { position: relative; }
+    .student-dd {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      background: #0c2050;
+      border: 1px solid rgba(200,212,232,0.28);
+      border-radius: 10px;
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 200;
+      display: none;
     }
-    .slot-table td {
-      padding: 8px 12px;
-      font-size: 13px;
-      color: var(--dance-white);
-      border-bottom: 1px solid rgba(200,212,232,0.07);
-    }
-    .slot-table tr:last-child td { border-bottom: none; }
-    .slot-tag {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 10px;
-      border-radius: 50px;
-    }
-    .slot-tag-boys  { background: rgba(42,107,212,0.3); color: #8ab4e0; border: 1px solid rgba(42,107,212,0.3); }
-    .slot-tag-girls { background: rgba(200,80,180,0.25); color: #e08ad8; border: 1px solid rgba(200,80,180,0.3); }
-
-    /* Twinkling star CSS */
-    @keyframes twinkle {
-      0%,100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: .2; transform: scale(.6); }
-    }
-    .star-fixed {
-      position: fixed;
-      border-radius: 50%;
-      background: white;
-      pointer-events: none;
-      animation: twinkle var(--dur,2s) ease-in-out infinite;
-      animation-delay: var(--delay,0s);
-      z-index: 0;
-    }
-
-    /* Payment section */
-    .payment-highlight {
-      background: linear-gradient(135deg, rgba(42,107,212,0.2) 0%, rgba(16,39,86,0.6) 100%);
-      border: 1px solid rgba(42,107,212,0.4);
-      border-radius: 20px;
-      padding: 36px 32px;
-      text-align: center;
-    }
-    .payment-price {
-      font-size: 56px;
-      font-weight: 900;
-      color: #fff;
-      line-height: 1;
-      margin-bottom: 6px;
-    }
-    .payment-price sup { font-size: 28px; vertical-align: super; }
-    .payment-label {
+    .student-dd.open { display: block; }
+    .s-opt {
+      padding: 10px 14px;
+      cursor: pointer;
+      color: #e0ecff;
       font-size: 14px;
-      color: var(--dance-silver);
-      margin-bottom: 28px;
-      opacity: .8;
+      border-bottom: 1px solid rgba(200,212,232,0.08);
+      transition: background .12s;
     }
+    .s-opt:last-child { border-bottom: none; }
+    .s-opt:hover { background: rgba(42,107,212,0.3); }
+    .s-opt.not-listed { color: #7ab4e8; font-style: italic; }
 
-    /* Success state */
-    .success-msg {
+    /* Alerts */
+    .d-alert {
+      border-radius: 10px;
+      padding: 13px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .d-alert.show { display: block; }
+    .d-alert-err { background: rgba(220,60,60,0.2); border: 1px solid rgba(220,60,60,0.4); color: #f08080; }
+    .d-success {
       display: none;
       text-align: center;
       padding: 24px;
@@ -416,149 +253,161 @@
       font-size: 16px;
       font-weight: 700;
     }
-    .success-msg.show { display: block; }
+    .d-success.show { display: block; }
 
-    /* Responsive */
-    @media(max-width:700px) {
-      .dance-card { padding: 20px; }
-      .dance-section { padding: 40px 16px; }
+    /* Slot table */
+    .slot-table { width: 100%; border-collapse: collapse; }
+    .slot-table th {
+      text-align: left; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .08em;
+      color: #8aadd4; padding: 8px 12px;
+      border-bottom: 1px solid rgba(200,212,232,0.15);
+    }
+    .slot-table td {
+      padding: 8px 12px; font-size: 13px; color: #e0ecff;
+      border-bottom: 1px solid rgba(200,212,232,0.07);
+    }
+    .slot-table tr:last-child td { border-bottom: none; }
+    .stag {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      padding: 2px 10px; border-radius: 50px;
+    }
+    .stag-b { background: rgba(42,107,212,0.3); color: #8ab4e0; border: 1px solid rgba(42,107,212,0.3); }
+    .stag-g { background: rgba(200,80,180,0.2); color: #e08ad8; border: 1px solid rgba(200,80,180,0.3); }
+
+    /* Contact buttons */
+    .contact-row {
+      display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 32px;
     }
   </style>
 </head>
-<body style="background:#040c1e url('images/class-of-2030-dance-invite.png') center 65px / cover no-repeat fixed;margin:0;padding:0;">
+<body>
 
-<!-- Sparkle canvas (behind everything) -->
 <canvas id="sparkle-canvas"></canvas>
 
-<!-- SITE HEADER -->
-<header class="site-header" style="position:relative;z-index:10;">
-  <nav class="container nav-inner">
-    <a href="index.html" class="nav-brand">
-      <img src="images/logo.png" alt="Schalmont Central PTO" class="nav-logo-img">
-    </a>
-    <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li class="has-dropdown">
-        <a href="schools.html">Schools</a>
-        <ul class="nav-dropdown">
-          <li><a href="woestina.html">🌱 Woestina Pre-K</a></li>
-          <li><a href="jefferson.html">🏫 Jefferson Elementary</a></li>
-          <li><a href="middle-school.html">📚 Middle School</a></li>
-          <li><a href="high-school.html">🎓 High School</a></li>
-        </ul>
-      </li>
-      <li class="has-dropdown">
-        <a href="events.html">Events</a>
-        <ul class="nav-dropdown">
-          <li><a href="staff-appreciation-week.html">&#x1F31F; Staff Appreciation Week</a></li>
-        </ul>
-      </li>
-      <li><a href="meetings.html">Meetings</a></li>
-      <li class="has-dropdown">
-        <a href="shop.html">Shop</a>
-        <ul class="nav-dropdown">
-          <li><a href="shop.html">👕 Spiritwear</a></li>
-          <li><a href="fundraisers.html">💰 Fundraisers</a></li>
-        </ul>
-      </li>
-      <li><a href="directory.html">Directory</a></li>
-      <li><a href="login.html" class="btn btn-primary" style="padding:6px 16px;font-size:14px;color:#000000" id="nav-login-btn">Login/Register</a></li>
-      <li><a href="social.html" class="nav-social-icon" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a></li>
-      <li><a href="social.html" class="nav-social-icon" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li>
-    </ul>
-    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
-  </nav>
-</header>
+<div class="page-wrap">
 
-<div class="dance-page">
+  <!-- SITE HEADER -->
+  <header class="site-header" style="position:relative;z-index:10;background:rgba(4,14,38,0.85);backdrop-filter:blur(8px);">
+    <nav class="container nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="images/logo.png" alt="Schalmont Central PTO" class="nav-logo-img">
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li class="has-dropdown">
+          <a href="schools.html">Schools</a>
+          <ul class="nav-dropdown">
+            <li><a href="woestina.html">🌱 Woestina Pre-K</a></li>
+            <li><a href="jefferson.html">🏫 Jefferson Elementary</a></li>
+            <li><a href="middle-school.html">📚 Middle School</a></li>
+            <li><a href="high-school.html">🎓 High School</a></li>
+          </ul>
+        </li>
+        <li class="has-dropdown">
+          <a href="events.html">Events</a>
+          <ul class="nav-dropdown">
+            <li><a href="staff-appreciation-week.html">&#x1F31F; Staff Appreciation Week</a></li>
+          </ul>
+        </li>
+        <li><a href="meetings.html">Meetings</a></li>
+        <li class="has-dropdown">
+          <a href="shop.html">Shop</a>
+          <ul class="nav-dropdown">
+            <li><a href="shop.html">👕 Spiritwear</a></li>
+            <li><a href="fundraisers.html">💰 Fundraisers</a></li>
+          </ul>
+        </li>
+        <li><a href="directory.html">Directory</a></li>
+        <li><a href="login.html" class="btn btn-primary" style="padding:6px 16px;font-size:14px;color:#000" id="nav-login-btn">Login/Register</a></li>
+        <li><a href="social.html" class="nav-social-icon" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a></li>
+        <li><a href="social.html" class="nav-social-icon" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    </nav>
+  </header>
 
-  <!-- spacer so content starts below the invitation art -->
-  <div style="height:100vh;display:flex;align-items:flex-end;justify-content:center;padding-bottom:32px">
+  <!-- HERO — invitation image -->
+  <div class="dance-hero">
+    <img src="images/class-of-2030-dance-invite.png"
+         alt="Schalmont Class of 2026 — 8th Grade Dance, Saturday June 13, 7–9 PM">
     <div class="hero-ctas">
-      <a href="https://8th-grade-dance-tickets-23649.cheddarup.com" target="_blank" rel="noopener" class="btn-dance-silver">🎟️ Buy Tickets — $30</a>
-      <a href="#sizing" class="btn-dance-outline">👕 Shirt Sizing</a>
-      <a href="#volunteer" class="btn-dance-outline">🙋 Volunteer</a>
+      <a href="https://8th-grade-dance-tickets-23649.cheddarup.com" target="_blank" rel="noopener" class="btn-d btn-d-blue">🎟️ Buy Tickets — $30</a>
+      <a href="#sizing" class="btn-d btn-d-outline">👕 Shirt Sizing</a>
+      <a href="#volunteer" class="btn-d btn-d-outline">🙋 Volunteer</a>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════════ BODY -->
+  <!-- CONTENT BODY -->
   <div class="dance-body">
 
-    <!-- DOWNLOAD FLYER -->
-    <section class="dance-section" style="padding-top:40px;padding-bottom:20px;text-align:center">
-      <a href="images/class-of-2030-dance-invite.png" download="Schalmont-8th-Grade-Dance-2026.png" class="btn-dance-primary" style="font-size:15px;padding:13px 28px">
+    <!-- DOWNLOAD -->
+    <div class="d-section" style="padding-top:40px;text-align:center">
+      <a href="images/class-of-2030-dance-invite.png" download="Schalmont-8th-Grade-Dance-2026.png" class="btn-d btn-d-blue">
         ⬇️ Download &amp; Print Invitation
       </a>
-    </section>
+    </div>
 
-    <hr class="dance-divider">
+    <hr class="d-divider">
 
-    <!-- TICKETS / PAYMENT -->
-    <section class="dance-section" id="tickets">
-      <div class="dance-section-title">🎟️ Buy Tickets</div>
-      <div class="dance-section-desc">Tickets are $30 per student. Purchase online or during lunch the first week of June. We accept cash, check, or card.</div>
-
-      <div class="payment-highlight">
-        <div class="payment-price"><sup>$</sup>30</div>
-        <div class="payment-label">per ticket &nbsp;·&nbsp; All 8th grade students welcome</div>
-        <a href="https://8th-grade-dance-tickets-23649.cheddarup.com" target="_blank" rel="noopener" class="btn-dance-silver" style="font-size:16px;padding:16px 36px;">
+    <!-- TICKETS -->
+    <div class="d-section" id="tickets">
+      <div class="d-section-title">🎟️ Buy Tickets</div>
+      <div class="d-section-desc">Tickets are $30 per student. Purchase online or during lunch the first week of June. Cash and check accepted at the door.</div>
+      <div class="payment-box">
+        <div class="payment-amount"><sup>$</sup>30</div>
+        <div class="payment-sub">per ticket &nbsp;·&nbsp; All 8th grade students welcome</div>
+        <a href="https://8th-grade-dance-tickets-23649.cheddarup.com" target="_blank" rel="noopener" class="btn-d btn-d-blue" style="font-size:16px;padding:16px 36px;">
           🎟️ Purchase Tickets Online
         </a>
-        <p style="margin-top:20px;font-size:13px;color:var(--dance-silver);opacity:.7">
-          Cash &amp; check also accepted during lunch the first week of June.
-        </p>
+        <p style="margin-top:18px;font-size:13px;color:#7090b0;">Cash &amp; check also accepted at the door.</p>
       </div>
-    </section>
+    </div>
 
-    <hr class="dance-divider">
+    <hr class="d-divider">
 
     <!-- SWEATSHIRT SIZING -->
-    <section class="dance-section" id="sizing">
-      <div class="dance-section-title">👕 Sweatshirt Sizing</div>
-      <div class="dance-section-desc">All 8th graders will receive a sweatshirt! Search for your name and submit your size. If you can't find your name, enter it manually below.</div>
-      <div style="background:rgba(200,160,48,0.12);border:1px solid rgba(200,160,48,0.35);border-radius:12px;padding:14px 18px;margin-bottom:24px;font-size:14px;font-weight:700;color:#e8c870;">
+    <div class="d-section" id="sizing">
+      <div class="d-section-title">👕 Sweatshirt Sizing</div>
+      <div class="d-section-desc">All 8th graders will receive a sweatshirt at the dance! Search for your name below and submit your size.</div>
+
+      <div class="deadline-banner">
         ⚠️ Shirt sizes must be submitted by <strong>Friday, June 5</strong> — end of day.
       </div>
 
-      <div class="dance-card">
-        <div id="sizing-alert" class="dance-alert"></div>
-        <div id="sizing-success" class="success-msg">
-          ✅ Your size has been saved! See you on June 13th!
-        </div>
+      <div class="d-card">
+        <div id="sizing-alert" class="d-alert d-alert-err"></div>
+        <div id="sizing-success" class="d-success">✅ Your size has been saved! See you on June 13.</div>
 
         <form id="sizing-form" autocomplete="off">
-          <!-- Student search -->
-          <div class="dance-form-group">
-            <label class="dance-label" for="student-search">Student Name</label>
-            <div class="student-search-wrap">
-              <input type="text" id="student-search" class="dance-input" placeholder="Type to search student list…" autocomplete="off">
-              <div id="student-dropdown" class="student-dropdown" role="listbox"></div>
-              <input type="hidden" id="student-name-hidden" name="studentName">
+          <div class="d-group">
+            <label class="d-label" for="student-search">Student Name</label>
+            <div class="student-wrap">
+              <input type="text" id="student-search" class="d-input" placeholder="Type to search…" autocomplete="off">
+              <div id="student-dd" class="student-dd"></div>
+              <input type="hidden" id="student-name-val">
             </div>
           </div>
 
-          <!-- Manual name entry (shown when "Not listed" is picked) -->
-          <div id="manual-name-row" class="dance-form-row" style="display:none">
-            <div class="dance-form-group" style="margin-bottom:0">
-              <label class="dance-label" for="manual-first">First Name</label>
-              <input type="text" id="manual-first" class="dance-input" placeholder="First">
+          <div id="manual-row" class="d-row" style="display:none">
+            <div class="d-group" style="margin-bottom:0">
+              <label class="d-label" for="manual-first">First Name</label>
+              <input type="text" id="manual-first" class="d-input" placeholder="First">
             </div>
-            <div class="dance-form-group" style="margin-bottom:0">
-              <label class="dance-label" for="manual-last">Last Name</label>
-              <input type="text" id="manual-last" class="dance-input" placeholder="Last">
+            <div class="d-group" style="margin-bottom:0">
+              <label class="d-label" for="manual-last">Last Name</label>
+              <input type="text" id="manual-last" class="d-input" placeholder="Last">
             </div>
           </div>
 
-          <!-- Email (optional) -->
-          <div class="dance-form-group">
-            <label class="dance-label" for="sizing-email">Email (optional — for confirmation)</label>
-            <input type="email" id="sizing-email" class="dance-input" placeholder="your@email.com">
+          <div class="d-group">
+            <label class="d-label" for="sizing-email">Email (optional — for confirmation)</label>
+            <input type="email" id="sizing-email" class="d-input" placeholder="your@email.com">
           </div>
 
-          <!-- Size selector -->
-          <div class="dance-form-group">
-            <label class="dance-label">Sweatshirt Size</label>
-            <div class="size-grid" id="size-grid">
+          <div class="d-group">
+            <label class="d-label">Sweatshirt Size</label>
+            <div class="size-grid">
               <button type="button" class="size-btn" data-size="YS">Youth S</button>
               <button type="button" class="size-btn" data-size="YM">Youth M</button>
               <button type="button" class="size-btn" data-size="YL">Youth L</button>
@@ -569,139 +418,121 @@
               <button type="button" class="size-btn" data-size="AXL">Adult XL</button>
               <button type="button" class="size-btn" data-size="A2XL">Adult 2XL</button>
             </div>
-            <input type="hidden" id="selected-size" name="size">
+            <input type="hidden" id="selected-size">
           </div>
 
-          <button type="submit" class="btn-dance-primary" style="width:100%;justify-content:center;font-size:15px;padding:14px">
+          <button type="submit" class="btn-d btn-d-blue" style="width:100%;justify-content:center;font-size:15px;padding:14px;margin-top:4px;">
             Submit My Size
           </button>
         </form>
       </div>
-    </section>
+    </div>
 
-    <hr class="dance-divider">
+    <hr class="d-divider">
 
-    <!-- VOLUNTEER SIGNUP -->
-    <section class="dance-section" id="volunteer">
-      <div class="dance-section-title">🙋 Volunteer Sign-Up</div>
-      <div class="dance-section-desc">Many hands make for a great night! Choose a role below and fill in your info. We appreciate every volunteer.</div>
+    <!-- VOLUNTEER -->
+    <div class="d-section" id="volunteer">
+      <div class="d-section-title">🙋 Volunteer Sign-Up</div>
+      <div class="d-section-desc">Many hands make for a great night! Fill in your info and choose a role.</div>
 
-      <div class="dance-card">
-        <div id="vol-alert" class="dance-alert"></div>
-        <div id="vol-success" class="success-msg">
-          ✅ Thank you! You're signed up. We'll be in touch closer to the event.
-        </div>
+      <div class="d-card">
+        <div id="vol-alert" class="d-alert d-alert-err"></div>
+        <div id="vol-success" class="d-success">✅ Thank you! You're signed up. We'll be in touch closer to the event.</div>
 
-        <form id="volunteer-form">
-          <!-- Name + contact -->
-          <div class="dance-form-row">
-            <div class="dance-form-group" style="margin-bottom:0">
-              <label class="dance-label" for="vol-first">First Name *</label>
-              <input type="text" id="vol-first" class="dance-input" required placeholder="Jane">
+        <form id="vol-form">
+          <div class="d-row">
+            <div class="d-group" style="margin-bottom:0">
+              <label class="d-label" for="vol-first">First Name *</label>
+              <input type="text" id="vol-first" class="d-input" required placeholder="Jane">
             </div>
-            <div class="dance-form-group" style="margin-bottom:0">
-              <label class="dance-label" for="vol-last">Last Name *</label>
-              <input type="text" id="vol-last" class="dance-input" required placeholder="Smith">
+            <div class="d-group" style="margin-bottom:0">
+              <label class="d-label" for="vol-last">Last Name *</label>
+              <input type="text" id="vol-last" class="d-input" required placeholder="Smith">
             </div>
           </div>
-          <div class="dance-form-row">
-            <div class="dance-form-group" style="margin-bottom:0">
-              <label class="dance-label" for="vol-email">Email Address *</label>
-              <input type="email" id="vol-email" class="dance-input" required placeholder="your@email.com">
+          <div class="d-row">
+            <div class="d-group" style="margin-bottom:0">
+              <label class="d-label" for="vol-email">Email *</label>
+              <input type="email" id="vol-email" class="d-input" required placeholder="your@email.com">
             </div>
-            <div class="dance-form-group" style="margin-bottom:0">
-              <label class="dance-label" for="vol-phone">Phone Number *</label>
-              <input type="tel" id="vol-phone" class="dance-input" required placeholder="(518) 555-0000">
+            <div class="d-group" style="margin-bottom:0">
+              <label class="d-label" for="vol-phone">Phone *</label>
+              <input type="tel" id="vol-phone" class="d-input" required placeholder="(518) 555-0000">
             </div>
           </div>
 
-          <!-- Role selector -->
-          <div class="dance-form-group">
-            <label class="dance-label" for="vol-role">Volunteer Role *</label>
-            <select id="vol-role" class="dance-select" required>
+          <div class="d-group">
+            <label class="d-label" for="vol-role">Volunteer Role *</label>
+            <select id="vol-role" class="d-select" required>
               <option value="">— Select a role —</option>
-              <optgroup label="General Roles">
-                <option value="Setup">Setup</option>
-                <option value="Cleanup">Cleanup</option>
-                <option value="Chaperone">Chaperone</option>
-                <option value="Food Service">Food Service</option>
+              <optgroup label="General">
+                <option value="Setup">Setup (10 spots)</option>
+                <option value="Cleanup">Cleanup (10 spots)</option>
+                <option value="Chaperone">Chaperone (5 spots)</option>
+                <option value="Food Service">Food Service (3 spots)</option>
               </optgroup>
-              <optgroup label="Boys Bathroom Monitor — 15 min slots">
-                <option value="Boys Bathroom 7:00–7:15 PM">Boys Bathroom — 7:00–7:15 PM</option>
-                <option value="Boys Bathroom 7:15–7:30 PM">Boys Bathroom — 7:15–7:30 PM</option>
-                <option value="Boys Bathroom 7:30–7:45 PM">Boys Bathroom — 7:30–7:45 PM</option>
-                <option value="Boys Bathroom 7:45–8:00 PM">Boys Bathroom — 7:45–8:00 PM</option>
-                <option value="Boys Bathroom 8:00–8:15 PM">Boys Bathroom — 8:00–8:15 PM</option>
-                <option value="Boys Bathroom 8:15–8:30 PM">Boys Bathroom — 8:15–8:30 PM</option>
-                <option value="Boys Bathroom 8:30–8:45 PM">Boys Bathroom — 8:30–8:45 PM</option>
-                <option value="Boys Bathroom 8:45–9:00 PM">Boys Bathroom — 8:45–9:00 PM</option>
+              <optgroup label="Boys Bathroom Monitor — 15-min slots">
+                <option value="Boys Bathroom 7:00–7:15 PM">Boys — 7:00–7:15 PM</option>
+                <option value="Boys Bathroom 7:15–7:30 PM">Boys — 7:15–7:30 PM</option>
+                <option value="Boys Bathroom 7:30–7:45 PM">Boys — 7:30–7:45 PM</option>
+                <option value="Boys Bathroom 7:45–8:00 PM">Boys — 7:45–8:00 PM</option>
+                <option value="Boys Bathroom 8:00–8:15 PM">Boys — 8:00–8:15 PM</option>
+                <option value="Boys Bathroom 8:15–8:30 PM">Boys — 8:15–8:30 PM</option>
+                <option value="Boys Bathroom 8:30–8:45 PM">Boys — 8:30–8:45 PM</option>
+                <option value="Boys Bathroom 8:45–9:00 PM">Boys — 8:45–9:00 PM</option>
               </optgroup>
-              <optgroup label="Girls Bathroom Monitor — 15 min slots">
-                <option value="Girls Bathroom 7:00–7:15 PM">Girls Bathroom — 7:00–7:15 PM</option>
-                <option value="Girls Bathroom 7:15–7:30 PM">Girls Bathroom — 7:15–7:30 PM</option>
-                <option value="Girls Bathroom 7:30–7:45 PM">Girls Bathroom — 7:30–7:45 PM</option>
-                <option value="Girls Bathroom 7:45–8:00 PM">Girls Bathroom — 7:45–8:00 PM</option>
-                <option value="Girls Bathroom 8:00–8:15 PM">Girls Bathroom — 8:00–8:15 PM</option>
-                <option value="Girls Bathroom 8:15–8:30 PM">Girls Bathroom — 8:15–8:30 PM</option>
-                <option value="Girls Bathroom 8:30–8:45 PM">Girls Bathroom — 8:30–8:45 PM</option>
-                <option value="Girls Bathroom 8:45–9:00 PM">Girls Bathroom — 8:45–9:00 PM</option>
+              <optgroup label="Girls Bathroom Monitor — 15-min slots">
+                <option value="Girls Bathroom 7:00–7:15 PM">Girls — 7:00–7:15 PM</option>
+                <option value="Girls Bathroom 7:15–7:30 PM">Girls — 7:15–7:30 PM</option>
+                <option value="Girls Bathroom 7:30–7:45 PM">Girls — 7:30–7:45 PM</option>
+                <option value="Girls Bathroom 7:45–8:00 PM">Girls — 7:45–8:00 PM</option>
+                <option value="Girls Bathroom 8:00–8:15 PM">Girls — 8:00–8:15 PM</option>
+                <option value="Girls Bathroom 8:15–8:30 PM">Girls — 8:15–8:30 PM</option>
+                <option value="Girls Bathroom 8:30–8:45 PM">Girls — 8:30–8:45 PM</option>
+                <option value="Girls Bathroom 8:45–9:00 PM">Girls — 8:45–9:00 PM</option>
               </optgroup>
             </select>
           </div>
 
-          <!-- Capacity reference table -->
           <details style="margin-bottom:20px">
-            <summary style="cursor:pointer;font-size:13px;color:var(--dance-silver);font-weight:600;margin-bottom:12px">
-              📋 View slots &amp; availability
-            </summary>
-            <div style="overflow-x:auto;margin-top:12px">
+            <summary style="cursor:pointer;font-size:13px;color:#8aadd4;font-weight:600;">📋 View all slots &amp; capacity</summary>
+            <div style="overflow-x:auto;margin-top:14px">
               <table class="slot-table">
-                <thead>
-                  <tr>
-                    <th>Role</th>
-                    <th>Slots Available</th>
-                    <th>Notes</th>
-                  </tr>
-                </thead>
+                <thead><tr><th>Role</th><th>Spots</th><th>Notes</th></tr></thead>
                 <tbody>
-                  <tr><td>Setup</td><td>10</td><td>Arrive at 5:30 PM</td></tr>
-                  <tr><td>Cleanup</td><td>10</td><td>Starts at 9:00 PM</td></tr>
+                  <tr><td>Setup</td><td>10</td><td>Arrive 5:30 PM</td></tr>
+                  <tr><td>Cleanup</td><td>10</td><td>Starts 9:00 PM</td></tr>
                   <tr><td>Chaperone</td><td>5</td><td>Full event</td></tr>
                   <tr><td>Food Service</td><td>3</td><td>Full event</td></tr>
-                  <tr><td><span class="slot-tag slot-tag-boys">Boys</span> Bathroom Monitor</td><td>8 slots (1 each)</td><td>15 min shifts, 7–9 PM</td></tr>
-                  <tr><td><span class="slot-tag slot-tag-girls">Girls</span> Bathroom Monitor</td><td>8 slots (1 each)</td><td>15 min shifts, 7–9 PM</td></tr>
+                  <tr><td><span class="stag stag-b">Boys</span> Bathroom Monitor</td><td>8 slots × 1</td><td>15-min shifts, 7–9 PM</td></tr>
+                  <tr><td><span class="stag stag-g">Girls</span> Bathroom Monitor</td><td>8 slots × 1</td><td>15-min shifts, 7–9 PM</td></tr>
                 </tbody>
               </table>
             </div>
           </details>
 
-          <button type="submit" class="btn-dance-primary" style="width:100%;justify-content:center;font-size:15px;padding:14px">
+          <button type="submit" class="btn-d btn-d-blue" style="width:100%;justify-content:center;font-size:15px;padding:14px;">
             Sign Me Up!
           </button>
         </form>
       </div>
-    </section>
+    </div>
 
-    <!-- Contact section -->
-    <section class="dance-section" style="padding-top:20px;padding-bottom:60px">
-      <hr class="dance-divider" style="margin:0 0 48px;">
-      <div class="dance-section-title" style="justify-content:center;text-align:center">📬 Questions?</div>
-      <div class="dance-section-desc" style="text-align:center">Reach out to one of our event organizers.</div>
-      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:36px">
-        <a href="mailto:rosampezzuto@gmail.com" class="btn-dance-primary" style="font-size:15px;padding:14px 28px">
-          ✉️ Rosa Pezzuto
-        </a>
-        <a href="mailto:kbenkoski@schalmont.net" class="btn-dance-primary" style="font-size:15px;padding:14px 28px">
-          ✉️ Kelly Benkoski
-        </a>
+    <hr class="d-divider">
+
+    <!-- CONTACT -->
+    <div class="d-section" style="text-align:center;padding-bottom:60px">
+      <div class="d-section-title" style="justify-content:center">📬 Questions?</div>
+      <div class="d-section-desc">Reach out to one of our event organizers.</div>
+      <div class="contact-row">
+        <a href="mailto:rosampezzuto@gmail.com" class="btn-d btn-d-blue">✉️ Rosa Pezzuto</a>
+        <a href="mailto:kbenkoski@schalmont.net" class="btn-d btn-d-blue">✉️ Kelly Benkoski</a>
       </div>
-      <div style="text-align:center">
-        <a href="middle-school.html" class="btn-dance-outline">← Back to Middle School</a>
-      </div>
-    </section>
+      <a href="middle-school.html" class="btn-d btn-d-outline">← Back to Middle School</a>
+    </div>
 
   </div><!-- /.dance-body -->
-</div><!-- /.dance-page -->
+</div><!-- /.page-wrap -->
 
 <!-- FOOTER -->
 <footer class="site-footer" style="position:relative;z-index:1;">
@@ -746,140 +577,85 @@
   </div>
 </footer>
 
-<!-- Firebase + Auth -->
 <script src="js/firebase-config.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/app.js"></script>
 
 <script>
-/* ══════════════════════════════════════════════════════════
-   SPARKLE CANVAS — starfield + targeted letter/ribbon glints
-══════════════════════════════════════════════════════════ */
-(function() {
+/* ── SPARKLE CANVAS ──────────────────────────────────────── */
+(function () {
   const canvas = document.getElementById('sparkle-canvas');
-  const ctx    = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d');
   let W, H, dots = [], glints = [];
-
-  const HEADER_H = 65; // px — nav bar height
 
   function resize() {
     W = canvas.width  = window.innerWidth;
-    H = canvas.height = Math.max(document.documentElement.scrollHeight, window.innerHeight);
+    H = canvas.height = window.innerHeight;
   }
   window.addEventListener('resize', () => { resize(); init(); });
   resize();
 
-  function rand(a, b) { return a + Math.random() * (b - a); }
+  const rand = (a, b) => a + Math.random() * (b - a);
 
-  // 4-point star cross — the glint seen on the invitation letters
   function drawCross(x, y, size, alpha) {
-    if (alpha <= 0) return;
+    if (alpha <= 0.02) return;
     ctx.save();
     ctx.lineCap = 'round';
-
-    // Long vertical + horizontal arms
-    ctx.lineWidth = Math.max(0.8, size * 0.16);
     ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+    ctx.lineWidth = Math.max(0.7, size * 0.15);
     ctx.beginPath(); ctx.moveTo(x, y - size); ctx.lineTo(x, y + size); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(x - size, y); ctx.lineTo(x + size, y); ctx.stroke();
-
-    // Shorter diagonal arms
-    const d = size * 0.42;
-    ctx.lineWidth = Math.max(0.5, size * 0.09);
-    ctx.beginPath(); ctx.moveTo(x-d, y-d); ctx.lineTo(x+d, y+d); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(x+d, y-d); ctx.lineTo(x-d, y+d); ctx.stroke();
-
-    // Bright centre dot
+    const d = size * 0.4;
+    ctx.lineWidth = Math.max(0.4, size * 0.08);
+    ctx.beginPath(); ctx.moveTo(x-d,y-d); ctx.lineTo(x+d,y+d); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x+d,y-d); ctx.lineTo(x-d,y+d); ctx.stroke();
     ctx.beginPath();
-    ctx.arc(x, y, Math.max(0.6, size * 0.18), 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(255,255,255,${Math.min(1, alpha * 1.5)})`;
+    ctx.arc(x, y, Math.max(0.5, size * 0.15), 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${Math.min(1, alpha * 1.6)})`;
     ctx.fill();
     ctx.restore();
   }
 
   function init() {
-    dots  = [];
-    glints = [];
+    dots = []; glints = [];
 
-    // ── Background starfield dots ──────────────────────────
-    const dotCount = Math.floor((W * H) / 1800);
-    for (let i = 0; i < dotCount; i++) {
+    // Subtle additional stars layered over the bg image
+    const count = Math.floor((W * H) / 3500);
+    for (let i = 0; i < count; i++) {
       const roll = Math.random();
       dots.push({
         x: rand(0, W), y: rand(0, H),
-        r: roll > 0.96 ? rand(1.4, 2.2) : roll > 0.84 ? rand(0.7, 1.3) : rand(0.2, 0.7),
-        baseAlpha: roll > 0.88 ? rand(0.5, 0.85) : rand(0.12, 0.45),
+        r: roll > 0.93 ? rand(1.2, 2.0) : rand(0.3, 1.0),
+        base: roll > 0.88 ? rand(0.4, 0.75) : rand(0.08, 0.35),
         phase: rand(0, Math.PI * 2),
-        speed: rand(0.004, 0.018),
-        isStar: roll > 0.94,
+        speed: rand(0.005, 0.020),
+        star: roll > 0.92,
       });
     }
 
-    // ── Targeted glints on the invitation artwork ──────────
-    // Positions expressed as fractions of viewport (vw%, vh%)
-    // accounting for HEADER_H offset on the background image.
-    // The invitation image fills from y=HEADER_H; its total
-    // visible height ≈ window.innerHeight - HEADER_H.
-    // Image aspect ratio ~0.78 (portrait), so effective image
-    // width = min(W, H/0.78).
-
-    const vH = window.innerHeight - HEADER_H; // visible invitation height
-
-    function vp(xFrac, yFrac) {
-      // xFrac: 0=left, 1=right of viewport
-      // yFrac: 0=top of invitation, 1=bottom of invitation visible area
-      return { x: W * xFrac, y: HEADER_H + vH * yFrac };
-    }
-
-    // SCHALMONT letters — bright glints spread across ~y 8–20% of image
-    const schalmontGlints = [
-      vp(0.08, 0.08), vp(0.18, 0.11), vp(0.26, 0.09), vp(0.35, 0.13),
-      vp(0.44, 0.08), vp(0.53, 0.10), vp(0.62, 0.12), vp(0.72, 0.09),
-      vp(0.81, 0.11), vp(0.90, 0.08), vp(0.14, 0.18), vp(0.30, 0.16),
-      vp(0.50, 0.17), vp(0.68, 0.19), vp(0.85, 0.16),
-    ];
-
-    // 2026 numbers — y ~30–52%
-    const yearGlints = [
-      vp(0.12, 0.32), vp(0.22, 0.38), vp(0.33, 0.30), vp(0.42, 0.45),
-      vp(0.50, 0.33), vp(0.58, 0.50), vp(0.67, 0.35), vp(0.76, 0.42),
-      vp(0.88, 0.31), vp(0.20, 0.48), vp(0.46, 0.40), vp(0.72, 0.49),
-    ];
-
-    // Left silver ribbon — x ~2–8%, y 0–70%
-    const leftRibbon = Array.from({length: 10}, (_, i) => vp(rand(0.01, 0.07), i / 10));
-
-    // Right silver ribbon — x ~92–98%, y 0–70%
-    const rightRibbon = Array.from({length: 10}, (_, i) => vp(rand(0.93, 0.99), i / 10));
-
-    const allGlintPositions = [...schalmontGlints, ...yearGlints, ...leftRibbon, ...rightRibbon];
-
-    allGlintPositions.forEach((pos, idx) => {
+    // Glinting crosses scattered across the viewport
+    for (let i = 0; i < 28; i++) {
       glints.push({
-        x:     pos.x,
-        y:     pos.y,
-        size:  rand(5, 14),
+        x: rand(0.02, 0.98) * W,
+        y: rand(0.01, 0.99) * H,
+        size: rand(5, 16),
         phase: rand(0, Math.PI * 2),
-        // Each glint has a unique, slow period so they don't all pulse together
-        speed: rand(0.012, 0.030),
+        speed: rand(0.010, 0.028),
       });
-    });
+    }
   }
   init();
 
-  let frame = 0;
+  let f = 0;
   function draw() {
     ctx.clearRect(0, 0, W, H);
-    frame++;
+    f++;
 
-    // Background starfield
     dots.forEach(p => {
-      const t     = frame * p.speed + p.phase;
-      const pulse = (Math.sin(t) + 1) / 2;
-      const alpha = p.baseAlpha * (0.25 + 0.75 * pulse);
-
-      if (p.isStar && pulse > 0.55) {
-        drawCross(p.x, p.y, p.r * 2.8, alpha * 0.85);
+      const pulse = (Math.sin(f * p.speed + p.phase) + 1) / 2;
+      const alpha = p.base * (0.2 + 0.8 * pulse);
+      if (p.star && pulse > 0.6) {
+        drawCross(p.x, p.y, p.r * 2.5, alpha * 0.8);
       } else {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
@@ -888,13 +664,10 @@
       }
     });
 
-    // Targeted letter + ribbon glints
     glints.forEach(g => {
-      const t     = frame * g.speed + g.phase;
-      // Use sin² so each glint flares up, holds briefly, then fades
-      const raw   = Math.sin(t);
+      const raw = Math.sin(f * g.speed + g.phase);
       const pulse = raw > 0 ? raw * raw : 0;
-      if (pulse > 0.04) drawCross(g.x, g.y, g.size * pulse, pulse);
+      drawCross(g.x, g.y, g.size * pulse, pulse * 0.95);
     });
 
     requestAnimationFrame(draw);
@@ -902,82 +675,65 @@
   draw();
 })();
 
-/* ══════════════════════════════════════════════════════════
-   CONFIG — paste your Apps Script URLs here after deploying
-   See the comment block at the bottom of this file for
-   step-by-step deployment instructions.
-══════════════════════════════════════════════════════════ */
+/* ── CONFIG — paste Apps Script URLs after deploying ──────── */
 const VOLUNTEER_SCRIPT_URL = 'PASTE_VOLUNTEER_APPS_SCRIPT_URL_HERE';
 const SIZING_SCRIPT_URL    = 'PASTE_SIZING_APPS_SCRIPT_URL_HERE';
 
-/* ══════════════════════════════════════════════════════════
-   STUDENT LIST — fetched from published Google Sheet CSV
-   Make sure the sheet is shared: "Anyone with the link can VIEW"
-   then publish via File → Share → Publish to web → CSV
-══════════════════════════════════════════════════════════ */
+/* ── STUDENT LIST from published Google Sheet CSV ─────────── */
 const STUDENT_SHEET_ID = '1g42R7GHqhtETg0CYMt5VKx48N6vHCHbbFMCv-xwHBB4';
 let allStudents = [];
 
 async function loadStudents() {
   try {
-    const url = `https://docs.google.com/spreadsheets/d/${STUDENT_SHEET_ID}/export?format=csv&gid=0`;
-    const res  = await fetch(url);
+    const res  = await fetch(`https://docs.google.com/spreadsheets/d/${STUDENT_SHEET_ID}/export?format=csv&gid=0`);
     const text = await res.text();
-    const rows = text.trim().split('\n').slice(1); // skip header row
-    allStudents = rows.map(r => {
+    allStudents = text.trim().split('\n').slice(1).map(r => {
       const cols = r.split(',');
-      // Assumes first column is name (or first + second are first/last)
-      const name = (cols[0] || '').replace(/^"|"$/g, '').trim();
-      return name;
+      return (cols[0] || '').replace(/^"|"$/g, '').trim();
     }).filter(Boolean);
-  } catch(e) {
-    console.warn('Could not load student list:', e);
-  }
+  } catch(e) { console.warn('Could not load student list:', e); }
 }
 loadStudents();
 
-/* Student search dropdown */
-const searchInput = document.getElementById('student-search');
-const dropdown    = document.getElementById('student-dropdown');
-const hiddenInput = document.getElementById('student-name-hidden');
-const manualRow   = document.getElementById('manual-name-row');
+/* Student search */
+const searchEl  = document.getElementById('student-search');
+const ddEl      = document.getElementById('student-dd');
+const nameVal   = document.getElementById('student-name-val');
+const manualRow = document.getElementById('manual-row');
 
-searchInput.addEventListener('input', () => {
-  const q = searchInput.value.trim().toLowerCase();
-  dropdown.innerHTML = '';
-  if (!q) { dropdown.classList.remove('open'); return; }
+searchEl.addEventListener('input', () => {
+  const q = searchEl.value.trim().toLowerCase();
+  ddEl.innerHTML = '';
+  if (!q) { ddEl.classList.remove('open'); return; }
 
   const matches = allStudents.filter(s => s.toLowerCase().includes(q)).slice(0, 12);
 
-  // Add "Not listed" option
-  const notListed = document.createElement('div');
-  notListed.className = 'student-option not-listed';
-  notListed.textContent = '+ My name is not listed';
-  notListed.addEventListener('click', () => {
-    searchInput.value = 'Not listed — I\'ll enter manually';
-    hiddenInput.value = '__manual__';
-    manualRow.style.display = 'grid';
-    dropdown.classList.remove('open');
-  });
-
   matches.forEach(name => {
     const el = document.createElement('div');
-    el.className = 'student-option';
+    el.className = 's-opt';
     el.textContent = name;
     el.addEventListener('click', () => {
-      searchInput.value = name;
-      hiddenInput.value = name;
+      searchEl.value = name; nameVal.value = name;
       manualRow.style.display = 'none';
-      dropdown.classList.remove('open');
+      ddEl.classList.remove('open');
     });
-    dropdown.appendChild(el);
+    ddEl.appendChild(el);
   });
-  dropdown.appendChild(notListed);
-  dropdown.classList.add('open');
-});
 
+  const notListed = document.createElement('div');
+  notListed.className = 's-opt not-listed';
+  notListed.textContent = '+ My name is not listed';
+  notListed.addEventListener('click', () => {
+    searchEl.value = "Not listed — I'll enter manually";
+    nameVal.value  = '__manual__';
+    manualRow.style.display = 'grid';
+    ddEl.classList.remove('open');
+  });
+  ddEl.appendChild(notListed);
+  ddEl.classList.add('open');
+});
 document.addEventListener('click', e => {
-  if (!e.target.closest('.student-search-wrap')) dropdown.classList.remove('open');
+  if (!e.target.closest('.student-wrap')) ddEl.classList.remove('open');
 });
 
 /* Size buttons */
@@ -989,73 +745,53 @@ document.querySelectorAll('.size-btn').forEach(btn => {
   });
 });
 
-/* ══════════════════════════════════════════════════════════
-   SIZING FORM SUBMIT
-══════════════════════════════════════════════════════════ */
+/* ── SIZING FORM ──────────────────────────────────────────── */
 document.getElementById('sizing-form').addEventListener('submit', async e => {
   e.preventDefault();
-  const alertEl   = document.getElementById('sizing-alert');
-  const successEl = document.getElementById('sizing-success');
-  alertEl.className = 'dance-alert';
+  const alertEl = document.getElementById('sizing-alert');
+  alertEl.className = 'd-alert d-alert-err';
 
-  let studentName = hiddenInput.value;
+  let studentName = nameVal.value;
   if (studentName === '__manual__') {
-    const first = document.getElementById('manual-first').value.trim();
-    const last  = document.getElementById('manual-last').value.trim();
-    if (!first || !last) {
-      alertEl.textContent = 'Please enter your first and last name.';
-      alertEl.className = 'dance-alert dance-alert-error show'; return;
-    }
-    studentName = `${first} ${last} (manual)`;
+    const f = document.getElementById('manual-first').value.trim();
+    const l = document.getElementById('manual-last').value.trim();
+    if (!f || !l) { alertEl.textContent = 'Please enter your first and last name.'; alertEl.classList.add('show'); return; }
+    studentName = `${f} ${l} (manual)`;
   }
-  if (!studentName) {
-    alertEl.textContent = 'Please search for and select your name.';
-    alertEl.className = 'dance-alert dance-alert-error show'; return;
-  }
+  if (!studentName) { alertEl.textContent = 'Please search for and select your name.'; alertEl.classList.add('show'); return; }
 
   const size = document.getElementById('selected-size').value;
-  if (!size) {
-    alertEl.textContent = 'Please select your sweatshirt size.';
-    alertEl.className = 'dance-alert dance-alert-error show'; return;
-  }
+  if (!size) { alertEl.textContent = 'Please select your sweatshirt size.'; alertEl.classList.add('show'); return; }
 
   const email = document.getElementById('sizing-email').value.trim();
 
   if (!SIZING_SCRIPT_URL || SIZING_SCRIPT_URL.startsWith('PASTE_')) {
-    // Script not configured — show warning but still show success UI for demo
-    successEl.innerHTML = '✅ Size recorded! (Google Sheets sync pending — see setup instructions.)';
     document.getElementById('sizing-form').style.display = 'none';
-    successEl.classList.add('show');
+    document.getElementById('sizing-success').classList.add('show');
     return;
   }
-
   try {
     const btn = e.target.querySelector('button[type=submit]');
     btn.disabled = true; btn.textContent = 'Saving…';
     const fd = new FormData();
-    fd.append('studentName', studentName);
-    fd.append('size', size);
-    fd.append('email', email);
-    fd.append('timestamp', new Date().toISOString());
+    fd.append('studentName', studentName); fd.append('size', size);
+    fd.append('email', email); fd.append('timestamp', new Date().toISOString());
     await fetch(SIZING_SCRIPT_URL, { method: 'POST', body: fd, mode: 'no-cors' });
     document.getElementById('sizing-form').style.display = 'none';
-    successEl.classList.add('show');
-  } catch(err) {
+    document.getElementById('sizing-success').classList.add('show');
+  } catch {
     alertEl.textContent = 'Something went wrong. Please try again.';
-    alertEl.className = 'dance-alert dance-alert-error show';
+    alertEl.classList.add('show');
     e.target.querySelector('button[type=submit]').disabled = false;
     e.target.querySelector('button[type=submit]').textContent = 'Submit My Size';
   }
 });
 
-/* ══════════════════════════════════════════════════════════
-   VOLUNTEER FORM SUBMIT
-══════════════════════════════════════════════════════════ */
-document.getElementById('volunteer-form').addEventListener('submit', async e => {
+/* ── VOLUNTEER FORM ───────────────────────────────────────── */
+document.getElementById('vol-form').addEventListener('submit', async e => {
   e.preventDefault();
-  const alertEl   = document.getElementById('vol-alert');
-  const successEl = document.getElementById('vol-success');
-  alertEl.className = 'dance-alert';
+  const alertEl = document.getElementById('vol-alert');
+  alertEl.className = 'd-alert d-alert-err';
 
   const first = document.getElementById('vol-first').value.trim();
   const last  = document.getElementById('vol-last').value.trim();
@@ -1065,97 +801,72 @@ document.getElementById('volunteer-form').addEventListener('submit', async e => 
 
   if (!first || !last || !email || !phone || !role) {
     alertEl.textContent = 'Please fill in all required fields.';
-    alertEl.className = 'dance-alert dance-alert-error show'; return;
+    alertEl.classList.add('show'); return;
   }
 
   if (!VOLUNTEER_SCRIPT_URL || VOLUNTEER_SCRIPT_URL.startsWith('PASTE_')) {
-    successEl.innerHTML = '✅ You\'re signed up! (Google Sheets sync pending — see setup instructions.)';
-    document.getElementById('volunteer-form').style.display = 'none';
-    successEl.classList.add('show');
+    document.getElementById('vol-form').style.display = 'none';
+    document.getElementById('vol-success').classList.add('show');
     return;
   }
-
   try {
     const btn = e.target.querySelector('button[type=submit]');
     btn.disabled = true; btn.textContent = 'Signing up…';
     const fd = new FormData();
-    fd.append('firstName',  first);
-    fd.append('lastName',   last);
-    fd.append('email',      email);
-    fd.append('phone',      phone);
-    fd.append('role',       role);
-    fd.append('timestamp',  new Date().toISOString());
+    fd.append('firstName', first); fd.append('lastName', last);
+    fd.append('email', email);     fd.append('phone', phone);
+    fd.append('role', role);       fd.append('timestamp', new Date().toISOString());
     await fetch(VOLUNTEER_SCRIPT_URL, { method: 'POST', body: fd, mode: 'no-cors' });
-    document.getElementById('volunteer-form').style.display = 'none';
-    successEl.classList.add('show');
-  } catch(err) {
+    document.getElementById('vol-form').style.display = 'none';
+    document.getElementById('vol-success').classList.add('show');
+  } catch {
     alertEl.textContent = 'Something went wrong. Please try again.';
-    alertEl.className = 'dance-alert dance-alert-error show';
+    alertEl.classList.add('show');
     e.target.querySelector('button[type=submit]').disabled = false;
     e.target.querySelector('button[type=submit]').textContent = 'Sign Me Up!';
   }
 });
 
-/* Mobile nav toggle */
-document.getElementById('nav-toggle')?.addEventListener('click', function() {
+/* Mobile nav */
+document.getElementById('nav-toggle')?.addEventListener('click', function () {
   document.querySelector('.nav-links')?.classList.toggle('open');
   this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
 });
 </script>
 
 <!--
-═══════════════════════════════════════════════════════════════════
-  GOOGLE APPS SCRIPT SETUP — READ THIS TO CONNECT THE FORMS
-═══════════════════════════════════════════════════════════════════
+═══════════════════════════════════════════════════════════
+  GOOGLE APPS SCRIPT SETUP
 
-You need to deploy TWO Google Apps Scripts — one for volunteers,
-one for sweatshirt sizing. Here's how:
+  VOLUNTEER SCRIPT → https://docs.google.com/spreadsheets/d/1TPSpcu9uQWPutEvZAJ2RU0v1l1v4_v1WIYbQdjbh_Xw
+  1. Extensions → Apps Script → paste:
 
-── VOLUNTEER SCRIPT ────────────────────────────────────────────
-1. Open: https://docs.google.com/spreadsheets/d/1TPSpcu9uQWPutEvZAJ2RU0v1l1v4_v1WIYbQdjbh_Xw
-2. Click Extensions → Apps Script
-3. Delete any existing code and paste this:
+  function doPost(e) {
+    SpreadsheetApp.getActiveSpreadsheet().getActiveSheet()
+      .appendRow([e.parameter.timestamp, e.parameter.firstName,
+                  e.parameter.lastName,  e.parameter.email,
+                  e.parameter.phone,     e.parameter.role]);
+    return ContentService.createTextOutput('OK');
+  }
 
-function doPost(e) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  const p = e.parameter;
-  sheet.appendRow([
-    p.timestamp, p.firstName, p.lastName, p.email, p.phone, p.role
-  ]);
-  return ContentService.createTextOutput('OK');
-}
+  2. Deploy → New deployment → Web app → Anyone → Deploy → copy URL
+  3. Paste URL as VOLUNTEER_SCRIPT_URL above
 
-4. Click Deploy → New deployment → Web app
-   - Execute as: Me
-   - Who has access: Anyone
-5. Click Deploy, copy the URL
-6. Paste it as VOLUNTEER_SCRIPT_URL in this file (line ~330 above)
+  SIZING SCRIPT → https://docs.google.com/spreadsheets/d/1g42R7GHqhtETg0CYMt5VKx48N6vHCHbbFMCv-xwHBB4
+  Same steps, paste:
 
-── SIZING SCRIPT ────────────────────────────────────────────────
-1. Open: https://docs.google.com/spreadsheets/d/1g42R7GHqhtETg0CYMt5VKx48N6vHCHbbFMCv-xwHBB4
-2. Click Extensions → Apps Script
-3. Delete any existing code and paste this:
+  function doPost(e) {
+    SpreadsheetApp.getActiveSpreadsheet().getActiveSheet()
+      .appendRow([e.parameter.timestamp, e.parameter.studentName,
+                  e.parameter.size,      e.parameter.email]);
+    return ContentService.createTextOutput('OK');
+  }
 
-function doPost(e) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  const p = e.parameter;
-  sheet.appendRow([
-    p.timestamp, p.studentName, p.size, p.email
-  ]);
-  return ContentService.createTextOutput('OK');
-}
+  Paste URL as SIZING_SCRIPT_URL above.
 
-4. Deploy → New deployment → Web app (same settings as above)
-5. Copy the URL and paste it as SIZING_SCRIPT_URL in this file
-
-── STUDENT LIST ─────────────────────────────────────────────────
-For the student search dropdown to populate:
-1. Open the student spreadsheet
-2. File → Share → Publish to web → Sheet1 → CSV → Publish
-3. Make sure the sheet sharing is set to "Anyone with the link can view"
-The first column should be the student's full name (or first name in col A,
-last name in col B — adjust the loadStudents() function if needed).
-═══════════════════════════════════════════════════════════════════
+  STUDENT SEARCH: publish the student sheet as CSV via
+  File → Share → Publish to web → Sheet1 → CSV → Publish
+═══════════════════════════════════════════════════════════
 -->
 </body>
 </html>
