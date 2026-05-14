@@ -625,10 +625,18 @@
     ctx.restore();
   }
 
+  // Get invitation image bounds (it's in the hero, centered, max 560px wide)
+  function getInviteBounds() {
+    const img = document.querySelector('.dance-hero img');
+    if (!img) return null;
+    const r = img.getBoundingClientRect();
+    return { x: r.left, y: r.top, w: r.width, h: r.height };
+  }
+
   function init() {
     dots = []; glints = [];
 
-    // Subtle additional stars layered over the bg image
+    // Background starfield
     const count = Math.floor((W * H) / 3500);
     for (let i = 0; i < count; i++) {
       const roll = Math.random();
@@ -642,18 +650,61 @@
       });
     }
 
-    // Glinting crosses scattered across the viewport
-    for (let i = 0; i < 28; i++) {
+    // General page glints
+    for (let i = 0; i < 20; i++) {
       glints.push({
         x: rand(0.02, 0.98) * W,
         y: rand(0.01, 0.99) * H,
-        size: rand(5, 16),
+        size: rand(4, 12),
         phase: rand(0, Math.PI * 2),
-        speed: rand(0.010, 0.028),
+        speed: rand(0.010, 0.025),
       });
+    }
+
+    // Dense glints targeted at the invitation image
+    const b = getInviteBounds();
+    if (b) {
+      // Grid of glint positions across the whole invitation
+      const cols = 9, rows = 14;
+      for (let c = 0; c < cols; c++) {
+        for (let r2 = 0; r2 < rows; r2++) {
+          // Jitter each position so it doesn't look like a grid
+          glints.push({
+            x: b.x + (b.w * (c + 0.5 + rand(-0.45, 0.45)) / cols),
+            y: b.y + (b.h * (r2 + 0.5 + rand(-0.45, 0.45)) / rows),
+            size: rand(3, 13),
+            phase: rand(0, Math.PI * 2),
+            speed: rand(0.008, 0.022),
+          });
+        }
+      }
+      // Extra dense glints on the letter areas (top 55% of invitation)
+      for (let i = 0; i < 60; i++) {
+        glints.push({
+          x: b.x + rand(0.05, 0.95) * b.w,
+          y: b.y + rand(0.04, 0.55) * b.h,
+          size: rand(2, 10),
+          phase: rand(0, Math.PI * 2),
+          speed: rand(0.010, 0.030),
+        });
+      }
+      // Edge glints along silver ribbon borders
+      for (let i = 0; i < 30; i++) {
+        const side = Math.random() > 0.5 ? 1 : -1;
+        glints.push({
+          x: side > 0 ? b.x + rand(0, 0.12) * b.w : b.x + rand(0.88, 1.0) * b.w,
+          y: b.y + rand(0, 1) * b.h,
+          size: rand(3, 11),
+          phase: rand(0, Math.PI * 2),
+          speed: rand(0.012, 0.028),
+        });
+      }
     }
   }
   init();
+  // Re-init after image loads in case bounds weren't ready
+  document.querySelector('.dance-hero img')?.addEventListener('load', init);
+  window.addEventListener('scroll', () => {}, { passive: true });
 
   let f = 0;
   function draw() {
