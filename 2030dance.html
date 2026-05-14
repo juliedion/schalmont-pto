@@ -395,7 +395,10 @@
             </div>
           </div>
 
-          <div id="manual-row" class="d-row" style="display:none">
+          <div style="font-size:13px;color:#7aaad8;margin:-8px 0 14px;font-style:italic;">
+            Can't find your name? Fill in below instead.
+          </div>
+          <div id="manual-row" class="d-row">
             <div class="d-group" style="margin-bottom:0">
               <label class="d-label" for="manual-first">First Name</label>
               <input type="text" id="manual-first" class="d-input" placeholder="First">
@@ -757,14 +760,21 @@ document.getElementById('sizing-form').addEventListener('submit', async e => {
   const alertEl = document.getElementById('sizing-alert');
   alertEl.className = 'd-alert d-alert-err';
 
+  const manualFirst = document.getElementById('manual-first').value.trim();
+  const manualLast  = document.getElementById('manual-last').value.trim();
   let studentName = nameVal.value;
-  if (studentName === '__manual__') {
-    const f = document.getElementById('manual-first').value.trim();
-    const l = document.getElementById('manual-last').value.trim();
-    if (!f || !l) { alertEl.textContent = 'Please enter your first and last name.'; alertEl.classList.add('show'); return; }
-    studentName = `${f} ${l} (manual)`;
+
+  if (manualFirst || manualLast) {
+    // Manual entry takes priority if anything is typed there
+    if (!manualFirst || !manualLast) {
+      alertEl.textContent = 'Please enter both first and last name.';
+      alertEl.classList.add('show'); return;
+    }
+    studentName = `${manualFirst} ${manualLast}`;
+  } else if (!studentName || studentName === '__manual__') {
+    alertEl.textContent = 'Please select your name from the list or enter it below.';
+    alertEl.classList.add('show'); return;
   }
-  if (!studentName) { alertEl.textContent = 'Please search for and select your name.'; alertEl.classList.add('show'); return; }
 
   const size = document.getElementById('selected-size').value;
   if (!size) { alertEl.textContent = 'Please select your sweatshirt size.'; alertEl.classList.add('show'); return; }
