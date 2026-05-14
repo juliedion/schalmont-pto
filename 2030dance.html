@@ -37,7 +37,7 @@
       padding: 32px 20px 24px;
       text-align: center;
     }
-    #invite-canvas:hover {
+    .dance-hero img:hover {
       transform: scale(1.18);
       box-shadow: 0 28px 80px rgba(0,0,0,0.85);
     }
@@ -323,13 +323,11 @@
     </nav>
   </header>
 
-  <!-- HERO — invitation image (canvas-corrected to show 2030) -->
+  <!-- HERO — invitation image -->
   <div class="dance-hero">
-    <canvas id="invite-canvas"
-            alt="Schalmont Class of 2030 — 8th Grade Dance, Saturday June 13, 7–9 PM"
-            style="width:100%;max-width:560px;border-radius:12px;box-shadow:0 16px 60px rgba(0,0,0,0.7);display:block;margin:0 auto 28px;cursor:zoom-in;transition:transform .35s ease,box-shadow .35s ease;">
-    </canvas>
-    <img id="invite-img-src" src="images/class-of-2030-dance-invite.png" alt="" style="display:none">
+    <img src="images/class-of-2030-dance-invite.png"
+         alt="Schalmont Class of 2030 — 8th Grade Dance, Saturday June 13, 7–9 PM"
+         style="width:100%;max-width:560px;border-radius:12px;box-shadow:0 16px 60px rgba(0,0,0,0.7);display:block;margin:0 auto 28px;cursor:zoom-in;transition:transform .35s ease,box-shadow .35s ease;">
     <div class="hero-ctas">
       <a href="https://8th-grade-dance-tickets-23649.cheddarup.com" target="_blank" rel="noopener" class="btn-d btn-d-blue">🎟️ Buy Tickets — $30</a>
       <a href="#sizing" class="btn-d btn-d-outline">👕 Shirt Sizing</a>
@@ -726,81 +724,6 @@
     requestAnimationFrame(draw);
   }
   draw();
-})();
-
-/* ── INVITATION CANVAS — paint over "2026" → "2030" ─────────
-   Positions are expressed as fractions of the image dimensions
-   so they scale correctly at any display size.
-────────────────────────────────────────────────────────────── */
-(function () {
-  const canvas = document.getElementById('invite-canvas');
-  const img    = document.getElementById('invite-img-src');
-  if (!canvas || !img) return;
-
-  function patch() {
-    const IW = img.naturalWidth;
-    const IH = img.naturalHeight;
-    canvas.width  = IW;
-    canvas.height = IH;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0);
-
-    /* ── 1. Cover "2026" big number ───────────────────────────
-       The number block sits roughly:
-         x: 5%–95% of width  (full width)
-         y: 28%–54% of height
-    ──────────────────────────────────────────────────────── */
-    const ny1 = IH * 0.27, ny2 = IH * 0.545;
-    // Sample the bg colour just inside the left edge at mid-number height
-    // and fill a rectangle to erase the old digits
-    ctx.fillStyle = '#0b1d4a';          // close match to invitation navy
-    ctx.fillRect(IW * 0.04, ny1, IW * 0.92, ny2 - ny1);
-
-    // Paint "2030" in the same style as the original
-    const numH = ny2 - ny1;
-    ctx.save();
-    ctx.textAlign    = 'center';
-    ctx.textBaseline = 'middle';
-    // Outer shadow glow
-    ctx.shadowColor  = 'rgba(80,150,255,0.7)';
-    ctx.shadowBlur   = 28;
-    // Silver gradient matching the diamond-letter style
-    const grad = ctx.createLinearGradient(0, ny1, 0, ny2);
-    grad.addColorStop(0.00, '#ffffff');
-    grad.addColorStop(0.15, '#e8f0ff');
-    grad.addColorStop(0.35, '#b8cce8');
-    grad.addColorStop(0.55, '#d8e8ff');
-    grad.addColorStop(0.75, '#8098c0');
-    grad.addColorStop(1.00, '#b0c4e0');
-    ctx.fillStyle = grad;
-    ctx.font = `900 ${numH * 0.88}px 'Arial Black', Impact, sans-serif`;
-    ctx.fillText('2030', IW / 2, ny1 + numH / 2);
-    ctx.restore();
-
-    /* ── 2. Cover URL ribbon "2026dance" → "2030dance" ────────
-       The ribbon sits at the bottom ~8% of the image.
-       We only need to repaint the text, not the whole ribbon.
-    ──────────────────────────────────────────────────────── */
-    const ry1 = IH * 0.898, ry2 = IH * 0.975;
-    const rH  = ry2 - ry1;
-    // Fill ribbon background colour
-    ctx.fillStyle = '#1a3a78';
-    ctx.fillRect(0, ry1, IW, rH);
-    // Repaint full corrected URL
-    ctx.save();
-    ctx.textAlign    = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle    = '#ffffff';
-    ctx.font         = `700 ${rH * 0.52}px 'Arial', sans-serif`;
-    ctx.fillText('schalmontpto.com/2030dance', IW / 2, ry1 + rH / 2);
-    ctx.restore();
-  }
-
-  if (img.complete && img.naturalWidth) {
-    patch();
-  } else {
-    img.addEventListener('load', patch);
-  }
 })();
 
 /* ── CONFIG — paste Apps Script URLs after deploying ──────── */
