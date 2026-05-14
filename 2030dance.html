@@ -29,145 +29,21 @@
 
     .dance-page { position: relative; z-index: 1; background: transparent; }
 
-    /* ── HERO — matches invitation background exactly ── */
+    /* ── HERO — invitation image IS the hero ── */
     .dance-hero {
       background: #040c1e;
-      padding: 52px 20px 48px;
       text-align: center;
       position: relative;
-      overflow: hidden;
-      border-bottom: 2px solid rgba(180,200,240,0.18);
     }
-    /* Blue radial glow in upper-left, like the invitation */
-    .dance-hero::before {
-      content: '';
-      position: absolute;
-      top: -10%; left: -5%;
-      width: 65%; height: 70%;
-      background: radial-gradient(ellipse, rgba(16,60,140,0.55) 0%, transparent 70%);
-      pointer-events: none;
+    .dance-hero-img {
+      width: 100%;
+      max-width: 680px;
+      display: block;
+      margin: 0 auto;
     }
-    /* Decorative silver ribbon — top-left corner */
-    .dance-hero::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 180px; height: 180px;
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cpath d='M0,0 Q60,30 30,90 Q10,130 0,180' fill='none' stroke='%23b0c8e8' stroke-width='8' opacity='0.45'/%3E%3Cpath d='M0,0 Q80,20 60,100 Q40,150 0,180' fill='none' stroke='%23d8eaff' stroke-width='4' opacity='0.3'/%3E%3C/svg%3E") no-repeat top left;
-      pointer-events: none;
-    }
-
-    /* "YOU'RE INVITED!" small top line */
-    .dance-hero-eyebrow {
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 5px;
-      text-transform: uppercase;
-      color: rgba(210,225,248,0.85);
-      margin-bottom: 6px;
-      position: relative;
-    }
-
-    /* SCHALMONT — Oswald heavy, diamond-faceted silver gradient */
-    .dance-hero-school {
-      font-family: 'Oswald', Impact, 'Arial Black', sans-serif;
-      font-size: clamp(58px, 14vw, 130px);
-      font-weight: 700;
-      line-height: 1;
-      letter-spacing: 6px;
-      text-transform: uppercase;
-      /* Faceted diamond gradient — bright white top, stepping down through silvers */
-      background: linear-gradient(
-        180deg,
-        #ffffff   0%,
-        #f4f8ff  12%,
-        #c8d8f0  28%,
-        #e8f0ff  38%,
-        #a0b8dc  52%,
-        #d0ddf0  62%,
-        #788cb8  78%,
-        #c0cfe8 100%
-      );
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      filter: drop-shadow(0 0 24px rgba(120,180,255,0.5))
-              drop-shadow(0 3px 6px rgba(0,0,10,0.9));
-      margin: 0 0 2px;
-      position: relative;
-    }
-
-    /* "Class of" — Dancing Script italic in blue */
-    .dance-hero-classof {
-      font-family: 'Dancing Script', Georgia, cursive;
-      font-size: clamp(22px, 5vw, 46px);
-      font-weight: 700;
-      color: #5a9de0;
-      margin: 0 0 0;
-      letter-spacing: 2px;
-      position: relative;
-      text-shadow: 0 0 12px rgba(60,120,220,0.5);
-    }
-
-    /* 2026 — same treatment as SCHALMONT, even bigger */
-    .dance-hero-year {
-      font-family: 'Oswald', Impact, 'Arial Black', sans-serif;
-      font-size: clamp(80px, 22vw, 200px);
-      font-weight: 700;
-      line-height: .88;
-      letter-spacing: 2px;
-      background: linear-gradient(
-        180deg,
-        #ffffff   0%,
-        #f0f6ff  10%,
-        #c0d4f0  25%,
-        #e4eeff  36%,
-        #98b4dc  50%,
-        #ccd8f0  62%,
-        #6880b0  80%,
-        #b8caec 100%
-      );
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      filter: drop-shadow(0 0 30px rgba(100,160,255,0.55))
-              drop-shadow(0 4px 8px rgba(0,0,10,0.9));
-      margin: 0 0 4px;
-      position: relative;
-    }
-
-    /* "8th Grade Dance" — Dancing Script in blue */
-    .dance-hero-title {
-      font-family: 'Dancing Script', Georgia, cursive;
-      font-size: clamp(28px, 6vw, 58px);
-      font-weight: 700;
-      color: #5a9de0;
-      margin: 0 0 6px;
-      letter-spacing: 1px;
-      position: relative;
-      text-shadow: 0 0 14px rgba(60,120,220,0.5);
-    }
-
-    /* Dot-star separator row */
-    .dance-hero-separator {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      margin: 8px 0 22px;
-      color: rgba(200,220,248,0.5);
-      font-size: 10px;
-      letter-spacing: 4px;
-    }
-    .dance-hero-separator span { color: rgba(200,220,248,0.7); font-size: 14px; }
-
-    /* "Our time to shine" tagline */
-    .dance-hero-sub {
-      font-family: 'Dancing Script', Georgia, cursive;
-      font-size: clamp(16px, 3vw, 24px);
-      color: rgba(200,218,248,0.8);
-      margin-bottom: 28px;
-      position: relative;
+    .dance-hero-ctas {
+      background: #040c1e;
+      padding: 28px 20px 36px;
     }
 
     /* Info pills in hero */
@@ -597,49 +473,32 @@
 
   <!-- ══════════════════════════════════════════════════ HERO -->
   <div class="dance-hero">
-    <div class="dance-hero-eyebrow">You're Invited!</div>
-    <div class="dance-hero-school">Schalmont</div>
-    <div class="dance-hero-classof">Class of</div>
-    <div class="dance-hero-year">2026</div>
-    <div class="dance-hero-title">8th Grade Dance</div>
-    <div class="dance-hero-separator">· · · · · <span>★</span> · · · · ·</div>
-    <div class="dance-hero-sub">Our time to shine</div>
-
-    <div class="hero-pills">
-      <div class="hero-pill"><span>📅</span> Saturday, June 13</div>
-      <div class="hero-pill"><span>🕖</span> 7:00 – 9:00 PM</div>
-      <div class="hero-pill"><span>📍</span> Schalmont Middle School</div>
-      <div class="hero-pill"><span>🎟️</span> Tickets $30</div>
-    </div>
-
-    <div class="hero-ctas">
-      <a href="https://8th-grade-dance-tickets-23649.cheddarup.com" target="_blank" rel="noopener" class="btn-dance-silver">🎟️ Buy Tickets — $30</a>
-      <a href="#flyer" class="btn-dance-outline">📄 View Flyer</a>
-      <a href="#volunteer" class="btn-dance-outline">🙋 Volunteer</a>
+    <img src="images/class-of-2030-dance-invite.png"
+         alt="Schalmont Class of 2026 — 8th Grade Dance, Saturday June 13, 7–9 PM"
+         class="dance-hero-img">
+    <div class="dance-hero-ctas">
+      <div class="hero-pills" style="margin-bottom:20px">
+        <div class="hero-pill"><span>📅</span> Saturday, June 13</div>
+        <div class="hero-pill"><span>🕖</span> 7:00 – 9:00 PM</div>
+        <div class="hero-pill"><span>📍</span> Schalmont Middle School</div>
+        <div class="hero-pill"><span>🎟️</span> Tickets $30</div>
+      </div>
+      <div class="hero-ctas">
+        <a href="https://8th-grade-dance-tickets-23649.cheddarup.com" target="_blank" rel="noopener" class="btn-dance-silver">🎟️ Buy Tickets — $30</a>
+        <a href="#sizing" class="btn-dance-outline">👕 Shirt Sizing</a>
+        <a href="#volunteer" class="btn-dance-outline">🙋 Volunteer</a>
+      </div>
     </div>
   </div>
 
   <!-- ══════════════════════════════════════════════════ BODY -->
   <div class="dance-body">
 
-    <!-- FLYER + DETAILS -->
-    <section class="dance-section" id="flyer">
-      <div style="text-align:center">
-        <div class="dance-section-title" style="justify-content:center">📋 Event Flyer</div>
-        <div class="dance-section-desc">Download and print the official invitation</div>
-      </div>
-
-      <div class="flyer-card">
-        <img src="images/class-of-2030-dance-invite.png" alt="8th Grade Dance Invitation — Class of 2026, Saturday June 13, 7–9 PM">
-        <div class="flyer-actions">
-          <a href="images/class-of-2030-dance-invite.png" download="Schalmont-8th-Grade-Dance-2026.jpg" class="btn-dance-primary" style="font-size:14px;padding:12px 22px">
-            ⬇️ Download &amp; Print
-          </a>
-          <a href="images/class-of-2030-dance-invite.png" target="_blank" class="btn-dance-outline" style="font-size:14px;padding:11px 22px">
-            🔍 View Full Size
-          </a>
-        </div>
-      </div>
+    <!-- DOWNLOAD FLYER -->
+    <section class="dance-section" style="padding-top:40px;padding-bottom:20px;text-align:center">
+      <a href="images/class-of-2030-dance-invite.png" download="Schalmont-8th-Grade-Dance-2026.png" class="btn-dance-primary" style="font-size:15px;padding:13px 28px">
+        ⬇️ Download &amp; Print Invitation
+      </a>
     </section>
 
     <hr class="dance-divider">
