@@ -114,7 +114,7 @@ function initLoginPage() {
       'auth/network-request-failed':  'Network error. Please check your connection.',
       'auth/invalid-credential':      'Incorrect email or password. Please try again.',
     };
-    return map[code] || 'Something went wrong. Please try again.';
+    return map[code] || `Something went wrong (${code}). Please try again.`;
   }
 
   function setLoading(form, loading) {
