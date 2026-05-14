@@ -65,11 +65,11 @@
     }
     .btn-d:hover { transform: translateY(-2px); }
     .btn-d-blue {
-      background: linear-gradient(135deg, #2a6bd4, #1a4fa8);
+      background: linear-gradient(135deg, #8a9aaa, #5a6a78);
       color: #fff;
-      box-shadow: 0 4px 18px rgba(42,107,212,0.5);
+      box-shadow: 0 4px 18px rgba(120,140,160,0.5);
     }
-    .btn-d-blue:hover { box-shadow: 0 8px 28px rgba(42,107,212,0.65); }
+    .btn-d-blue:hover { box-shadow: 0 8px 28px rgba(120,140,160,0.7); }
     .btn-d-outline {
       background: rgba(255,255,255,0.08);
       color: #c8d4e8;
@@ -97,7 +97,7 @@
     }
     .d-section-desc {
       font-size: 15px;
-      color: #a0b8d8;
+      color: #a0a8b0;
       margin-bottom: 28px;
       line-height: 1.6;
     }
@@ -119,8 +119,8 @@
 
     /* ── PAYMENT BOX ─────────────────────────────────────── */
     .payment-box {
-      background: linear-gradient(135deg, rgba(42,107,212,0.25), rgba(10,30,80,0.6));
-      border: 1px solid rgba(42,107,212,0.4);
+      background: linear-gradient(135deg, rgba(120,140,160,0.2), rgba(30,30,30,0.6));
+      border: 1px solid rgba(180,190,200,0.35);
       border-radius: 18px;
       padding: 36px;
       text-align: center;
@@ -135,7 +135,7 @@
     .payment-amount sup { font-size: 32px; vertical-align: super; }
     .payment-sub {
       font-size: 14px;
-      color: #a0b8d8;
+      color: #a0a8b0;
       margin-bottom: 28px;
     }
 
@@ -161,7 +161,7 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: .1em;
-      color: #8aadd4;
+      color: #a0aab4;
       margin-bottom: 6px;
     }
     .d-input, .d-select {
@@ -179,7 +179,7 @@
       appearance: none;
     }
     .d-input:focus, .d-select:focus {
-      border-color: #4a90e2;
+      border-color: #a0aab4;
       background: rgba(255,255,255,0.1);
     }
     .d-input::placeholder { color: rgba(160,184,216,0.45); }
@@ -192,15 +192,15 @@
       border-radius: 8px;
       border: 2px solid rgba(200,212,232,0.22);
       background: transparent;
-      color: #a0b8d8;
+      color: #a0a8b0;
       font-family: 'Urbanist', sans-serif;
       font-weight: 700;
       font-size: 14px;
       cursor: pointer;
       transition: all .15s;
     }
-    .size-btn:hover { border-color: #4a90e2; color: #fff; }
-    .size-btn.selected { background: #2a6bd4; border-color: #2a6bd4; color: #fff; }
+    .size-btn:hover { border-color: #a0aab4; color: #fff; }
+    .size-btn.selected { background: #6a7888; border-color: #8a9aaa; color: #fff; }
 
     /* Student search */
     .student-wrap { position: relative; }
@@ -226,7 +226,7 @@
       transition: background .12s;
     }
     .s-opt:last-child { border-bottom: none; }
-    .s-opt:hover { background: rgba(42,107,212,0.3); }
+    .s-opt:hover { background: rgba(160,170,180,0.2); }
     .s-opt.not-listed { color: #7ab4e8; font-style: italic; }
 
     /* Alerts */
@@ -255,7 +255,7 @@
     .slot-table th {
       text-align: left; font-size: 11px; font-weight: 700;
       text-transform: uppercase; letter-spacing: .08em;
-      color: #8aadd4; padding: 8px 12px;
+      color: #a0aab4; padding: 8px 12px;
       border-bottom: 1px solid rgba(200,212,232,0.15);
     }
     .slot-table td {
@@ -267,7 +267,7 @@
       display: inline-block; font-size: 11px; font-weight: 700;
       padding: 2px 10px; border-radius: 50px;
     }
-    .stag-b { background: rgba(42,107,212,0.3); color: #8ab4e0; border: 1px solid rgba(42,107,212,0.3); }
+    .stag-b { background: rgba(160,170,180,0.2); color: #b0b8c4; border: 1px solid rgba(160,170,180,0.2); }
     .stag-g { background: rgba(200,80,180,0.2); color: #e08ad8; border: 1px solid rgba(200,80,180,0.3); }
 
     /* Contact buttons */
@@ -364,8 +364,18 @@
 
     <!-- SWEATSHIRT SIZING -->
     <div class="d-section" id="sizing">
-      <div class="d-section-title">👕 Sweatshirt Sizing</div>
-      <div class="d-section-desc">All 8th graders will receive a sweatshirt at the dance! Search for your name below and submit your size.</div>
+      <div class="d-section-title">👕 Sweatshirts</div>
+      <div class="d-section-desc">All 8th graders attending the dance will receive a sweatshirt! Submit your size below. <strong style="color:#c8d0d8;">Not attending?</strong> You can still purchase a sweatshirt separately.</div>
+
+      <div style="background:rgba(160,170,180,0.1);border:1px solid rgba(180,190,200,0.3);border-radius:14px;padding:24px 28px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:16px;font-weight:800;color:#e0e4e8;margin-bottom:4px;">Not Attending the Dance?</div>
+          <div style="font-size:14px;color:#a0a8b0;line-height:1.5;">Purchase a Class of 2030 commemorative sweatshirt for <strong style="color:#c8d0d8;">$25</strong>.</div>
+        </div>
+        <a href="https://schalmont-class-of-2030-sweatshirt-purchase.cheddarup.com" target="_blank" rel="noopener" class="btn-d btn-d-blue" style="white-space:nowrap;flex-shrink:0;">
+          👕 Buy Sweatshirt — $25
+        </a>
+      </div>
 
       <div class="deadline-banner">
         ⚠️ Shirt sizes must be submitted by <strong>Friday, June 5</strong> — end of day.
@@ -385,7 +395,7 @@
             </div>
           </div>
 
-          <div style="font-size:13px;color:#7aaad8;margin:-8px 0 14px;font-style:italic;">
+          <div style="font-size:13px;color:#a0a8b0;margin:-8px 0 14px;font-style:italic;">
             Can't find your name? Fill in below instead.
           </div>
           <div id="manual-row" class="d-row">
@@ -494,7 +504,7 @@
           </div>
 
           <details style="margin-bottom:20px">
-            <summary style="cursor:pointer;font-size:13px;color:#8aadd4;font-weight:600;">📋 View all slots &amp; capacity</summary>
+            <summary style="cursor:pointer;font-size:13px;color:#a0aab4;font-weight:600;">📋 View all slots &amp; capacity</summary>
             <div style="overflow-x:auto;margin-top:14px">
               <table class="slot-table">
                 <thead><tr><th>Role</th><th>Spots</th><th>Notes</th></tr></thead>
