@@ -132,9 +132,9 @@
     }
     .btn-dance-silver:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(100,150,210,0.6); }
 
-    /* Main content area — same near-black as invitation */
+    /* Content sits over the invitation background */
     .dance-body {
-      background: #040c1e;
+      background: rgba(4, 12, 30, 0.88);
       min-height: 100vh;
     }
 
@@ -424,7 +424,7 @@
     }
   </style>
 </head>
-<body style="background:#040c1e;margin:0;padding:0;">
+<body style="background:#040c1e url('images/class-of-2030-dance-invite.png') center top / cover no-repeat fixed;margin:0;padding:0;">
 
 <!-- Sparkle canvas (behind everything) -->
 <canvas id="sparkle-canvas"></canvas>
@@ -471,23 +471,12 @@
 
 <div class="dance-page">
 
-  <!-- ══════════════════════════════════════════════════ HERO -->
-  <div class="dance-hero">
-    <img src="images/class-of-2030-dance-invite.png"
-         alt="Schalmont Class of 2026 — 8th Grade Dance, Saturday June 13, 7–9 PM"
-         class="dance-hero-img">
-    <div class="dance-hero-ctas">
-      <div class="hero-pills" style="margin-bottom:20px">
-        <div class="hero-pill"><span>📅</span> Saturday, June 13</div>
-        <div class="hero-pill"><span>🕖</span> 7:00 – 9:00 PM</div>
-        <div class="hero-pill"><span>📍</span> Schalmont Middle School</div>
-        <div class="hero-pill"><span>🎟️</span> Tickets $30</div>
-      </div>
-      <div class="hero-ctas">
-        <a href="https://8th-grade-dance-tickets-23649.cheddarup.com" target="_blank" rel="noopener" class="btn-dance-silver">🎟️ Buy Tickets — $30</a>
-        <a href="#sizing" class="btn-dance-outline">👕 Shirt Sizing</a>
-        <a href="#volunteer" class="btn-dance-outline">🙋 Volunteer</a>
-      </div>
+  <!-- spacer so content starts below the invitation art -->
+  <div style="height:100vh;display:flex;align-items:flex-end;justify-content:center;padding-bottom:32px">
+    <div class="hero-ctas">
+      <a href="https://8th-grade-dance-tickets-23649.cheddarup.com" target="_blank" rel="noopener" class="btn-dance-silver">🎟️ Buy Tickets — $30</a>
+      <a href="#sizing" class="btn-dance-outline">👕 Shirt Sizing</a>
+      <a href="#volunteer" class="btn-dance-outline">🙋 Volunteer</a>
     </div>
   </div>
 
