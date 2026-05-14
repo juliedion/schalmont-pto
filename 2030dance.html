@@ -132,10 +132,11 @@
     }
     .btn-dance-silver:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(100,150,210,0.6); }
 
-    /* Content sits over the invitation background */
+    /* Solid background so content never shows the invitation through it */
     .dance-body {
-      background: rgba(4, 12, 30, 0.88);
-      min-height: 100vh;
+      background: #040c1e;
+      position: relative;
+      z-index: 1;
     }
 
     .dance-section {
