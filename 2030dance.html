@@ -636,39 +636,40 @@
   function init() {
     dots = []; glints = [];
 
-    // Background starfield
-    const count = Math.floor((W * H) / 3500);
+    // Background starfield — denser and brighter
+    const count = Math.floor((W * H) / 2200);
     for (let i = 0; i < count; i++) {
       const roll = Math.random();
       dots.push({
         x: rand(0, W), y: rand(0, H),
-        r: roll > 0.93 ? rand(1.2, 2.0) : rand(0.3, 1.0),
-        base: roll > 0.88 ? rand(0.4, 0.75) : rand(0.08, 0.35),
+        r: roll > 0.94 ? rand(1.5, 2.6)   // bright large
+         : roll > 0.80 ? rand(0.8, 1.5)   // medium
+         :               rand(0.3, 0.8),   // tiny majority
+        base: roll > 0.85 ? rand(0.55, 0.95) : rand(0.15, 0.50),
         phase: rand(0, Math.PI * 2),
-        speed: rand(0.005, 0.020),
-        star: roll > 0.92,
+        speed: rand(0.004, 0.022),
+        star: roll > 0.88,   // more stars drawn as crosses
       });
     }
 
     // General page glints
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 28; i++) {
       glints.push({
         x: rand(0.02, 0.98) * W,
         y: rand(0.01, 0.99) * H,
-        size: rand(4, 12),
+        size: rand(5, 15),
         phase: rand(0, Math.PI * 2),
-        speed: rand(0.010, 0.025),
+        speed: rand(0.008, 0.022),
       });
     }
 
     // Dense glints targeted at the invitation image
     const b = getInviteBounds();
     if (b) {
-      // Grid of glint positions across the whole invitation
+      // Grid across whole invitation
       const cols = 9, rows = 14;
       for (let c = 0; c < cols; c++) {
         for (let r2 = 0; r2 < rows; r2++) {
-          // Jitter each position so it doesn't look like a grid
           glints.push({
             x: b.x + (b.w * (c + 0.5 + rand(-0.45, 0.45)) / cols),
             y: b.y + (b.h * (r2 + 0.5 + rand(-0.45, 0.45)) / rows),
@@ -678,7 +679,8 @@
           });
         }
       }
-      // Extra dense glints on the letter areas (top 55% of invitation)
+
+      // Extra dense on upper text area (top 55%)
       for (let i = 0; i < 60; i++) {
         glints.push({
           x: b.x + rand(0.05, 0.95) * b.w,
@@ -688,11 +690,23 @@
           speed: rand(0.010, 0.030),
         });
       }
+
+      // Targeted glints on "GALA" — sits ~13–22% from top, center of image
+      for (let i = 0; i < 18; i++) {
+        glints.push({
+          x: b.x + rand(0.15, 0.85) * b.w,
+          y: b.y + rand(0.13, 0.22) * b.h,
+          size: rand(4, 14),
+          phase: rand(0, Math.PI * 2),
+          speed: rand(0.009, 0.026),
+        });
+      }
+
       // Edge glints along silver ribbon borders
       for (let i = 0; i < 30; i++) {
-        const side = Math.random() > 0.5 ? 1 : -1;
+        const side = Math.random() > 0.5;
         glints.push({
-          x: side > 0 ? b.x + rand(0, 0.12) * b.w : b.x + rand(0.88, 1.0) * b.w,
+          x: side ? b.x + rand(0, 0.12) * b.w : b.x + rand(0.88, 1.0) * b.w,
           y: b.y + rand(0, 1) * b.h,
           size: rand(3, 11),
           phase: rand(0, Math.PI * 2),
