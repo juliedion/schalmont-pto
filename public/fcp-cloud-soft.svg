@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 120">
+  <defs>
+    <linearGradient id="cloudFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".98"/>
+      <stop offset=".62" stop-color="#fbfdff" stop-opacity=".96"/>
+      <stop offset="1" stop-color="#dfeef7" stop-opacity=".86"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="36%" cy="18%" r="72%">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softShadow" x="-30%" y="-60%" width="170%" height="230%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur"/>
+      <feOffset dy="5" result="off"/>
+      <feColorMatrix in="off" type="matrix"
+        values="0 0 0 0 0.38  0 0 0 0 0.66  0 0 0 0 0.80  0 0 0 .16 0" result="shadow"/>
+      <feMerge><feMergeNode in="shadow"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <g filter="url(#softShadow)">
+    <ellipse cx="158" cy="82" rx="132" ry="29" fill="url(#cloudFill)"/>
+    <ellipse cx="73" cy="72" rx="49" ry="31" fill="url(#cloudFill)"/>
+    <ellipse cx="117" cy="53" rx="54" ry="40" fill="url(#cloudFill)"/>
+    <ellipse cx="173" cy="42" rx="62" ry="45" fill="url(#cloudFill)"/>
+    <ellipse cx="228" cy="57" rx="54" ry="38" fill="url(#cloudFill)"/>
+    <ellipse cx="274" cy="74" rx="37" ry="26" fill="url(#cloudFill)"/>
+    <ellipse cx="145" cy="39" rx="84" ry="34" fill="url(#glow)" opacity=".58"/>
+  </g>
+</svg>

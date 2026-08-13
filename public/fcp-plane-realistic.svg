@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 155">
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".62" stop-color="#f8fbfd"/><stop offset="1" stop-color="#dbeaf2"/></linearGradient>
+    <linearGradient id="pink" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6f88"/><stop offset="1" stop-color="#e93263"/></linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#72d7f4"/><stop offset="1" stop-color="#2d91c6"/></linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#173c57" flood-opacity=".24"/></filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="2"/></filter>
+  </defs>
+  <g filter="url(#shadow)" transform="translate(8 5)">
+    <!-- far wing -->
+    <path d="M135 76 L188 21 Q194 15 202 18 L223 28 L190 77 Z" fill="url(#pink)" stroke="#d72c58" stroke-width="3"/>
+    <!-- fuselage -->
+    <path d="M30 83 Q58 67 104 58 Q178 43 247 49 Q282 52 304 69 Q312 76 302 84 Q276 104 229 106 L114 103 Q68 103 36 96 Q21 92 30 83Z" fill="url(#body)" stroke="#9ebfd1" stroke-width="3"/>
+    <!-- nose highlight -->
+    <path d="M282 60 Q300 65 306 72 Q310 78 302 84 Q292 91 279 94 Q291 78 282 60Z" fill="#fff7df" opacity=".95"/>
+    <!-- belly shadow -->
+    <path d="M45 92 Q105 108 226 105 Q267 104 296 87 Q268 111 226 115 L105 111 Q62 109 38 98Z" fill="#b8d7e7" opacity=".75"/>
+    <!-- near wing -->
+    <path d="M139 99 L201 139 Q208 144 217 139 L235 124 L188 98 Z" fill="url(#pink)" stroke="#d72c58" stroke-width="3"/>
+    <!-- tail fins -->
+    <path d="M65 70 L38 38 Q34 34 28 38 L18 45 L39 79 Z" fill="url(#pink)" stroke="#d72c58" stroke-width="3"/>
+    <path d="M62 98 L34 120 Q30 123 25 120 L16 113 L42 91 Z" fill="url(#pink)" stroke="#d72c58" stroke-width="3"/>
+    <!-- windows -->
+    <g fill="url(#blue)" stroke="#ffffff" stroke-width="3">
+      <ellipse cx="169" cy="68" rx="10" ry="8"/><ellipse cx="194" cy="65" rx="10" ry="8"/><ellipse cx="219" cy="65" rx="10" ry="8"/><ellipse cx="244" cy="68" rx="10" ry="8"/>
+    </g>
+    <!-- door -->
+    <rect x="132" y="66" width="17" height="28" rx="7" fill="#d8edf5" stroke="#a9c9da" stroke-width="2"/>
+    <!-- cheerful stripe -->
+    <path d="M72 85 Q153 70 263 75" fill="none" stroke="#75cbea" stroke-width="4" opacity=".55"/>
+    <!-- tiny sparkle -->
+    <circle cx="115" cy="84" r="4" fill="#ffd84e"/>
+  </g>
+</svg>
