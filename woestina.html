@@ -41,6 +41,40 @@
       color: var(--white);
       border-color: var(--primary);
     }
+    .class-search-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #5a8000;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 7px 14px;
+      border-radius: var(--radius);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+      flex-shrink: 0;
+    }
+    .class-search-btn:hover { opacity: 0.88; }
+    .class-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: all var(--transition);
+    }
+    .class-card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+    .class-year {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+      min-width: 56px;
+    }
 
   </style>
 </head>
@@ -139,6 +173,7 @@
           <a href="picture-days.html" class="sidenav-item sub">Picture Days</a>
           <a href="shop.html" class="sidenav-item sub">Spiritwear</a>
           <a href="staff-appreciation-week.html#woestina" class="sidenav-item sub">Staff Appreciation Week</a>
+          <a href="class-of-2040.html" class="sidenav-item sub">Class of 2040 — Pre-Kindergarten</a>
         </div>
       </div>
 
@@ -383,6 +418,26 @@
               <a href="staff-appreciation-week.html#woestina" class="btn btn-primary" style="font-size:13px;padding:8px 16px">See Details →</a>
             </div>
           </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CLASS FACEBOOK PAGE -->
+  <section class="section" id="class-pages">
+    <div class="container" style="max-width:860px">
+      <div class="section-heading">
+        <h2>📘 Class Facebook Page</h2>
+        <div class="accent-line"></div>
+      </div>
+      <p style="font-size:14px;color:var(--text-light);margin-bottom:16px">Connect with other Woestina Pre-K families through your child's class year group.</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+
+        <div class="class-card">
+          <div class="class-year">2040</div>
+          <div style="flex:1"><h4 style="font-size:14px;margin-bottom:2px">Parents of the Schalmont Class of 2040</h4><p style="font-size:12px;color:var(--text-light);margin:0">Current Pre-Kindergarten</p></div>
+          <a href="class-of-2040.html" class="class-search-btn">View Class Page →</a>
         </div>
 
       </div>
