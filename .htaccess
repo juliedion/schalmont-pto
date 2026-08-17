@@ -4,6 +4,9 @@ RewriteEngine On
 # Redirect old casino-night URL to casinoroyale
 RewriteRule ^casino-night$ /casinoroyale [R=301,L]
 
+# Redirect old class-of-YYYY URLs to classofYYYY
+RewriteRule ^class-of-([0-9]{4})$ /classof$1 [R=301,L]
+
 # Redirect /index and /index.html to /
 RewriteCond %{THE_REQUEST} \s/+index(\.html)?\s [NC]
 RewriteRule ^ / [R=301,L]
