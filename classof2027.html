@@ -23,6 +23,9 @@
       transition: opacity 0.2s;
     }
     .class-search-btn:hover { opacity: 0.88; }
+    @media (max-width: 700px) {
+      .ppspot-grid { grid-template-columns: 1fr !important; }
+    }
   </style>
 </head>
 <body>
@@ -155,10 +158,50 @@
 
         <p style="font-size:16px;line-height:1.75;margin-bottom:28px">This page is home base for Schalmont Class of 2027 families — currently our seniors (12th grade) at High School. Connect with your class Facebook group below, and check back for room parent contacts, class events, and fundraiser details as they're added.</p>
 
-        <!-- Paint Your Parking Spot flyer -->
-        <div style="max-width:380px;margin:0 auto 36px;text-align:center">
-          <img src="images/paint-your-parking-spot-2027.jpg" alt="Schalmont Seniors Party in the Parking Lot — Paint Your Parking Spot, Class of 2027, Friday August 21 2026, 8 AM to Noon, Schalmont High School" style="width:100%;height:auto;display:block;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);border:1px solid var(--border)">
+      </div>
+
+      <!-- Paint Your Parking Spot event -->
+      <div style="max-width:980px;margin:0 auto 36px">
+        <div class="ppspot-grid" style="display:grid;grid-template-columns:1.15fr 1fr;gap:28px;align-items:start">
+
+          <!-- Flyer -->
+          <div style="text-align:center">
+            <img src="images/paint-your-parking-spot-2027-v2.jpg" alt="Schalmont Seniors Party in the Parking Lot — Paint Your Parking Spot, Class of 2027, Friday August 21 2026, 8 AM to Noon, Schalmont High School. Light breakfast and/or monetary donations appreciated." style="width:100%;height:auto;display:block;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);border:1px solid var(--border)">
+          </div>
+
+          <!-- Sign-up sheet + Venmo -->
+          <div style="display:flex;flex-direction:column;gap:20px">
+
+            <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px">
+              <h3 style="font-size:17px;font-weight:700;margin-bottom:4px;color:var(--primary)">🥐 What Are You Bringing?</h3>
+              <p style="font-size:13px;color:var(--text-light);margin-bottom:16px">Sign up to bring a light breakfast item — the list below updates live for everyone.</p>
+
+              <div id="signup-alert" style="margin-bottom:10px"></div>
+
+              <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+                <input type="text" id="signup-name" placeholder="Your name" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:inherit;box-sizing:border-box">
+                <input type="text" id="signup-item" placeholder="What you're bringing (e.g. donut holes)" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:inherit;box-sizing:border-box">
+                <button id="signup-btn" onclick="submitParkingSignup()" class="btn btn-primary" style="width:100%;padding:11px;font-size:14px">Sign Up →</button>
+              </div>
+
+              <div style="border-top:1px solid var(--border);padding-top:14px">
+                <div id="signup-count" style="font-size:12px;color:var(--text-light);margin-bottom:8px">Loading…</div>
+                <div id="signup-list" style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--text)"></div>
+              </div>
+            </div>
+
+            <!-- Venmo Donate -->
+            <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;text-align:center">
+              <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;color:var(--primary)">💚 Chip In</h3>
+              <p style="font-size:13px;color:var(--text-light);margin-bottom:16px">Can't make it but want to help? Monetary donations are welcome via Venmo.</p>
+              <a href="https://venmo.com/u/schalmont-pto" target="_blank" rel="noopener" style="display:block;width:100%;box-sizing:border-box;background:#008CFF;color:#fff;font-weight:800;font-size:15px;padding:12px;border-radius:var(--radius);text-decoration:none;text-align:center">💸 Donate via Venmo — @schalmont-pto</a>
+            </div>
+
+          </div>
         </div>
+      </div>
+
+      <div style="max-width:780px;margin:0 auto">
 
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-bottom:36px">
 
@@ -277,8 +320,77 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
+  <script>
+    // ── Paint Your Parking Spot — "what are you bringing" sign-up sheet ──
+    var ppspotDb = firebase.firestore();
+    var PPSPOT_COLLECTION = 'parking_spot_signups_2027';
+
+    ppspotDb.collection(PPSPOT_COLLECTION)
+      .orderBy('createdAt', 'asc')
+      .onSnapshot(function(snap) {
+        var listEl  = document.getElementById('signup-list');
+        var countEl = document.getElementById('signup-count');
+        var entries = snap.docs.map(function(d) { return d.data(); });
+        countEl.textContent = entries.length + (entries.length === 1 ? ' person has' : ' people have') + ' signed up';
+        if (!entries.length) {
+          listEl.innerHTML = '<div style="color:var(--text-light);font-style:italic">No sign-ups yet — be the first!</div>';
+          return;
+        }
+        listEl.innerHTML = entries.map(function(e) {
+          return '<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--light-bg)">' +
+                 '<strong>' + escapeHtml(e.name || '—') + '</strong>' +
+                 '<span style="color:var(--text-light);text-align:right">' + escapeHtml(e.item || '—') + '</span>' +
+                 '</div>';
+        }).join('');
+      }, function(err) {
+        document.getElementById('signup-count').textContent = '';
+        document.getElementById('signup-list').innerHTML =
+          '<div style="color:#c0392b">Unable to load sign-ups right now. Please try again later.</div>';
+      });
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function(c) {
+        return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+      });
+    }
+
+    function submitParkingSignup() {
+      var nameEl = document.getElementById('signup-name');
+      var itemEl = document.getElementById('signup-item');
+      var alertEl = document.getElementById('signup-alert');
+      var btn = document.getElementById('signup-btn');
+      var name = nameEl.value.trim();
+      var item = itemEl.value.trim();
+      alertEl.innerHTML = '';
+
+      if (!name || !item) {
+        alertEl.innerHTML = '<div style="font-size:13px;color:#c0392b">Please fill in both your name and what you\'re bringing.</div>';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Signing up…';
+
+      ppspotDb.collection(PPSPOT_COLLECTION).add({
+        name: name,
+        item: item,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function() {
+        nameEl.value = '';
+        itemEl.value = '';
+        alertEl.innerHTML = '<div style="font-size:13px;color:var(--primary)">✓ Thanks — you\'re on the list!</div>';
+        btn.disabled = false;
+        btn.textContent = 'Sign Up →';
+      }).catch(function(e) {
+        alertEl.innerHTML = '<div style="font-size:13px;color:#c0392b">Error: ' + e.message + '</div>';
+        btn.disabled = false;
+        btn.textContent = 'Sign Up →';
+      });
+    }
+  </script>
 </body>
 </html>
