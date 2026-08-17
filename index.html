@@ -284,8 +284,6 @@
               <button id="today-next-btn" class="today-nav-btn active" aria-label="Next day" onclick="navigateTodayWidget(1)">Next &#8594;</button>
             </div>
           </div>
-          <!-- Letter day badges (shown when detected in calendar) -->
-          <div id="today-letter-days" class="today-letter-days" style="display:none"></div>
           <!-- Events list (default display) -->
           <div id="today-events-list" class="today-events-list">
             <div class="today-events-loading">Loading today&#8217;s schedule&hellip;</div>
@@ -1233,10 +1231,9 @@
       return events;
     }
 
-    // Render letter days + event list from fetched iCal data
+    // Render event list from fetched iCal data (letter-day schedule entries are excluded)
     function renderCustomEvents(allEvents) {
       var listEl = document.getElementById('today-events-list');
-      var ldEl   = document.getElementById('today-letter-days');
       if (!listEl) return;
 
       if (!allEvents.length) {
@@ -1251,37 +1248,11 @@
         return a.ev.startMs - b.ev.startMs;
       });
 
-      // Separate letter-day events from regular events
+      // Exclude letter-day schedule entries (e.g. "A Day", "B Day") from the list
       var letterDayRe = /\b([A-E])\s*[-\u2013]?\s*Day\b/i;
-      var letterDays = [], regularEvents = [];
-      allEvents.forEach(function(item) {
-        var match = letterDayRe.exec(item.ev.summary);
-        if (match) {
-          letterDays.push({letter:match[1].toUpperCase(), key:item.key, title:item.ev.summary});
-        } else {
-          regularEvents.push(item);
-        }
+      var regularEvents = allEvents.filter(function(item) {
+        return !letterDayRe.test(item.ev.summary);
       });
-
-      // Render letter day badges
-      if (letterDays.length && ldEl) {
-        var ldHtml = '<div class="letter-day-header">Today\'s School Schedule</div><div class="letter-day-badges">';
-        letterDays.forEach(function(ld) {
-          var color = CAL_COLORS[ld.key];
-          var label = CAL_LABELS[ld.key];
-          var info  = getDayLabelInfo(ld.title);
-          if (info) { color = info.color; label = info.label; }
-          ldHtml += '<div class="letter-day-badge" style="--ld-color:'+color+'">'
-            +'<div class="letter-day-letter">'+ld.letter+'</div>'
-            +'<div class="letter-day-info">'
-            +'<div class="letter-day-day-word">Day</div>'
-            +'<div class="letter-day-school" style="color:'+color+'">'+label+'</div>'
-            +'</div></div>';
-        });
-        ldHtml += '</div>';
-        ldEl.innerHTML = ldHtml;
-        ldEl.style.display = 'block';
-      }
 
       // Render regular events
       if (!regularEvents.length) {
