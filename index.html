@@ -10,6 +10,41 @@
 </head>
 <body>
 
+  <!-- REVOLVING BANNER AD -->
+  <div class="banner-ad-bar" id="banner-ad-bar">
+    <div class="banner-ad-track" id="banner-ad-track">
+      <!-- Each slide: wrap in <a> if the ad links somewhere -->
+      <a class="banner-ad-slide is-active" href="#" target="_blank" rel="noopener">
+        <img src="images/Ads/Banners/Leaderad-ss-2026.jpg" alt="Sponsor advertisement">
+      </a>
+      <a class="banner-ad-slide" href="#" target="_blank" rel="noopener">
+        <img src="images/Ads/Banners/CW-Schalmont-leader.jpg" alt="Sponsor advertisement">
+      </a>
+      <a class="banner-ad-slide" href="#" target="_blank" rel="noopener">
+        <img src="images/Ads/Banners/Name-bubbles-Schalmont-leader.jpg" alt="Sponsor advertisement">
+      </a>
+    </div>
+  </div>
+  <style>
+    .banner-ad-bar{background:#f2f2f2;border-bottom:1px solid #e0e0e0;text-align:center;overflow:hidden}
+    .banner-ad-track{position:relative;max-width:970px;margin:0 auto;min-height:90px}
+    .banner-ad-slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .6s ease;pointer-events:none}
+    .banner-ad-slide.is-active{opacity:1;position:relative;pointer-events:auto}
+    .banner-ad-slide img{max-width:100%;height:auto;display:block}
+  </style>
+  <script>
+    (function(){
+      var slides=document.querySelectorAll('#banner-ad-track .banner-ad-slide');
+      if(slides.length<2)return;
+      var i=0;
+      setInterval(function(){
+        slides[i].classList.remove('is-active');
+        i=(i+1)%slides.length;
+        slides[i].classList.add('is-active');
+      },6000);
+    })();
+  </script>
+
   <!-- HEADER -->
   <header class="site-header">
     <nav class="container nav-inner">
@@ -32,7 +67,6 @@
               <li><a href="staff-appreciation-week.html">&#x1F31F; Staff Appreciation Week</a></li>
             </ul>
           </li>
-        <li><a href="meetings.html">Meetings</a></li>
         <li class="has-dropdown">
           <a href="shop.html">Shop</a>
           <ul class="nav-dropdown">
@@ -41,7 +75,6 @@
           </ul>
         </li>
         <li><a href="fundraisers.html">Fundraisers</a></li>
-        <li><a href="yearbooks.html">Yearbook</a></li>
         <li><a href="directory.html">Directory</a></li>
         <li class="has-dropdown">
           <a href="contact.html">Contact</a>
@@ -104,7 +137,6 @@
       <a href="index.html" class="sidenav-item">Home</a>
       <a href="events.html" class="sidenav-item">Events Calendar</a>
       <a href="staff-appreciation-week.html" class="sidenav-item" style="padding-left:26px;font-size:13px;color:var(--text)">→ Staff Appreciation Week</a>
-      <a href="meetings.html" class="sidenav-item">PTO Meetings</a>
 
       <div class="sidenav-heading">Schools</div>
       <a href="schools.html" class="sidenav-item">All Schools</a>
@@ -195,13 +227,11 @@
       <a href="events.html" class="sidenav-item">Events</a>
       <a href="fundraisers.html" class="sidenav-item">Fundraisers</a>
       <a href="gallery.html" class="sidenav-item">Gallery</a>
-      <a href="meetings.html" class="sidenav-item">Meetings</a>
       <a href="schools.html" class="sidenav-item">Schools</a>
       <a href="family-scouts.html" class="sidenav-item">Scouts</a>
       <a href="shop.html" class="sidenav-item">Shop</a>
       <a href="social.html" class="sidenav-item">Social Media</a>
       <a href="sports.html" class="sidenav-item">Sports</a>
-      <a href="yearbooks.html" class="sidenav-item">Yearbooks</a>
 
       <div class="sidenav-heading">Connect</div>
       <a href="about.html" class="sidenav-item">About the PTO</a>
@@ -986,7 +1016,6 @@
             <li><a href="directory.html">Parent Directory</a></li>
             <li><a href="shop.html">Shop</a></li>
             <li><a href="fundraisers.html">Fundraisers</a></li>
-            <li><a href="meetings.html">PTO Meetings</a></li>
           </ul>
         </div>
         <div>
