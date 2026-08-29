@@ -1,0 +1,1163 @@
+@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@400;500;600;700;800;900&display=swap');
+:root{
+  --ink:#103d3b; --deep:#073c3a; --green:#0b5b56; --mint:#1fa584;
+  --cream:#f6f1e5; --paper:#fbfaf6; --line:#ded8ca; --orange:#ef6f32; --pink:#f49ca8;
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:#183331;font-family:Arial,Helvetica,sans-serif}
+a{color:inherit;text-decoration:none} button,input{font:inherit}
+.siteHeader{max-width:1240px;margin:auto;padding:22px 28px;display:flex;align-items:center;gap:32px;border-bottom:1px solid var(--line)}
+.brand{display:flex;flex-direction:column;font-weight:1000;line-height:.72;letter-spacing:-1px}.fort{font-size:14px;letter-spacing:5px}.crazy{font-size:25px}
+.siteHeader nav{display:flex;gap:28px;margin-left:auto;font-weight:800;font-size:14px}.siteHeader nav a:hover{text-decoration:underline}
+.headerCta,.primaryBtn,.secondaryBtn,.creamBtn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;font-weight:900;padding:13px 20px}
+.headerCta,.primaryBtn{background:var(--deep);color:white}.secondaryBtn{border:1px solid var(--deep)}.creamBtn{background:var(--cream);color:var(--deep)}
+main{overflow:hidden}.hero{max-width:1240px;margin:auto;padding:80px 28px 70px;display:grid;grid-template-columns:1.08fr .92fr;gap:60px;align-items:center}
+.kicker{font-weight:1000;letter-spacing:2.4px;font-size:12px;color:var(--orange);margin:0 0 14px}.kicker.light{color:#ffd7a5}
+.hero h1{font-size:clamp(58px,8vw,108px);letter-spacing:-6px;line-height:.82;margin:0;color:var(--deep);max-width:760px}
+.heroText{font-size:21px;line-height:1.5;max-width:610px;margin:28px 0;color:#4c625f}.heroActions{display:flex;gap:12px;flex-wrap:wrap}
+.heroArt{background:var(--deep);min-height:440px;border-radius:34px;padding:36px;color:white;display:flex;flex-direction:column;justify-content:space-between;transform:rotate(1.5deg);box-shadow:16px 18px 0 #d9d1bf}
+.heroBurst{font-size:62px;font-weight:1000;letter-spacing:-4px}.heroTiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}.heroTiles span{background:#fff1;display:grid;place-items:center;aspect-ratio:1.4;border-radius:18px;font-size:58px}.heroArt p{font-size:18px;font-weight:800;max-width:430px}
+.categoryBar{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:16px 28px;display:flex;gap:10px;overflow:auto;justify-content:center}
+.categoryBar a{border:1px solid var(--line);background:white;padding:10px 15px;border-radius:999px;white-space:nowrap;font-weight:800;font-size:13px}
+.section{max-width:1240px;margin:auto;padding:78px 28px}.sectionHead{display:flex;align-items:end;justify-content:space-between;gap:30px;margin-bottom:28px}.sectionHead h2{font-size:clamp(36px,5vw,62px);letter-spacing:-2.5px;margin:0;color:var(--deep)}.sectionHead>a{font-weight:900}
+.findGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.findCard{border:1px solid var(--line);background:white;border-radius:22px;overflow:hidden;transition:.2s transform}.findCard:hover{transform:translateY(-4px)}
+.findVisual{display:grid;place-items:center;position:relative;aspect-ratio:1.08;background:#eae4d7}.findEmoji{font-size:76px;filter:drop-shadow(0 10px 8px #0002)}.findVisual.cool{background:#bfe9ed}.findVisual.play{background:#ffe4a7}.findVisual.dog{background:#efc6ad}.findVisual.road{background:#d5e0cd}.findVisual.home{background:#d7d2ee}.findVisual.sun{background:#ffdca5}
+.badge{position:absolute;left:12px;top:12px;background:var(--deep);color:white;font-size:11px;font-weight:900;padding:8px 10px;border-radius:999px}
+.findBody{padding:19px}.micro{font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#76827f}.findBody h3{font-size:24px;letter-spacing:-1px;margin:7px 0}.findBody>p:not(.micro){color:#64716f;line-height:1.45}.cardBottom{display:flex;align-items:center;justify-content:space-between;margin-top:20px}.textLink{font-weight:900;color:var(--green)}
+.featureBand{background:var(--deep);color:white;display:grid;grid-template-columns:1fr 1fr;gap:40px;padding:70px max(28px,calc((100vw - 1184px)/2));align-items:center}.featureBand h2{font-size:clamp(44px,6vw,76px);letter-spacing:-3px;line-height:.9;margin:0 0 20px}.featureBand p{font-size:18px;line-height:1.5}.roadGraphic{min-height:300px;display:flex;align-items:center;justify-content:center;gap:35px;font-size:120px;background:#fff1;border-radius:30px}.roadGraphic span{font-size:38px;line-height:.9;font-weight:1000;color:#ffd7a5;transform:rotate(-7deg)}
+.twoCol{display:grid;grid-template-columns:1.4fr .6fr;gap:24px}.miniGrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.sectionHead.compact{margin-bottom:20px}.under25{background:var(--orange);color:white;border-radius:28px;padding:34px;display:flex;flex-direction:column;justify-content:center}.priceMark{font-size:38px;font-weight:1000;line-height:.9}.priceMark strong{font-size:76px}.under25>p:not(.kicker){font-size:17px;line-height:1.5}
+.crazyList .sectionHead{max-width:900px}.articleGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.articleGrid article{border-top:5px solid var(--deep);padding:22px 4px}.articleGrid span{font-size:48px;font-weight:1000;color:#d8d1c2}.articleGrid p{font-size:11px;font-weight:1000;letter-spacing:2px;color:var(--orange)}.articleGrid h3{font-size:27px;line-height:1.08;letter-spacing:-1px}.articleGrid a{font-weight:900;color:var(--green)}
+.newsletter{background:#d7a9d0;color:var(--deep);padding:65px max(28px,calc((100vw - 1184px)/2));display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:end}.newsletter h2{font-size:50px;letter-spacing:-2px;margin:0}.newsletter form{display:flex;background:white;border-radius:999px;padding:6px}.newsletter input{border:0;outline:0;background:transparent;flex:1;padding:12px 18px;min-width:0}.newsletter button{border:0;background:var(--deep);color:white;font-weight:900;border-radius:999px;padding:13px 22px}
+footer{max-width:1240px;margin:auto;padding:50px 28px;color:#64716f;border-top:1px solid var(--line)}.footerBrand{color:var(--deep);margin-bottom:15px}.disclosure{font-size:12px;max-width:600px}
+.findPage{max-width:1180px;margin:auto;padding:50px 28px 90px}.backLink{font-weight:900;color:var(--green)}.findDetail{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:34px;align-items:start}.detailVisual{min-height:590px;border-radius:30px;display:grid;place-items:center;position:relative;background:#eae4d7}.detailVisual>span{font-size:170px}.detailVisual b{position:absolute;top:20px;left:20px;background:var(--deep);color:white;border-radius:999px;padding:10px 14px}.detailVisual.cool{background:#bfe9ed}.detailVisual.play{background:#ffe4a7}.detailVisual.dog{background:#efc6ad}.detailVisual.road{background:#d5e0cd}.detailVisual.home{background:#d7d2ee}.detailVisual.sun{background:#ffdca5}
+.detailCopy{padding-top:25px}.detailCopy h1{font-size:clamp(48px,6vw,78px);letter-spacing:-4px;line-height:.9;margin:0;color:var(--deep)}.eyebrow{font-size:22px;font-weight:800;color:#6c7977}.verdict{border-left:6px solid var(--orange);padding:8px 0 8px 17px;margin:28px 0;display:flex;flex-direction:column;gap:5px}.verdict small{font-weight:1000;letter-spacing:1.6px}.verdict strong{font-size:27px}.detailLead{font-size:19px;line-height:1.55}.detailCopy h2{margin-top:30px}.detailCopy ul{list-style:none;padding:0;display:grid;gap:10px}.detailCopy li{font-weight:700}.retailerBtn{margin-top:18px;min-width:250px}.tinyDisclosure{font-size:11px;color:#75807d;max-width:460px}
+@media(max-width:900px){.siteHeader nav{display:none}.headerCta{margin-left:auto}.hero,.findDetail,.featureBand,.twoCol,.newsletter{grid-template-columns:1fr}.findGrid{grid-template-columns:1fr 1fr}.articleGrid{grid-template-columns:1fr}.hero{padding-top:50px}.hero h1{letter-spacing:-4px}.roadGraphic{min-height:220px}.detailVisual{min-height:420px}}
+@media(max-width:560px){.siteHeader{padding:18px}.crazy{font-size:20px}.headerCta{display:none}.hero,.section,.findPage{padding-left:18px;padding-right:18px}.hero h1{font-size:58px}.findGrid,.miniGrid{grid-template-columns:1fr}.categoryBar{justify-content:flex-start}.heroArt{min-height:350px}.heroBurst{font-size:48px}.articleGrid{gap:4px}.newsletter h2{font-size:40px}}
+
+
+/* ===== FCP STOREFRONT V2 — branded discovery system ===== */
+.announcementBar{min-height:34px;background:#ff1e78;color:white;display:flex;justify-content:center;gap:70px;align-items:center;padding:8px 24px;font-size:11px;font-weight:1000;letter-spacing:.4px;text-align:center}
+.siteHeader{background:#071f3d;max-width:none;padding-left:max(28px,calc((100vw - 1184px)/2));padding-right:max(28px,calc((100vw - 1184px)/2));border:0;color:white}
+.brandLogo{display:block;width:155px;flex:0 0 auto}.brandLogo img{display:block;width:100%;height:auto}
+.siteHeader nav a{color:white}.headerCta{background:#ff1e78;color:white}
+.brandedHero{max-width:none;margin:0;padding-left:max(28px,calc((100vw - 1184px)/2));padding-right:max(28px,calc((100vw - 1184px)/2));background:linear-gradient(115deg,#c7edff 0%,#73cef6 65%,#52bce9 100%);min-height:520px;position:relative}
+.brandedHero .heroCopy{position:relative;z-index:3}.brandedHero h1{font-size:clamp(50px,6.7vw,92px);line-height:.88;color:#071f3d;max-width:690px;text-transform:uppercase;font-weight:1000;letter-spacing:-4px}.brandedHero h1 span{color:#ff1e78}
+.brandedHero .heroText{color:#071f3d;font-weight:700;max-width:570px}.hotBtn{background:#ff1e78;box-shadow:0 5px 0 #d3145f}.brandedHero .secondaryBtn{background:white;color:#071f3d;border:2px solid #071f3d;box-shadow:0 4px 0 #071f3d}
+.heroNote{font-size:12px;font-weight:900;color:#315b75;margin-top:20px}
+.fortScene{position:relative;min-height:390px;align-self:end;margin-bottom:-70px;filter:drop-shadow(0 14px 10px #184b6a33)}
+.fortDoor{position:absolute;width:205px;height:285px;bottom:45px;left:50%;transform:translateX(-50%);background:#ff1e78;border:11px solid #071f3d;border-radius:110px 110px 8px 8px;color:white;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:inset 0 0 0 5px #ff6da7}
+.fortDoor small{font-weight:900;letter-spacing:2px}.fortDoor strong{font-size:66px;line-height:.9;letter-spacing:-4px}.fortDoor span{font-size:12px;font-weight:900;text-transform:uppercase;margin:8px}.fortDoor b{background:#c9f236;color:#071f3d;padding:6px 8px;font-size:11px}
+.fortRoof{position:absolute;z-index:2;left:50%;bottom:312px;transform:translateX(-50%);width:285px;height:74px;background:#071f3d;color:white;clip-path:polygon(50% 0,100% 70%,92% 100%,8% 100%,0 70%);display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;font-weight:900;font-size:11px;letter-spacing:2px}
+.fortWing{position:absolute;bottom:45px;width:185px;height:205px;background:#f4e9ca;border:9px solid #071f3d;border-radius:8px;text-align:center;color:#071f3d;padding-top:50px}.leftWing{left:4%}.rightWing{right:4%}.fortWing:before{content:"";position:absolute;left:-9px;right:-9px;top:20px;height:34px;background:repeating-linear-gradient(90deg,#071f3d 0 28px,#fff 28px 56px);border-bottom:7px solid #071f3d}.fortWing b{display:inline-block;background:#071f3d;color:#c9f236;padding:8px;transform:rotate(-2deg);font-size:12px}.fortWing span{display:block;font-size:34px;margin-top:20px}
+.grass{position:absolute;bottom:0;left:-15%;right:-15%;height:52px;color:#5eb526;font-size:70px;line-height:.3;overflow:hidden}
+.sun{position:absolute;width:110px;height:110px;border-radius:50%;right:-10px;top:10px;background:#fff49a;box-shadow:0 0 45px #fff49a}.cloud{position:absolute;background:#eaf8ff;border-radius:999px;width:120px;height:42px}.cloud:before,.cloud:after{content:"";position:absolute;background:inherit;border-radius:50%}.cloud:before{width:60px;height:60px;left:22px;bottom:0}.cloud:after{width:75px;height:75px;right:12px;bottom:0}.cloudOne{left:-20px;top:60px}.cloudTwo{right:40px;top:100px}
+.collectionZone{background:white;padding:26px 0 22px}.collectionTitle{text-align:center;font-size:30px;font-weight:1000;color:#071f3d;letter-spacing:-1px}.categoryBar{border:0;padding-top:20px}.categoryBar a:nth-child(8n+1){background:#fff19a}.categoryBar a:nth-child(8n+2){background:#d4efff}.categoryBar a:nth-child(8n+3){background:#ffc8d9}.categoryBar a:nth-child(8n+4){background:#d9f6c7}.categoryBar a:nth-child(8n+5){background:#ddd0ff}.categoryBar a:nth-child(8n+6){background:#c8f4ef}.categoryBar a:nth-child(8n+7){background:#fff19a}.categoryBar a:nth-child(8n+8){background:#d4efff}.categoryBar a{color:#071f3d;border:0;border-radius:12px;box-shadow:0 3px 0 #071f3d22}
+.sectionHead h2,.featureBand h2,.newsletter h2{font-weight:1000}.featureBand{background:#071f3d}.under25{background:#ff1e78}.newsletter{background:#7bd6ff}.newsletter .kicker.light{color:#ff1e78}
+footer{background:#071f3d;color:#c7d4e1;max-width:none;padding-left:max(28px,calc((100vw - 1184px)/2));padding-right:max(28px,calc((100vw - 1184px)/2))}
+@media(max-width:900px){.announcementBar{gap:20px}.announcementBar span:nth-child(2){display:none}.fortScene{min-height:330px;margin-bottom:-40px}.fortWing{width:155px}.fortDoor{width:180px}.fortRoof{width:250px}}
+@media(max-width:620px){.announcementBar span:not(:first-child){display:none}.brandLogo{width:125px}.brandedHero{padding-top:45px}.fortScene{min-height:330px}.fortWing{display:none}.fortDoor{height:250px}.fortRoof{bottom:277px}.collectionTitle{font-size:23px}}
+
+/* ===== V2.1 EXACT LIVE-SITE HERO TRANSPLANT ===== */
+:root{--fc-navy:#061A3A;--fc-pink:#ff1f7a;--fc-blue:#10bcd0;--font-heading:'Luckiest Guy',system-ui,sans-serif;--font-body:'Nunito',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+body,p,a,button,input,textarea,select{font-family:var(--font-body)}
+h1,h2,h3,h4,h5,h6,.hero__title,.sectionHead h2,.collectionTitle{font-family:var(--font-heading);font-weight:400;letter-spacing:.018em}
+.page-width{max-width:1320px;margin:0 auto;padding:0 20px}
+.hero.hero--fort{position:relative;min-height:660px;padding:0;background:radial-gradient(circle at 88% 18%,rgba(255,31,122,.07),transparent 25%),radial-gradient(circle at 10% 78%,rgba(16,188,208,.08),transparent 28%),#fff7ee;color:var(--fc-navy);overflow:hidden;display:block;max-width:none;margin:0}
+.hero.hero--fort::before,.hero.hero--fort::after{display:none}
+.hero__scene{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:flex-end;overflow:hidden;pointer-events:none}
+.hero__scene::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(255,247,238,1) 0%,rgba(255,247,238,.96) 24%,rgba(255,247,238,.65) 39%,rgba(255,247,238,.18) 53%,rgba(255,247,238,0) 74%)}
+.hero__scene img{width:min(85vw,1320px);height:auto;max-height:640px;object-fit:contain;object-position:right bottom;margin-right:clamp(-120px,-6vw,-40px);margin-bottom:-2px;display:block}
+.hero__overlay-wrap{min-height:660px;display:flex;align-items:center;position:relative;z-index:3}
+.hero__copy-card{max-width:470px;padding:44px 0 42px}
+.hero__eyebrow{display:none}
+.hero__title{max-width:460px;font-size:clamp(2.7rem,5.05vw,5rem);line-height:.94;letter-spacing:.02em;margin:0 0 20px;text-transform:uppercase;color:#061A3A;text-shadow:none}
+.hero__title .text-pink{color:#ff1f7a;display:block}.hero__title .text-teal{color:#10bcd0;display:block}
+.hero__subtitle{font-family:var(--font-body);max-width:415px;font-size:clamp(1rem,1.25vw,1.16rem);line-height:1.45;font-weight:800;color:#061A3A;margin:0 0 26px}
+.hero__actions{display:flex;flex-wrap:wrap;gap:14px}
+.hero__actions .btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 24px;border-radius:15px;font-family:var(--font-body);font-weight:900;font-size:.875rem;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;box-shadow:0 4px 0 rgba(6,26,58,.16);text-decoration:none}
+.hero__actions .btn--primary{background:#ff1f7a;color:#fff}.hero__outline{background:#fff;color:#061A3A;border:2.5px solid #061A3A}
+.hero__blink-eye{position:absolute;z-index:2;right:clamp(167px,16.7vw,286px);bottom:clamp(123px,15.7vw,176px);width:clamp(17px,1.8vw,30px);height:clamp(13px,1.4vw,24px);border-radius:999px;background:#16aab6;box-shadow:inset 0 -2px 0 rgba(6,26,58,.16);transform:scaleY(0);transform-origin:center;animation:fc-alien-blink 5.5s infinite}
+@keyframes fc-alien-blink{0%,88%,100%{transform:scaleY(0);opacity:0}90%,93%{transform:scaleY(1);opacity:1}95%{transform:scaleY(0);opacity:0}}
+@media(max-width:1100px){.hero__scene img{width:min(78vw,900px);max-height:485px}.hero__title{font-size:clamp(2.55rem,6vw,4.3rem);max-width:400px}.hero__copy-card{max-width:405px}}
+@media(max-width:900px){.hero.hero--fort,.hero__overlay-wrap{min-height:690px}.hero__overlay-wrap{align-items:flex-start}.hero__copy-card{padding-top:34px;max-width:380px}.hero__scene{align-items:flex-end;justify-content:center}.hero__scene::before{background:linear-gradient(180deg,rgba(255,247,238,1) 0%,rgba(255,247,238,.93) 36%,rgba(255,247,238,.36) 60%,rgba(255,247,238,0) 82%)}.hero__scene img{width:1040px;max-width:none;max-height:420px;margin-right:-120px}.hero__blink-eye{right:185px;bottom:92px;width:22px;height:17px}}
+@media(max-width:560px){.hero.hero--fort,.hero__overlay-wrap{min-height:650px}.hero__title{font-size:clamp(2.45rem,13vw,3.35rem);max-width:310px}.hero__subtitle{max-width:300px;font-size:.96rem}.hero__scene img{width:800px;max-height:360px;margin-right:-168px}.hero__blink-eye{right:112px;bottom:77px;width:18px;height:14px}}
+
+
+/* ===== V2.2 — exact Shopify hero typography override =====
+   These selectors intentionally outrank legacy .hero h1 rules above. */
+.hero.hero--fort .hero__title{
+  font-family:'Luckiest Guy',system-ui,sans-serif;
+  max-width:460px;
+  font-size:clamp(2.7rem,5.05vw,5rem);
+  font-weight:400;
+  line-height:.94;
+  letter-spacing:.02em;
+  margin:0 0 20px;
+  text-transform:uppercase;
+  color:#061A3A;
+  text-shadow:none;
+}
+.hero.hero--fort .hero__subtitle{
+  font-family:'Nunito',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  max-width:415px;
+  font-size:clamp(1rem,1.25vw,1.16rem);
+  line-height:1.45;
+  font-weight:800;
+  color:#061A3A;
+  margin:0 0 26px;
+}
+.hero.hero--fort .hero__actions .btn{
+  font-family:'Luckiest Guy',system-ui,sans-serif;
+  font-weight:400;
+  letter-spacing:.04em;
+}
+@media(max-width:1100px){
+  .hero.hero--fort .hero__title{font-size:clamp(2.55rem,6vw,4.3rem);max-width:400px}
+}
+@media(max-width:900px){
+  .hero.hero--fort .hero__title{font-size:3.55rem;max-width:400px;letter-spacing:.02em;line-height:.94}
+}
+@media(max-width:560px){
+  .hero.hero--fort .hero__title{font-size:3.05rem;max-width:310px;letter-spacing:.02em;line-height:.94}
+  .hero.hero--fort .hero__subtitle{max-width:300px;font-size:.98rem}
+}
+
+/* ===== V2.3 — match live fortcrazypants.com computed typography ===== */
+@media (min-width:1101px){
+  .hero.hero--fort .hero__title{
+    font-size:52.8px;
+    max-width:600px;
+    line-height:1.02;
+    letter-spacing:.018em;
+  }
+  .collectionZone .collectionTitle,
+  .section .sectionHead h2{
+    font-size:40.8px;
+    line-height:1.08;
+    letter-spacing:.018em;
+  }
+}
+.hero.hero--fort .hero__title .text-pink,
+.hero.hero--fort .hero__title .text-teal{
+  display:inline;
+}
+.hero.hero--fort .hero__actions .btn{
+  font-family:'Nunito',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:900;
+  letter-spacing:.02em;
+}
+
+
+/* ===== V2.5 — animation anchored to the actual Fort artwork ===== */
+.hero__scene{display:flex;align-items:flex-end;justify-content:flex-end;}
+.hero__art{position:relative;width:min(85vw,1320px);height:auto;margin-right:clamp(-120px,-6vw,-40px);margin-bottom:-2px;flex:0 0 auto;}
+.hero__art picture,.hero__art img{display:block;width:100%;height:auto;}
+.hero__art .hero__blink-eye{
+  position:absolute;z-index:4;
+  left:80.85%;top:67.55%;
+  width:2.05%;aspect-ratio:1.28/1;
+  right:auto;bottom:auto;height:auto;
+  border-radius:999px;background:#16aab6;
+  box-shadow:inset 0 -2px 0 rgba(6,26,58,.16);
+  transform:translate(-50%,-50%) scaleY(0);
+  transform-origin:center;
+  animation:fc-alien-blink-art 5.5s infinite;
+}
+@keyframes fc-alien-blink-art{
+  0%,88%,100%{transform:translate(-50%,-50%) scaleY(0);opacity:0}
+  90%,93%{transform:translate(-50%,-50%) scaleY(1);opacity:1}
+  95%{transform:translate(-50%,-50%) scaleY(0);opacity:0}
+}
+@media(max-width:1100px){
+  .hero__art{width:min(78vw,900px);}
+}
+@media(max-width:900px){
+  .hero__scene{justify-content:center;}
+  .hero__art{width:1040px;max-width:none;margin-right:-120px;margin-bottom:0;}
+  .hero__art .hero__blink-eye{left:71.45%;top:69.75%;width:2.7%;}
+}
+@media(max-width:560px){
+  .hero__art{width:800px;margin-right:-168px;}
+  .hero__art .hero__blink-eye{left:71.45%;top:69.75%;width:2.7%;}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero__art .hero__blink-eye{animation:none;opacity:0;}
+}
+
+
+/* V2.7 — footer uses the exact same logo asset as the header */
+.footerLogo{display:block;width:190px;max-width:48vw;margin-bottom:18px}
+.footerLogo img{display:block;width:100%;height:auto;object-fit:contain}
+@media(max-width:620px){.footerLogo{width:160px}}
+
+/* ===== V3.6 — MEASURED AGAINST APPROVED 996×344 REFERENCE ===== */
+.hero.hero--fort{
+  position:relative!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  aspect-ratio:996 / 344!important;
+  overflow:hidden!important;
+  background:linear-gradient(108deg,#b9eaff 0%,#80d4f4 50%,#49bdeb 100%)!important;
+}
+.hero__scene{
+  position:absolute!important;
+  inset:0!important;
+  overflow:hidden!important;
+}
+.hero__scene::before{display:none!important}
+
+/* FORT: reference math puts the asset at ~80% viewport width, bottom-right. */
+.hero__art{
+  position:absolute!important;
+  z-index:3!important;
+  width:80.1%!important;
+  max-width:none!important;
+  height:auto!important;
+  left:auto!important;
+  right:0!important;
+  bottom:0!important;
+  margin:0!important;
+  overflow:visible!important;
+}
+.hero__art picture,
+.hero__art picture img,
+.hero__art > img{
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  height:auto!important;
+  object-fit:contain!important;
+  object-position:right bottom!important;
+}
+
+/* Real grass from the same artwork fills only the ~20% exposed left edge. */
+.hero__leftGrass{
+  position:absolute!important;
+  left:0!important;
+  bottom:0!important;
+  width:21%!important;
+  height:15.5%!important;
+  z-index:4!important;
+  overflow:hidden!important;
+  pointer-events:none!important;
+}
+.hero__leftGrass img{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:left bottom!important;
+}
+
+/* Blink coordinates stay proportional to Fort artwork. */
+.hero__blink-eye{
+  left:80.85%!important;
+  top:67.55%!important;
+  width:2.05%!important;
+}
+
+/* SKY */
+.hero__skyMotion{
+  position:absolute!important;
+  inset:0!important;
+  z-index:2!important;
+  overflow:hidden!important;
+  pointer-events:none!important;
+}
+.hero__approvedCloud{
+  position:absolute!important;
+  display:block!important;
+  height:auto!important;
+  object-fit:contain!important;
+  pointer-events:none!important;
+}
+.hero__approvedCloud--left{
+  width:16.5%!important;
+  left:0!important;
+  top:0!important;
+  opacity:.96!important;
+  animation:fc36CloudA 30s ease-in-out infinite alternate!important;
+}
+.hero__approvedCloud--mid{
+  width:16.5%!important;
+  left:35.1%!important;
+  top:30.2%!important;
+  opacity:.80!important;
+  animation:fc36CloudB 32s ease-in-out infinite alternate-reverse!important;
+}
+.hero__approvedCloud--rightTop{
+  width:19.5%!important;
+  right:0!important;
+  top:10.8%!important;
+  opacity:.94!important;
+  z-index:2!important;
+  animation:fc36CloudC 31s ease-in-out infinite alternate!important;
+}
+.hero__approvedCloud--rightLow{
+  width:11%!important;
+  right:0!important;
+  top:31%!important;
+  opacity:.80!important;
+  animation:fc36CloudD 29s ease-in-out infinite alternate-reverse!important;
+}
+
+/* SUN: measured from reference, behind the upper-right cloud. */
+.hero__approvedSun{
+  position:absolute!important;
+  width:6.2%!important;
+  aspect-ratio:1!important;
+  right:3.9%!important;
+  top:5.2%!important;
+  z-index:1!important;
+  border-radius:50%!important;
+  background:radial-gradient(circle at 38% 34%,#fffde4 0 18%,#fff69b 49%,#ffd75d 100%)!important;
+  box-shadow:0 0 14px rgba(255,248,182,.82),0 0 34px rgba(255,225,77,.52)!important;
+  opacity:.97!important;
+  animation:fc36Sun 9s ease-in-out infinite!important;
+}
+
+/* PLANE: keep the approved V3.2 plane, path adjusted only to reference position. */
+.hero__plane{
+  position:absolute!important;
+  left:-110px!important;
+  top:27%!important;
+  width:92px!important;
+  height:46px!important;
+  min-width:0!important;
+  max-width:92px!important;
+  min-height:0!important;
+  max-height:46px!important;
+  z-index:5!important;
+  overflow:visible!important;
+  transform-origin:center!important;
+  animation:fc36Plane 15s linear infinite!important;
+  animation-delay:-4s!important;
+}
+.hero__planeArt{
+  position:absolute!important;
+  inset:0!important;
+  width:92px!important;
+  height:46px!important;
+  max-width:92px!important;
+  max-height:46px!important;
+  object-fit:contain!important;
+  filter:drop-shadow(0 3px 3px rgba(30,96,132,.16))!important;
+}
+.hero__airTrail{
+  position:absolute!important;
+  width:145px!important;
+  height:42px!important;
+  right:70px!important;
+  left:auto!important;
+  top:7px!important;
+  overflow:visible!important;
+  opacity:.65!important;
+}
+.hero__airTrail path{
+  fill:none!important;
+  stroke:rgba(255,255,255,.92)!important;
+  stroke-width:3!important;
+  stroke-linecap:round!important;
+  stroke-dasharray:430!important;
+  stroke-dashoffset:430!important;
+  animation:fc36Trail 15s linear infinite!important;
+  animation-delay:-4s!important;
+}
+.hero__airTrail path:nth-child(2){stroke-width:1.5!important;opacity:.34!important}
+
+/* COPY: measured from approved reference. */
+.hero__overlay-wrap{
+  position:relative!important;
+  z-index:6!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+}
+.hero__copy-card{
+  position:absolute!important;
+  left:6.45%!important;
+  top:24.1%!important;
+  width:38.5%!important;
+  max-width:390px!important;
+  margin:0!important;
+  padding:0!important;
+}
+.hero__eyebrow{display:none!important}
+.hero__title{
+  margin:0 0 22px!important;
+  max-width:390px!important;
+}
+.hero__subtitle{
+  max-width:360px!important;
+}
+
+/* Motion remains subtle like the target. */
+@keyframes fc36Plane{
+  0%{left:-110px;top:29%;transform:rotate(-5deg) scale(.92);opacity:0}
+  6%{opacity:.96}
+  44%{top:16%;transform:rotate(-7deg) scale(1)}
+  78%{top:7%;transform:rotate(-9deg) scale(.97);opacity:.96}
+  95%{opacity:.92}
+  100%{left:calc(100% + 110px);top:0%;transform:rotate(-10deg) scale(.92);opacity:0}
+}
+@keyframes fc36Trail{
+  0%,5%{stroke-dashoffset:430;opacity:0}
+  12%{opacity:.78}
+  45%{stroke-dashoffset:105;opacity:.76}
+  74%{stroke-dashoffset:0;opacity:.54}
+  97%{opacity:.22}
+  100%{stroke-dashoffset:-100;opacity:0}
+}
+@keyframes fc36CloudA{from{transform:translateX(-3px)}to{transform:translateX(9px) translateY(1px)}}
+@keyframes fc36CloudB{from{transform:translateX(4px)}to{transform:translateX(-8px) translateY(-1px)}}
+@keyframes fc36CloudC{from{transform:translateX(-4px)}to{transform:translateX(8px) translateY(1px)}}
+@keyframes fc36CloudD{from{transform:translateX(4px)}to{transform:translateX(-7px) translateY(1px)}}
+@keyframes fc36Sun{0%,100%{transform:translateY(0)}50%{transform:translateY(1.5px)}}
+
+/* Preserve current mobile behavior separately. */
+@media(max-width:900px){
+  .hero.hero--fort{aspect-ratio:auto!important;height:650px!important;min-height:650px!important}
+  .hero__art{
+    width:800px!important;
+    right:-165px!important;
+    left:auto!important;
+    bottom:0!important;
+  }
+  .hero__art picture,
+  .hero__art picture img,
+  .hero__art > img{width:800px!important}
+  .hero__leftGrass{width:38%!important;height:11%!important}
+  .hero__copy-card{
+    left:18px!important;
+    top:34px!important;
+    width:330px!important;
+    max-width:88vw!important;
+  }
+  .hero__approvedCloud--left{width:23%!important;top:45%!important}
+  .hero__approvedCloud--mid{width:18%!important;left:43%!important;top:54%!important}
+  .hero__approvedCloud--rightTop{width:24%!important;right:0!important;top:46%!important}
+  .hero__approvedCloud--rightLow{display:none!important}
+  .hero__approvedSun{width:48px!important;right:7%!important;top:47%!important}
+  .hero__plane,.hero__planeArt{width:68px!important;height:34px!important;max-width:68px!important;max-height:34px!important}
+  .hero__airTrail{width:100px!important;height:30px!important;right:52px!important;top:5px!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .hero__approvedCloud,.hero__approvedSun,.hero__airTrail path{animation:none!important}
+  .hero__plane{display:none!important}
+}
+
+
+
+/* ===== V3.7 — CLEAN REFERENCE CORRECTION =====
+   V3.6 proved the Fort/text geometry was close. This layer ONLY fixes
+   the visibly wrong sky fragments, continuous grass, and plane visibility. */
+
+.hero__leftGrass{
+  left:0!important;
+  right:0!important;
+  width:100%!important;
+  height:14.8%!important;
+  bottom:0!important;
+  z-index:2!important;
+  overflow:hidden!important;
+  background-image:url("/fort-grass-clean.png")!important;
+  background-repeat:repeat-x!important;
+  background-size:auto 100%!important;
+  background-position:left bottom!important;
+}
+.hero__leftGrass img{display:none!important}
+
+/* Fort must sit above the continuous grass strip. */
+.hero__art{z-index:3!important}
+
+/* Clean, soft clouds — no screenshot rectangles/artifacts. */
+.hero__approvedCloud{
+  filter:none!important;
+  mix-blend-mode:normal!important;
+}
+.hero__approvedCloud--left{
+  width:15.5%!important;
+  left:-2.5%!important;
+  top:-2.5%!important;
+  opacity:.82!important;
+}
+.hero__approvedCloud--mid{
+  width:13.5%!important;
+  left:37.5%!important;
+  top:31%!important;
+  opacity:.58!important;
+}
+.hero__approvedCloud--rightTop{
+  width:18.5%!important;
+  right:-1.5%!important;
+  top:5.5%!important;
+  opacity:.88!important;
+  z-index:2!important;
+}
+.hero__approvedCloud--rightLow{
+  width:12.5%!important;
+  right:3%!important;
+  top:26%!important;
+  opacity:.55!important;
+}
+
+/* Target sun: soft, partly behind upper-right cloud. */
+.hero__approvedSun{
+  width:6.3%!important;
+  right:4.1%!important;
+  top:4.8%!important;
+  z-index:1!important;
+}
+
+/* Keep the approved plane small and make sure it is visibly present during the cycle. */
+.hero__plane{
+  width:86px!important;
+  height:42px!important;
+  max-width:86px!important;
+  max-height:42px!important;
+  z-index:7!important;
+  animation:fc37Plane 13s linear infinite!important;
+  animation-delay:-6.5s!important;
+}
+.hero__planeArt{
+  width:86px!important;
+  height:42px!important;
+  max-width:86px!important;
+  max-height:42px!important;
+}
+.hero__airTrail{
+  width:155px!important;
+  height:44px!important;
+  right:65px!important;
+  top:4px!important;
+}
+@keyframes fc37Plane{
+  0%{left:-100px;top:27%;transform:rotate(-5deg);opacity:.9}
+  20%{top:22%;opacity:1}
+  45%{top:14%;transform:rotate(-7deg);opacity:1}
+  70%{top:8%;transform:rotate(-8deg);opacity:1}
+  100%{left:calc(100% + 100px);top:1%;transform:rotate(-9deg);opacity:.9}
+}
+
+/* Desktop target has a little more breathing room above the Fort roof. */
+@media(min-width:901px){
+  .hero__art{width:79.5%!important}
+}
+
+/* Mobile keeps the existing dedicated layout. */
+@media(max-width:900px){
+  .hero__leftGrass{
+    width:100%!important;
+    height:11%!important;
+    background-size:auto 100%!important;
+  }
+  .hero__approvedCloud--left{width:28%!important;left:-6%!important;top:44%!important}
+  .hero__approvedCloud--mid{width:20%!important;left:42%!important;top:54%!important}
+  .hero__approvedCloud--rightTop{width:28%!important;right:-5%!important;top:45%!important}
+  .hero__approvedCloud--rightLow{display:none!important}
+}
+
+/* ===== V3.8 — plane + moving clouds + clean left grass ===== */
+
+/* Clean continuous grass along the full bottom-left without white/artifact gaps. */
+.hero__leftGrass{
+  position:absolute!important;
+  left:0!important;
+  bottom:0!important;
+  width:100%!important;
+  height:15.2%!important;
+  z-index:2!important;
+  overflow:hidden!important;
+  background-image:url("/fort-grass-strip.png")!important;
+  background-repeat:repeat-x!important;
+  background-position:left bottom!important;
+  background-size:auto 100%!important;
+}
+.hero__leftGrass img{display:none!important}
+.hero__art{z-index:3!important}
+
+/* Clouds drift enough to actually be noticeable, while staying subtle. */
+.hero__approvedCloud--left{
+  animation:fc38CloudLeft 18s ease-in-out infinite alternate!important;
+}
+.hero__approvedCloud--mid{
+  animation:fc38CloudMid 21s ease-in-out infinite alternate-reverse!important;
+}
+.hero__approvedCloud--rightTop{
+  animation:fc38CloudRightTop 24s ease-in-out infinite alternate!important;
+}
+.hero__approvedCloud--rightLow{
+  animation:fc38CloudRightLow 20s ease-in-out infinite alternate-reverse!important;
+}
+@keyframes fc38CloudLeft{
+  from{transform:translate3d(-6px,0,0)}
+  to{transform:translate3d(34px,4px,0)}
+}
+@keyframes fc38CloudMid{
+  from{transform:translate3d(18px,0,0)}
+  to{transform:translate3d(-28px,-3px,0)}
+}
+@keyframes fc38CloudRightTop{
+  from{transform:translate3d(-16px,0,0)}
+  to{transform:translate3d(22px,3px,0)}
+}
+@keyframes fc38CloudRightLow{
+  from{transform:translate3d(14px,0,0)}
+  to{transform:translate3d(-22px,2px,0)}
+}
+
+/* Reliable plane animation: translate across the hero instead of animating left. */
+.hero__plane{
+  display:block!important;
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  width:92px!important;
+  height:46px!important;
+  max-width:92px!important;
+  max-height:46px!important;
+  z-index:8!important;
+  opacity:1!important;
+  will-change:transform,opacity!important;
+  animation:fc38PlaneFlight 13s linear infinite!important;
+  animation-delay:-4.2s!important;
+  transform-origin:center!important;
+}
+.hero__planeArt{
+  display:block!important;
+  width:92px!important;
+  height:46px!important;
+  max-width:92px!important;
+  max-height:46px!important;
+  object-fit:contain!important;
+}
+.hero__airTrail{
+  display:block!important;
+  position:absolute!important;
+  width:150px!important;
+  height:44px!important;
+  right:68px!important;
+  left:auto!important;
+  top:6px!important;
+  overflow:visible!important;
+  opacity:.72!important;
+}
+.hero__airTrail path{
+  stroke-dasharray:none!important;
+  stroke-dashoffset:0!important;
+  animation:none!important;
+  stroke:rgba(255,255,255,.92)!important;
+  stroke-linecap:round!important;
+}
+@keyframes fc38PlaneFlight{
+  0%{
+    transform:translate3d(-120px,118px,0) rotate(-5deg) scale(.94);
+    opacity:.95;
+  }
+  25%{
+    transform:translate3d(24vw,82px,0) rotate(-6deg) scale(1);
+    opacity:1;
+  }
+  55%{
+    transform:translate3d(55vw,44px,0) rotate(-8deg) scale(1);
+    opacity:1;
+  }
+  82%{
+    transform:translate3d(82vw,15px,0) rotate(-9deg) scale(.97);
+    opacity:1;
+  }
+  100%{
+    transform:translate3d(calc(100vw + 120px),-12px,0) rotate(-10deg) scale(.94);
+    opacity:.95;
+  }
+}
+
+/* Never hide the plane just because reduced motion is enabled; freeze it instead. */
+@media(prefers-reduced-motion:reduce){
+  .hero__plane{
+    display:block!important;
+    animation:none!important;
+    transform:translate3d(58vw,44px,0) rotate(-8deg)!important;
+  }
+  .hero__approvedCloud{animation:none!important}
+}
+
+@media(max-width:900px){
+  .hero__leftGrass{
+    height:11.5%!important;
+    background-size:auto 100%!important;
+  }
+  .hero__plane{
+    width:68px!important;
+    height:34px!important;
+    max-width:68px!important;
+    max-height:34px!important;
+    animation-duration:11s!important;
+  }
+  .hero__planeArt{
+    width:68px!important;
+    height:34px!important;
+    max-width:68px!important;
+    max-height:34px!important;
+  }
+  .hero__airTrail{
+    width:100px!important;
+    height:30px!important;
+    right:50px!important;
+    top:4px!important;
+  }
+}
+
+/* ===== V3.9 — clean grass + clearly animated clouds ===== */
+
+/* Replace every older grass treatment with a clean tile from intact Fort grass. */
+.hero__leftGrass{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  width:100%!important;
+  height:15.2%!important;
+  z-index:2!important;
+  overflow:hidden!important;
+  background-image:url("/fort-grass-clean-v39.png")!important;
+  background-repeat:repeat-x!important;
+  background-position:left bottom!important;
+  background-size:auto 100%!important;
+}
+.hero__leftGrass img{display:none!important}
+
+/* The Fort stays above the grass filler, eliminating post/building artifacts in the filler. */
+.hero__art{z-index:3!important}
+
+/* Make cloud movement unmistakable while keeping it gentle. */
+.hero__approvedCloud{
+  will-change:transform!important;
+}
+.hero__approvedCloud--left{
+  animation:fc39CloudLeft 14s ease-in-out infinite alternate!important;
+}
+.hero__approvedCloud--mid{
+  animation:fc39CloudMid 17s ease-in-out infinite alternate-reverse!important;
+}
+.hero__approvedCloud--rightTop{
+  animation:fc39CloudRightTop 19s ease-in-out infinite alternate!important;
+}
+.hero__approvedCloud--rightLow{
+  animation:fc39CloudRightLow 16s ease-in-out infinite alternate-reverse!important;
+}
+
+@keyframes fc39CloudLeft{
+  0%{transform:translate3d(-12px,0,0)}
+  100%{transform:translate3d(58px,5px,0)}
+}
+@keyframes fc39CloudMid{
+  0%{transform:translate3d(35px,0,0)}
+  100%{transform:translate3d(-42px,-4px,0)}
+}
+@keyframes fc39CloudRightTop{
+  0%{transform:translate3d(-28px,0,0)}
+  100%{transform:translate3d(36px,4px,0)}
+}
+@keyframes fc39CloudRightLow{
+  0%{transform:translate3d(24px,0,0)}
+  100%{transform:translate3d(-36px,3px,0)}
+}
+
+/* Preserve V3.8 plane animation above clouds/Fort. */
+.hero__plane{z-index:8!important}
+
+@media(max-width:900px){
+  .hero__leftGrass{
+    height:11.5%!important;
+    background-size:auto 100%!important;
+  }
+  .hero__approvedCloud--left{animation-duration:12s!important}
+  .hero__approvedCloud--mid{animation-duration:14s!important}
+  .hero__approvedCloud--rightTop{animation-duration:15s!important}
+}
+
+
+
+/* ===== V4.0 — final grass artifact cleanup ===== */
+/* Use only the lower, clean grass pixels. No shelves, posts, building edges, or cream artifacts. */
+.hero__leftGrass{
+  background-image:url("/fort-grass-clean-v40.png")!important;
+  background-repeat:repeat-x!important;
+  background-position:left bottom!important;
+  background-size:auto 100%!important;
+  overflow:hidden!important;
+}
+.hero__leftGrass img{display:none!important}
+
+/* Preserve the working V3.9 sky and plane animation unchanged. */
+
+/* ===== V4.1 — responsive hero copy fix =====
+   Keeps the approved art/animation untouched.
+   Fixes H1, paragraph and buttons between full desktop and mobile. */
+
+/* Wide desktop: preserve the intended two-line headline. */
+@media (min-width:1201px){
+  .hero__copy-card{
+    width:43%!important;
+    max-width:500px!important;
+  }
+  .hero.hero--fort .hero__title,
+  .hero__title{
+    width:100%!important;
+    max-width:500px!important;
+    font-size:52.8px!important;
+    line-height:.94!important;
+  }
+  .hero__subtitle{
+    max-width:420px!important;
+  }
+}
+
+/* Laptop / narrower desktop.
+   Give the copy more horizontal room and scale everything together. */
+@media (min-width:901px) and (max-width:1200px){
+  .hero__copy-card{
+    left:6.2%!important;
+    top:17%!important;
+    width:44%!important;
+    max-width:470px!important;
+  }
+
+  .hero.hero--fort .hero__title,
+  .hero__title{
+    width:100%!important;
+    max-width:470px!important;
+    font-size:clamp(38px,4.25vw,49px)!important;
+    line-height:.94!important;
+    letter-spacing:.018em!important;
+    margin-bottom:18px!important;
+  }
+
+  /* Keep the colored words inline so the title naturally resolves to two lines
+     whenever the available width allows it. */
+  .hero.hero--fort .hero__title .text-pink,
+  .hero.hero--fort .hero__title .text-teal,
+  .hero__title .text-pink,
+  .hero__title .text-teal{
+    display:inline!important;
+  }
+
+  .hero__subtitle{
+    width:100%!important;
+    max-width:400px!important;
+    font-size:clamp(14px,1.35vw,16px)!important;
+    line-height:1.42!important;
+    margin-bottom:20px!important;
+  }
+
+  .hero__actions{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+    gap:12px!important;
+  }
+
+  .hero__actions .btn{
+    flex:0 0 auto!important;
+    padding:12px 18px!important;
+    font-size:12.5px!important;
+    border-radius:14px!important;
+  }
+}
+
+/* Small laptop / large tablet: let the copy shrink another step before
+   switching to the dedicated mobile layout at 900px. */
+@media (min-width:901px) and (max-width:1025px){
+  .hero__copy-card{
+    left:5.5%!important;
+    top:14%!important;
+    width:45%!important;
+    max-width:440px!important;
+  }
+
+  .hero.hero--fort .hero__title,
+  .hero__title{
+    max-width:440px!important;
+    font-size:clamp(35px,4.1vw,42px)!important;
+  }
+
+  .hero__subtitle{
+    max-width:365px!important;
+    font-size:14px!important;
+    margin-bottom:17px!important;
+  }
+
+  .hero__actions{gap:9px!important}
+  .hero__actions .btn{
+    padding:11px 15px!important;
+    font-size:11.5px!important;
+  }
+}
+
+/* Mobile: make the existing layout more comfortable and prevent buttons
+   from clipping or colliding with the artwork. */
+@media (max-width:900px){
+  .hero__copy-card{
+    width:min(360px,88vw)!important;
+    max-width:min(360px,88vw)!important;
+  }
+
+  .hero.hero--fort .hero__title,
+  .hero__title{
+    width:100%!important;
+    max-width:350px!important;
+    font-size:clamp(39px,10.5vw,50px)!important;
+    line-height:.94!important;
+    margin-bottom:17px!important;
+  }
+
+  .hero__subtitle{
+    width:100%!important;
+    max-width:330px!important;
+    font-size:14px!important;
+    line-height:1.42!important;
+    margin-bottom:18px!important;
+  }
+
+  .hero__actions{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    gap:10px!important;
+  }
+
+  .hero__actions .btn{
+    padding:11px 16px!important;
+    font-size:11.5px!important;
+  }
+}
+
+@media (max-width:520px){
+  .hero__copy-card{
+    width:calc(100vw - 36px)!important;
+    max-width:calc(100vw - 36px)!important;
+  }
+
+  .hero.hero--fort .hero__title,
+  .hero__title{
+    max-width:330px!important;
+    font-size:clamp(37px,11vw,46px)!important;
+  }
+
+  .hero__subtitle{
+    max-width:310px!important;
+    font-size:13.5px!important;
+  }
+
+  .hero__actions{
+    max-width:330px!important;
+  }
+}
+
+/* ===== V4.2 — alien blink alignment =====
+   Desktop and mobile Fort artwork have different eye coordinates. */
+
+/* Desktop Fort (1800 × 654): center eyelid precisely over the alien's eye. */
+@media (min-width:901px){
+  .hero__art .hero__blink-eye,
+  .hero__blink-eye{
+    left:80.95%!important;
+    top:69.75%!important;
+    width:1.45%!important;
+    aspect-ratio:1.45 / 1!important;
+    height:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    border-radius:999px!important;
+    transform:translate(-50%,-50%) scaleY(0)!important;
+    transform-origin:center!important;
+    animation:fc42AlienBlink 5.5s infinite!important;
+  }
+}
+
+/* Mobile Fort uses a different crop/composition, so align to its actual eye. */
+@media (max-width:900px){
+  .hero__art .hero__blink-eye,
+  .hero__blink-eye{
+    left:71.55%!important;
+    top:66.75%!important;
+    width:2.15%!important;
+    aspect-ratio:1.45 / 1!important;
+    height:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    transform:translate(-50%,-50%) scaleY(0)!important;
+    animation:fc42AlienBlink 5.5s infinite!important;
+  }
+}
+
+@keyframes fc42AlienBlink{
+  0%,87%,100%{
+    transform:translate(-50%,-50%) scaleY(0);
+    opacity:0;
+  }
+  89%{
+    transform:translate(-50%,-50%) scaleY(.35);
+    opacity:.9;
+  }
+  90.5%,92.5%{
+    transform:translate(-50%,-50%) scaleY(1);
+    opacity:1;
+  }
+  94%{
+    transform:translate(-50%,-50%) scaleY(.35);
+    opacity:.9;
+  }
+  95.5%{
+    transform:translate(-50%,-50%) scaleY(0);
+    opacity:0;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .hero__art .hero__blink-eye,
+  .hero__blink-eye{
+    animation:none!important;
+    opacity:0!important;
+  }
+}
+
+/* ===== V4.3 — clean Fort artifacts + reliable alien blink ===== */
+
+/* The cleaned desktop Fort asset has the damaged far-left grass pixels removed.
+   The clean repeating grass layer beneath it now shows through with no boxes/artifacts. */
+
+/* Desktop alien eye on the 1800×654 Fort artwork. */
+@media (min-width:901px){
+  .hero__art{
+    position:absolute!important;
+  }
+
+  .hero__art .hero__blink-eye,
+  .hero__blink-eye{
+    display:block!important;
+    position:absolute!important;
+    z-index:30!important;
+
+    /* Exact eye center on the monster in the Fort artwork */
+    left:80.92%!important;
+    top:69.88%!important;
+
+    /* Explicit dimensions so the eyelid cannot collapse to zero height */
+    width:1.48%!important;
+    height:1.55%!important;
+    min-width:12px!important;
+    min-height:6px!important;
+
+    right:auto!important;
+    bottom:auto!important;
+    margin:0!important;
+
+    border-radius:999px!important;
+    background:#22aeb9!important;
+    box-shadow:
+      inset 0 -2px 0 rgba(6,45,59,.22),
+      0 1px 1px rgba(255,255,255,.10)!important;
+
+    transform-origin:center center!important;
+    transform:translate(-50%,-50%) scaleY(.06)!important;
+    opacity:0!important;
+
+    animation:fc43AlienBlink 4.8s ease-in-out infinite!important;
+    pointer-events:none!important;
+  }
+}
+
+/* Mobile artwork has a different composition. */
+@media (max-width:900px){
+  .hero__art .hero__blink-eye,
+  .hero__blink-eye{
+    display:block!important;
+    position:absolute!important;
+    z-index:30!important;
+    left:71.55%!important;
+    top:66.85%!important;
+    width:2.18%!important;
+    height:1.72%!important;
+    min-width:12px!important;
+    min-height:6px!important;
+    right:auto!important;
+    bottom:auto!important;
+    border-radius:999px!important;
+    background:#22aeb9!important;
+    box-shadow:inset 0 -2px 0 rgba(6,45,59,.22)!important;
+    transform-origin:center center!important;
+    transform:translate(-50%,-50%) scaleY(.06)!important;
+    opacity:0!important;
+    animation:fc43AlienBlink 4.8s ease-in-out infinite!important;
+    pointer-events:none!important;
+  }
+}
+
+/* A clearly visible double-blink every 4.8 seconds. */
+@keyframes fc43AlienBlink{
+  0%,70%,100%{
+    transform:translate(-50%,-50%) scaleY(.06);
+    opacity:0;
+  }
+
+  /* first blink */
+  73%{
+    transform:translate(-50%,-50%) scaleY(.35);
+    opacity:.95;
+  }
+  75%,78%{
+    transform:translate(-50%,-50%) scaleY(1);
+    opacity:1;
+  }
+  80%{
+    transform:translate(-50%,-50%) scaleY(.08);
+    opacity:0;
+  }
+
+  /* quick second blink */
+  84%{
+    transform:translate(-50%,-50%) scaleY(.35);
+    opacity:.95;
+  }
+  86%,89%{
+    transform:translate(-50%,-50%) scaleY(1);
+    opacity:1;
+  }
+  92%{
+    transform:translate(-50%,-50%) scaleY(.08);
+    opacity:0;
+  }
+}
+
+/* Keep the blink functional even if older reduced-motion rules tried to hide it.
+   It is a tiny decorative blink rather than a large motion effect. */
+@media (prefers-reduced-motion:reduce){
+  .hero__art .hero__blink-eye,
+  .hero__blink-eye{
+    display:block!important;
+    animation:fc43AlienBlink 7s ease-in-out infinite!important;
+  }
+}
+
+
+/* ===== LIVE SHOPIFY PRODUCT DATA ===== */
+.productVisual{background:#fff;overflow:hidden}
+.productVisual img{width:100%;height:100%;object-fit:contain;display:block;padding:10px}
+.productDetailVisual{background:#fff;overflow:hidden}
+.productDetailVisual>img{width:100%;height:100%;max-height:590px;object-fit:contain;display:block;padding:24px}
+
+/* ===== Hybrid affiliate + Shopify/Zendrop product behavior ===== */
+.productActionWrap{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:8px}
+.productActionError,.productActionNotice{font-family:Nunito,Arial,sans-serif;font-size:13px;font-weight:800;color:#a63b38;margin:6px 0 0}
+.retailerBtn[disabled]{opacity:.5;cursor:not-allowed}
+.productVisual img{width:100%;height:100%;object-fit:cover;display:block}
+.productDetailVisual img{width:100%;height:100%;object-fit:contain;display:block}

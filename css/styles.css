@@ -1771,62 +1771,6 @@ select   { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xm
   display: block;
 }
 
-/* Letter Day Display */
-.today-letter-days {
-  border-bottom: 1px solid var(--border);
-  background: #f8faf8;
-  padding: 14px 16px 12px;
-}
-.letter-day-header {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  color: var(--text-light);
-  margin-bottom: 10px;
-}
-.letter-day-badges {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.letter-day-badge {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 16px 10px 12px;
-  background: var(--white);
-  border: 2px solid var(--ld-color, var(--primary));
-  border-radius: var(--radius-lg);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-}
-.letter-day-letter {
-  font-size: 52px;
-  font-weight: 900;
-  line-height: 1;
-  color: var(--ld-color, var(--primary));
-  font-family: 'Urbanist', sans-serif;
-  min-width: 38px;
-  text-align: center;
-}
-.letter-day-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.letter-day-day-word {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  color: var(--text-light);
-}
-.letter-day-school {
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.3;
-}
-
 /* Custom event list */
 .today-events-list {
   min-height: 80px;

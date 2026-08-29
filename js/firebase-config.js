@@ -19,6 +19,9 @@
             match /raffle_entries/{docId} {
               allow read, write: if true;
             }
+            match /parking_spot_signups_2027/{docId} {
+              allow read, write: if true;
+            }
             match /massage_signups/{docId} {
               allow read: if true;
               allow create: if true;
