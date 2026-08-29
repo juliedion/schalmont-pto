@@ -13,24 +13,18 @@
   <!-- REVOLVING BANNER AD -->
   <div class="banner-ad-bar" id="banner-ad-bar">
     <div class="banner-ad-track" id="banner-ad-track">
-      <!-- Each slide: wrap in <a> if the ad links somewhere -->
-      <a class="banner-ad-slide is-active" href="#" target="_blank" rel="noopener">
-        <img src="images/Ads/Banners/Leaderad-ss-2026.jpg" alt="Sponsor advertisement">
-      </a>
-      <a class="banner-ad-slide" href="#" target="_blank" rel="noopener">
-        <img src="images/Ads/Banners/CW-Schalmont-leader.jpg" alt="Sponsor advertisement">
-      </a>
-      <a class="banner-ad-slide" href="#" target="_blank" rel="noopener">
-        <img src="images/Ads/Banners/Name-bubbles-Schalmont-leader.jpg" alt="Sponsor advertisement">
-      </a>
+      <!-- Each slide: wrap in <a> if the ad links somewhere. Replace text with <img> when real ads are ready. -->
+      <a class="banner-ad-slide is-active" href="#" target="_blank" rel="noopener">Your ad here — contact the Schalmont PTO</a>
+      <a class="banner-ad-slide" href="#" target="_blank" rel="noopener">Sponsor a Schalmont PTO event today</a>
+      <a class="banner-ad-slide" href="#" target="_blank" rel="noopener">Advertise to Schalmont families — email schalmontpto@gmail.com</a>
     </div>
   </div>
   <style>
     .banner-ad-bar{background:#f2f2f2;border-bottom:1px solid #e0e0e0;text-align:center;overflow:hidden}
-    .banner-ad-track{position:relative;max-width:970px;margin:0 auto;min-height:90px}
-    .banner-ad-slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .6s ease;pointer-events:none}
-    .banner-ad-slide.is-active{opacity:1;position:relative;pointer-events:auto}
-    .banner-ad-slide img{max-width:100%;height:auto;display:block}
+    .banner-ad-track{position:relative;max-width:970px;margin:0 auto;height:40px}
+    .banner-ad-slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .6s ease;pointer-events:none;font-size:13px;line-height:40px;color:#555;text-decoration:none}
+    .banner-ad-slide.is-active{opacity:1;pointer-events:auto}
+    .banner-ad-slide img{max-height:40px;width:auto;display:block}
   </style>
   <script>
     (function(){
