@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PTO Back Office</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" href="../images/favicon.svg">
+</head>
+<body>
+  <div id="bo-loading">Loading your workspace…</div>
+  <div id="bo-shell"></div>
+
+  <main id="bo-main" style="display:none">
+    <h1 class="bo-h1">Welcome, <span id="me-name"></span></h1>
+    <p class="bo-lead">
+      This is the PTO Back Office &mdash; the private area where you plan events, build web
+      pages, share files, and collect sign-ups. Nothing here is visible to the public until
+      <em>you</em> choose to publish it. Pick a school below to get started.
+    </p>
+
+    <div class="bo-tip">
+      <strong>New here?</strong> Start with <a href="help.html">Help &amp; How-To</a> for a
+      plain-English walkthrough. You can't break the live website from this screen &mdash;
+      pages you create stay as private drafts until you press <strong>Publish</strong>.
+    </div>
+
+    <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)">Your schools</h2>
+    <div class="bo-grid" id="school-cards" style="margin-bottom:34px"></div>
+
+    <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)">Tools</h2>
+    <div class="bo-grid">
+      <a class="bo-card" href="assistant.html">
+        <span class="bo-cardicon">💬</span>
+        <h3>AI Assistant</h3>
+        <p>Ask questions in plain language &mdash; "How do I add a photo?", "Write a
+           reminder email for our fundraiser", "Ideas for a spring event".</p>
+      </a>
+      <a class="bo-card" href="help.html">
+        <span class="bo-cardicon">📖</span>
+        <h3>Help &amp; How-To</h3>
+        <p>Step-by-step guides for every part of the back office, written for
+           non-designers.</p>
+      </a>
+      <a class="bo-card" href="people.html" id="people-card" style="display:none">
+        <span class="bo-cardicon">👥</span>
+        <h3>People &amp; Roles</h3>
+        <p>Add administrators and choose which school(s) each person can manage.
+           (President / owner only.)</p>
+      </a>
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-storage-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="admin-core.js"></script>
+  <script>
+    requireAdmin((me) => {
+      document.getElementById('me-name').textContent = me.name;
+      if (me.isSuper) document.getElementById('people-card').style.display = '';
+
+      const wrap = document.getElementById('school-cards');
+      wrap.innerHTML = me.schools.map(s => `
+        <a class="bo-card" href="school.html?s=${s}">
+          <span class="bo-cardicon">🏫</span>
+          <h3>${SCHOOLS[s]}</h3>
+          <p>Pages, files &amp; photos, and planning for ${SCHOOLS[s]}.</p>
+        </a>`).join('');
+    });
+  </script>
+</body>
+</html>

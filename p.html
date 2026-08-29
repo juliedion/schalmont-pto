@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schalmont PTO</title>
+  <link rel="stylesheet" href="css/styles.css?v=6">
+  <link rel="stylesheet" href="admin/admin.css">
+  <link rel="icon" href="images/favicon.svg">
+  <style>
+    body { background: var(--light-bg); margin: 0; }
+    .pg-header { background: var(--primary-dark); padding: 14px 20px; }
+    .pg-header a { display: inline-flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font-weight: 800; }
+    .pg-header img { height: 34px; background:#fff; border-radius:6px; padding:3px; }
+    .pg-wrap { max-width: 760px; margin: 0 auto; padding: 34px 20px 80px; }
+    .pg-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: clamp(20px, 5vw, 44px); }
+    .pg-foot { text-align: center; font-size: 13px; color: var(--text-light); margin-top: 26px; }
+    .pg-foot a { color: var(--primary); }
+  </style>
+</head>
+<body>
+  <div class="pg-header">
+    <a href="index.html"><img src="images/logo.png" alt=""> Schalmont Central PTO</a>
+  </div>
+  <div class="pg-wrap">
+    <div class="pg-card">
+      <div class="pg-body" id="pg-body">
+        <p style="color:var(--text-light)">Loading…</p>
+      </div>
+    </div>
+    <div class="pg-foot" id="pg-foot"></div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="admin/render-blocks.js"></script>
+  <script>
+    const SCHOOL_LABEL = { woestina:'Woestina Pre-K', jefferson:'Jefferson Elementary',
+      middle:'Middle School', high:'High School', pto:'Schalmont PTO' };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const slug = new URLSearchParams(location.search).get('slug') ||
+                 location.pathname.replace(/^\/p\/?/, '').replace(/\/$/, '');
+
+    (async () => {
+      const body = document.getElementById('pg-body');
+      if (!slug) { body.innerHTML = notFound(); return; }
+      try {
+        const snap = await db.collection('pages').where('slug', '==', slug)
+                             .where('status', '==', 'published').limit(1).get();
+        if (snap.empty) { body.innerHTML = notFound(); return; }
+        const p = snap.docs[0].data();
+        document.title = p.title + ' — Schalmont PTO';
+        body.innerHTML = `<h1>${escapeHtml(p.title)}</h1>` + renderBlocks(p.blocks);
+        document.getElementById('pg-foot').innerHTML =
+          `${SCHOOL_LABEL[p.school] || 'Schalmont PTO'} &nbsp;·&nbsp; ` +
+          `<a href="index.html">Schalmont PTO home</a>`;
+      } catch (e) {
+        body.innerHTML = '<p>Sorry, this page could not be loaded right now.</p>';
+      }
+    })();
+
+    function notFound() {
+      return '<h1>Page not found</h1><p>This page may have been unpublished or the link is ' +
+        'mistyped. <a href="index.html">Go to the Schalmont PTO home page</a>.</p>';
+    }
+    function escapeHtml(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+  </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Assistant — PTO Back Office</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" href="../images/favicon.svg">
+</head>
+<body>
+  <div id="bo-loading">Loading…</div>
+  <div id="bo-shell"></div>
+
+  <main id="bo-main" style="display:none">
+    <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo; AI Assistant</div>
+    <h1 class="bo-h1">AI Assistant</h1>
+    <p class="bo-lead">Ask anything in plain language. It knows how this back office works and can
+       also help you write emails, newsletter blurbs, social posts, and brainstorm event ideas.</p>
+
+    <div class="bo-tip">
+      <strong>Try asking:</strong> "How do I add a photo to a page?" &nbsp;·&nbsp;
+      "Write a friendly reminder email for the Jefferson Fun Run on May 3" &nbsp;·&nbsp;
+      "Give me 5 fall fundraiser ideas for an elementary school" &nbsp;·&nbsp;
+      "Turn these notes into a short Facebook post: …"<br>
+      <span style="font-size:12px">The assistant can't see private student data and doesn't make
+      changes for you &mdash; it gives you words and steps, you do the clicking.</span>
+    </div>
+
+    <div class="bo-chat">
+      <div class="bo-chat-log" id="log">
+        <div class="bo-msg ai">Hi! I'm your PTO helper. Ask me how to do something in the back
+          office, or ask me to help write something. What are you working on?</div>
+      </div>
+      <form class="bo-chat-form" id="chat-form">
+        <textarea id="chat-input" placeholder="Type your question and press Enter…" required></textarea>
+        <button class="bo-btn" type="submit" id="send-btn">Send</button>
+      </form>
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-storage-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="admin-core.js"></script>
+  <script>
+    const history = [];
+
+    requireAdmin(() => {
+      const form = document.getElementById('chat-form');
+      const input = document.getElementById('chat-input');
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
+      });
+      form.onsubmit = send;
+    });
+
+    function addMsg(role, text) {
+      const el = document.createElement('div');
+      el.className = 'bo-msg ' + (role === 'user' ? 'user' : 'ai');
+      el.textContent = text;
+      document.getElementById('log').appendChild(el);
+      el.scrollIntoView({ block: 'end' });
+      return el;
+    }
+
+    async function send(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-input');
+      const btn = document.getElementById('send-btn');
+      const q = input.value.trim();
+      if (!q) return;
+      input.value = '';
+      btn.disabled = true;
+      addMsg('user', q);
+      history.push({ role: 'user', content: q });
+      const thinking = addMsg('ai', 'Thinking…');
+
+      try {
+        const idToken = await auth.currentUser.getIdToken();
+        const res = await fetch('../api/ai.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: history, idToken })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        thinking.textContent = data.reply;
+        history.push({ role: 'assistant', content: data.reply });
+      } catch (err) {
+        thinking.textContent = '⚠️ ' + err.message;
+        thinking.style.color = 'var(--error)';
+      } finally {
+        btn.disabled = false;
+        input.focus();
+      }
+    }
+  </script>
+</body>
+</html>

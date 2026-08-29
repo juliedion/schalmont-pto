@@ -1,0 +1,36 @@
+rules_version = '2';
+
+/* ============================================================
+   Schalmont PTO — Firebase Storage security rules
+   ------------------------------------------------------------
+   HOW TO INSTALL:
+     1. Go to  https://console.firebase.google.com  → project "schalmont-pto"
+     2. Left menu → Build → Storage
+        (if you've never opened it, click "Get started" and accept
+         the default bucket + location — pick a US location)
+     3. Open the "Rules" tab
+     4. Select all, delete, paste this whole file, press "Publish"
+   ============================================================ */
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function role() {
+      return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role;
+    }
+    function isBackOfficeUser() {
+      return request.auth != null && (
+        request.auth.token.email == 'julie@schalmontpto.com' ||
+        role() == 'admin' || role() == 'superadmin'
+      );
+    }
+
+    // Files uploaded from the back office, organized by school
+    match /schools/{school}/{fileName=**} {
+      allow read: if true;                       // shown on public pages
+      allow write: if isBackOfficeUser()
+                   && request.resource.size < 15 * 1024 * 1024;
+      allow delete: if isBackOfficeUser();
+    }
+  }
+}

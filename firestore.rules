@@ -1,0 +1,93 @@
+rules_version = '2';
+
+/* ============================================================
+   Schalmont PTO — Firestore security rules
+   ------------------------------------------------------------
+   HOW TO INSTALL:
+     1. Go to  https://console.firebase.google.com  → project "schalmont-pto"
+     2. Left menu → Build → Firestore Database → "Rules" tab
+     3. Select ALL the text in the box and delete it
+     4. Paste this whole file
+     5. Press "Publish"
+   ============================================================ */
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /* ---- helpers ---- */
+    function signedIn() { return request.auth != null; }
+
+    function userData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function isOwner() {
+      return signedIn() && (
+        request.auth.token.email == 'julie@schalmontpto.com' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         userData().role == 'superadmin')
+      );
+    }
+    function adminSchools() {
+      return (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+              userData().role == 'admin')
+        ? userData().adminSchools : [];
+    }
+    function canManage(school) {
+      return isOwner() || (school in adminSchools());
+    }
+
+    /* ---- Back office: pages ---- */
+    match /pages/{pageId} {
+      allow read: if resource.data.status == 'published'
+                  || (signedIn() && canManage(resource.data.school));
+      allow create: if signedIn() && canManage(request.resource.data.school);
+      allow update, delete: if signedIn() && canManage(resource.data.school);
+    }
+
+    /* ---- Back office: uploaded files/photos metadata ---- */
+    match /assets/{assetId} {
+      allow read: if true;   // used on public pages
+      allow create: if signedIn() && canManage(request.resource.data.school);
+      allow update, delete: if signedIn() && canManage(resource.data.school);
+    }
+
+    /* ---- Back office: planning checklist ---- */
+    match /planning/{taskId} {
+      allow read: if signedIn() && canManage(resource.data.school);
+      allow create: if signedIn() && canManage(request.resource.data.school);
+      allow update, delete: if signedIn() && canManage(resource.data.school);
+    }
+
+    /* ---- Users / roles ---- */
+    match /users/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isOwner());
+      allow create: if signedIn() && request.auth.uid == userId
+                    && request.resource.data.status in ['pending', 'approved'];
+      // A person may keep their own directory profile fields up to date, but may
+      // NOT give themselves a role. Only the owner changes role / adminSchools.
+      allow update: if signedIn() && (
+        isOwner() ||
+        (request.auth.uid == userId
+          && !('role' in request.resource.data.diff(resource.data).affectedKeys())
+          && !('adminSchools' in request.resource.data.diff(resource.data).affectedKeys()))
+      );
+      allow delete: if isOwner();
+    }
+
+    /* ---- Existing collections (unchanged) ---- */
+    match /raffle_entries/{docId} { allow read, write: if true; }
+    match /parking_spot_signups_2027/{docId} { allow read, write: if true; }
+    match /massage_signups/{docId} {
+      allow read, create, delete: if true;
+      allow update: if signedIn() && request.auth.token.email in ['julie@schalmontpto.com'];
+    }
+    match /events/{eventId} {
+      allow read: if true;
+      allow write: if isOwner();
+    }
+    match /directory/{userId} {
+      allow read: if signedIn();
+      allow write: if signedIn() && request.auth.uid == userId;
+    }
+  }
+}

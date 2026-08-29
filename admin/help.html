@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help &amp; How-To — PTO Back Office</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" href="../images/favicon.svg">
+  <style>
+    .help h2 { font-size:19px; color:var(--primary-dark); margin:34px 0 8px; }
+    .help h3 { font-size:15px; margin:20px 0 6px; }
+    .help ol, .help ul { line-height:1.8; max-width:70ch; }
+    .help p { line-height:1.7; max-width:70ch; }
+    .help code { background:#eef1ee; padding:1px 5px; border-radius:4px; font-size:13px; }
+    .help .q { font-weight:700; color:var(--primary-dark); margin-top:16px; }
+  </style>
+</head>
+<body>
+  <div id="bo-loading">Loading…</div>
+  <div id="bo-shell"></div>
+
+  <main id="bo-main" class="help" style="display:none">
+    <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo; Help &amp; How-To</div>
+    <h1 class="bo-h1">Help &amp; How-To</h1>
+    <p class="bo-lead">Everything here is written for volunteers, not web designers. If you get
+       stuck, the <a href="assistant.html">AI Assistant</a> can walk you through any of this.</p>
+
+    <h2>The big picture</h2>
+    <p>The back office is a private area. The public can't see anything you do here until you
+       <strong>publish</strong> it. Your work is organized <strong>by school</strong>. Pick your
+       school from the left menu, then use the tabs: <strong>Pages</strong>, <strong>Files &amp;
+       Photos</strong>, and <strong>Planning</strong>.</p>
+
+    <h2>Building a page</h2>
+    <ol>
+      <li>Open your school &rarr; <strong>Pages</strong> tab &rarr; <strong>＋ New page</strong>.</li>
+      <li>Type a <strong>Page title</strong> (e.g. "Jefferson Fun Run 2026"). The <strong>Page
+          link</strong> fills in automatically &mdash; you can shorten it.</li>
+      <li>Add <strong>blocks</strong> one at a time using the buttons:
+        <ul>
+          <li><strong>Heading</strong> — a title for a section.</li>
+          <li><strong>Paragraph</strong> — normal text. Leave a blank line between paragraphs.</li>
+          <li><strong>Bullet list</strong> — type one item per line.</li>
+          <li><strong>Photo</strong> — pick from photos you've uploaded, or paste an image link.</li>
+          <li><strong>Button</strong> — a big clickable button (e.g. "Sign up now") that links
+              somewhere.</li>
+          <li><strong>Divider line</strong> — a thin line between sections.</li>
+          <li><strong>Embed</strong> — drops in a Google Form, Google Calendar, or a YouTube
+              video. Paste the share link.</li>
+        </ul>
+      </li>
+      <li>Watch the <strong>Live preview</strong> on the right &mdash; that's exactly what visitors see.</li>
+      <li>Press <strong>Save draft</strong> as you go. Nothing is public yet.</li>
+      <li>When it's ready, press <strong>Publish</strong>. You'll get a link like
+          <code>schalmontpto.com/p/jefferson-fun-run</code> to share by email or Facebook.</li>
+      <li>To take it down later, open it and press <strong>Unpublish</strong>. To fix a typo,
+          just edit and press <strong>Update live page</strong>.</li>
+    </ol>
+
+    <h3>Reordering or removing blocks</h3>
+    <p>Each block has small <strong>▲ ▼</strong> arrows to move it up or down, and an
+       <strong>✕</strong> to delete it.</p>
+
+    <h2>Uploading files &amp; photos</h2>
+    <ol>
+      <li>Open your school &rarr; <strong>Files &amp; Photos</strong> tab.</li>
+      <li>Click the upload box (or drag files onto it). Photos, PDFs and Word docs up to 15&nbsp;MB.</li>
+      <li>Each file gets a <strong>Copy link</strong> button. Paste that link into a page, an
+          email, or a Facebook post.</li>
+      <li>Photos you upload here automatically appear as choices when you add a <strong>Photo</strong>
+          block to a page.</li>
+      <li><strong>Delete</strong> removes the file everywhere &mdash; any page using it will show a
+          broken image, so check first.</li>
+    </ol>
+
+    <h2>Forms and sign-up sheets</h2>
+    <p>A built-in builder is coming in the next update. For now, the quickest way:</p>
+    <ol>
+      <li>Go to <a href="https://forms.google.com" target="_blank">forms.google.com</a> and build
+          your form or sign-up (it's free).</li>
+      <li>Click <strong>Send</strong> &rarr; the link icon &rarr; <strong>Copy</strong>.</li>
+      <li>In your page, add an <strong>Embed</strong> block and paste the link. The form now
+          appears right inside your PTO page.</li>
+    </ol>
+
+    <h2>The Planning checklist</h2>
+    <p>Each school has a shared to-do list on the <strong>Planning</strong> tab. Everyone who
+       helps with that school sees the same list. Add tasks, check them off, remove them when
+       done. Great for "who's bringing what".</p>
+
+    <h2>The AI Assistant</h2>
+    <p>Ask it how to do anything here, or ask it to write things for you &mdash; reminder emails,
+       newsletter blurbs, social posts, thank-you notes, event ideas. It gives you words and
+       steps; you still do the clicking. It never sees private student or family data.</p>
+
+    <h2 id="roles">Adding administrators (owner only)</h2>
+    <ol>
+      <li>The new person first creates a normal account at the
+          <a href="../login.html" target="_blank">sign-in page</a>.</li>
+      <li>An owner opens <strong>People &amp; Roles</strong>, finds them, sets their role to
+          <strong>School administrator</strong>, and checks the school(s) they should manage.</li>
+      <li>Press <strong>Save</strong>. They now see those schools when they open the back office.</li>
+    </ol>
+
+    <h2>Common questions</h2>
+    <p class="q">I published a page &mdash; where is it?</p>
+    <p>At <code>schalmontpto.com/p/</code> followed by the Page link you chose. It's also listed
+       (with a <strong>View</strong> button) on your school's Pages tab.</p>
+    <p class="q">Can I put my page in the top menu of the website?</p>
+    <p>Not yet from here &mdash; ask the site owner to add it to the navigation. You can link to it
+       from any existing page or from Facebook right away.</p>
+    <p class="q">I made a mistake on a live page.</p>
+    <p>Open it, fix it, press <strong>Update live page</strong>. Changes are instant.</p>
+    <p class="q">Did I break the website?</p>
+    <p>No. The back office can only add new <code>/p/</code> pages and files. It can't touch the
+       existing site pages.</p>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-storage-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="admin-core.js"></script>
+  <script>requireAdmin(() => {});</script>
+</body>
+</html>

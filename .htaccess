@@ -7,6 +7,9 @@ RewriteRule ^casino-night$ /casinoroyale [R=301,L]
 # Redirect old class-of-YYYY URLs to classofYYYY
 RewriteRule ^class-of-([0-9]{4})$ /classof$1 [R=301,L]
 
+# Back-office published pages: /p/some-page  ->  p.html?slug=some-page
+RewriteRule ^p/([A-Za-z0-9_-]+)/?$ p.html?slug=$1 [L,QSA]
+
 # Redirect /index and /index.html to /
 RewriteCond %{THE_REQUEST} \s/+index(\.html)?\s [NC]
 RewriteRule ^ / [R=301,L]

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Editor — PTO Back Office</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" href="../images/favicon.svg">
+  <style>
+    .bo-topbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:20px; }
+    .bo-topbar .spacer { flex:1; }
+    .bo-blockfield { margin-bottom:8px; }
+    .bo-blockfield label { font-size:12px; font-weight:700; color:var(--text-light); display:block; margin-bottom:3px; }
+    .bo-blockfield input, .bo-blockfield textarea, .bo-blockfield select {
+      width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px; font-family:inherit; font-size:13.5px;
+    }
+    .bo-imgpick { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+    .bo-imgpick img { width:60px; height:46px; object-fit:cover; border-radius:5px; border:2px solid transparent; cursor:pointer; }
+    .bo-imgpick img.sel { border-color:var(--primary); }
+  </style>
+</head>
+<body>
+  <div id="bo-loading">Loading editor…</div>
+  <div id="bo-shell"></div>
+
+  <main id="bo-main" style="display:none">
+    <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo;
+      <a id="crumb-school" href="#">School</a> &rsaquo; Page editor</div>
+
+    <div class="bo-topbar">
+      <strong id="status-pill" class="bo-pill draft">Draft</strong>
+      <span class="spacer"></span>
+      <a class="bo-btn ghost sm" id="view-btn" target="_blank" style="display:none">View live page ↗</a>
+      <button class="bo-btn ghost sm" id="save-btn">Save draft</button>
+      <button class="bo-btn sm" id="publish-btn">Publish</button>
+      <button class="bo-btn danger sm" id="unpublish-btn" style="display:none">Unpublish</button>
+    </div>
+
+    <div class="bo-tip">
+      Build your page by adding <strong>blocks</strong> below &mdash; think of them as
+      LEGO bricks. Add a heading, type a paragraph, drop in a photo, add a button.
+      The right side shows exactly how visitors will see it. Press <strong>Save draft</strong>
+      often. When it's ready, press <strong>Publish</strong> and share the link.
+    </div>
+
+    <div class="bo-field" style="max-width:none">
+      <label>Page title <span class="bo-hint">Shows at the top of the page and in the browser tab. Example: "Jefferson Fun Run 2026".</span></label>
+      <input type="text" id="page-title" placeholder="Give your page a clear name">
+    </div>
+    <div class="bo-field" style="max-width:none">
+      <label>Page link <span class="bo-hint">This is the web address. It's created from your title &mdash; you can shorten it. Only lowercase letters, numbers and dashes.</span></label>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <span style="color:var(--text-light)">schalmontpto.com/p/</span>
+        <input type="text" id="page-slug" style="max-width:280px" placeholder="jefferson-fun-run">
+      </div>
+    </div>
+
+    <div class="bo-editor" style="margin-top:20px">
+      <div>
+        <div class="bo-preview-label">Building blocks</div>
+        <div class="bo-blocks" id="blocks"></div>
+        <div class="bo-addbar">
+          <button data-add="heading">＋ Heading</button>
+          <button data-add="paragraph">＋ Paragraph</button>
+          <button data-add="list">＋ Bullet list</button>
+          <button data-add="image">＋ Photo</button>
+          <button data-add="button">＋ Button</button>
+          <button data-add="divider">＋ Divider line</button>
+          <button data-add="embed">＋ Embed (Google Form, video&hellip;)</button>
+        </div>
+        <div class="bo-tip" style="margin-top:18px">
+          <strong>Want a sign-up sheet or a form right now?</strong> Create a free
+          <a href="https://forms.google.com" target="_blank">Google Form</a>, press its
+          <em>Send</em> button, copy the link, then add an <strong>Embed</strong> block here and
+          paste it. A built-in form &amp; sign-up builder is coming in the next update.
+        </div>
+      </div>
+      <div>
+        <div class="bo-preview">
+          <div class="bo-preview-label">Live preview — what visitors see</div>
+          <div class="pg-body" id="preview"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-storage-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="admin-core.js"></script>
+  <script src="render-blocks.js"></script>
+  <script>
+    let pageId = getParam('id');
+    let school = getParam('s');
+    let page = { title:'', slug:'', school:school, status:'draft', blocks:[] };
+    let images = [];          // uploaded photos for this school, for the Photo block
+    let slugTouched = false;
+
+    requireAdmin(async (me) => {
+      if (pageId) {
+        const snap = await db.collection('pages').doc(pageId).get();
+        if (!snap.exists) { toast('Page not found', 'error'); location.href = 'index.html'; return; }
+        page = Object.assign(page, snap.data());
+        school = page.school;
+      }
+      if (!canManage(school)) {
+        document.getElementById('bo-main').innerHTML = '<p class="bo-lead">You don\'t have access to this school. <a href="index.html">Go back</a>.</p>';
+        return;
+      }
+
+      document.getElementById('crumb-school').textContent = SCHOOLS[school];
+      document.getElementById('crumb-school').href = 'school.html?s=' + school;
+      document.getElementById('page-title').value = page.title || '';
+      document.getElementById('page-slug').value = page.slug || '';
+      if (page.slug) slugTouched = true;
+      if (!page.blocks || !page.blocks.length) page.blocks = [{ type:'heading', level:1, text:'' }];
+
+      wireInputs();
+      renderBlockEditors();
+      refreshPreview();
+      reflectStatus();
+      loadImages();
+    });
+
+    function wireInputs() {
+      const title = document.getElementById('page-title');
+      const slug = document.getElementById('page-slug');
+      title.oninput = () => {
+        page.title = title.value;
+        if (!slugTouched) { slug.value = slugify(title.value); page.slug = slug.value; }
+        refreshPreview();
+      };
+      slug.oninput = () => { slugTouched = true; slug.value = slugify(slug.value); page.slug = slug.value; };
+
+      document.querySelectorAll('[data-add]').forEach(btn => {
+        btn.onclick = () => {
+          const t = btn.dataset.add;
+          const starter = { heading:{type:'heading',level:2,text:''}, paragraph:{type:'paragraph',text:''},
+            list:{type:'list',items:['']}, image:{type:'image',url:'',alt:'',caption:''},
+            button:{type:'button',label:'',href:'',style:'solid'}, divider:{type:'divider'},
+            embed:{type:'embed',src:''} }[t];
+          page.blocks.push(starter);
+          renderBlockEditors(); refreshPreview();
+        };
+      });
+
+      document.getElementById('save-btn').onclick = () => save(false);
+      document.getElementById('publish-btn').onclick = () => save('published');
+      document.getElementById('unpublish-btn').onclick = () => save('draft');
+    }
+
+    async function loadImages() {
+      try {
+        const snap = await db.collection('assets').where('school','==',school)
+                             .where('isImage','==',true).orderBy('createdAt','desc').get();
+        images = snap.docs.map(d => d.data());
+      } catch (_) { images = []; }
+      renderBlockEditors();
+    }
+
+    function renderBlockEditors() {
+      const wrap = document.getElementById('blocks');
+      wrap.innerHTML = '';
+      page.blocks.forEach((b, i) => {
+        const box = document.createElement('div');
+        box.className = 'bo-block';
+        box.innerHTML = `
+          <div class="bo-block-head">
+            <span class="bo-block-type">${labelFor(b.type)}</span>
+            <button data-mv="-1" title="Move up">▲</button>
+            <button data-mv="1" title="Move down">▼</button>
+            <button data-rm title="Delete this block">✕</button>
+          </div>
+          <div class="bo-block-body"></div>`;
+        box.querySelector('[data-mv="-1"]').onclick = () => move(i, -1);
+        box.querySelector('[data-mv="1"]').onclick = () => move(i, 1);
+        box.querySelector('[data-rm]').onclick = () => {
+          if (confirm('Delete this block?')) { page.blocks.splice(i,1); renderBlockEditors(); refreshPreview(); }
+        };
+        box.querySelector('.bo-block-body').append(...fieldsFor(b, i));
+        wrap.appendChild(box);
+      });
+    }
+
+    function labelFor(t) {
+      return { heading:'Heading', paragraph:'Paragraph', list:'Bullet list', image:'Photo',
+               button:'Button', divider:'Divider line', embed:'Embed' }[t] || t;
+    }
+
+    function field(labelText, hint, control) {
+      const d = document.createElement('div');
+      d.className = 'bo-blockfield';
+      const l = document.createElement('label');
+      l.textContent = labelText;
+      if (hint) { const s = document.createElement('span'); s.style.fontWeight='400'; s.textContent=' — '+hint; l.appendChild(s); }
+      d.appendChild(l); d.appendChild(control);
+      return d;
+    }
+
+    function fieldsFor(b, i) {
+      const out = [];
+      const upd = () => refreshPreview();
+      if (b.type === 'heading') {
+        const sel = document.createElement('select');
+        sel.innerHTML = '<option value="1">Big (page title)</option><option value="2">Medium (section)</option><option value="3">Small</option>';
+        sel.value = b.level || 2;
+        sel.onchange = () => { b.level = +sel.value; upd(); };
+        const inp = document.createElement('input');
+        inp.type = 'text'; inp.value = b.text || ''; inp.placeholder = 'Heading text';
+        inp.oninput = () => { b.text = inp.value; upd(); };
+        out.push(field('Size','', sel), field('Text','', inp));
+      }
+      else if (b.type === 'paragraph') {
+        const ta = document.createElement('textarea');
+        ta.value = b.text || ''; ta.placeholder = 'Type your text here. Leave a blank line to start a new paragraph.';
+        ta.oninput = () => { b.text = ta.value; upd(); };
+        out.push(field('Text','', ta));
+      }
+      else if (b.type === 'list') {
+        const ta = document.createElement('textarea');
+        ta.value = (b.items || []).join('\n'); ta.placeholder = 'One bullet point per line';
+        ta.oninput = () => { b.items = ta.value.split('\n'); upd(); };
+        out.push(field('List items','one per line', ta));
+      }
+      else if (b.type === 'image') {
+        const inp = document.createElement('input');
+        inp.type = 'text'; inp.value = b.url || ''; inp.placeholder = 'Pick a photo below, or paste an image link';
+        inp.oninput = () => { b.url = inp.value; upd(); };
+        const pick = document.createElement('div');
+        pick.className = 'bo-imgpick';
+        if (!images.length) pick.innerHTML = '<span style="font-size:12px;color:var(--text-light)">No photos uploaded yet. Go to the school\'s <b>Files &amp; Photos</b> tab to add some.</span>';
+        images.forEach(img => {
+          const t = document.createElement('img');
+          t.src = img.url; t.title = img.name;
+          if (img.url === b.url) t.className = 'sel';
+          t.onclick = () => { b.url = img.url; inp.value = img.url; renderBlockEditors(); upd(); };
+          pick.appendChild(t);
+        });
+        const alt = document.createElement('input');
+        alt.type='text'; alt.value=b.alt||''; alt.placeholder='e.g. Students running the fun run';
+        alt.oninput = () => { b.alt = alt.value; };
+        const cap = document.createElement('input');
+        cap.type='text'; cap.value=b.caption||''; cap.placeholder='Optional caption shown under the photo';
+        cap.oninput = () => { b.caption = cap.value; upd(); };
+        out.push(field('Photo link','', inp));
+        out.push((() => { const d=document.createElement('div'); d.className='bo-blockfield'; d.appendChild(pick); return d; })());
+        out.push(field('Describe the photo','for visually-impaired visitors', alt));
+        out.push(field('Caption','optional', cap));
+      }
+      else if (b.type === 'button') {
+        const lab = document.createElement('input');
+        lab.type='text'; lab.value=b.label||''; lab.placeholder='e.g. Sign up now';
+        lab.oninput = () => { b.label = lab.value; upd(); };
+        const href = document.createElement('input');
+        href.type='text'; href.value=b.href||''; href.placeholder='https://…  (or /p/another-page)';
+        href.oninput = () => { b.href = href.value; upd(); };
+        const st = document.createElement('select');
+        st.innerHTML = '<option value="solid">Filled (green)</option><option value="outline">Outline</option>';
+        st.value = b.style || 'solid';
+        st.onchange = () => { b.style = st.value; upd(); };
+        out.push(field('Button text','', lab), field('Where it goes','full web address', href), field('Style','', st));
+      }
+      else if (b.type === 'divider') {
+        const p = document.createElement('div');
+        p.style.cssText = 'font-size:12px;color:var(--text-light)';
+        p.textContent = 'A horizontal line to separate sections. Nothing to fill in.';
+        out.push(p);
+      }
+      else if (b.type === 'embed') {
+        const inp = document.createElement('input');
+        inp.type='text'; inp.value=b.src||''; inp.placeholder='Paste an https:// link';
+        inp.oninput = () => { b.src = inp.value; upd(); };
+        const help = document.createElement('div');
+        help.style.cssText = 'font-size:12px;color:var(--text-light);margin-top:4px';
+        help.innerHTML = 'Works with Google Forms, Google Calendar, YouTube, Vimeo, Facebook and Instagram links. ' +
+          'For a Google Form: open it, click <b>Send</b>, choose the link icon, copy, paste here.';
+        out.push(field('Link to embed','', inp));
+        const d=document.createElement('div'); d.className='bo-blockfield'; d.appendChild(help); out.push(d);
+      }
+      return out;
+    }
+
+    function move(i, dir) {
+      const j = i + dir;
+      if (j < 0 || j >= page.blocks.length) return;
+      [page.blocks[i], page.blocks[j]] = [page.blocks[j], page.blocks[i]];
+      renderBlockEditors(); refreshPreview();
+    }
+
+    function refreshPreview() {
+      const titleHtml = page.title ? `<h1>${esc(page.title)}</h1>` : '';
+      document.getElementById('preview').innerHTML = titleHtml + renderBlocks(page.blocks);
+    }
+
+    function reflectStatus() {
+      const live = page.status === 'published';
+      const pill = document.getElementById('status-pill');
+      pill.textContent = live ? 'Published' : 'Draft';
+      pill.className = 'bo-pill ' + (live ? 'live' : 'draft');
+      document.getElementById('unpublish-btn').style.display = live ? '' : 'none';
+      document.getElementById('publish-btn').textContent = live ? 'Update live page' : 'Publish';
+      const v = document.getElementById('view-btn');
+      if (live && page.slug) { v.style.display = ''; v.href = '../p/' + page.slug; } else { v.style.display = 'none'; }
+    }
+
+    async function save(statusChange) {
+      const btns = document.querySelectorAll('.bo-topbar button');
+      if (!page.title.trim()) { toast('Give your page a title first', 'error'); return; }
+      if (!page.slug.trim()) { page.slug = slugify(page.title); }
+
+      if (statusChange === 'published') {
+        // make sure the link isn't already used by another page
+        const dupe = await db.collection('pages').where('slug','==',page.slug).get();
+        const clash = dupe.docs.find(d => d.id !== pageId);
+        if (clash) { toast('That link is already used by another page — change the Page link', 'error'); return; }
+      }
+
+      btns.forEach(b => b.disabled = true);
+      const data = {
+        title: page.title.trim(), slug: page.slug.trim(), school,
+        blocks: page.blocks, updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedBy: ME.email
+      };
+      if (statusChange) data.status = statusChange;
+
+      try {
+        if (pageId) {
+          await db.collection('pages').doc(pageId).update(data);
+        } else {
+          data.status = statusChange || 'draft';
+          data.createdBy = ME.email;
+          data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+          const ref = await db.collection('pages').add(data);
+          pageId = ref.id;
+          history.replaceState(null, '', 'page-editor.html?id=' + pageId);
+        }
+        if (statusChange) page.status = statusChange;
+        reflectStatus();
+        toast(statusChange === 'published' ? '✓ Published! Share your link.' :
+              statusChange === 'draft' ? 'Page unpublished (now a draft)' : 'Draft saved');
+      } catch (e) {
+        toast('Could not save: ' + e.message, 'error');
+      } finally {
+        btns.forEach(b => b.disabled = false);
+      }
+    }
+  </script>
+</body>
+</html>

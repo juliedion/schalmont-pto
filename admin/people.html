@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>People &amp; Roles — PTO Back Office</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" href="../images/favicon.svg">
+  <style>
+    .person { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:12px; }
+    .person-top { display:flex; gap:12px; align-items:baseline; flex-wrap:wrap; }
+    .person-top h4 { margin:0; font-size:15px; }
+    .person-top .em { font-size:13px; color:var(--text-light); }
+    .role-row { display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin:12px 0 6px; }
+    .school-checks { display:flex; gap:14px; flex-wrap:wrap; margin-top:6px; }
+    .school-checks label { font-size:13.5px; font-weight:600; display:flex; gap:5px; align-items:center; }
+    .person.is-admin { border-left:4px solid var(--primary); }
+  </style>
+</head>
+<body>
+  <div id="bo-loading">Loading…</div>
+  <div id="bo-shell"></div>
+
+  <main id="bo-main" style="display:none">
+    <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo; People &amp; Roles</div>
+    <h1 class="bo-h1">People &amp; Roles</h1>
+    <p class="bo-lead">Decide who can use the back office and which school(s) each person manages.
+       Only the PTO president / owner sees this page.</p>
+
+    <div class="bo-tip">
+      <strong>How roles work:</strong><br>
+      • <strong>School administrator</strong> — can build pages, upload files, and plan for the
+        school(s) you check below. Nothing else.<br>
+      • <strong>Owner (super-admin)</strong> — full access to every school <em>and</em> this
+        People &amp; Roles page. Give this to co-presidents only.<br>
+      • <strong>Member</strong> — a regular directory account with no back-office access.<br><br>
+      A person must <strong>create an account first</strong> at
+      <a href="../login.html" target="_blank">the sign-in page</a> before they appear in the list below.
+    </div>
+
+    <div class="bo-field">
+      <label>Find a person</label>
+      <input type="text" id="search" placeholder="Type a name or email to filter">
+    </div>
+
+    <div id="people"></div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-storage-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="admin-core.js"></script>
+  <script>
+    let all = [];
+
+    requireAdmin((me) => {
+      if (!me.isSuper) { location.href = 'index.html'; return; }
+      document.getElementById('search').oninput = render;
+      load();
+    });
+
+    async function load() {
+      const snap = await db.collection('users').orderBy('displayName').get();
+      all = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      render();
+    }
+
+    function render() {
+      const q = document.getElementById('search').value.toLowerCase().trim();
+      const box = document.getElementById('people');
+      const list = all.filter(u =>
+        !q || (u.displayName || '').toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q));
+      if (!list.length) { box.innerHTML = '<p style="color:var(--text-light)">No matching people.</p>'; return; }
+      box.innerHTML = '';
+      list.forEach(u => {
+        const role = u.role || 'member';
+        const mySchools = u.adminSchools || [];
+        const el = document.createElement('div');
+        el.className = 'person' + (role !== 'member' ? ' is-admin' : '');
+        el.innerHTML = `
+          <div class="person-top">
+            <h4>${esc(u.displayName || '(no name)')}</h4>
+            <span class="em">${esc(u.email || '')}</span>
+          </div>
+          <div class="role-row">
+            <label style="font-weight:700;font-size:13px">Role:
+              <select data-role>
+                <option value="member">Member (no access)</option>
+                <option value="admin">School administrator</option>
+                <option value="superadmin">Owner (full access)</option>
+              </select>
+            </label>
+          </div>
+          <div class="school-checks" data-schools ${role === 'admin' ? '' : 'style="display:none"'}>
+            ${Object.entries(SCHOOLS).map(([k, v]) =>
+              `<label><input type="checkbox" value="${k}" ${mySchools.includes(k) ? 'checked' : ''}> ${v}</label>`).join('')}
+          </div>
+          <div style="margin-top:10px">
+            <button class="bo-btn sm" data-save>Save</button>
+            <span class="bo-meta" data-msg style="margin-left:8px"></span>
+          </div>`;
+        const sel = el.querySelector('[data-role]');
+        sel.value = role;
+        const checks = el.querySelector('[data-schools]');
+        sel.onchange = () => { checks.style.display = sel.value === 'admin' ? '' : 'none'; };
+        el.querySelector('[data-save]').onclick = async (ev) => {
+          ev.target.disabled = true;
+          const newRole = sel.value;
+          const schools = [...checks.querySelectorAll('input:checked')].map(c => c.value);
+          try {
+            await db.collection('users').doc(u.id).update({
+              role: newRole === 'member' ? firebase.firestore.FieldValue.delete() : newRole,
+              adminSchools: newRole === 'admin' ? schools : firebase.firestore.FieldValue.delete()
+            });
+            el.querySelector('[data-msg]').textContent = '✓ Saved';
+            u.role = newRole; u.adminSchools = schools;
+          } catch (e) {
+            el.querySelector('[data-msg]').textContent = 'Error: ' + e.message;
+          }
+          ev.target.disabled = false;
+        };
+        box.appendChild(el);
+      });
+    }
+  </script>
+</body>
+</html>
