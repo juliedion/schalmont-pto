@@ -28,13 +28,14 @@ is automatically the owner.)
 
 ---
 
-## 3. Turn on file storage
+## 3. File storage — not used (staying on the free plan)
 
-1. Same console → **Build → Storage**
-2. If you've never opened it: click **Get started**, accept the default rules for now,
-   choose a **US** location, finish
-3. Open the **Rules** tab → select all → delete → paste the entire contents of
-   [`storage.rules`](../storage.rules) → **Publish**
+The **Files & Photos** tab is a *link library*: admins paste links to photos/PDFs that live
+in Google Drive, an image host, or on the web. Nothing is stored in Firebase, so there is
+nothing to set up here and no `storage.rules` to install.
+
+If you later upgrade Firebase to the **Blaze** plan (still ~$0/mo at PTO scale, but needs a
+card), real drag-and-drop uploads can be switched back on — ask for that as a follow-up.
 
 ---
 
@@ -83,4 +84,4 @@ Easiest way:
   them to the menu.
 - The built-in **form / sign-up builder** is the next update. For now admins embed a Google
   Form (there's a help section explaining it).
-- Storage uploads are capped at 15 MB/file.
+- **Files & Photos** is a link library (paste links), not file upload — see Step 3.

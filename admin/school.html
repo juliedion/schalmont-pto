@@ -55,17 +55,37 @@
     <!-- ============ FILES ============ -->
     <section class="bo-panel" id="panel-files">
       <div class="bo-tip">
-        Upload photos, PDFs (permission slips, flyers, menus), and other documents here.
-        Once uploaded, click <strong>Copy link</strong> to paste the file into a page, an email,
-        or a Facebook post. Photos you upload also show up as choices when you add an
-        <strong>Image</strong> block to a page.
+        This is your school's <strong>link library</strong> &mdash; a saved list of photos and
+        documents you can reuse on pages, in emails, and in Facebook posts. You add things by
+        <strong>pasting a link</strong> to them.
+        <br><br>
+        <strong>Where do I get a link?</strong><br>
+        • <em>A photo already on the web</em> (our site, a news article, a vendor's site):
+          right-click it &rarr; <strong>Copy Image Address</strong>.<br>
+        • <em>A PDF or flyer</em> (permission slip, menu, order form): put it in Google Drive,
+          click <strong>Share</strong> &rarr; <strong>Anyone with the link</strong> &rarr;
+          <strong>Copy link</strong>.<br>
+        • <em>A photo from your computer</em>: upload it to a free host like
+          <a href="https://postimages.org" target="_blank">postimages.org</a> and copy the
+          "Direct link", or ask the site owner to add it to schalmontpto.com/images.
+        <br><br>
+        Tick <strong>"This is a photo"</strong> for images so they appear in the
+        page builder's <strong>Photo</strong> block.
       </div>
-      <div class="bo-dropzone" id="dropzone">
-        <strong>Click to choose files</strong> or drag them here<br>
-        <span style="font-size:12px">Photos (JPG/PNG), PDFs, Word docs &mdash; up to 15&nbsp;MB each</span>
-        <input type="file" id="file-input" multiple hidden
-               accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt">
-      </div>
+      <form id="asset-form" style="max-width:560px;margin-bottom:8px">
+        <div class="bo-field" style="margin-bottom:10px">
+          <label>Name <span class="bo-hint">So you can find it later, e.g. "Fun Run permission slip"</span></label>
+          <input type="text" id="asset-name" required>
+        </div>
+        <div class="bo-field" style="margin-bottom:10px">
+          <label>Link (web address) <span class="bo-hint">Must start with https://</span></label>
+          <input type="url" id="asset-url" placeholder="https://..." required>
+        </div>
+        <label style="display:flex;gap:7px;align-items:center;font-size:14px;font-weight:600;margin-bottom:12px">
+          <input type="checkbox" id="asset-isimg"> This is a photo
+        </label>
+        <button class="bo-btn" type="submit">Add to library</button>
+      </form>
       <div id="upload-status" style="margin:12px 0;font-size:13px;color:var(--text-light)"></div>
       <div class="bo-media-grid" id="media-grid" style="margin-top:16px"></div>
     </section>
@@ -118,7 +138,7 @@
 
       loadPages();
       loadMedia();
-      initUpload();
+      initAssetForm();
       loadTasks();
       initTasks();
     });
@@ -158,37 +178,24 @@
       }
     }
 
-    /* ---------------- FILES ---------------- */
-    function initUpload() {
-      const dz = document.getElementById('dropzone');
-      const input = document.getElementById('file-input');
-      dz.onclick = () => input.click();
-      dz.ondragover = e => { e.preventDefault(); dz.classList.add('drag'); };
-      dz.ondragleave = () => dz.classList.remove('drag');
-      dz.ondrop = e => { e.preventDefault(); dz.classList.remove('drag'); handleFiles(e.dataTransfer.files); };
-      input.onchange = () => handleFiles(input.files);
-    }
-
-    async function handleFiles(files) {
-      const status = document.getElementById('upload-status');
-      for (const file of files) {
-        if (file.size > 15 * 1024 * 1024) { toast(file.name + ' is over 15 MB — skipped', 'error'); continue; }
-        status.textContent = 'Uploading ' + file.name + '…';
+    /* ---------------- FILES (link library) ---------------- */
+    function initAssetForm() {
+      document.getElementById('asset-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('asset-name').value.trim();
+        const url = document.getElementById('asset-url').value.trim();
+        const isImage = document.getElementById('asset-isimg').checked;
+        if (!/^https:\/\//i.test(url)) { toast('The link must start with https://', 'error'); return; }
         try {
-          const safe = Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
-          const ref = storage.ref('schools/' + school + '/' + safe);
-          await ref.put(file);
-          const url = await ref.getDownloadURL();
           await db.collection('assets').add({
-            name: file.name, url, path: ref.fullPath, type: file.type || 'file',
-            isImage: /^image\//.test(file.type), school,
+            name, url, type: isImage ? 'image-link' : 'link', isImage, school,
             uploadedBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
-        } catch (e) { toast('Upload failed: ' + e.message, 'error'); }
-      }
-      status.textContent = '';
-      toast('Upload complete');
-      loadMedia();
+          e.target.reset();
+          toast('Added to library');
+          loadMedia();
+        } catch (err) { toast('Could not save: ' + err.message, 'error'); }
+      };
     }
 
     async function loadMedia() {
@@ -196,7 +203,7 @@
       try {
         const snap = await db.collection('assets').where('school', '==', school)
                              .orderBy('createdAt', 'desc').get();
-        if (snap.empty) { grid.innerHTML = '<p style="color:var(--text-light)">No files yet.</p>'; return; }
+        if (snap.empty) { grid.innerHTML = '<p style="color:var(--text-light)">Your library is empty — add a photo or document link above.</p>'; return; }
         grid.innerHTML = '';
         snap.forEach(doc => {
           const a = doc.data();
@@ -209,18 +216,17 @@
             <div class="bo-media-body">
               <div class="bo-media-name">${esc(a.name)}</div>
               <button class="bo-btn ghost sm" data-url="${esc(a.url)}">Copy link</button>
-              <button class="bo-btn danger sm" data-del="${doc.id}" data-path="${esc(a.path)}">Delete</button>
+              <button class="bo-btn danger sm" data-del="${doc.id}">Remove</button>
             </div>`;
           el.querySelector('[data-url]').onclick = (ev) => {
             navigator.clipboard.writeText(ev.target.dataset.url); toast('Link copied');
           };
           el.querySelector('[data-del]').onclick = async (ev) => {
-            if (!confirm('Delete ' + a.name + '? Any page using it will show a broken image.')) return;
+            if (!confirm('Remove "' + a.name + '" from the library? (The original file/photo is not deleted — this just takes it off your list. Any page using it keeps working.)')) return;
             try {
-              await storage.ref(ev.target.dataset.path).delete().catch(() => {});
               await db.collection('assets').doc(ev.target.dataset.del).delete();
-              toast('Deleted'); loadMedia();
-            } catch (e) { toast('Could not delete: ' + e.message, 'error'); }
+              toast('Removed'); loadMedia();
+            } catch (e) { toast('Could not remove: ' + e.message, 'error'); }
           };
           grid.appendChild(el);
         });
