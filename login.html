@@ -91,9 +91,20 @@
       <!-- HEADER -->
       <div class="login-header">
         <img src="images/logo.png" alt="Schalmont Central PTO">
-        <h1>Parent Directory Access</h1>
-        <p>Sign in to connect with other Schalmont families</p>
+        <h1 id="login-title">Parent Directory Access</h1>
+        <p id="login-subtitle">Sign in to connect with other Schalmont families</p>
       </div>
+      <script>
+        // Reword the sign-in screen when the visitor was sent here from the Back Office
+        (function () {
+          var next = new URLSearchParams(location.search).get('next') || '';
+          if (next.indexOf('admin') !== -1) {
+            document.getElementById('login-title').textContent = 'PTO Back Office';
+            document.getElementById('login-subtitle').textContent =
+              'Sign in with your PTO administrator account';
+          }
+        })();
+      </script>
 
       <!-- BODY -->
       <div class="login-body">
