@@ -1426,6 +1426,51 @@ select   { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xm
   grid-template-columns: 210px 1fr;
   gap: 0;
 }
+.homepage-layout.has-adrail {
+  grid-template-columns: 210px 1fr 200px;
+}
+.homepage-adrail {
+  align-self: start;
+  position: sticky;
+  top: 70px;
+  max-height: calc(100vh - 70px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  border-left: 1px solid var(--border);
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.adrail-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-light);
+}
+.adrail-slot {
+  width: 160px;
+  height: 600px;
+  max-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 12px;
+  color: #888;
+  background: #f2f2f2;
+  border: 1px dashed #ccc;
+  border-radius: 6px;
+  overflow: hidden;
+  text-decoration: none;
+}
+.adrail-slot img { max-width: 100%; height: auto; display: block; }
+@media (max-width: 1100px) {
+  .homepage-layout.has-adrail { grid-template-columns: 210px 1fr; }
+  .homepage-adrail { display: none; }
+}
 .homepage-sidenav {
   align-self: start;
   background: var(--white);
