@@ -1,26 +1,5 @@
 {
-  "indexes": [
-    { "collectionGroup": "pages", "queryScope": "COLLECTION", "fields": [
-      { "fieldPath": "school", "order": "ASCENDING" },
-      { "fieldPath": "updatedAt", "order": "DESCENDING" }
-    ]},
-    { "collectionGroup": "pages", "queryScope": "COLLECTION", "fields": [
-      { "fieldPath": "slug", "order": "ASCENDING" },
-      { "fieldPath": "status", "order": "ASCENDING" }
-    ]},
-    { "collectionGroup": "assets", "queryScope": "COLLECTION", "fields": [
-      { "fieldPath": "school", "order": "ASCENDING" },
-      { "fieldPath": "createdAt", "order": "DESCENDING" }
-    ]},
-    { "collectionGroup": "assets", "queryScope": "COLLECTION", "fields": [
-      { "fieldPath": "school", "order": "ASCENDING" },
-      { "fieldPath": "isImage", "order": "ASCENDING" },
-      { "fieldPath": "createdAt", "order": "DESCENDING" }
-    ]},
-    { "collectionGroup": "planning", "queryScope": "COLLECTION", "fields": [
-      { "fieldPath": "school", "order": "ASCENDING" },
-      { "fieldPath": "createdAt", "order": "DESCENDING" }
-    ]}
-  ],
+  "_comment": "The back office is written to need NO composite indexes. Queries filter on one field and sort in JavaScript. Keep it that way.",
+  "indexes": [],
   "fieldOverrides": []
 }

@@ -38,19 +38,30 @@
   <script>
     const SCHOOL_LABEL = { woestina:'Woestina Pre-K', jefferson:'Jefferson Elementary',
       middle:'Middle School', high:'High School', pto:'Schalmont PTO' };
+    const PREFIX_TO_SCHOOL = { woestina:'woestina', jes:'jefferson', ms:'middle', hs:'high', pto:'pto' };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const slug = new URLSearchParams(location.search).get('slug') ||
-                 location.pathname.replace(/^\/p\/?/, '').replace(/\/$/, '');
+
+    const params = new URLSearchParams(location.search);
+    let slug = params.get('slug');
+    let prefix = params.get('prefix');
+    if (!slug) {
+      const m = location.pathname.match(/^\/(woestina|jes|ms|hs|pto)\/([A-Za-z0-9_-]+)/)
+             || location.pathname.match(/^\/p\/([A-Za-z0-9_-]+)/);
+      if (m) { if (m.length === 3) { prefix = m[1]; slug = m[2]; } else { slug = m[1]; } }
+    }
 
     (async () => {
       const body = document.getElementById('pg-body');
       if (!slug) { body.innerHTML = notFound(); return; }
       try {
-        const snap = await db.collection('pages').where('slug', '==', slug)
-                             .where('status', '==', 'published').limit(1).get();
-        if (snap.empty) { body.innerHTML = notFound(); return; }
-        const p = snap.docs[0].data();
+        const snap = await db.collection('pages').where('slug', '==', slug).get();
+        const wantSchool = prefix ? PREFIX_TO_SCHOOL[prefix] : null;
+        const match = snap.docs
+          .map(d => d.data())
+          .find(d => d.status === 'published' && (!wantSchool || d.school === wantSchool));
+        if (!match) { body.innerHTML = notFound(); return; }
+        const p = match;
         document.title = p.title + ' — Schalmont PTO';
         body.innerHTML = `<h1>${escapeHtml(p.title)}</h1>` + renderBlocks(p.blocks);
         document.getElementById('pg-foot').innerHTML =

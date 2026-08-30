@@ -39,19 +39,11 @@ card), real drag-and-drop uploads can be switched back on — ask for that as a 
 
 ---
 
-## 4. Create the database indexes
+## 4. Database indexes — none needed
 
-The back office runs a few sorted searches that Firestore needs "indexes" for.
-Easiest way:
-
-- Open **https://schalmontpto.com/admin/school.html?s=jefferson** and click around the
-  **Pages**, **Files & Photos**, and **Planning** tabs.
-- If something says *"Could not load … this mentions an index"*, press **F12**, open the
-  **Console**, and click the long `https://console.firebase.google.com/...` link in the red
-  error. It opens the console with the index pre-filled — press **Create index**, wait a
-  minute, refresh.
-- There are 5 total (listed in [`firestore.indexes.json`](../firestore.indexes.json)). You
-  only need to do this once ever.
+The back office only uses simple searches, so Firestore does not need any custom indexes.
+If you ever see a red *"requires an index"* error, it means a query was changed — tell the
+developer; don't create indexes by hand.
 
 ---
 

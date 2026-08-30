@@ -147,34 +147,35 @@
     async function loadPages() {
       const box = document.getElementById('pages-list');
       try {
-        const snap = await db.collection('pages').where('school', '==', school)
-                             .orderBy('updatedAt', 'desc').get();
+        const snap = await db.collection('pages').where('school', '==', school).get();
         if (snap.empty) {
           box.innerHTML = '<p style="color:var(--text-light)">No pages yet. Press <strong>＋ New page</strong> to make your first one.</p>';
           return;
         }
+        const docs = snap.docs.slice().sort((a, b) =>
+          (b.data().updatedAt?.seconds || 0) - (a.data().updatedAt?.seconds || 0));
         box.innerHTML = '';
-        snap.forEach(doc => {
+        docs.forEach(doc => {
           const p = doc.data();
           const live = p.status === 'published';
+          const path = pagePath(school, p.slug);
           const row = document.createElement('div');
           row.className = 'bo-row';
           row.innerHTML = `
             <div class="bo-row-main">
               <h4>${esc(p.title || 'Untitled page')}</h4>
               <div class="bo-meta">
-                ${live ? 'Live at <code>/p/' + esc(p.slug) + '</code>' : 'Draft — not visible to the public'}
+                ${live ? 'Live at <code>/' + esc(path) + '</code>' : 'Draft — not visible to the public'}
                 &nbsp;·&nbsp; edited ${fmtDate(p.updatedAt)}
               </div>
             </div>
             <span class="bo-pill ${live ? 'live' : 'draft'}">${live ? 'Published' : 'Draft'}</span>
-            ${live ? `<a class="bo-btn ghost sm" href="../p/${esc(p.slug)}" target="_blank">View</a>` : ''}
+            ${live ? `<a class="bo-btn ghost sm" href="../${esc(path)}" target="_blank">View</a>` : ''}
             <a class="bo-btn sm" href="page-editor.html?id=${doc.id}">Edit</a>`;
           box.appendChild(row);
         });
       } catch (e) {
-        box.innerHTML = '<p style="color:var(--error)">Could not load pages: ' + esc(e.message) +
-          '<br><span style="font-size:12px;color:var(--text-light)">If this mentions an index, open the link in the browser console once to create it, or see admin/SETUP.md.</span></p>';
+        box.innerHTML = '<p style="color:var(--error)">Could not load pages: ' + esc(e.message) + '</p>';
       }
     }
 
@@ -201,11 +202,12 @@
     async function loadMedia() {
       const grid = document.getElementById('media-grid');
       try {
-        const snap = await db.collection('assets').where('school', '==', school)
-                             .orderBy('createdAt', 'desc').get();
+        const snap = await db.collection('assets').where('school', '==', school).get();
         if (snap.empty) { grid.innerHTML = '<p style="color:var(--text-light)">Your library is empty — add a photo or document link above.</p>'; return; }
         grid.innerHTML = '';
-        snap.forEach(doc => {
+        snap.docs.slice()
+          .sort((a, b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0))
+          .forEach(doc => {
           const a = doc.data();
           const el = document.createElement('div');
           el.className = 'bo-media';
@@ -254,11 +256,12 @@
     async function loadTasks() {
       const box = document.getElementById('task-list');
       try {
-        const snap = await db.collection('planning').where('school', '==', school)
-                             .orderBy('createdAt', 'desc').get();
+        const snap = await db.collection('planning').where('school', '==', school).get();
         if (snap.empty) { box.innerHTML = '<p style="color:var(--text-light)">No tasks yet.</p>'; return; }
         box.innerHTML = '';
-        snap.forEach(doc => {
+        snap.docs.slice()
+          .sort((a, b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0))
+          .forEach(doc => {
           const t = doc.data();
           const el = document.createElement('div');
           el.className = 'bo-checkitem' + (t.done ? ' done' : '');

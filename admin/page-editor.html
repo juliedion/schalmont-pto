@@ -52,8 +52,8 @@
     <div class="bo-field" style="max-width:none">
       <label>Page link <span class="bo-hint">This is the web address. It's created from your title &mdash; you can shorten it. Only lowercase letters, numbers and dashes.</span></label>
       <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-        <span style="color:var(--text-light)">schalmontpto.com/p/</span>
-        <input type="text" id="page-slug" style="max-width:280px" placeholder="jefferson-fun-run">
+        <span style="color:var(--text-light)">schalmontpto.com/<span id="slug-prefix">p</span>/</span>
+        <input type="text" id="page-slug" style="max-width:280px" placeholder="fun-run">
       </div>
     </div>
 
@@ -114,6 +114,7 @@
 
       document.getElementById('crumb-school').textContent = SCHOOLS[school];
       document.getElementById('crumb-school').href = 'school.html?s=' + school;
+      document.getElementById('slug-prefix').textContent = SCHOOL_PREFIX[school];
       document.getElementById('page-title').value = page.title || '';
       document.getElementById('page-slug').value = page.slug || '';
       if (page.slug) slugTouched = true;
@@ -155,9 +156,10 @@
 
     async function loadImages() {
       try {
-        const snap = await db.collection('assets').where('school','==',school)
-                             .where('isImage','==',true).orderBy('createdAt','desc').get();
-        images = snap.docs.map(d => d.data());
+        const snap = await db.collection('assets').where('school','==',school).get();
+        images = snap.docs.map(d => d.data())
+          .filter(a => a.isImage)
+          .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
       } catch (_) { images = []; }
       renderBlockEditors();
     }
@@ -256,7 +258,7 @@
         lab.type='text'; lab.value=b.label||''; lab.placeholder='e.g. Sign up now';
         lab.oninput = () => { b.label = lab.value; upd(); };
         const href = document.createElement('input');
-        href.type='text'; href.value=b.href||''; href.placeholder='https://…  (or /p/another-page)';
+        href.type='text'; href.value=b.href||''; href.placeholder='https://…  (or /jes/another-page)';
         href.oninput = () => { b.href = href.value; upd(); };
         const st = document.createElement('select');
         st.innerHTML = '<option value="solid">Filled (green)</option><option value="outline">Outline</option>';
@@ -304,7 +306,7 @@
       document.getElementById('unpublish-btn').style.display = live ? '' : 'none';
       document.getElementById('publish-btn').textContent = live ? 'Update live page' : 'Publish';
       const v = document.getElementById('view-btn');
-      if (live && page.slug) { v.style.display = ''; v.href = '../p/' + page.slug; } else { v.style.display = 'none'; }
+      if (live && page.slug) { v.style.display = ''; v.href = '../' + pagePath(school, page.slug); } else { v.style.display = 'none'; }
     }
 
     async function save(statusChange) {
@@ -315,8 +317,8 @@
       if (statusChange === 'published') {
         // make sure the link isn't already used by another page
         const dupe = await db.collection('pages').where('slug','==',page.slug).get();
-        const clash = dupe.docs.find(d => d.id !== pageId);
-        if (clash) { toast('That link is already used by another page — change the Page link', 'error'); return; }
+        const clash = dupe.docs.find(d => d.id !== pageId && d.data().school === school);
+        if (clash) { toast('That link is already used by another ' + SCHOOLS[school] + ' page — change the Page link', 'error'); return; }
       }
 
       btns.forEach(b => b.disabled = true);

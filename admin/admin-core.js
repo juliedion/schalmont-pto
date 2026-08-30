@@ -21,6 +21,18 @@ const SCHOOLS = {
   pto:       'PTO-wide (all schools)'
 };
 
+/* The short web-address prefix each school's published pages use,
+   e.g. schalmontpto.com/ms/spring-concert   (KEY -> prefix).
+   These must also be listed in .htaccess and p.html. */
+const SCHOOL_PREFIX = {
+  woestina:  'woestina',
+  jefferson: 'jes',
+  middle:    'ms',
+  high:      'hs',
+  pto:       'pto'
+};
+function pagePath(school, slug) { return SCHOOL_PREFIX[school] + '/' + slug; }
+
 /* Bootstrap super-admin. This email is ALWAYS treated as the owner,
    even before any roles are set up in the database. Additional
    super-admins are granted from the People & Roles page. */
