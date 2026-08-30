@@ -83,11 +83,11 @@ service cloud.firestore {
       allow update, delete: if signedIn() && canManage(resource.data.school);
     }
 
-    /* ---- Yearbook: photo submissions ---- */
+    /* ---- Yearbook: photo submissions (no approval step) ---- */
     match /yearbook_photos/{id} {
       allow read: if signedIn() && canManage(resource.data.school);
-      // The public upload form creates these; must be 'pending' for a known school.
-      allow create: if request.resource.data.status == 'pending'
+      // The public upload form creates these directly.
+      allow create: if request.resource.data.status == 'live'
                     && request.resource.data.school in ['woestina','jefferson','middle','high','pto']
                     && request.resource.data.photos.size() <= 12;
       allow update, delete: if signedIn() && canManage(resource.data.school);

@@ -62,12 +62,10 @@
     </form>
     <div class="bo-list" id="folders"></div>
 
-    <!-- PENDING -->
-    <h2 class="yb-sub">Waiting for your review <span id="pending-count" class="bo-pill draft"></span></h2>
-    <div id="pending"></div>
-
-    <!-- APPROVED -->
-    <h2 class="yb-sub">Approved photos</h2>
+    <!-- PHOTOS -->
+    <h2 class="yb-sub">Photos</h2>
+    <p class="yb-sublink">Every photo families have submitted, grouped by event folder. Use
+       <strong>Remove</strong> to permanently delete one (e.g. a duplicate or a bad shot).</p>
     <div class="bo-field" style="max-width:360px">
       <label>Show folder</label>
       <select id="approved-folder"><option value="">Choose an event folder…</option></select>
@@ -119,13 +117,12 @@
         .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
       photos = pSnap.docs.map(d => ({ id: d.id, ...d.data() }));
       renderFolders();
-      renderPending();
       renderApprovedOptions();
       renderApproved();
     }
 
-    function countFor(slug, status) {
-      return photos.filter(p => p.event === slug && (!status || p.status === status))
+    function countFor(slug) {
+      return photos.filter(p => p.event === slug)
                    .reduce((n, p) => n + (p.photos ? p.photos.length : 0), 0);
     }
 
@@ -155,7 +152,7 @@
         el.className = 'yb-folder';
         el.innerHTML = `
           <span class="nm">${esc(f.name)}</span>
-          <span class="ct">${countFor(f.slug, 'approved')} approved · ${countFor(f.slug, 'pending')} pending</span>
+          <span class="ct">${countFor(f.slug)} photo${countFor(f.slug) === 1 ? '' : 's'}</span>
           <button class="bo-btn ghost sm" data-rn>Rename</button>
           <button class="bo-btn danger sm" data-del>Delete</button>`;
         el.querySelector('[data-rn]').onclick = async () => {
@@ -165,7 +162,7 @@
           reload();
         };
         el.querySelector('[data-del]').onclick = async () => {
-          if (countFor(f.slug)) { alert('This folder still has photos in it. Reject or move those first.'); return; }
+          if (countFor(f.slug)) { alert('This folder still has photos in it. Remove those first.'); return; }
           if (!confirm('Delete the "' + f.name + '" folder?')) return;
           await db.collection('yearbook_folders').doc(f.id).delete();
           reload();
@@ -174,78 +171,53 @@
       });
     }
 
-    /* ---- pending review ---- */
-    function renderPending() {
-      const box = document.getElementById('pending');
-      const list = photos.filter(p => p.status === 'pending')
-        .sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
-      document.getElementById('pending-count').textContent = list.length ? list.length + ' to review' : 'all clear';
-      if (!list.length) { box.innerHTML = '<p style="color:var(--text-light)">Nothing waiting. 🎉</p>'; return; }
-      box.innerHTML = '';
-      list.forEach(sub => {
-        const el = document.createElement('div');
-        el.className = 'yb-review';
-        el.innerHTML = `
-          <div class="meta">
-            <b>${esc(sub.eventLabel || sub.event)}</b> &nbsp;·&nbsp; from ${esc(sub.uploaderName || 'unknown')}
-            ${sub.uploaderEmail ? ' (' + esc(sub.uploaderEmail) + ')' : ''}<br>
-            ${sub.people ? '<b>In the photos:</b> ' + esc(sub.people) : '<i>No names given</i>'}
-          </div>
-          <div class="yb-shots">
-            ${(sub.photos || []).map(ph => `<a href="${esc(ph.url)}" target="_blank"><img src="${esc(ph.url)}" alt=""></a>`).join('')}
-          </div>
-          <button class="bo-btn sm" data-ok>✓ Approve</button>
-          <button class="bo-btn danger sm" data-no>✕ Reject &amp; delete</button>`;
-        el.querySelector('[data-ok]').onclick = async (ev) => {
-          ev.target.disabled = true;
-          await db.collection('yearbook_photos').doc(sub.id).update({
-            status: 'approved', reviewedBy: ME.email,
-            reviewedAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
-          toast('Approved'); reload();
-        };
-        el.querySelector('[data-no]').onclick = async (ev) => {
-          if (!confirm('Reject this submission and permanently delete the photo file(s)?')) return;
-          ev.target.disabled = true;
-          try {
-            const idToken = await auth.currentUser.getIdToken();
-            await fetch('../api/yearbook-delete.php', {
-              method: 'POST', headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ idToken, paths: (sub.photos || []).map(p => p.url) })
-            });
-          } catch (_) {}
-          await db.collection('yearbook_photos').doc(sub.id).delete();
-          toast('Rejected'); reload();
-        };
-        box.appendChild(el);
-      });
-    }
-
-    /* ---- approved gallery ---- */
+    /* ---- photos by folder ---- */
     function renderApprovedOptions() {
       const sel = document.getElementById('approved-folder');
       const cur = sel.value;
       sel.innerHTML = '<option value="">Choose an event folder…</option>' +
-        folders.map(f => `<option value="${f.slug}">${esc(f.name)} (${countFor(f.slug, 'approved')})</option>`).join('');
+        folders.map(f => `<option value="${f.slug}">${esc(f.name)} (${countFor(f.slug)})</option>`).join('');
       sel.value = cur;
+    }
+
+    async function removePhoto(sub, ph) {
+      if (!confirm('Permanently delete this photo?')) return;
+      try {
+        const idToken = await auth.currentUser.getIdToken();
+        await fetch('../api/yearbook-delete.php', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken, paths: [ph.url] })
+        }).catch(() => {});
+        const remaining = (sub.photos || []).filter(x => x.url !== ph.url);
+        if (remaining.length) {
+          await db.collection('yearbook_photos').doc(sub.id).update({ photos: remaining });
+        } else {
+          await db.collection('yearbook_photos').doc(sub.id).delete();
+        }
+        toast('Photo removed'); reload();
+      } catch (e) { toast('Could not remove: ' + e.message, 'error'); }
     }
 
     function renderApproved() {
       const box = document.getElementById('approved');
       const slug = document.getElementById('approved-folder').value;
-      if (!slug) { box.innerHTML = '<p style="color:var(--text-light)">Pick a folder above to see its approved photos.</p>'; return; }
-      const subs = photos.filter(p => p.status === 'approved' && p.event === slug);
+      if (!slug) { box.innerHTML = '<p style="color:var(--text-light)">Pick a folder above to see its photos.</p>'; return; }
+      const subs = photos.filter(p => p.event === slug);
       const shots = [];
-      subs.forEach(s => (s.photos || []).forEach(ph => shots.push({ ...ph, people: s.people, by: s.uploaderName })));
-      if (!shots.length) { box.innerHTML = '<p style="color:var(--text-light)">No approved photos in this folder yet.</p>'; return; }
+      subs.forEach(s => (s.photos || []).forEach(ph => shots.push({ ph, sub: s })));
+      if (!shots.length) { box.innerHTML = '<p style="color:var(--text-light)">No photos in this folder yet.</p>'; return; }
       box.innerHTML = '';
-      shots.forEach(sh => {
+      shots.forEach(({ ph, sub }) => {
         const fig = document.createElement('figure');
         fig.innerHTML = `
-          <a href="${esc(sh.url)}" target="_blank"><img src="${esc(sh.url)}" alt=""></a>
-          <figcaption>${sh.people ? esc(sh.people) : '<i>no names</i>'}<br>
-            <span style="color:var(--text-light)">by ${esc(sh.by || '')}</span></figcaption>
-          <a class="dl" href="${esc(sh.url)}" download>Download</a>`;
+          <a href="${esc(ph.url)}" target="_blank"><img src="${esc(ph.url)}" alt=""></a>
+          <figcaption>${sub.people ? esc(sub.people) : '<i>no names</i>'}<br>
+            <span style="color:var(--text-light)">by ${esc(sub.uploaderName || '')}</span></figcaption>
+          <div style="display:flex">
+            <a class="dl" href="${esc(ph.url)}" download style="flex:1">Download</a>
+            <button class="dl" data-rm style="flex:1;border:none;border-left:1px solid var(--border);background:none;cursor:pointer;color:var(--error)">Remove</button>
+          </div>`;
+        fig.querySelector('[data-rm]').onclick = () => removePhoto(sub, ph);
         box.appendChild(fig);
       });
     }

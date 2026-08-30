@@ -47,9 +47,8 @@
       <h1>Submit Yearbook Photos</h1>
       <p class="yb-intro">
         Help build the school yearbooks! Pick your school and the event, tell us who's in the
-        pictures, and upload them below. A PTO volunteer reviews every photo before it's used,
-        so it may not appear right away. Please only submit photos you took and are happy to
-        share.
+        pictures, and upload them below. Please only submit photos you took and are happy to
+        share with the school community.
       </p>
 
       <div id="msg"></div>
@@ -206,7 +205,7 @@
         const data = await res.json();
         if (!res.ok || !data.ok) throw new Error(data.error || 'Upload failed');
 
-        // save the submission details for the review team
+        // save the submission details for the yearbook team
         await db.collection('yearbook_photos').add({
           school: schoolSel.value,
           event: eventSel.value,
@@ -216,13 +215,13 @@
           people: fd.get('people'),
           photos: data.files,
           batchId: data.batchId,
-          status: 'pending',
+          status: 'live',
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }).catch(() => {});
 
         showMsg('ok', 'Thank you! ' + data.files.length + ' photo' +
-          (data.files.length === 1 ? '' : 's') + ' submitted for ' + fd.get('eventLabel') +
-          '. A PTO volunteer will review them soon. You can submit more below.');
+          (data.files.length === 1 ? '' : 's') + ' added to ' + fd.get('eventLabel') +
+          '. You can submit more below.');
         chosen = []; renderThumbs();
         document.getElementById('people').value = '';
         window.scrollTo({ top: 0, behavior: 'smooth' });
