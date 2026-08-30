@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendar — PTO Back Office</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" href="../images/favicon.svg">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+  <style>
+    .cal-bar { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:16px; }
+    .cal-bar select { padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-family:inherit; font-size:13.5px; }
+    .cal-legend { display:flex; gap:12px; flex-wrap:wrap; font-size:12px; color:var(--text); margin-bottom:14px; }
+    .cal-legend span { display:inline-flex; align-items:center; gap:5px; }
+    .cal-dot { width:11px; height:11px; border-radius:3px; display:inline-block; }
+    #calendar { background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px; }
+    .fc .fc-toolbar-title { font-size:1.15rem; }
+    .fc-event { cursor:pointer; }
+    .fc-event.promo { opacity:.9; }
+
+    /* modal */
+    .cal-modal { position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:flex-start; justify-content:center; z-index:60; overflow-y:auto; padding:40px 14px; }
+    .cal-modal.open { display:flex; }
+    .cal-dialog { background:#fff; border-radius:14px; width:100%; max-width:560px; padding:24px; }
+    .cal-dialog h2 { margin:0 0 14px; font-size:19px; color:var(--primary-dark); }
+    .cal-row { display:flex; gap:12px; flex-wrap:wrap; }
+    .cal-row > * { flex:1; min-width:140px; }
+    .cal-modal label { display:block; font-weight:700; font-size:12.5px; margin:10px 0 3px; color:var(--text); }
+    .cal-modal input, .cal-modal select, .cal-modal textarea {
+      width:100%; padding:9px 10px; border:1px solid var(--border); border-radius:7px; font-family:inherit; font-size:14px;
+    }
+    .cal-modal textarea { min-height:60px; resize:vertical; }
+    .promo-grid { background:var(--light-bg); border:1px solid var(--border); border-radius:8px; padding:12px; margin-top:6px; }
+    .promo-line { display:flex; gap:8px; align-items:center; margin-bottom:7px; }
+    .promo-line label { margin:0; flex:0 0 130px; font-weight:600; }
+    .promo-line input[type=date] { flex:1; }
+    .promo-line input[type=checkbox] { width:auto; }
+    .cal-actions { display:flex; gap:8px; margin-top:18px; flex-wrap:wrap; }
+    .cal-actions .spacer { flex:1; }
+  </style>
+</head>
+<body>
+  <div id="bo-loading">Loading…</div>
+  <div id="bo-shell"></div>
+
+  <main id="bo-main" style="display:none">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      <a class="bo-btn ghost sm" href="index.html">← Back Office Home</a>
+      <a class="bo-btn ghost sm" id="back-school" href="#" style="display:none">← <span id="back-school-name"></span> Workspace</a>
+    </div>
+    <h1 class="bo-h1">PTO Calendar</h1>
+    <p class="bo-lead">Every event, program, and fundraiser in one place. Click a day to add
+       something; click an event to edit it. Each event automatically gets its
+       <strong>flyer</strong> and <strong>social media</strong> dates worked backward from the
+       event date &mdash; turn them on with the checkbox below.</p>
+
+    <div class="cal-bar">
+      <label style="font-weight:700;font-size:13px">Show:
+        <select id="school-filter">
+          <option value="all">All schools</option>
+          <option value="pto">PTO-wide / District</option>
+          <option value="woestina">Woestina Pre-K</option>
+          <option value="jefferson">Jefferson Elementary</option>
+          <option value="middle">Middle School</option>
+          <option value="high">High School</option>
+        </select>
+      </label>
+      <label style="font-weight:700;font-size:13px;display:flex;align-items:center;gap:6px">
+        <input type="checkbox" id="show-promo"> Show flyer &amp; social dates
+      </label>
+      <span class="spacer" style="flex:1"></span>
+      <button class="bo-btn sm" id="add-btn">＋ New event</button>
+      <button class="bo-btn ghost sm" id="import-btn">⭳ Import from Google Sheet</button>
+    </div>
+
+    <div class="cal-legend" id="legend"></div>
+    <div id="calendar"></div>
+  </main>
+
+  <!-- Add / edit modal -->
+  <div class="cal-modal" id="modal">
+    <div class="cal-dialog">
+      <h2 id="modal-title">New event</h2>
+      <label>Name</label>
+      <input type="text" id="f-title" placeholder="e.g. Trail of Treats">
+      <div class="cal-row">
+        <div>
+          <label>Type</label>
+          <select id="f-category">
+            <option>Event</option><option>Program</option><option>Fundraiser</option>
+            <option>Meeting</option><option>Staff Appreciation</option>
+            <option>District Calendar</option><option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label>School / scope</label>
+          <select id="f-school">
+            <option value="pto">PTO-wide / District</option>
+            <option value="woestina">Woestina Pre-K</option>
+            <option value="jefferson">Jefferson Elementary</option>
+            <option value="middle">Middle School</option>
+            <option value="high">High School</option>
+          </select>
+        </div>
+      </div>
+      <div class="cal-row">
+        <div><label>Date</label><input type="date" id="f-date"></div>
+        <div><label>End date <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input type="date" id="f-enddate"></div>
+        <div><label>Start time <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input type="time" id="f-time"></div>
+      </div>
+      <label>Location</label>
+      <input type="text" id="f-location" placeholder="Building / address">
+      <div class="cal-row">
+        <div><label>Audience</label><input type="text" id="f-audience" placeholder="e.g. MS/HS families"></div>
+        <div><label>Owner / lead</label><input type="text" id="f-owner" placeholder="Who's running it"></div>
+        <div>
+          <label>Status</label>
+          <select id="f-status">
+            <option value="idea">Idea</option><option value="planned">Planned</option>
+            <option value="confirmed">Confirmed</option><option value="done">Done</option>
+          </select>
+        </div>
+      </div>
+      <label>Notes</label>
+      <textarea id="f-notes"></textarea>
+
+      <label style="margin-top:16px">Flyer &amp; social media schedule
+        <span style="font-weight:400;color:var(--text-light)">— filled in automatically from the date; adjust if needed. Tick when done.</span>
+      </label>
+      <div class="promo-grid" id="promo-grid"></div>
+
+      <div class="cal-actions">
+        <button class="bo-btn danger sm" id="del-btn" style="display:none">Delete</button>
+        <span class="spacer"></span>
+        <button class="bo-btn ghost sm" id="cancel-btn">Cancel</button>
+        <button class="bo-btn sm" id="save-ev-btn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-storage-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="admin-core.js"></script>
+  <script>
+    const SHEET_ID = '125BxlKchxGULKFtK_nl9pE67UdJwU0kqKU_ftEUC7SA';
+    const CAT_COLOR = {
+      'Event': '#295c38', 'Program': '#2b6cb0', 'Fundraiser': '#b7791f',
+      'Meeting': '#6b46c1', 'Staff Appreciation': '#d53f8c',
+      'District Calendar': '#718096', 'Other': '#4a5568'
+    };
+    function catColor(c) {
+      if (CAT_COLOR[c]) return CAT_COLOR[c];
+      const s = (c || '').toLowerCase();
+      if (s.includes('fundrais')) return CAT_COLOR.Fundraiser;
+      if (s.includes('meeting')) return CAT_COLOR.Meeting;
+      if (s.includes('appreciat')) return CAT_COLOR['Staff Appreciation'];
+      if (s.includes('district') || s.includes('no school')) return CAT_COLOR['District Calendar'];
+      if (s.includes('program')) return CAT_COLOR.Program;
+      return CAT_COLOR.Event;
+    }
+
+    let cal, allEvents = [], editingId = null;
+
+    requireAdmin((me) => {
+      const s = getParam('s');
+      if (s && SCHOOLS[s]) {
+        document.getElementById('school-filter').value = s === 'pto' ? 'pto' : s;
+        const b = document.getElementById('back-school');
+        b.style.display = ''; b.href = 'school.html?s=' + s;
+        document.getElementById('back-school-name').textContent = SCHOOLS[s];
+      }
+
+      document.getElementById('legend').innerHTML = Object.entries(CAT_COLOR)
+        .map(([k, v]) => `<span><i class="cal-dot" style="background:${v}"></i>${k}</span>`).join('');
+
+      buildCalendar();
+      document.getElementById('school-filter').onchange = refresh;
+      document.getElementById('show-promo').onchange = refresh;
+      document.getElementById('add-btn').onclick = () => openModal(null, toYMD(new Date()));
+      document.getElementById('import-btn').onclick = importSheet;
+      document.getElementById('cancel-btn').onclick = closeModal;
+      document.getElementById('save-ev-btn').onclick = saveEvent;
+      document.getElementById('del-btn').onclick = deleteEvent;
+      document.getElementById('f-date').onchange = syncPromoFromDate;
+
+      loadEvents();
+    });
+
+    function buildCalendar() {
+      cal = new FullCalendar.Calendar(document.getElementById('calendar'), {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+        },
+        buttonText: { today: 'Today', month: 'Month', week: 'Week', day: 'Day', list: 'List' },
+        height: 'auto',
+        navLinks: true,
+        nowIndicator: true,
+        dateClick: (info) => openModal(null, info.dateStr.slice(0, 10)),
+        eventClick: (info) => {
+          const p = info.event.extendedProps;
+          openModal(p.kind === 'promo' ? p.parentId : p.docId);
+        },
+        events: []
+      });
+      cal.render();
+    }
+
+    async function loadEvents() {
+      try {
+        const snap = await db.collection('pto_events').get();
+        allEvents = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        refresh();
+      } catch (e) {
+        toast('Could not load calendar: ' + e.message, 'error');
+      }
+    }
+
+    function refresh() {
+      const filter = document.getElementById('school-filter').value;
+      const showPromo = document.getElementById('show-promo').checked;
+      const fcEvents = [];
+      allEvents
+        .filter(ev => filter === 'all' || ev.school === filter ||
+                      (filter === 'pto' && (!ev.school || ev.school === 'pto' || ev.school === 'district')))
+        .forEach(ev => {
+          const color = catColor(ev.category);
+          const timed = !!ev.time;
+          fcEvents.push({
+            id: ev.id,
+            title: ev.title + (ev.status === 'idea' ? ' (idea)' : ''),
+            start: timed ? `${ev.date}T${ev.time}` : ev.date,
+            end: ev.endDate ? addDays(ev.endDate, 1) : undefined,
+            allDay: !timed,
+            backgroundColor: color, borderColor: color,
+            classNames: ev.status === 'done' ? ['done'] : [],
+            extendedProps: { docId: ev.id, kind: 'event' }
+          });
+          if (showPromo && ev.promo) {
+            Object.entries(ev.promo).forEach(([k, date]) => {
+              if (!date) return;
+              const done = ev.promoDone && ev.promoDone[k];
+              fcEvents.push({
+                title: (done ? '✓ ' : '📢 ') + PROMO_LABELS[k] + ': ' + ev.title,
+                start: date, allDay: true,
+                backgroundColor: '#fff', borderColor: color, textColor: '#555',
+                classNames: ['promo'],
+                extendedProps: { kind: 'promo', parentId: ev.id, promoKey: k }
+              });
+            });
+          }
+        });
+      cal.removeAllEvents();
+      fcEvents.forEach(e => cal.addEvent(e));
+    }
+
+    /* ---------- modal ---------- */
+    function openModal(docId, presetDate) {
+      editingId = docId;
+      const ev = docId ? allEvents.find(e => e.id === docId) : null;
+      document.getElementById('modal-title').textContent = ev ? 'Edit event' : 'New event';
+      document.getElementById('del-btn').style.display = ev ? '' : 'none';
+      document.getElementById('f-title').value = ev?.title || '';
+      const catSel = document.getElementById('f-category');
+      [...catSel.querySelectorAll('option[data-extra]')].forEach(o => o.remove());
+      const cat = ev?.category || 'Event';
+      if (![...catSel.options].some(o => o.value === cat)) {
+        const o = new Option(cat, cat); o.dataset.extra = '1'; catSel.add(o, 0);
+      }
+      catSel.value = cat;
+      document.getElementById('f-school').value = ev?.school || 'pto';
+      document.getElementById('f-date').value = ev?.date || presetDate || '';
+      document.getElementById('f-enddate').value = ev?.endDate || '';
+      document.getElementById('f-time').value = ev?.time || '';
+      document.getElementById('f-location').value = ev?.location || '';
+      document.getElementById('f-audience').value = ev?.audience || '';
+      document.getElementById('f-owner').value = ev?.owner || '';
+      document.getElementById('f-status').value = ev?.status || 'planned';
+      document.getElementById('f-notes').value = ev?.notes || '';
+      renderPromo(computePromo(ev?.date || presetDate || '', ev?.promo), ev?.promoDone || {});
+      document.getElementById('modal').classList.add('open');
+    }
+    function closeModal() { document.getElementById('modal').classList.remove('open'); editingId = null; }
+
+    function renderPromo(promo, done) {
+      const g = document.getElementById('promo-grid');
+      g.innerHTML = Object.keys(PROMO_OFFSETS).map(k => `
+        <div class="promo-line">
+          <label>${PROMO_LABELS[k]}</label>
+          <input type="date" data-pk="${k}" value="${promo[k] || ''}">
+          <label style="flex:0;white-space:nowrap"><input type="checkbox" data-pd="${k}" ${done[k] ? 'checked' : ''}> done</label>
+        </div>`).join('');
+    }
+    function syncPromoFromDate() {
+      const d = document.getElementById('f-date').value;
+      const done = {};
+      document.querySelectorAll('[data-pd]').forEach(c => done[c.dataset.pd] = c.checked);
+      renderPromo(computePromo(d), done);
+    }
+
+    async function saveEvent() {
+      const title = document.getElementById('f-title').value.trim();
+      const date = document.getElementById('f-date').value;
+      if (!title) { toast('Give the event a name', 'error'); return; }
+      if (!date) { toast('Pick a date', 'error'); return; }
+      const promo = {}, promoDone = {};
+      document.querySelectorAll('[data-pk]').forEach(i => promo[i.dataset.pk] = i.value || '');
+      document.querySelectorAll('[data-pd]').forEach(c => promoDone[c.dataset.pd] = c.checked);
+
+      const data = {
+        title, date,
+        category: document.getElementById('f-category').value,
+        school: document.getElementById('f-school').value,
+        endDate: document.getElementById('f-enddate').value || '',
+        time: document.getElementById('f-time').value || '',
+        location: document.getElementById('f-location').value.trim(),
+        audience: document.getElementById('f-audience').value.trim(),
+        owner: document.getElementById('f-owner').value.trim(),
+        status: document.getElementById('f-status').value,
+        notes: document.getElementById('f-notes').value.trim(),
+        promo, promoDone,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedBy: ME.email
+      };
+      try {
+        if (editingId) {
+          await db.collection('pto_events').doc(editingId).update(data);
+        } else {
+          data.source = 'manual';
+          data.createdBy = ME.email;
+          data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+          await db.collection('pto_events').add(data);
+        }
+        toast('Saved'); closeModal(); loadEvents();
+      } catch (e) { toast('Could not save: ' + e.message, 'error'); }
+    }
+
+    async function deleteEvent() {
+      if (!editingId) return;
+      if (!confirm('Delete this event from the calendar?')) return;
+      try {
+        await db.collection('pto_events').doc(editingId).delete();
+        toast('Deleted'); closeModal(); loadEvents();
+      } catch (e) { toast('Could not delete: ' + e.message, 'error'); }
+    }
+
+    /* ---------- import from Google Sheet ---------- */
+    async function importSheet() {
+      if (!confirm('Import events from the PTO planning spreadsheet?\n\n' +
+        'New rows are added. Rows already imported are refreshed. Events you added by hand are left alone.')) return;
+      const btn = document.getElementById('import-btn');
+      btn.disabled = true; btn.textContent = 'Importing…';
+      try {
+        const idToken = await auth.currentUser.getIdToken();
+        const res = await fetch('../api/sheet-proxy.php?id=' + SHEET_ID + '&idToken=' + encodeURIComponent(idToken));
+        const data = await res.json();
+        if (!res.ok || !data.ok) throw new Error(data.error || 'Import failed');
+        const rows = parseCSV(data.csv);
+        const header = rows.shift().map(h => h.trim());
+        const col = name => header.findIndex(h => h.toLowerCase() === name.toLowerCase());
+        const ci = {
+          date: col('Event Date'), title: col('Event / Initiative'), cat: col('Category'),
+          audience: col('Audience'), flyer: col('Flyer / Take-Home Date'),
+          social1: col('First Social Post'), reminder: col('Reminder Post'),
+          plan: col('Suggested Planning Start'), owner: col('Owner'),
+          status: col('Status'), notes: col('Notes')
+        };
+        const existing = {};
+        allEvents.forEach(e => { if (e.sheetKey) existing[e.sheetKey] = e.id; });
+
+        let added = 0, updated = 0;
+        const batch = db.batch();
+        for (const r of rows) {
+          const rawDate = (r[ci.date] || '').trim();
+          const title = (r[ci.title] || '').trim();
+          if (!rawDate || !title) continue;
+          const d = new Date(rawDate);
+          if (isNaN(d)) continue;
+          const date = toYMD(d);
+          const sheetKey = title + '||' + date;
+          const mapStatus = (s) => /complete/i.test(s) ? 'done' : /progress/i.test(s) ? 'confirmed' : 'planned';
+          const parseD = (v) => { const x = new Date((v || '').trim()); return isNaN(x) ? '' : toYMD(x); };
+          const fields = {
+            title, date,
+            category: (r[ci.cat] || 'Event').trim(),
+            audience: (r[ci.audience] || '').trim(),
+            owner: (r[ci.owner] || '').trim(),
+            notes: (r[ci.notes] || '').trim(),
+            status: mapStatus(r[ci.status] || ''),
+            school: 'pto',
+            promo: {
+              planningStart: parseD(r[ci.plan]) || addDays(date, -PROMO_OFFSETS.planningStart),
+              flyer:         parseD(r[ci.flyer]) || addDays(date, -PROMO_OFFSETS.flyer),
+              firstSocial:   parseD(r[ci.social1]) || addDays(date, -PROMO_OFFSETS.firstSocial),
+              reminder:      parseD(r[ci.reminder]) || addDays(date, -PROMO_OFFSETS.reminder)
+            },
+            source: 'sheet', sheetKey,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: ME.email
+          };
+          if (existing[sheetKey]) {
+            batch.update(db.collection('pto_events').doc(existing[sheetKey]), fields);
+            updated++;
+          } else {
+            const ref = db.collection('pto_events').doc();
+            fields.promoDone = {};
+            fields.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            fields.createdBy = ME.email;
+            batch.set(ref, fields);
+            added++;
+          }
+        }
+        await batch.commit();
+        toast(`Imported: ${added} new, ${updated} updated`);
+        loadEvents();
+      } catch (e) {
+        toast('Import problem: ' + e.message, 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = '⭳ Import from Google Sheet';
+      }
+    }
+
+    // minimal CSV parser (handles quoted fields, commas, newlines, "" escapes)
+    function parseCSV(text) {
+      const rows = []; let row = [], val = '', q = false;
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (q) {
+          if (c === '"') { if (text[i + 1] === '"') { val += '"'; i++; } else q = false; }
+          else val += c;
+        } else if (c === '"') q = true;
+        else if (c === ',') { row.push(val); val = ''; }
+        else if (c === '\n') { row.push(val); rows.push(row); row = []; val = ''; }
+        else if (c === '\r') { /* skip */ }
+        else val += c;
+      }
+      if (val !== '' || row.length) { row.push(val); rows.push(row); }
+      return rows.filter(r => r.some(x => x !== ''));
+    }
+  </script>
+</body>
+</html>

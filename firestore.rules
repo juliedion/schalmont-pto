@@ -35,6 +35,12 @@ service cloud.firestore {
     function canManage(school) {
       return isOwner() || (school in adminSchools());
     }
+    function isAnyAdmin() {
+      return isOwner() || (
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        userData().role in ['admin', 'superadmin']
+      );
+    }
 
     /* ---- Back office: pages ---- */
     match /pages/{pageId} {
@@ -65,6 +71,18 @@ service cloud.firestore {
       allow update, delete: if signedIn() && canManage(resource.data.school);
     }
 
+    /* ---- Shared PTO calendar ---- */
+    match /pto_events/{id} {
+      allow read, write: if isAnyAdmin();
+    }
+
+    /* ---- Planning: idea board ---- */
+    match /ideas/{id} {
+      allow read: if signedIn() && canManage(resource.data.school);
+      allow create: if signedIn() && canManage(request.resource.data.school);
+      allow update, delete: if signedIn() && canManage(resource.data.school);
+    }
+
     /* ---- Yearbook: photo submissions ---- */
     match /yearbook_photos/{id} {
       allow read: if signedIn() && canManage(resource.data.school);
@@ -77,7 +95,9 @@ service cloud.firestore {
 
     /* ---- Users / roles ---- */
     match /users/{userId} {
-      allow read: if signedIn() && (request.auth.uid == userId || isOwner());
+      // A person can read their own record; any back-office admin can read the
+      // roster (needed to assign planning tasks).
+      allow read: if signedIn() && (request.auth.uid == userId || isAnyAdmin());
       allow create: if signedIn() && request.auth.uid == userId
                     && request.resource.data.status in ['pending', 'approved'];
       // A person may keep their own directory profile fields up to date, but may

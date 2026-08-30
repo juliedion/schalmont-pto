@@ -40,7 +40,12 @@ named `uploads` in **Bluehost File Manager** (inside `public_html`) and set its 
 to **755**, then re-run `fix-permissions.php` (it runs after every deploy anyway).
 
 Re-paste [`firestore.rules`](../firestore.rules) into the Firebase console whenever it
-changes (it now also covers `yearbook_folders` and `yearbook_photos`).
+changes (it now also covers `yearbook_folders`, `yearbook_photos`, `pto_events`, `ideas`,
+and lets admins read the user roster to assign tasks).
+
+**Calendar → Google Sheet:** the planning spreadsheet must be shared **Anyone with the link
+→ Viewer** for the "Import from Google Sheet" button to work. The allowed sheet id is set in
+`api/sheet-proxy.php` (`$ALLOWED`).
 
 ---
 

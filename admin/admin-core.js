@@ -137,6 +137,7 @@ function renderShell() {
         <div class="bo-navgroup-label">Schools</div>
         ${schoolLinks}
         <div class="bo-navgroup-label">Tools</div>
+        ${link('calendar.html', 'Calendar', '📅')}
         ${link('assistant.html', 'AI Assistant', '💬')}
         ${link('help.html', 'Help &amp; How-To', '📖')}
         ${ME.isSuper ? link('people.html', 'People &amp; Roles', '👥') : ''}
@@ -190,4 +191,45 @@ function toast(msg, kind) {
 /* Guard: can the current person manage this school? */
 function canManage(school) {
   return ME && (ME.isSuper || ME.schools.includes(school));
+}
+
+/* ---- date helpers (used by the calendar) ---- */
+function toYMD(d) {
+  const z = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`;
+}
+function ymdToDate(s) {
+  if (!s) return null;
+  const p = String(s).split('-');
+  if (p.length !== 3) return null;
+  const d = new Date(+p[0], +p[1] - 1, +p[2]);
+  return isNaN(d) ? null : d;
+}
+function addDays(ymd, delta) {
+  const d = ymdToDate(ymd);
+  if (!d) return '';
+  d.setDate(d.getDate() + delta);
+  return toYMD(d);
+}
+
+/* How far ahead of an event each promo task should happen (days before).
+   Editable per event afterward. */
+const PROMO_OFFSETS = { planningStart: 42, flyer: 21, firstSocial: 14, reminder: 3 };
+const PROMO_LABELS  = {
+  planningStart: 'Start planning',
+  flyer:         'Flyer / take-home goes out',
+  firstSocial:   'First social post',
+  reminder:      'Reminder post'
+};
+function computePromo(dateYMD, existing) {
+  const p = existing || {};
+  const out = {};
+  for (const k in PROMO_OFFSETS) {
+    out[k] = p[k] || addDays(dateYMD, -PROMO_OFFSETS[k]);
+  }
+  return out;
+}
+function prettyYMD(s) {
+  const d = ymdToDate(s);
+  return d ? d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) : (s || '');
 }

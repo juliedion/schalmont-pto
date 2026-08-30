@@ -39,6 +39,7 @@
       <button class="bo-tab active" data-tab="pages">📄 Pages</button>
       <button class="bo-tab" data-tab="files">🖼️ Files &amp; Photos</button>
       <button class="bo-tab" data-tab="plan">✅ Planning</button>
+      <a class="bo-tab" id="calendar-tab" style="text-decoration:none">📅 Calendar</a>
       <a class="bo-tab" id="yearbook-tab" style="text-decoration:none">📸 Yearbook Photos</a>
     </div>
 
@@ -97,14 +98,33 @@
     <!-- ============ PLANNING ============ -->
     <section class="bo-panel" id="panel-plan">
       <div class="bo-tip">
-        A shared to-do list for this school's PTO team. Anyone with access to this school sees the
-        same list, so it's a good place to track "who's bringing what" and what still needs doing.
+        Everyone with access to this school sees the same Planning page. Use <strong>Ideas</strong>
+        to jot down anything you might want to do, and the <strong>To-Do list</strong> for
+        actual tasks &mdash; each one can be assigned to a person and given a due date.
       </div>
-      <form id="task-form" style="display:flex;gap:8px;max-width:560px;margin-bottom:18px">
-        <input type="text" id="task-input" placeholder="Add a task, e.g. Book the DJ for the dance"
+
+      <h3 style="font-size:16px;color:var(--primary-dark);margin:6px 0 10px">💡 Ideas</h3>
+      <form id="idea-form" style="display:flex;gap:8px;max-width:600px;margin-bottom:12px">
+        <input type="text" id="idea-input" placeholder="e.g. Family game night in the spring"
                style="flex:1;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit">
-        <button class="bo-btn" type="submit">Add</button>
+        <button class="bo-btn" type="submit">Add idea</button>
       </form>
+      <div class="bo-list" id="idea-list" style="margin-bottom:34px"></div>
+
+      <h3 style="font-size:16px;color:var(--primary-dark);margin:6px 0 10px">✅ To-Do list</h3>
+      <form id="task-form" style="display:flex;gap:8px;max-width:640px;margin-bottom:6px;flex-wrap:wrap">
+        <input type="text" id="task-input" placeholder="Task, e.g. Book the DJ for the dance"
+               style="flex:2;min-width:200px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit">
+        <select id="task-assignee" style="flex:1;min-width:130px;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:inherit">
+          <option value="">Unassigned</option>
+        </select>
+        <input type="date" id="task-due" title="Due date (optional)"
+               style="padding:9px 10px;border:1px solid var(--border);border-radius:8px;font-family:inherit">
+        <button class="bo-btn" type="submit">Add task</button>
+      </form>
+      <label style="font-size:12.5px;color:var(--text-light);display:flex;gap:6px;align-items:center;margin-bottom:14px">
+        <input type="checkbox" id="mine-only"> Show only tasks assigned to me
+      </label>
       <div class="bo-list" id="task-list"></div>
     </section>
   </main>
@@ -132,6 +152,7 @@
       document.getElementById('tip-example').textContent =
         'schalmontpto.com/' + SCHOOL_PREFIX[school] + '/fun-run';
       document.getElementById('yearbook-tab').href = 'yearbook.html?s=' + school;
+      document.getElementById('calendar-tab').href = 'calendar.html?s=' + school;
 
       // Tabs
       document.querySelectorAll('button.bo-tab').forEach(btn => {
@@ -146,8 +167,11 @@
       loadPages();
       loadMedia();
       initAssetForm();
-      loadTasks();
+      loadPeople().then(loadTasks);
+      initIdeas();
+      loadIdeas();
       initTasks();
+      document.getElementById('mine-only').onchange = loadTasks;
     });
 
     /* ---------------- PAGES ---------------- */
@@ -244,7 +268,82 @@
       }
     }
 
-    /* ---------------- PLANNING ---------------- */
+    /* ---------------- PLANNING: people for the "assign to" list ------------ */
+    let people = [];
+    async function loadPeople() {
+      const names = new Map();
+      names.set(ME.email, ME.name + ' (me)');
+      try {
+        const [a, s] = await Promise.all([
+          db.collection('users').where('adminSchools', 'array-contains', school).get(),
+          db.collection('users').where('role', '==', 'superadmin').get()
+        ]);
+        [...a.docs, ...s.docs].forEach(d => {
+          const u = d.data();
+          if (u.email) names.set(u.email, u.displayName || u.email);
+        });
+      } catch (_) {}
+      people = [...names.entries()];
+      const sel = document.getElementById('task-assignee');
+      sel.innerHTML = '<option value="">Unassigned</option>' +
+        people.map(([em, nm]) => `<option value="${esc(em)}">${esc(nm)}</option>`).join('');
+    }
+    function personName(email) {
+      if (!email) return '';
+      const hit = people.find(p => p[0] === email);
+      return hit ? hit[1] : email.split('@')[0];
+    }
+
+    /* ---------------- PLANNING: ideas ------------------------------------- */
+    function initIdeas() {
+      document.getElementById('idea-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const inp = document.getElementById('idea-input');
+        const text = inp.value.trim();
+        if (!text) return;
+        inp.value = '';
+        await db.collection('ideas').add({
+          school, text, by: ME.email,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        loadIdeas();
+      };
+    }
+    async function loadIdeas() {
+      const box = document.getElementById('idea-list');
+      try {
+        const snap = await db.collection('ideas').where('school', '==', school).get();
+        if (snap.empty) { box.innerHTML = '<p style="color:var(--text-light)">No ideas yet — add one above.</p>'; return; }
+        box.innerHTML = '';
+        snap.docs.slice()
+          .sort((a, b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0))
+          .forEach(doc => {
+            const i = doc.data();
+            const el = document.createElement('div');
+            el.className = 'bo-row';
+            el.innerHTML = `
+              <div class="bo-row-main"><h4 style="font-weight:500">${esc(i.text)}</h4>
+                <span class="bo-meta">from ${esc((i.by || '').split('@')[0])}</span></div>
+              <button class="bo-btn ghost sm" data-promote>Move to To-Do</button>
+              <button class="bo-btn ghost sm" data-del>Remove</button>`;
+            el.querySelector('[data-promote]').onclick = async () => {
+              await db.collection('planning').add({
+                school, text: i.text, done: false, assignedTo: '', dueDate: '',
+                createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+              });
+              await db.collection('ideas').doc(doc.id).delete();
+              toast('Moved to To-Do list'); loadIdeas(); loadTasks();
+            };
+            el.querySelector('[data-del]').onclick = () =>
+              db.collection('ideas').doc(doc.id).delete().then(loadIdeas);
+            box.appendChild(el);
+          });
+      } catch (e) {
+        box.innerHTML = '<p style="color:var(--error)">Could not load ideas: ' + esc(e.message) + '</p>';
+      }
+    }
+
+    /* ---------------- PLANNING: assignable to-dos ------------------------- */
     function initTasks() {
       document.getElementById('task-form').onsubmit = async (e) => {
         e.preventDefault();
@@ -252,8 +351,11 @@
         const text = input.value.trim();
         if (!text) return;
         input.value = '';
+        const assignedTo = document.getElementById('task-assignee').value;
+        const dueDate = document.getElementById('task-due').value;
+        document.getElementById('task-due').value = '';
         await db.collection('planning').add({
-          school, text, done: false,
+          school, text, done: false, assignedTo, dueDate,
           createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         loadTasks();
@@ -262,24 +364,44 @@
 
     async function loadTasks() {
       const box = document.getElementById('task-list');
+      const mineOnly = document.getElementById('mine-only').checked;
       try {
         const snap = await db.collection('planning').where('school', '==', school).get();
-        if (snap.empty) { box.innerHTML = '<p style="color:var(--text-light)">No tasks yet.</p>'; return; }
+        let docs = snap.docs.slice();
+        if (mineOnly) docs = docs.filter(d => d.data().assignedTo === ME.email);
+        if (!docs.length) { box.innerHTML = '<p style="color:var(--text-light)">' +
+          (mineOnly ? 'No tasks assigned to you.' : 'No tasks yet.') + '</p>'; return; }
+        docs.sort((a, b) => {
+          const A = a.data(), B = b.data();
+          if (!!A.done !== !!B.done) return A.done ? 1 : -1;          // open first
+          return (A.dueDate || '9999') < (B.dueDate || '9999') ? -1 : 1; // then by due date
+        });
         box.innerHTML = '';
-        snap.docs.slice()
-          .sort((a, b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0))
-          .forEach(doc => {
+        docs.forEach(doc => {
           const t = doc.data();
+          const overdue = t.dueDate && !t.done && t.dueDate < new Date().toISOString().slice(0, 10);
           const el = document.createElement('div');
           el.className = 'bo-checkitem' + (t.done ? ' done' : '');
           el.innerHTML = `
             <input type="checkbox" id="t-${doc.id}" ${t.done ? 'checked' : ''}>
             <label for="t-${doc.id}" style="flex:1">${esc(t.text)}
-              <span class="bo-meta" style="display:block">added by ${esc((t.createdBy||'').split('@')[0])}</span>
+              <span class="bo-meta" style="display:block">
+                ${t.assignedTo ? '👤 ' + esc(personName(t.assignedTo)) : 'Unassigned'}
+                ${t.dueDate ? ' · <span style="color:' + (overdue ? 'var(--error)' : 'var(--text-light)') + '">due ' + esc(t.dueDate) + '</span>' : ''}
+              </span>
             </label>
+            <button class="bo-btn ghost sm" data-assign>Assign</button>
             <button class="bo-btn ghost sm" data-del>Remove</button>`;
           el.querySelector('input').onchange = (ev) =>
             db.collection('planning').doc(doc.id).update({ done: ev.target.checked }).then(loadTasks);
+          el.querySelector('[data-assign]').onclick = () => {
+            const opts = ['(unassign)', ...people.map(p => p[1])];
+            const pick = prompt('Assign to:\n' + opts.map((o, n) => n + ' = ' + o).join('\n'), '0');
+            if (pick === null) return;
+            const n = parseInt(pick, 10);
+            const email = n === 0 ? '' : (people[n - 1] ? people[n - 1][0] : t.assignedTo);
+            db.collection('planning').doc(doc.id).update({ assignedTo: email }).then(loadTasks);
+          };
           el.querySelector('[data-del]').onclick = () =>
             db.collection('planning').doc(doc.id).delete().then(loadTasks);
           box.appendChild(el);
