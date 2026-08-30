@@ -44,7 +44,7 @@
         A <strong>page</strong> is a web page on the PTO site &mdash; like a flyer that lives online.
         You build it by stacking simple blocks (a heading, a paragraph, a photo, a button&hellip;).
         Nobody can see it until you press <strong>Publish</strong>. After that it has its own link
-        you can share, e.g. <code>schalmontpto.com/p/your-page-name</code>.
+        you can share, e.g. <code id="tip-example">schalmontpto.com/&hellip;</code>.
       </div>
       <p><a class="bo-btn" href="#" id="new-page-btn">＋ New page</a></p>
       <div class="bo-list" id="pages-list" style="margin-top:18px">
@@ -125,6 +125,8 @@
       document.getElementById('crumb-school').textContent = SCHOOLS[school];
       document.getElementById('school-title').textContent = SCHOOLS[school] + ' — Workspace';
       document.getElementById('new-page-btn').href = 'page-editor.html?s=' + school + '&new=1';
+      document.getElementById('tip-example').textContent =
+        'schalmontpto.com/' + SCHOOL_PREFIX[school] + '/fun-run';
 
       // Tabs
       document.querySelectorAll('.bo-tab').forEach(btn => {
