@@ -238,7 +238,8 @@
     async function loadEvents() {
       try {
         const snap = await db.collection('pto_events').get();
-        allEvents = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        allEvents = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+          .filter(e => !e.id.startsWith('__'));       // skip internal bookkeeping docs
         refresh();
         // First time the calendar is ever opened, pull the planning sheet automatically.
         if (!autoImportTried && !allEvents.some(e => e.source === 'sheet')) {
@@ -361,6 +362,7 @@
       };
       try {
         if (editingId) {
+          data.pinned = true;   // a human edited this — future sheet re-syncs leave it alone
           await db.collection('pto_events').doc(editingId).update(data);
         } else {
           data.source = 'manual';
@@ -375,7 +377,13 @@
     async function deleteEvent() {
       if (!editingId) return;
       if (!confirm('Delete this event from the calendar?')) return;
+      const ev = allEvents.find(e => e.id === editingId);
       try {
+        // If it came from the planning sheet, remember not to re-add it on the next sync.
+        if (ev && ev.source === 'sheet') {
+          await db.collection('pto_events').doc('__deleted__').set(
+            { ids: firebase.firestore.FieldValue.arrayUnion(editingId) }, { merge: true });
+        }
         await db.collection('pto_events').doc(editingId).delete();
         toast('Deleted'); closeModal(); loadEvents();
       } catch (e) { toast('Could not delete: ' + e.message, 'error'); }
@@ -411,8 +419,14 @@
           status: col('Status'), notes: col('Notes')
         };
         const known = new Set(allEvents.map(e => e.id));
+        const pinned = new Set(allEvents.filter(e => e.pinned).map(e => e.id));
+        let skip = new Set();
+        try {
+          const dd = await db.collection('pto_events').doc('__deleted__').get();
+          if (dd.exists) skip = new Set(dd.data().ids || []);
+        } catch (_) {}
 
-        let added = 0, updated = 0;
+        let added = 0, updated = 0, kept = 0;
         const batch = db.batch();
         for (const r of rows) {
           const rawDate = (r[ci.date] || '').trim();
@@ -424,6 +438,9 @@
           // deterministic id => running the sync again upserts instead of duplicating
           const id = ('sheet_' + date + '_' + title).toLowerCase()
             .replace(/[^a-z0-9_]+/g, '_').replace(/_+/g, '_').slice(0, 120);
+          // leave hand-edited or hand-deleted sheet events alone
+          if (skip.has(id)) { continue; }
+          if (pinned.has(id)) { kept++; continue; }
           const mapStatus = (s) => /complete/i.test(s) ? 'done' : /progress/i.test(s) ? 'confirmed' : 'planned';
           const parseD = (v) => { const x = new Date((v || '').trim()); return isNaN(x) ? '' : toYMD(x); };
           const fields = {
@@ -459,7 +476,7 @@
         await batch.commit();
         stat.style.color = 'var(--text-light)';
         stat.textContent = 'Synced from planning sheet · ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-        if (!silent) toast(`Synced: ${added} new, ${updated} updated`);
+        if (!silent) toast(`Synced: ${added} new, ${updated} updated` + (kept ? `, ${kept} of your edits kept` : ''));
         loadEvents();
       } catch (e) {
         const stat = document.getElementById('sync-status');
