@@ -235,9 +235,12 @@
       const filter = document.getElementById('school-filter').value;
       const showPromo = document.getElementById('show-promo').checked;
       const fcEvents = [];
+      const isDistrict = ev => !ev.school || ev.school === 'pto' || ev.school === 'district';
       allEvents
-        .filter(ev => filter === 'all' || ev.school === filter ||
-                      (filter === 'pto' && (!ev.school || ev.school === 'pto' || ev.school === 'district')))
+        // Every school's calendar also shows PTO-wide / district events (that's what the
+        // planning spreadsheet mostly contains). A school filter only hides OTHER schools'
+        // school-specific events.
+        .filter(ev => filter === 'all' || ev.school === filter || isDistrict(ev))
         .forEach(ev => {
           const color = catColor(ev.category);
           const timed = !!ev.time;
@@ -373,7 +376,10 @@
       try {
         const idToken = await auth.currentUser.getIdToken();
         const res = await fetch('../api/sheet-proxy.php?id=' + SHEET_ID + '&idToken=' + encodeURIComponent(idToken));
-        const data = await res.json();
+        const raw = await res.text();
+        let data;
+        try { data = JSON.parse(raw); }
+        catch (_) { throw new Error('the server did not respond correctly — is api/sheet-proxy.php uploaded to Bluehost?'); }
         if (!res.ok || !data.ok) throw new Error(data.error || 'Sync failed');
         const rows = parseCSV(data.csv);
         const header = rows.shift().map(h => h.trim());
@@ -429,11 +435,14 @@
           batch.set(db.collection('pto_events').doc(id), fields, { merge: true });
         }
         await batch.commit();
+        stat.style.color = 'var(--text-light)';
         stat.textContent = 'Synced from planning sheet · ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
         if (!silent) toast(`Synced: ${added} new, ${updated} updated`);
         loadEvents();
       } catch (e) {
-        document.getElementById('sync-status').textContent = '';
+        const stat = document.getElementById('sync-status');
+        stat.style.color = 'var(--error)';
+        stat.textContent = 'Planning sheet: ' + e.message;
         toast('Sheet sync problem: ' + e.message, 'error');
       } finally {
         syncing = false;
