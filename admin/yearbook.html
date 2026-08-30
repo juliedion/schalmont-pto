@@ -34,6 +34,10 @@
   <div id="bo-shell"></div>
 
   <main id="bo-main" style="display:none">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      <a class="bo-btn ghost sm" href="index.html">← Back Office Home</a>
+      <a class="bo-btn ghost sm" id="back-school" href="#">← <span id="back-school-name">School</span> Workspace</a>
+    </div>
     <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo;
       <a id="crumb-school" href="#">School</a> &rsaquo; Yearbook Photos</div>
     <h1 class="bo-h1" id="title">Yearbook Photos</h1>
@@ -90,6 +94,8 @@
       }
       document.getElementById('crumb-school').textContent = SCHOOLS[school];
       document.getElementById('crumb-school').href = 'school.html?s=' + school;
+      document.getElementById('back-school').href = 'school.html?s=' + school;
+      document.getElementById('back-school-name').textContent = SCHOOLS[school];
       document.getElementById('title').textContent = SCHOOLS[school] + ' — Yearbook Photos';
 
       const link = 'schalmontpto.com/yearbook-upload';

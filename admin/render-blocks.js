@@ -60,4 +60,45 @@
   global.renderBlocks = function (blocks) {
     return (blocks || []).map(renderBlock).join('\n');
   };
+
+  function prettyDate(ymd) {
+    if (!ymd) return '';
+    const p = ymd.split('-');
+    if (p.length !== 3) return ymd;
+    const d = new Date(+p[0], +p[1] - 1, +p[2]);
+    if (isNaN(d)) return ymd;
+    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  }
+  function prettyTime(hm) {
+    if (!hm) return '';
+    const p = hm.split(':');
+    if (p.length < 2) return hm;
+    let h = +p[0]; const m = p[1];
+    const ap = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return `${h}:${m} ${ap}`;
+  }
+
+  /* Flyer image + event date/time/location card, shown above the blocks */
+  global.renderPageHeader = function (page) {
+    let html = '';
+    if (page.flyerUrl) {
+      html += `<img src="${e(page.flyerUrl)}" alt="Event flyer" class="pg-flyer">`;
+    }
+    const date = prettyDate(page.eventDate);
+    const time = prettyTime(page.eventTime);
+    const loc  = page.eventLocation;
+    if (date || time || loc) {
+      html += '<div class="pg-eventbox">';
+      if (date || time) {
+        html += `<div class="pg-eventrow"><span class="pg-eventicon">📅</span><span>${e(date)}${date && time ? ' · ' : ''}${e(time)}</span></div>`;
+      }
+      if (loc) {
+        const maps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(loc);
+        html += `<div class="pg-eventrow"><span class="pg-eventicon">📍</span><a href="${e(maps)}" target="_blank" rel="noopener">${e(loc)}</a></div>`;
+      }
+      html += '</div>';
+    }
+    return html;
+  };
 })(window);

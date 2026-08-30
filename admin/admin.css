@@ -153,6 +153,15 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 .pg-body .pg-btn.outline { background: #fff; color: var(--primary); border: 2px solid var(--primary); }
 .pg-body hr { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
 .pg-body iframe { width: 100%; min-height: 480px; border: 1px solid var(--border); border-radius: 10px; }
+.pg-flyer { display: block; width: 100%; border-radius: 12px; margin: 0 0 18px; border: 1px solid var(--border); }
+.pg-eventbox { background: #eef6ec; border: 1px solid #cfe6c8; border-radius: 10px; padding: 14px 16px; margin: 0 0 20px; }
+.pg-eventrow { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; color: var(--primary-dark); font-weight: 600; }
+.pg-eventrow + .pg-eventrow { margin-top: 7px; }
+.pg-eventrow a { color: var(--primary); }
+.pg-eventicon { flex-shrink: 0; }
+
+/* Preview banner on p.html */
+.pg-preview-banner { background: var(--warning); color: #fff; text-align: center; padding: 8px 14px; font-size: 13px; font-weight: 700; }
 
 /* ---------- Media library ---------- */
 .bo-media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }

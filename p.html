@@ -19,6 +19,9 @@
   </style>
 </head>
 <body>
+  <div id="preview-banner" class="pg-preview-banner" hidden>
+    👁 PREVIEW — this is a draft. It is not visible to the public until you press Publish.
+  </div>
   <div class="pg-header">
     <a href="index.html"><img src="images/logo.png" alt=""> Schalmont Central PTO</a>
   </div>
@@ -32,6 +35,7 @@
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="admin/render-blocks.js"></script>
@@ -39,10 +43,12 @@
     const SCHOOL_LABEL = { woestina:'Woestina Pre-K', jefferson:'Jefferson Elementary',
       middle:'Middle School', high:'High School', pto:'Schalmont PTO' };
     const PREFIX_TO_SCHOOL = { woestina:'woestina', jes:'jefferson', ms:'middle', hs:'high', pto:'pto' };
+    const OWNER_EMAIL = 'julie@schalmontpto.com';
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
     const params = new URLSearchParams(location.search);
+    const isPreview = params.get('preview') === '1';
     let slug = params.get('slug');
     let prefix = params.get('prefix');
     if (!slug) {
@@ -50,27 +56,50 @@
              || location.pathname.match(/^\/p\/([A-Za-z0-9_-]+)/);
       if (m) { if (m.length === 3) { prefix = m[1]; slug = m[2]; } else { slug = m[1]; } }
     }
+    const wantSchool = prefix ? PREFIX_TO_SCHOOL[prefix] : null;
 
-    (async () => {
-      const body = document.getElementById('pg-body');
+    const body = document.getElementById('pg-body');
+
+    if (isPreview) {
+      firebase.auth().onAuthStateChanged(async (user) => {
+        if (!user) { body.innerHTML = '<h1>Preview</h1><p>Please <a href="login.html">sign in</a> as a PTO administrator to preview this page.</p>'; return; }
+        const ok = await canPreview(user);
+        if (!ok) { body.innerHTML = '<h1>Preview</h1><p>Your account can\'t preview this page.</p>'; return; }
+        render(true);
+      });
+    } else {
+      render(false);
+    }
+
+    async function canPreview(user) {
+      if (user.email === OWNER_EMAIL) return true;
+      try {
+        const d = (await db.collection('users').doc(user.uid).get()).data() || {};
+        if (d.role === 'superadmin') return true;
+        if (d.role === 'admin' && Array.isArray(d.adminSchools) && wantSchool)
+          return d.adminSchools.includes(wantSchool);
+      } catch (_) {}
+      return false;
+    }
+
+    async function render(preview) {
       if (!slug) { body.innerHTML = notFound(); return; }
       try {
         const snap = await db.collection('pages').where('slug', '==', slug).get();
-        const wantSchool = prefix ? PREFIX_TO_SCHOOL[prefix] : null;
         const match = snap.docs
           .map(d => d.data())
-          .find(d => d.status === 'published' && (!wantSchool || d.school === wantSchool));
+          .find(d => (preview || d.status === 'published') && (!wantSchool || d.school === wantSchool));
         if (!match) { body.innerHTML = notFound(); return; }
         const p = match;
         document.title = p.title + ' — Schalmont PTO';
-        body.innerHTML = `<h1>${escapeHtml(p.title)}</h1>` + renderBlocks(p.blocks);
+        if (preview && p.status !== 'published') document.getElementById('preview-banner').hidden = false;
+        body.innerHTML = `<h1>${escapeHtml(p.title)}</h1>` + renderPageHeader(p) + renderBlocks(p.blocks);
         document.getElementById('pg-foot').innerHTML =
-          `${SCHOOL_LABEL[p.school] || 'Schalmont PTO'} &nbsp;·&nbsp; ` +
-          `<a href="index.html">Schalmont PTO home</a>`;
+          `${SCHOOL_LABEL[p.school] || 'Schalmont PTO'} &nbsp;·&nbsp; <a href="index.html">Schalmont PTO home</a>`;
       } catch (e) {
         body.innerHTML = '<p>Sorry, this page could not be loaded right now.</p>';
       }
-    })();
+    }
 
     function notFound() {
       return '<h1>Page not found</h1><p>This page may have been unpublished or the link is ' +

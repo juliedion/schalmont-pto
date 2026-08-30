@@ -26,12 +26,15 @@
   <div id="bo-shell"></div>
 
   <main id="bo-main" style="display:none">
-    <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo;
-      <a id="crumb-school" href="#">School</a> &rsaquo; Page editor</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      <a class="bo-btn ghost sm" href="index.html">← Back Office Home</a>
+      <a class="bo-btn ghost sm" id="back-school" href="#">← <span id="back-school-name">School</span> Workspace</a>
+    </div>
 
     <div class="bo-topbar">
       <strong id="status-pill" class="bo-pill draft">Draft</strong>
       <span class="spacer"></span>
+      <a class="bo-btn ghost sm" id="preview-btn" target="_blank">👁 Preview</a>
       <a class="bo-btn ghost sm" id="view-btn" target="_blank" style="display:none">View live page ↗</a>
       <button class="bo-btn ghost sm" id="save-btn">Save draft</button>
       <button class="bo-btn sm" id="publish-btn">Publish</button>
@@ -50,12 +53,40 @@
       <input type="text" id="page-title" placeholder="Give your page a clear name">
     </div>
     <div class="bo-field" style="max-width:none">
-      <label>Page link <span class="bo-hint">This is the web address. It's created from your title &mdash; you can shorten it. Only lowercase letters, numbers and dashes.</span></label>
+      <label>Page link <span class="bo-hint">This is the web address. It's created from your title &mdash; you can shorten it. Lowercase letters and numbers only.</span></label>
       <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
         <span style="color:var(--text-light)">schalmontpto.com/<span id="slug-prefix">p</span>/</span>
-        <input type="text" id="page-slug" style="max-width:280px" placeholder="fun-run">
+        <input type="text" id="page-slug" style="max-width:280px" placeholder="funrun">
       </div>
     </div>
+
+    <details style="margin:8px 0 4px;max-width:none">
+      <summary style="cursor:pointer;font-weight:700;font-size:13.5px;color:var(--text)">Event details &amp; flyer (optional)</summary>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:10px">
+        <div class="bo-tip" style="margin-bottom:14px">
+          Fill these in if this page is for an event. The date, time and location show in a
+          highlighted box near the top of the page, and the flyer appears as a big image above it.
+        </div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap">
+          <div class="bo-blockfield"><label>Date</label>
+            <input type="date" id="event-date"></div>
+          <div class="bo-blockfield"><label>Start time</label>
+            <input type="time" id="event-time"></div>
+        </div>
+        <div class="bo-blockfield"><label>Location <span style="font-weight:400;color:var(--text-light)">— name and/or address; becomes a Google Maps link</span></label>
+          <input type="text" id="event-location" placeholder="Jefferson Elementary gym, 2 Sabre Lane, Schenectady NY"></div>
+        <div class="bo-blockfield" style="margin-top:10px">
+          <label>Flyer image <span style="font-weight:400;color:var(--text-light)">— JPG or PNG, up to 12 MB</span></label>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <button type="button" class="bo-btn ghost sm" id="flyer-pick">Upload flyer</button>
+            <button type="button" class="bo-btn ghost sm" id="flyer-remove" style="display:none">Remove flyer</button>
+            <span id="flyer-status" style="font-size:12px;color:var(--text-light)"></span>
+            <input type="file" id="flyer-input" accept="image/png,image/jpeg,image/webp" hidden>
+          </div>
+          <img id="flyer-thumb" style="display:none;max-width:180px;margin-top:8px;border-radius:8px;border:1px solid var(--border)">
+        </div>
+      </div>
+    </details>
 
     <div class="bo-editor" style="margin-top:20px">
       <div>
@@ -114,9 +145,15 @@
 
       document.getElementById('crumb-school').textContent = SCHOOLS[school];
       document.getElementById('crumb-school').href = 'school.html?s=' + school;
+      document.getElementById('back-school').href = 'school.html?s=' + school;
+      document.getElementById('back-school-name').textContent = SCHOOLS[school];
       document.getElementById('slug-prefix').textContent = SCHOOL_PREFIX[school];
       document.getElementById('page-title').value = page.title || '';
       document.getElementById('page-slug').value = page.slug || '';
+      document.getElementById('event-date').value = page.eventDate || '';
+      document.getElementById('event-time').value = page.eventTime || '';
+      document.getElementById('event-location').value = page.eventLocation || '';
+      showFlyer();
       if (page.slug) slugTouched = true;
       if (!page.blocks || !page.blocks.length) page.blocks = [{ type:'heading', level:1, text:'' }];
 
@@ -127,15 +164,68 @@
       loadImages();
     });
 
+    // web-address friendly: lowercase letters + numbers only, no spaces or dashes
+    function pageSlug(s) {
+      return String(s).toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 60);
+    }
+
+    function showFlyer() {
+      const thumb = document.getElementById('flyer-thumb');
+      const rm = document.getElementById('flyer-remove');
+      if (page.flyerUrl) {
+        thumb.src = page.flyerUrl; thumb.style.display = ''; rm.style.display = '';
+      } else {
+        thumb.style.display = 'none'; rm.style.display = 'none';
+      }
+    }
+
+    async function uploadImage(file) {
+      const fd = new FormData();
+      fd.append('school', school);
+      fd.append('image', file);
+      fd.append('idToken', await auth.currentUser.getIdToken());
+      const res = await fetch('../api/upload-image.php', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || 'Upload failed');
+      return data.url;
+    }
+
     function wireInputs() {
       const title = document.getElementById('page-title');
       const slug = document.getElementById('page-slug');
       title.oninput = () => {
         page.title = title.value;
-        if (!slugTouched) { slug.value = slugify(title.value); page.slug = slug.value; }
+        if (!slugTouched) { slug.value = pageSlug(title.value); page.slug = slug.value; }
         refreshPreview();
       };
-      slug.oninput = () => { slugTouched = true; slug.value = slugify(slug.value); page.slug = slug.value; };
+      slug.oninput = () => { slugTouched = true; slug.value = pageSlug(slug.value); page.slug = slug.value; };
+
+      const ed = document.getElementById('event-date'), et = document.getElementById('event-time'),
+            el = document.getElementById('event-location');
+      ed.oninput = () => { page.eventDate = ed.value; refreshPreview(); };
+      et.oninput = () => { page.eventTime = et.value; refreshPreview(); };
+      el.oninput = () => { page.eventLocation = el.value.trim(); refreshPreview(); };
+
+      const fpick = document.getElementById('flyer-pick'), finput = document.getElementById('flyer-input'),
+            fstat = document.getElementById('flyer-status');
+      fpick.onclick = () => finput.click();
+      finput.onchange = async () => {
+        if (!finput.files[0]) return;
+        fstat.textContent = 'Uploading…';
+        try {
+          page.flyerUrl = await uploadImage(finput.files[0]);
+          fstat.textContent = ''; showFlyer(); refreshPreview();
+        } catch (e) { fstat.textContent = e.message; }
+        finput.value = '';
+      };
+      document.getElementById('flyer-remove').onclick = () => {
+        page.flyerUrl = ''; showFlyer(); refreshPreview();
+      };
+
+      document.getElementById('preview-btn').onclick = (e) => {
+        e.preventDefault();
+        openPreview();
+      };
 
       document.querySelectorAll('[data-add]').forEach(btn => {
         btn.onclick = () => {
@@ -230,11 +320,28 @@
       }
       else if (b.type === 'image') {
         const inp = document.createElement('input');
-        inp.type = 'text'; inp.value = b.url || ''; inp.placeholder = 'Pick a photo below, or paste an image link';
+        inp.type = 'text'; inp.value = b.url || ''; inp.placeholder = 'Upload below, pick a saved photo, or paste an image link';
         inp.oninput = () => { b.url = inp.value; upd(); };
+
+        const up = document.createElement('button');
+        up.type = 'button'; up.className = 'bo-btn ghost sm'; up.textContent = 'Upload a photo';
+        const upFile = document.createElement('input');
+        upFile.type = 'file'; upFile.accept = 'image/png,image/jpeg,image/webp'; upFile.hidden = true;
+        const upStat = document.createElement('span');
+        upStat.style.cssText = 'font-size:12px;color:var(--text-light);margin-left:8px';
+        up.onclick = () => upFile.click();
+        upFile.onchange = async () => {
+          if (!upFile.files[0]) return;
+          upStat.textContent = 'Uploading…';
+          try {
+            b.url = await uploadImage(upFile.files[0]);
+            upStat.textContent = ''; renderBlockEditors(); upd();
+          } catch (e) { upStat.textContent = e.message; }
+        };
+
         const pick = document.createElement('div');
         pick.className = 'bo-imgpick';
-        if (!images.length) pick.innerHTML = '<span style="font-size:12px;color:var(--text-light)">No photos uploaded yet. Go to the school\'s <b>Files &amp; Photos</b> tab to add some.</span>';
+        if (!images.length) pick.innerHTML = '<span style="font-size:12px;color:var(--text-light)">No saved photos yet — upload one above, or add links in the school\'s <b>Files &amp; Photos</b> tab.</span>';
         images.forEach(img => {
           const t = document.createElement('img');
           t.src = img.url; t.title = img.name;
@@ -249,6 +356,7 @@
         cap.type='text'; cap.value=b.caption||''; cap.placeholder='Optional caption shown under the photo';
         cap.oninput = () => { b.caption = cap.value; upd(); };
         out.push(field('Photo link','', inp));
+        out.push((() => { const d=document.createElement('div'); d.className='bo-blockfield'; d.append(up, upFile, upStat); return d; })());
         out.push((() => { const d=document.createElement('div'); d.className='bo-blockfield'; d.appendChild(pick); return d; })());
         out.push(field('Describe the photo','for visually-impaired visitors', alt));
         out.push(field('Caption','optional', cap));
@@ -295,7 +403,20 @@
 
     function refreshPreview() {
       const titleHtml = page.title ? `<h1>${esc(page.title)}</h1>` : '';
-      document.getElementById('preview').innerHTML = titleHtml + renderBlocks(page.blocks);
+      document.getElementById('preview').innerHTML =
+        titleHtml + renderPageHeader(page) + renderBlocks(page.blocks);
+    }
+
+    async function openPreview() {
+      const btn = document.getElementById('preview-btn');
+      if (!page.title.trim()) { toast('Add a page title first, then Preview', 'error'); return; }
+      btn.textContent = 'Saving…';
+      try {
+        await save(false);                    // save current work as a draft
+        if (pageId) window.open('../' + pagePath(school, page.slug) + '?preview=1', '_blank');
+      } finally {
+        btn.textContent = '👁 Preview';
+      }
     }
 
     function reflectStatus() {
@@ -312,7 +433,7 @@
     async function save(statusChange) {
       const btns = document.querySelectorAll('.bo-topbar button');
       if (!page.title.trim()) { toast('Give your page a title first', 'error'); return; }
-      if (!page.slug.trim()) { page.slug = slugify(page.title); }
+      if (!page.slug.trim()) { page.slug = pageSlug(page.title); }
 
       if (statusChange === 'published') {
         // make sure the link isn't already used by another page
@@ -324,7 +445,10 @@
       btns.forEach(b => b.disabled = true);
       const data = {
         title: page.title.trim(), slug: page.slug.trim(), school,
-        blocks: page.blocks, updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        blocks: page.blocks,
+        eventDate: page.eventDate || '', eventTime: page.eventTime || '',
+        eventLocation: page.eventLocation || '', flyerUrl: page.flyerUrl || '',
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedBy: ME.email
       };
       if (statusChange) data.status = statusChange;
