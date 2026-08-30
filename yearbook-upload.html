@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit Yearbook Photos — Schalmont PTO</title>
+  <meta name="description" content="Share your event photos for the Schalmont school yearbooks.">
+  <link rel="stylesheet" href="css/styles.css?v=6">
+  <link rel="icon" href="images/favicon.svg">
+  <style>
+    body { background: var(--light-bg); margin: 0; }
+    .yb-header { background: var(--primary-dark); padding: 14px 20px; }
+    .yb-header a { display: inline-flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font-weight: 800; }
+    .yb-header img { height: 34px; background: #fff; border-radius: 6px; padding: 3px; }
+    .yb-wrap { max-width: 620px; margin: 0 auto; padding: 30px 18px 70px; }
+    .yb-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: clamp(20px, 5vw, 36px); }
+    .yb-card h1 { font-size: 22px; color: var(--primary-dark); margin: 0 0 6px; }
+    .yb-intro { font-size: 14px; color: var(--text); line-height: 1.6; margin-bottom: 22px; }
+    .yb-field { margin-bottom: 16px; }
+    .yb-field label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 5px; }
+    .yb-field .hint { font-weight: 400; color: var(--text-light); font-size: 12.5px; display: block; margin-top: 2px; }
+    .yb-field input[type=text], .yb-field input[type=email], .yb-field select, .yb-field textarea {
+      width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 8px;
+      font-family: inherit; font-size: 15px; background: #fff;
+    }
+    .yb-field textarea { min-height: 70px; resize: vertical; }
+    .yb-drop { border: 2px dashed var(--primary-light); border-radius: 12px; padding: 26px; text-align: center; color: var(--text-light); cursor: pointer; }
+    .yb-drop.drag { background: #eef6ec; }
+    .yb-thumbs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .yb-thumbs .t { position: relative; width: 84px; height: 84px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+    .yb-thumbs .t img { width: 100%; height: 100%; object-fit: cover; }
+    .yb-thumbs .t button { position: absolute; top: 2px; right: 2px; border: none; background: rgba(0,0,0,.6); color: #fff; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px; }
+    .yb-btn { width: 100%; padding: 13px; border: none; border-radius: 9px; background: var(--primary); color: #fff; font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit; }
+    .yb-btn:disabled { opacity: .6; }
+    .yb-note { font-size: 12px; color: var(--text-light); margin-top: 14px; line-height: 1.5; }
+    .yb-msg { padding: 14px; border-radius: 9px; font-size: 14px; margin-bottom: 18px; line-height: 1.55; }
+    .yb-msg.ok { background: var(--success-light); color: #1c6b3a; }
+    .yb-msg.err { background: var(--error-light); color: #9b2c2c; }
+  </style>
+</head>
+<body>
+  <div class="yb-header">
+    <a href="index.html"><img src="images/logo.png" alt=""> Schalmont Central PTO</a>
+  </div>
+  <div class="yb-wrap">
+    <div class="yb-card">
+      <h1>Submit Yearbook Photos</h1>
+      <p class="yb-intro">
+        Help build the school yearbooks! Pick your school and the event, tell us who's in the
+        pictures, and upload them below. A PTO volunteer reviews every photo before it's used,
+        so it may not appear right away. Please only submit photos you took and are happy to
+        share.
+      </p>
+
+      <div id="msg"></div>
+
+      <form id="yb-form">
+        <div class="yb-field">
+          <label for="school">School</label>
+          <select id="school" required>
+            <option value="">Choose a school…</option>
+            <option value="woestina">Woestina Pre-K</option>
+            <option value="jefferson">Jefferson Elementary</option>
+            <option value="middle">Middle School</option>
+            <option value="high">High School</option>
+            <option value="pto">PTO-wide event</option>
+          </select>
+        </div>
+
+        <div class="yb-field">
+          <label for="event">Event folder</label>
+          <select id="event" required disabled>
+            <option value="">Choose a school first…</option>
+          </select>
+          <span class="hint" id="event-hint"></span>
+        </div>
+
+        <div class="yb-field">
+          <label for="uploaderName">Your name</label>
+          <input type="text" id="uploaderName" required maxlength="80" autocomplete="name">
+        </div>
+
+        <div class="yb-field">
+          <label for="uploaderEmail">Your email <span class="hint" style="display:inline">(optional — only if we need to reach you about a photo)</span></label>
+          <input type="email" id="uploaderEmail" maxlength="120" autocomplete="email">
+        </div>
+
+        <div class="yb-field">
+          <label for="people">Who is in the photos?
+            <span class="hint">First and last names, left to right if you can. This helps us
+            caption pictures and is a big help to the yearbook team.</span>
+          </label>
+          <textarea id="people" maxlength="400" placeholder="e.g. Front row: Maya Chen, Liam Portnoy. Back row: Coach Rivera"></textarea>
+        </div>
+
+        <div class="yb-field">
+          <label>Photos <span class="hint">JPG, PNG, HEIC, etc. Up to 12 MB each, up to 12 at a time.</span></label>
+          <div class="yb-drop" id="drop">
+            <strong>Tap to choose photos</strong> or drag them here
+            <input type="file" id="file" accept="image/*" multiple hidden>
+          </div>
+          <div class="yb-thumbs" id="thumbs"></div>
+        </div>
+
+        <button class="yb-btn" type="submit" id="submit">Submit photos</button>
+        <p class="yb-note">
+          By submitting, you confirm these are your photos and you're OK with the Schalmont PTO
+          using them in a school yearbook, slideshow, or newsletter. Contact
+          <a href="mailto:info@schalmontpto.com">info@schalmontpto.com</a> to have a photo removed.
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script>
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    let chosen = [];   // File objects
+
+    const schoolSel = document.getElementById('school');
+    const eventSel  = document.getElementById('event');
+    const eventHint = document.getElementById('event-hint');
+    let folders = [];
+
+    schoolSel.onchange = async () => {
+      eventSel.innerHTML = '<option value="">Loading…</option>';
+      eventSel.disabled = true;
+      eventHint.textContent = '';
+      const school = schoolSel.value;
+      if (!school) { eventSel.innerHTML = '<option value="">Choose a school first…</option>'; return; }
+      try {
+        const snap = await db.collection('yearbook_folders').where('school', '==', school).get();
+        folders = snap.docs.map(d => d.data())
+          .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        if (!folders.length) {
+          eventSel.innerHTML = '<option value="">No event folders yet</option>';
+          eventHint.textContent = 'This school hasn\'t set up any event folders yet. Please check back, or email info@schalmontpto.com.';
+          return;
+        }
+        eventSel.innerHTML = '<option value="">Choose an event…</option>' +
+          folders.map(f => `<option value="${f.slug}">${escapeHtml(f.name)}</option>`).join('');
+        eventSel.disabled = false;
+      } catch (e) {
+        eventSel.innerHTML = '<option value="">Could not load folders</option>';
+        eventHint.textContent = e.message;
+      }
+    };
+
+    /* file picking */
+    const drop = document.getElementById('drop');
+    const fileInput = document.getElementById('file');
+    drop.onclick = () => fileInput.click();
+    drop.ondragover = e => { e.preventDefault(); drop.classList.add('drag'); };
+    drop.ondragleave = () => drop.classList.remove('drag');
+    drop.ondrop = e => { e.preventDefault(); drop.classList.remove('drag'); addFiles(e.dataTransfer.files); };
+    fileInput.onchange = () => addFiles(fileInput.files);
+
+    function addFiles(list) {
+      for (const f of list) {
+        if (!f.type.startsWith('image/') && !/\.(heic|heif)$/i.test(f.name)) continue;
+        if (chosen.length >= 12) break;
+        chosen.push(f);
+      }
+      renderThumbs();
+    }
+    function renderThumbs() {
+      const box = document.getElementById('thumbs');
+      box.innerHTML = '';
+      chosen.forEach((f, i) => {
+        const t = document.createElement('div');
+        t.className = 't';
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(f);
+        const x = document.createElement('button');
+        x.type = 'button'; x.textContent = '×';
+        x.onclick = () => { chosen.splice(i, 1); renderThumbs(); };
+        t.append(img, x);
+        box.appendChild(t);
+      });
+    }
+
+    /* submit */
+    document.getElementById('yb-form').onsubmit = async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById('msg');
+      const btn = document.getElementById('submit');
+      msg.innerHTML = '';
+      if (!chosen.length) { showMsg('err', 'Please choose at least one photo.'); return; }
+      if (!eventSel.value) { showMsg('err', 'Please choose an event folder.'); return; }
+
+      const fd = new FormData();
+      fd.append('school', schoolSel.value);
+      fd.append('event', eventSel.value);
+      fd.append('eventLabel', folders.find(f => f.slug === eventSel.value)?.name || eventSel.value);
+      fd.append('uploaderName', document.getElementById('uploaderName').value.trim());
+      fd.append('uploaderEmail', document.getElementById('uploaderEmail').value.trim());
+      fd.append('people', document.getElementById('people').value.trim());
+      chosen.forEach(f => fd.append('photos[]', f));
+
+      btn.disabled = true; btn.textContent = 'Uploading…';
+      try {
+        const res = await fetch('api/yearbook-upload.php', { method: 'POST', body: fd });
+        const data = await res.json();
+        if (!res.ok || !data.ok) throw new Error(data.error || 'Upload failed');
+
+        // save the submission details for the review team
+        await db.collection('yearbook_photos').add({
+          school: schoolSel.value,
+          event: eventSel.value,
+          eventLabel: fd.get('eventLabel'),
+          uploaderName: fd.get('uploaderName'),
+          uploaderEmail: fd.get('uploaderEmail'),
+          people: fd.get('people'),
+          photos: data.files,
+          batchId: data.batchId,
+          status: 'pending',
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(() => {});
+
+        showMsg('ok', 'Thank you! ' + data.files.length + ' photo' +
+          (data.files.length === 1 ? '' : 's') + ' submitted for ' + fd.get('eventLabel') +
+          '. A PTO volunteer will review them soon. You can submit more below.');
+        chosen = []; renderThumbs();
+        document.getElementById('people').value = '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        showMsg('err', err.message);
+      } finally {
+        btn.disabled = false; btn.textContent = 'Submit photos';
+      }
+    };
+
+    function showMsg(kind, text) {
+      document.getElementById('msg').innerHTML = `<div class="yb-msg ${kind}">${escapeHtml(text)}</div>`;
+    }
+    function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+  </script>
+</body>
+</html>

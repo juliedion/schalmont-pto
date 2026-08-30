@@ -36,7 +36,8 @@ if (!is_array($body) || empty($body['messages']) || empty($body['idToken'])) {
 }
 
 /* ---------- 1. Verify the Firebase sign-in token ---------- */
-$claims = verify_firebase_token($body['idToken'], $cfg['firebase_project_id']);
+require __DIR__ . '/_verify.php';
+$claims = firebase_verify_token($body['idToken'], $cfg['firebase_project_id']);
 if (!$claims) bail(401, 'Please sign in again.');
 $userEmail = $claims['email'] ?? 'unknown';
 
@@ -114,56 +115,3 @@ $usage['count']++;
 @file_put_contents($usageFile, json_encode($usage), LOCK_EX);
 
 echo json_encode(['reply' => $reply]);
-
-
-/* ============================================================
-   Firebase ID token verification (RS256, Google public certs)
-   ============================================================ */
-function verify_firebase_token($jwt, $projectId) {
-  $parts = explode('.', $jwt);
-  if (count($parts) !== 3) return null;
-  [$h64, $p64, $s64] = $parts;
-
-  $header  = json_decode(b64url_decode($h64), true);
-  $payload = json_decode(b64url_decode($p64), true);
-  $sig     = b64url_decode($s64);
-  if (!$header || !$payload || !$sig) return null;
-  if (($header['alg'] ?? '') !== 'RS256' || empty($header['kid'])) return null;
-
-  // claims
-  $now = time();
-  if (($payload['aud'] ?? '') !== $projectId) return null;
-  if (($payload['iss'] ?? '') !== "https://securetoken.google.com/$projectId") return null;
-  if (($payload['exp'] ?? 0) < $now - 60) return null;
-  if (($payload['iat'] ?? 0) > $now + 300) return null;
-  if (empty($payload['sub'])) return null;
-
-  // Google public certs (cached 1h)
-  $certs = google_secure_token_certs();
-  $pem = $certs[$header['kid']] ?? null;
-  if (!$pem) return null;
-
-  $signed = "$h64.$p64";
-  $ok = openssl_verify($signed, $sig, $pem, OPENSSL_ALGO_SHA256);
-  return $ok === 1 ? $payload : null;
-}
-
-function b64url_decode($s) {
-  return base64_decode(strtr($s, '-_', '+/') . str_repeat('=', (4 - strlen($s) % 4) % 4));
-}
-
-function google_secure_token_certs() {
-  $cacheFile = __DIR__ . '/.google-certs.json';
-  if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < 3600)) {
-    $c = json_decode(file_get_contents($cacheFile), true);
-    if (is_array($c)) return $c;
-  }
-  $url = 'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
-  $ch = curl_init($url);
-  curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 15]);
-  $json = curl_exec($ch);
-  curl_close($ch);
-  $certs = json_decode($json, true);
-  if (is_array($certs)) @file_put_contents($cacheFile, json_encode($certs), LOCK_EX);
-  return is_array($certs) ? $certs : [];
-}

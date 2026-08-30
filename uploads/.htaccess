@@ -1,0 +1,9 @@
+# Uploaded files: serve as static content only — never execute anything here.
+Options -Indexes -ExecCGI
+<FilesMatch "\.(php|phtml|phar|pht|php[0-9]|cgi|pl|py|sh|asp|aspx|jsp|htaccess)$">
+  Require all denied
+</FilesMatch>
+# Keep submission metadata sidecars private
+<FilesMatch "\.json$">
+  Require all denied
+</FilesMatch>

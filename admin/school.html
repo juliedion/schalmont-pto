@@ -36,6 +36,7 @@
       <button class="bo-tab active" data-tab="pages">📄 Pages</button>
       <button class="bo-tab" data-tab="files">🖼️ Files &amp; Photos</button>
       <button class="bo-tab" data-tab="plan">✅ Planning</button>
+      <a class="bo-tab" id="yearbook-tab" style="text-decoration:none">📸 Yearbook Photos</a>
     </div>
 
     <!-- ============ PAGES ============ -->
@@ -127,9 +128,10 @@
       document.getElementById('new-page-btn').href = 'page-editor.html?s=' + school + '&new=1';
       document.getElementById('tip-example').textContent =
         'schalmontpto.com/' + SCHOOL_PREFIX[school] + '/fun-run';
+      document.getElementById('yearbook-tab').href = 'yearbook.html?s=' + school;
 
       // Tabs
-      document.querySelectorAll('.bo-tab').forEach(btn => {
+      document.querySelectorAll('button.bo-tab').forEach(btn => {
         btn.onclick = () => {
           document.querySelectorAll('.bo-tab').forEach(b => b.classList.remove('active'));
           document.querySelectorAll('.bo-panel').forEach(p => p.classList.remove('active'));

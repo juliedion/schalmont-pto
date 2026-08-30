@@ -28,14 +28,19 @@ is automatically the owner.)
 
 ---
 
-## 3. File storage — not used (staying on the free plan)
+## 3. File storage
 
-The **Files & Photos** tab is a *link library*: admins paste links to photos/PDFs that live
-in Google Drive, an image host, or on the web. Nothing is stored in Firebase, so there is
-nothing to set up here and no `storage.rules` to install.
+**Files & Photos** tab: a *link library* — admins paste links to photos/PDFs that live in
+Google Drive, an image host, or on the web. Nothing stored in Firebase.
 
-If you later upgrade Firebase to the **Blaze** plan (still ~$0/mo at PTO scale, but needs a
-card), real drag-and-drop uploads can be switched back on — ask for that as a follow-up.
+**Yearbook photos:** parents' uploads are saved on **Bluehost** under `/uploads/yearbook/…`
+by `api/yearbook-upload.php`. Nothing to set up — the folder is created automatically on the
+first upload. If uploads ever fail with a "could not create folder" message, create a folder
+named `uploads` in **Bluehost File Manager** (inside `public_html`) and set its permissions
+to **755**, then re-run `fix-permissions.php` (it runs after every deploy anyway).
+
+Re-paste [`firestore.rules`](../firestore.rules) into the Firebase console whenever it
+changes (it now also covers `yearbook_folders` and `yearbook_photos`).
 
 ---
 
