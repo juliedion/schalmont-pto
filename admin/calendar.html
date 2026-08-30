@@ -71,8 +71,9 @@
         <input type="checkbox" id="show-promo"> Show flyer &amp; social dates
       </label>
       <span class="spacer" style="flex:1"></span>
+      <span id="sync-status" style="font-size:12px;color:var(--text-light)"></span>
       <button class="bo-btn sm" id="add-btn">＋ New event</button>
-      <button class="bo-btn ghost sm" id="import-btn">⭳ Import from Google Sheet</button>
+      <button class="bo-btn ghost sm" id="import-btn" style="display:none">↻ Re-sync from planning sheet</button>
     </div>
 
     <div class="cal-legend" id="legend"></div>
@@ -164,7 +165,7 @@
       return CAT_COLOR.Event;
     }
 
-    let cal, allEvents = [], editingId = null;
+    let cal, allEvents = [], editingId = null, autoImportTried = false;
 
     requireAdmin((me) => {
       const s = getParam('s');
@@ -182,7 +183,9 @@
       document.getElementById('school-filter').onchange = refresh;
       document.getElementById('show-promo').onchange = refresh;
       document.getElementById('add-btn').onclick = () => openModal(null, toYMD(new Date()));
-      document.getElementById('import-btn').onclick = importSheet;
+      // The manual re-sync link only appears on the top-level Calendar (not a school tab).
+      if (!s) document.getElementById('import-btn').style.display = '';
+      document.getElementById('import-btn').onclick = () => importSheet(false);
       document.getElementById('cancel-btn').onclick = closeModal;
       document.getElementById('save-ev-btn').onclick = saveEvent;
       document.getElementById('del-btn').onclick = deleteEvent;
@@ -218,6 +221,11 @@
         const snap = await db.collection('pto_events').get();
         allEvents = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         refresh();
+        // First time the calendar is ever opened, pull the planning sheet automatically.
+        if (!autoImportTried && !allEvents.some(e => e.source === 'sheet')) {
+          autoImportTried = true;
+          importSheet(true);
+        }
       } catch (e) {
         toast('Could not load calendar: ' + e.message, 'error');
       }
@@ -351,17 +359,22 @@
       } catch (e) { toast('Could not delete: ' + e.message, 'error'); }
     }
 
-    /* ---------- import from Google Sheet ---------- */
-    async function importSheet() {
-      if (!confirm('Import events from the PTO planning spreadsheet?\n\n' +
-        'New rows are added. Rows already imported are refreshed. Events you added by hand are left alone.')) return;
+    /* ---------- sync from the planning Google Sheet ---------- */
+    let syncing = false;
+    async function importSheet(silent) {
+      if (syncing) return;
+      if (!silent && !confirm('Re-sync events from the PTO planning spreadsheet?\n\n' +
+        'New rows are added, rows already synced are refreshed, and events you added by hand are left alone.')) return;
+      syncing = true;
       const btn = document.getElementById('import-btn');
-      btn.disabled = true; btn.textContent = 'Importing…';
+      const stat = document.getElementById('sync-status');
+      btn.disabled = true;
+      stat.textContent = silent ? 'Loading events from the planning sheet…' : 'Syncing…';
       try {
         const idToken = await auth.currentUser.getIdToken();
         const res = await fetch('../api/sheet-proxy.php?id=' + SHEET_ID + '&idToken=' + encodeURIComponent(idToken));
         const data = await res.json();
-        if (!res.ok || !data.ok) throw new Error(data.error || 'Import failed');
+        if (!res.ok || !data.ok) throw new Error(data.error || 'Sync failed');
         const rows = parseCSV(data.csv);
         const header = rows.shift().map(h => h.trim());
         const col = name => header.findIndex(h => h.toLowerCase() === name.toLowerCase());
@@ -372,8 +385,7 @@
           plan: col('Suggested Planning Start'), owner: col('Owner'),
           status: col('Status'), notes: col('Notes')
         };
-        const existing = {};
-        allEvents.forEach(e => { if (e.sheetKey) existing[e.sheetKey] = e.id; });
+        const known = new Set(allEvents.map(e => e.id));
 
         let added = 0, updated = 0;
         const batch = db.batch();
@@ -384,7 +396,9 @@
           const d = new Date(rawDate);
           if (isNaN(d)) continue;
           const date = toYMD(d);
-          const sheetKey = title + '||' + date;
+          // deterministic id => running the sync again upserts instead of duplicating
+          const id = ('sheet_' + date + '_' + title).toLowerCase()
+            .replace(/[^a-z0-9_]+/g, '_').replace(/_+/g, '_').slice(0, 120);
           const mapStatus = (s) => /complete/i.test(s) ? 'done' : /progress/i.test(s) ? 'confirmed' : 'planned';
           const parseD = (v) => { const x = new Date((v || '').trim()); return isNaN(x) ? '' : toYMD(x); };
           const fields = {
@@ -401,28 +415,29 @@
               firstSocial:   parseD(r[ci.social1]) || addDays(date, -PROMO_OFFSETS.firstSocial),
               reminder:      parseD(r[ci.reminder]) || addDays(date, -PROMO_OFFSETS.reminder)
             },
-            source: 'sheet', sheetKey,
+            source: 'sheet', sheetKey: title + '||' + date,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: ME.email
           };
-          if (existing[sheetKey]) {
-            batch.update(db.collection('pto_events').doc(existing[sheetKey]), fields);
-            updated++;
-          } else {
-            const ref = db.collection('pto_events').doc();
+          if (!known.has(id)) {
             fields.promoDone = {};
             fields.createdAt = firebase.firestore.FieldValue.serverTimestamp();
             fields.createdBy = ME.email;
-            batch.set(ref, fields);
             added++;
+          } else {
+            updated++;
           }
+          batch.set(db.collection('pto_events').doc(id), fields, { merge: true });
         }
         await batch.commit();
-        toast(`Imported: ${added} new, ${updated} updated`);
+        stat.textContent = 'Synced from planning sheet · ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        if (!silent) toast(`Synced: ${added} new, ${updated} updated`);
         loadEvents();
       } catch (e) {
-        toast('Import problem: ' + e.message, 'error');
+        document.getElementById('sync-status').textContent = '';
+        toast('Sheet sync problem: ' + e.message, 'error');
       } finally {
-        btn.disabled = false; btn.textContent = '⭳ Import from Google Sheet';
+        syncing = false;
+        document.getElementById('import-btn').disabled = false;
       }
     }
 
