@@ -50,6 +50,12 @@
         <p>Step-by-step guides for every part of the back office, written for
            non-designers.</p>
       </a>
+      <a class="bo-card" href="directory.html" id="directory-card" style="display:none">
+        <span class="bo-cardicon">📇</span>
+        <h3>Parent Directory</h3>
+        <p>Approve or reject new family sign-ups, with a one-click safety check.
+           (President / officers only.)</p>
+      </a>
       <a class="bo-card" href="people.html" id="people-card" style="display:none">
         <span class="bo-cardicon">👥</span>
         <h3>People &amp; Roles</h3>
@@ -68,7 +74,10 @@
   <script>
     requireAdmin((me) => {
       document.getElementById('me-name').textContent = me.name;
-      if (me.isSuper) document.getElementById('people-card').style.display = '';
+      if (me.isSuper) {
+        document.getElementById('people-card').style.display = '';
+        document.getElementById('directory-card').style.display = '';
+      }
 
       const wrap = document.getElementById('school-cards');
       wrap.innerHTML = me.schools.map(s => `

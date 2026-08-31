@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parent Directory — PTO Back Office</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" href="../images/favicon.svg">
+  <style>
+    .dir-tabs { display:flex; gap:4px; border-bottom:2px solid var(--border); margin-bottom:20px; flex-wrap:wrap; }
+    .dir-tab { padding:9px 15px; border:none; background:none; font-family:inherit; font-size:14px; font-weight:700;
+               color:var(--text-light); cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; }
+    .dir-tab.active { color:var(--primary-dark); border-bottom-color:var(--primary); }
+    .dir-panel { display:none; }
+    .dir-panel.active { display:block; }
+    .dir-card { background:#fff; border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px; }
+    .dir-card.pending { border-left:4px solid var(--warning); }
+    .dir-top { display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap; }
+    .dir-av { width:44px; height:44px; border-radius:50%; background:var(--primary); color:#fff; display:flex;
+              align-items:center; justify-content:center; font-weight:800; flex-shrink:0; }
+    .dir-main { flex:1; min-width:180px; }
+    .dir-name { font-weight:700; font-size:15px; }
+    .dir-meta { font-size:12.5px; color:var(--text-light); margin-top:2px; }
+    .dir-sub { margin-top:10px; padding:11px 13px; background:#f0fbea; border:1px solid #cde8c4; border-radius:8px; font-size:13px; }
+    .dir-sub .lbl { font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#2e7d32; margin-bottom:5px; }
+    .dir-sub .kid { display:inline-block; background:#fff; border:1px solid var(--border); border-radius:6px; padding:2px 8px; font-size:12px; margin:2px 3px 0 0; }
+    .dir-nosub { margin-top:8px; font-size:12px; color:#8a6d1a; background:#fff8e1; border:1px solid #f0d874; border-radius:8px; padding:7px 11px; }
+    .dir-actions { display:flex; gap:7px; flex-wrap:wrap; flex-shrink:0; }
+    .dir-pill { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; padding:2px 8px; border-radius:20px; }
+    .dir-pill.pending { background:#fde9d0; color:#8a4b16; }
+    .dir-pill.approved { background:var(--success-light); color:#216e3c; }
+    .dir-pill.rejected { background:var(--error-light); color:#9b2c2c; }
+  </style>
+</head>
+<body>
+  <div id="bo-loading">Loading…</div>
+  <div id="bo-shell"></div>
+
+  <main id="bo-main" style="display:none">
+    <div style="margin-bottom:14px"><a class="bo-btn ghost sm" href="index.html">← Back Office Home</a></div>
+    <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo; Parent Directory</div>
+    <h1 class="bo-h1">Parent Directory</h1>
+    <p class="bo-lead">New families sign up for the parent directory and wait for approval.
+       Review each one, then <strong>Approve</strong> or <strong>Reject</strong>. Approved
+       families can see and be seen in the directory; rejected ones cannot.</p>
+
+    <div class="bo-tip">
+      <strong>Before approving:</strong> click <strong>🔍 Check Registry</strong> — it opens the
+      National Sex Offender Public Website pre-filled with that person's name. This is a quick
+      safety check since the directory shares family contact info.
+    </div>
+
+    <div class="dir-tabs">
+      <button class="dir-tab active" data-tab="pending">Pending <span id="c-pending">0</span></button>
+      <button class="dir-tab" data-tab="approved">Approved <span id="c-approved">0</span></button>
+      <button class="dir-tab" data-tab="rejected">Rejected <span id="c-rejected">0</span></button>
+    </div>
+
+    <section class="dir-panel active" id="p-pending"></section>
+    <section class="dir-panel" id="p-approved"></section>
+    <section class="dir-panel" id="p-rejected"></section>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-storage-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="admin-core.js"></script>
+  <script>
+    requireAdmin((me) => {
+      if (!me.isSuper) {
+        document.getElementById('bo-main').innerHTML =
+          '<p class="bo-lead">Directory approvals are handled by PTO officers. <a href="index.html">Back</a>.</p>';
+        return;
+      }
+      document.querySelectorAll('.dir-tab').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('.dir-tab').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.dir-panel').forEach(p => p.classList.remove('active'));
+          btn.classList.add('active');
+          document.getElementById('p-' + btn.dataset.tab).classList.add('active');
+        };
+      });
+      load();
+    });
+
+    async function load() {
+      let users, dir;
+      try {
+        [users, dir] = await Promise.all([
+          db.collection('users').get(),
+          db.collection('directory').get()
+        ]);
+      } catch (e) {
+        document.getElementById('bo-main').insertAdjacentHTML('beforeend',
+          '<p style="color:var(--error)">Could not load: ' + esc(e.message) + '</p>');
+        return;
+      }
+      const listings = {};
+      dir.forEach(d => listings[d.id] = d.data());
+
+      const buckets = { pending: [], approved: [], rejected: [] };
+      users.docs.forEach(d => {
+        if (d.id.startsWith('__')) return;
+        const s = (d.data().status || 'pending');
+        (buckets[s] || buckets.pending).push(d);
+      });
+
+      for (const key of ['pending', 'approved', 'rejected']) {
+        const list = buckets[key].sort((a, b) =>
+          (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
+        document.getElementById('c-' + key).textContent = list.length;
+        const box = document.getElementById('p-' + key);
+        box.innerHTML = list.length ? '' : '<p style="color:var(--text-light)">None.</p>';
+        list.forEach(d => box.appendChild(card(d, listings[d.id])));
+      }
+    }
+
+    function card(doc, listing) {
+      const u = doc.data();
+      const uid = doc.id;
+      const name = u.displayName || '(no name)';
+      const parts = name.trim().split(/\s+/);
+      const nsopw = 'https://www.nsopw.gov/en/Search/Verify?FirstName=' +
+        encodeURIComponent(parts[0] || '') + '&LastName=' +
+        encodeURIComponent(parts.slice(1).join(' ') || '') + '&Territories=ny';
+      const status = u.status || 'pending';
+
+      let sub;
+      if (listing) {
+        const kids = (Array.isArray(listing.students) ? listing.students : [])
+          .map(s => `<span class="kid">${esc(s.name || '?')} · ${esc(s.grade || '?')} · ${esc(s.school || '?')}</span>`).join('');
+        sub = `<div class="dir-sub"><div class="lbl">Directory submission</div>
+          <div><strong>Name:</strong> ${esc([listing.firstName, listing.lastName].filter(Boolean).join(' ') || '—')}</div>
+          ${listing.email ? `<div><strong>Email:</strong> ${esc(listing.email)}</div>` : ''}
+          ${listing.phone ? `<div><strong>Phone:</strong> ${esc(listing.phone)}</div>` : ''}
+          ${kids ? `<div style="margin-top:5px"><strong>Children:</strong><br>${kids}</div>` : '<div style="color:#888">No children listed</div>'}
+        </div>`;
+      } else {
+        sub = '<div class="dir-nosub">⚠️ No directory listing submitted yet</div>';
+      }
+
+      let actions = `<a class="bo-btn ghost sm" href="${nsopw}" target="_blank" rel="noopener">🔍 Check Registry</a>`;
+      if (status === 'pending' || status === 'rejected')
+        actions += `<button class="bo-btn sm" data-act="approved">Approve</button>`;
+      if (status === 'pending' || status === 'approved')
+        actions += `<button class="bo-btn danger sm" data-act="rejected">${status === 'approved' ? 'Revoke' : 'Reject'}</button>`;
+
+      const el = document.createElement('div');
+      el.className = 'dir-card' + (status === 'pending' ? ' pending' : '');
+      el.innerHTML = `
+        <div class="dir-top">
+          <div class="dir-av">${esc((parts[0] || '?')[0].toUpperCase())}</div>
+          <div class="dir-main">
+            <div class="dir-name">${esc(name)} <span class="dir-pill ${status}">${status}</span></div>
+            <div class="dir-meta">${esc(u.email || '—')} · signed up ${fmtDate(u.createdAt)}${u.ipAddress ? ' · IP ' + esc(u.ipAddress) : ''}</div>
+            ${sub}
+          </div>
+          <div class="dir-actions">${actions}</div>
+        </div>`;
+      el.querySelectorAll('[data-act]').forEach(b => {
+        b.onclick = async () => {
+          b.disabled = true; b.textContent = '…';
+          try {
+            await db.collection('users').doc(uid).update({ status: b.dataset.act });
+            toast(b.dataset.act === 'approved' ? '✓ Approved' : 'Updated');
+            load();
+          } catch (e) { toast('Error: ' + e.message, 'error'); b.disabled = false; }
+        };
+      });
+      return el;
+    }
+  </script>
+</body>
+</html>

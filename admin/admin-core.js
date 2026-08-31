@@ -140,6 +140,7 @@ function renderShell() {
         ${link('calendar.html', 'Calendar', '📅')}
         ${link('assistant.html', 'AI Assistant', '💬')}
         ${link('help.html', 'Help &amp; How-To', '📖')}
+        ${ME.isSuper ? link('directory.html', 'Parent Directory', '📇') : ''}
         ${ME.isSuper ? link('people.html', 'People &amp; Roles', '👥') : ''}
       </nav>
       <div class="bo-sidebar-foot">
