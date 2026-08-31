@@ -64,13 +64,31 @@ function requireAdmin(onReady) {
 
     // Look up this person's record for their role + assigned schools
     let data = {};
+    let docExists = false;
     try {
       const snap = await db.collection('users').doc(user.uid).get();
+      docExists = snap.exists;
       data = snap.exists ? snap.data() : {};
     } catch (e) { /* rules may block; fall through to owner check */ }
 
     const isOwner = user.email === OWNER_EMAIL ||
                     (typeof adminEmails !== 'undefined' && adminEmails.includes(user.email));
+
+    // Self-heal: a trusted-list officer who has no user record yet gets one on first sign-in,
+    // so they show up in People & Roles and task-assignment lists.
+    if (isOwner && !docExists) {
+      try {
+        await db.collection('users').doc(user.uid).set({
+          displayName: user.displayName || user.email,
+          email: user.email,
+          role: 'superadmin',
+          status: 'approved',
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          selfProvisioned: true
+        }, { merge: true });
+        data = { role: 'superadmin', status: 'approved' };
+      } catch (_) { /* not fatal — access still granted below via the trusted list */ }
+    }
     const isSuper = isOwner || data.role === 'superadmin';
     const schools = isSuper ? Object.keys(SCHOOLS) : (data.adminSchools || []);
 

@@ -116,25 +116,36 @@
         // Use a SECONDARY Firebase app so creating the account doesn't sign YOU out.
         const secApp = firebase.apps.find(a => a.name === 'sec') || firebase.initializeApp(firebaseConfig, 'sec');
         try {
-          const cred = await secApp.auth().createUserWithEmailAndPassword(email, pass);
-          await cred.user.updateProfile({ displayName: name });
-          const uid = cred.user.uid;
+          let uid, created = true;
+          try {
+            const cred = await secApp.auth().createUserWithEmailAndPassword(email, pass);
+            await cred.user.updateProfile({ displayName: name });
+            uid = cred.user.uid;
+          } catch (e1) {
+            if (e1.code !== 'auth/email-already-in-use') throw e1;
+            // Account already exists (e.g. a half-finished earlier attempt) — sign in with the
+            // password given to recover the id and finish setting them up.
+            created = false;
+            const cred = await secApp.auth().signInWithEmailAndPassword(email, pass);
+            uid = cred.user.uid;
+            if (name && cred.user.displayName !== name) await cred.user.updateProfile({ displayName: name });
+          }
           await secApp.auth().signOut();
 
           const doc = {
             displayName: name, email, status: 'approved',
             createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
           };
-          if (role !== 'member') doc.role = role;
-          if (role === 'admin') doc.adminSchools = schools;
-          await db.collection('users').doc(uid).set(doc);
+          if (role !== 'member') doc.role = role; else doc.role = firebase.firestore.FieldValue.delete();
+          doc.adminSchools = role === 'admin' ? schools : firebase.firestore.FieldValue.delete();
+          await db.collection('users').doc(uid).set(doc, { merge: true });
 
-          alert.innerHTML = `<div class="alert alert-success"><span>✓</span><span><strong>${esc(name)}</strong> can now sign in with <strong>${esc(email)}</strong> and that password.</span></div>`;
+          alert.innerHTML = `<div class="alert alert-success"><span>✓</span><span><strong>${esc(name)}</strong> can ${created ? 'now ' : ''}sign in with <strong>${esc(email)}</strong> and that password${created ? '' : ' (account already existed — role updated)'}.</span></div>`;
           e.target.reset(); wrap.style.display = 'none';
           load();
         } catch (err) {
-          const msg = err.code === 'auth/email-already-in-use'
-            ? 'That email already has an account — find them in the list below to set their role.'
+          const msg = err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential'
+            ? 'That email already has an account, but with a different password. Use "Forgot password" on the sign-in page, or delete the old account in the Firebase console.'
             : err.message;
           alert.innerHTML = `<div class="alert alert-error"><span>✕</span><span>${esc(msg)}</span></div>`;
         } finally {
