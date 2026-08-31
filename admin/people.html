@@ -199,10 +199,21 @@
           document.getElementById('c-preset').value = '';
           load();
         } catch (err) {
-          const msg = err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential'
-            ? 'That email already has an account, but with a different password. Use "Forgot password" on the sign-in page, or delete the old account in the Firebase console.'
-            : err.message;
-          alert.innerHTML = `<div class="alert alert-error"><span>✕</span><span>${esc(msg)}</span></div>`;
+          if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+            alert.innerHTML =
+              `<div class="alert alert-error"><span>✕</span><span><strong>${esc(email)}</strong> already has an
+               account, but with a different password. Send them a reset link, then they set their own password:</span></div>
+               <button type="button" class="bo-btn sm" id="send-reset" style="margin-top:8px">Send password-reset email to ${esc(email)}</button>
+               <p style="font-size:12px;color:var(--text-light);margin-top:6px">No inbox for that address? Delete the account in
+               Firebase console &rarr; Authentication &rarr; Users, then run this again.</p>`;
+            document.getElementById('send-reset').onclick = async (ev) => {
+              ev.target.disabled = true;
+              try { await auth.sendPasswordResetEmail(email); ev.target.textContent = '✓ Reset email sent'; }
+              catch (e2) { ev.target.textContent = 'Could not send: ' + e2.message; }
+            };
+          } else {
+            alert.innerHTML = `<div class="alert alert-error"><span>✕</span><span>${esc(err.message)}</span></div>`;
+          }
         } finally {
           btn.disabled = false; btn.textContent = 'Create / update login';
         }
