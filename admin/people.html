@@ -27,7 +27,7 @@
     <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo; People &amp; Roles</div>
     <h1 class="bo-h1">People &amp; Roles</h1>
     <p class="bo-lead">Officers and administrators: their organization, title, and what they can
-       do in the back office. Creating a brand-new login is limited to the PTO president.</p>
+       do in the back office.</p>
 
     <div class="bo-tip">
       <strong>How roles work:</strong><br>
@@ -121,14 +121,12 @@
       if (!me.isSuper) { location.href = 'index.html'; return; }
       document.getElementById('search').oninput = render;
       document.getElementById('show-all').onchange = render;
-      if (me.email === OWNER_EMAIL) {
-        document.getElementById('create-card').style.display = '';
-        initCreateForm();
-      }
+      document.getElementById('create-card').style.display = '';
+      initCreateForm();
       load();
     });
 
-    /* ---- Create a login for someone (owner only) ---- */
+    /* ---- Create a login for someone ---- */
     function initCreateForm() {
       const roleSel = document.getElementById('c-role');
       const wrap = document.getElementById('c-schools-wrap');
