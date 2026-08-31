@@ -31,14 +31,16 @@
     </div>
     <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo; <span id="crumb-school"></span></div>
     <h1 class="bo-h1" id="school-title"></h1>
-    <p class="bo-lead">Everything for this school in one place. Use the tabs to switch between
-       building web <strong>Pages</strong>, managing <strong>Files &amp; Photos</strong>, and
-       keeping a <strong>Planning</strong> checklist for your team.</p>
+    <p class="bo-lead">Everything for this school in one place &mdash; use the tabs for web
+       <strong>Pages</strong>, <strong>Files &amp; Photos</strong>, <strong>Ideas</strong>, the
+       <strong>To-Do</strong> list, <strong>Fundraising</strong>, the <strong>Calendar</strong>,
+       and <strong>Yearbook Photos</strong>.</p>
 
     <div class="bo-tabs">
       <button class="bo-tab active" data-tab="pages">📄 Pages</button>
       <button class="bo-tab" data-tab="files">🖼️ Files &amp; Photos</button>
-      <button class="bo-tab" data-tab="plan">✅ Planning</button>
+      <button class="bo-tab" data-tab="ideas">💡 Ideas</button>
+      <button class="bo-tab" data-tab="todo">✅ To-Do</button>
       <a class="bo-tab" id="fundraising-tab" style="text-decoration:none">💰 Fundraising</a>
       <a class="bo-tab" id="calendar-tab" style="text-decoration:none">📅 Calendar</a>
       <a class="bo-tab" id="yearbook-tab" style="text-decoration:none">📸 Yearbook Photos</a>
@@ -96,23 +98,27 @@
       <div class="bo-media-grid" id="media-grid" style="margin-top:16px"></div>
     </section>
 
-    <!-- ============ PLANNING ============ -->
-    <section class="bo-panel" id="panel-plan">
+    <!-- ============ IDEAS ============ -->
+    <section class="bo-panel" id="panel-ideas">
       <div class="bo-tip">
-        Everyone with access to this school sees the same Planning page. Use <strong>Ideas</strong>
-        to jot down anything you might want to do, and the <strong>To-Do list</strong> for
-        actual tasks &mdash; each one can be assigned to a person and given a due date.
+        A shared place to jot down anything this school's PTO might want to do. Everyone with
+        access to the school sees the same list. Push a good one to the <strong>To-Do</strong>
+        tab with <strong>Move to To-Do</strong>.
       </div>
-
-      <h3 style="font-size:16px;color:var(--primary-dark);margin:6px 0 10px">💡 Ideas</h3>
       <form id="idea-form" style="display:flex;gap:8px;max-width:600px;margin-bottom:12px">
         <input type="text" id="idea-input" placeholder="e.g. Family game night in the spring"
                style="flex:1;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit">
         <button class="bo-btn" type="submit">Add idea</button>
       </form>
-      <div class="bo-list" id="idea-list" style="margin-bottom:34px"></div>
+      <div class="bo-list" id="idea-list"></div>
+    </section>
 
-      <h3 style="font-size:16px;color:var(--primary-dark);margin:6px 0 10px">✅ To-Do list</h3>
+    <!-- ============ TO-DO ============ -->
+    <section class="bo-panel" id="panel-todo">
+      <div class="bo-tip">
+        The shared task list for this school. Each task can be <strong>assigned to a person</strong>
+        and given a <strong>due date</strong> (overdue shows in red).
+      </div>
       <form id="task-form" style="display:flex;gap:8px;max-width:640px;margin-bottom:6px;flex-wrap:wrap">
         <input type="text" id="task-input" placeholder="Task, e.g. Book the DJ for the dance"
                style="flex:2;min-width:200px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit">
