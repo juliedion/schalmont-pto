@@ -10,37 +10,6 @@
 </head>
 <body>
 
-  <!-- REVOLVING SPONSOR BANNER (728x90). To link a sponsor, put its URL in the href="" below. -->
-  <div class="banner-ad-bar" id="banner-ad-bar">
-    <div class="banner-ad-track" id="banner-ad-track">
-      <a class="banner-ad-slide is-active" href="https://gadefarm.com" target="_blank" rel="noopener"><img src="images/Ads/Banners/gades_farm_728x90.jpg" alt="Gade Farm — Schalmont PTO sponsor"></a>
-      <a class="banner-ad-slide" href="https://www.pricechopper.com/" target="_blank" rel="noopener"><img src="images/Ads/Banners/price_chopper_728x90.jpg" alt="Price Chopper — Schalmont PTO sponsor"></a>
-      <a class="banner-ad-slide" href="https://www.facebook.com/Riseup518" target="_blank" rel="noopener"><img src="images/Ads/Banners/rise_up_nutrition_728x90.jpg" alt="Rise Up Nutrition — Schalmont PTO sponsor"></a>
-      <a class="banner-ad-slide" href="https://stacknstore.com" target="_blank" rel="noopener"><img src="images/Ads/Banners/stack_n_stor_728x90.jpg" alt="Stack N Stor — Schalmont PTO sponsor"></a>
-      <a class="banner-ad-slide" href="https://topsrotterdam.com" target="_blank" rel="noopener"><img src="images/Ads/Banners/tops_diner_728x90.jpg" alt="Tops Diner — Schalmont PTO sponsor"></a>
-      <a class="banner-ad-slide" href="contact.html"><img src="images/Ads/Banners/advertise_with_schalmont_pto.jpg" alt="Advertise with the Schalmont PTO — contact us"></a>
-    </div>
-  </div>
-  <style>
-    .banner-ad-bar{background:#ffffff;border-bottom:1px solid #e0e0e0;text-align:center;overflow:hidden}
-    .banner-ad-track{position:relative;max-width:728px;margin:0 auto;height:90px}
-    .banner-ad-slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .6s ease;pointer-events:none}
-    .banner-ad-slide.is-active{opacity:1;pointer-events:auto}
-    .banner-ad-slide img{max-width:100%;max-height:90px;width:auto;height:auto;object-fit:contain;display:block}
-  </style>
-  <script>
-    (function(){
-      var slides=document.querySelectorAll('#banner-ad-track .banner-ad-slide');
-      if(slides.length<2)return;
-      var i=0;
-      setInterval(function(){
-        slides[i].classList.remove('is-active');
-        i=(i+1)%slides.length;
-        slides[i].classList.add('is-active');
-      },6000);
-    })();
-  </script>
-
   <!-- HEADER -->
   <header class="site-header">
     <nav class="container nav-inner">
