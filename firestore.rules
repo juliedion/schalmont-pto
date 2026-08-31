@@ -76,6 +76,13 @@ service cloud.firestore {
       allow read, write: if isAnyAdmin();
     }
 
+    /* ---- Fundraising ---- */
+    match /fundraisers/{id} {
+      allow read: if signedIn() && canManage(resource.data.school);
+      allow create: if signedIn() && canManage(request.resource.data.school);
+      allow update, delete: if signedIn() && canManage(resource.data.school);
+    }
+
     /* ---- Planning: idea board ---- */
     match /ideas/{id} {
       allow read: if signedIn() && canManage(resource.data.school);

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fundraising — PTO Back Office</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" href="../images/favicon.svg">
+  <style>
+    .fr-card { background:#fff; border:1px solid var(--border); border-radius:12px; padding:18px; margin-bottom:16px; }
+    .fr-head { display:flex; align-items:flex-start; gap:12px; flex-wrap:wrap; }
+    .fr-head h3 { margin:0; font-size:17px; color:var(--primary-dark); flex:1; min-width:160px; }
+    .fr-goal { font-size:13px; font-weight:700; color:var(--primary); background:var(--success-light); padding:3px 10px; border-radius:20px; }
+    .fr-notes { font-size:13.5px; color:var(--text); margin:8px 0 0; line-height:1.55; white-space:pre-wrap; }
+    .fr-tracker { margin-top:14px; border-top:1px solid var(--border); padding-top:12px; }
+    .fr-tiles { display:flex; gap:10px; flex-wrap:wrap; margin:10px 0 14px; }
+    .fr-tile { background:var(--light-bg); border:1px solid var(--border); border-radius:8px; padding:9px 14px; font-size:13px; }
+    .fr-tile b { display:block; font-size:18px; color:var(--primary-dark); }
+    .fr-tablewrap { overflow-x:auto; border:1px solid var(--border); border-radius:8px; }
+    table.fr-table { border-collapse:collapse; width:100%; font-size:12.5px; }
+    .fr-table th { background:var(--light-bg); text-align:left; padding:7px 9px; font-weight:800; position:sticky; top:0; white-space:nowrap; }
+    .fr-table td { padding:6px 9px; border-top:1px solid var(--border); vertical-align:top; }
+    .fr-table tr:hover td { background:#fafcf8; }
+    .fr-badge { font-size:10.5px; font-weight:800; letter-spacing:.03em; padding:2px 7px; border-radius:20px; white-space:nowrap; text-transform:uppercase; }
+    .fr-badge.hot { background:var(--error-light); color:#9b2c2c; }
+    .fr-badge.go  { background:#fde9d0; color:#8a4b16; }
+    .fr-badge.got { background:var(--success-light); color:#216e3c; }
+    .fr-badge.neutral { background:#e6e9ec; color:#4a5568; }
+  </style>
+</head>
+<body>
+  <div id="bo-loading">Loading…</div>
+  <div id="bo-shell"></div>
+
+  <main id="bo-main" style="display:none">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      <a class="bo-btn ghost sm" href="index.html">← Back Office Home</a>
+      <a class="bo-btn ghost sm" id="back-school" href="#">← <span id="back-school-name">School</span> Workspace</a>
+    </div>
+    <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo;
+      <a id="crumb-school" href="#">School</a> &rsaquo; Fundraising</div>
+    <h1 class="bo-h1" id="title">Fundraising</h1>
+    <p class="bo-lead">Track this school's fundraisers, their goals, and (for raffles and prize
+       drives) the sponsor / prize tracker. Attach a Google Sheet and its live status shows
+       right here.</p>
+
+    <div class="bo-card" style="max-width:620px;margin-bottom:26px">
+      <h3 style="margin:0 0 12px;font-size:16px;color:var(--primary-dark)">Add a fundraiser</h3>
+      <form id="fr-form">
+        <div class="bo-field" style="margin-bottom:10px">
+          <label>Name</label>
+          <input type="text" id="f-name" required placeholder="e.g. November Calendar Raffle">
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div class="bo-field" style="flex:1;min-width:130px;margin-bottom:10px">
+            <label>Goal ($) <span class="bo-hint">optional</span></label>
+            <input type="text" id="f-goal" inputmode="numeric" placeholder="5000">
+          </div>
+          <div class="bo-field" style="flex:1;min-width:130px;margin-bottom:10px">
+            <label>Status</label>
+            <select id="f-status">
+              <option value="planning">Planning</option>
+              <option value="active">Active</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+        </div>
+        <div class="bo-field" style="margin-bottom:10px">
+          <label>Notes <span class="bo-hint">optional</span></label>
+          <textarea id="f-notes" placeholder="Dates, how it works, who's leading it…"></textarea>
+        </div>
+        <div class="bo-field" style="margin-bottom:12px">
+          <label>Tracker spreadsheet link <span class="bo-hint">optional — a Google Sheet shared "Anyone with the link can view"</span></label>
+          <input type="url" id="f-tracker" placeholder="https://docs.google.com/spreadsheets/d/…">
+        </div>
+        <button class="bo-btn" type="submit">Add fundraiser</button>
+      </form>
+    </div>
+
+    <div id="fr-list"></div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-storage-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="admin-core.js"></script>
+  <script>
+    const school = getParam('s');
+
+    requireAdmin((me) => {
+      if (!school || !SCHOOLS[school]) { location.href = 'index.html'; return; }
+      if (!canManage(school)) {
+        document.getElementById('bo-main').innerHTML =
+          '<p class="bo-lead">You don\'t have access to this school. <a href="index.html">Go back</a>.</p>';
+        return;
+      }
+      document.getElementById('crumb-school').textContent = SCHOOLS[school];
+      document.getElementById('crumb-school').href = 'school.html?s=' + school;
+      document.getElementById('back-school').href = 'school.html?s=' + school;
+      document.getElementById('back-school-name').textContent = SCHOOLS[school];
+      document.getElementById('title').textContent = SCHOOLS[school] + ' — Fundraising';
+      document.getElementById('fr-form').onsubmit = addFundraiser;
+      load();
+    });
+
+    function sheetId(url) {
+      const m = (url || '').match(/\/spreadsheets\/d\/([A-Za-z0-9_-]{20,64})/);
+      return m ? m[1] : '';
+    }
+
+    async function addFundraiser(e) {
+      e.preventDefault();
+      const name = document.getElementById('f-name').value.trim();
+      if (!name) return;
+      const trackerUrl = document.getElementById('f-tracker').value.trim();
+      if (trackerUrl && !sheetId(trackerUrl)) { toast('That doesn\'t look like a Google Sheets link', 'error'); return; }
+      await db.collection('fundraisers').add({
+        school, name,
+        goal: parseInt((document.getElementById('f-goal').value || '').replace(/[^0-9]/g, ''), 10) || 0,
+        status: document.getElementById('f-status').value,
+        notes: document.getElementById('f-notes').value.trim(),
+        trackerUrl, trackerSheetId: sheetId(trackerUrl),
+        createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      e.target.reset();
+      toast('Fundraiser added');
+      load();
+    }
+
+    async function load() {
+      const box = document.getElementById('fr-list');
+      let snap;
+      try { snap = await db.collection('fundraisers').where('school', '==', school).get(); }
+      catch (e) { box.innerHTML = '<p style="color:var(--error)">Could not load: ' + esc(e.message) + '</p>'; return; }
+      if (snap.empty) { box.innerHTML = '<p style="color:var(--text-light)">No fundraisers yet — add one above.</p>'; return; }
+      const docs = snap.docs.slice().sort((a, b) =>
+        (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
+      box.innerHTML = '';
+      docs.forEach(d => box.appendChild(fundraiserCard(d)));
+    }
+
+    function fundraiserCard(doc) {
+      const f = doc.data();
+      const el = document.createElement('div');
+      el.className = 'fr-card';
+      el.innerHTML = `
+        <div class="fr-head">
+          <h3>${esc(f.name)}</h3>
+          ${f.goal ? `<span class="fr-goal">Goal $${f.goal.toLocaleString()}</span>` : ''}
+          <select data-status style="padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:12px">
+            <option value="planning">Planning</option><option value="active">Active</option><option value="done">Done</option>
+          </select>
+          <button class="bo-btn ghost sm" data-edit>Edit</button>
+          <button class="bo-btn danger sm" data-del>Delete</button>
+        </div>
+        ${f.notes ? `<p class="fr-notes">${esc(f.notes)}</p>` : ''}
+        ${f.trackerSheetId ? `
+          <div class="fr-tracker">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <strong style="flex:1">Prize &amp; Sponsor Tracker</strong>
+              <a class="bo-btn ghost sm" href="${esc(f.trackerUrl)}" target="_blank" rel="noopener">Open in Google Sheets ↗</a>
+              <button class="bo-btn sm" data-load>Show tracker</button>
+            </div>
+            <div data-tracker style="margin-top:12px"></div>
+          </div>` : ''}`;
+
+      el.querySelector('[data-status]').value = f.status || 'planning';
+      el.querySelector('[data-status]').onchange = (ev) =>
+        db.collection('fundraisers').doc(doc.id).update({ status: ev.target.value }).then(() => toast('Updated'));
+      el.querySelector('[data-del]').onclick = () => {
+        if (confirm('Delete "' + f.name + '"? (The Google Sheet is not affected.)'))
+          db.collection('fundraisers').doc(doc.id).delete().then(load);
+      };
+      el.querySelector('[data-edit]').onclick = () => editFundraiser(doc.id, f);
+      const loadBtn = el.querySelector('[data-load]');
+      if (loadBtn) loadBtn.onclick = () => loadTracker(f.trackerSheetId, el.querySelector('[data-tracker]'), loadBtn);
+      return el;
+    }
+
+    async function editFundraiser(id, f) {
+      const name = prompt('Fundraiser name', f.name); if (name === null) return;
+      const goal = prompt('Goal in dollars (blank for none)', f.goal || ''); if (goal === null) return;
+      const notes = prompt('Notes', f.notes || ''); if (notes === null) return;
+      const tracker = prompt('Tracker Google Sheet link (blank for none)', f.trackerUrl || ''); if (tracker === null) return;
+      await db.collection('fundraisers').doc(id).update({
+        name: name.trim() || f.name,
+        goal: parseInt((goal || '').replace(/[^0-9]/g, ''), 10) || 0,
+        notes: notes.trim(),
+        trackerUrl: tracker.trim(), trackerSheetId: sheetId(tracker.trim())
+      });
+      toast('Saved'); load();
+    }
+
+    async function loadTracker(id, container, btn) {
+      btn.disabled = true; btn.textContent = 'Loading…';
+      try {
+        const idToken = await auth.currentUser.getIdToken();
+        const res = await fetch('../api/sheet-proxy.php?id=' + id + '&idToken=' + encodeURIComponent(idToken));
+        const raw = await res.text();
+        let data; try { data = JSON.parse(raw); } catch (_) { throw new Error('server error — is api/sheet-proxy.php uploaded?'); }
+        if (!res.ok || !data.ok) throw new Error(data.error || 'Could not read the sheet');
+        renderTracker(parseCSV(data.csv), container);
+        btn.textContent = 'Refresh tracker';
+      } catch (e) {
+        container.innerHTML = '<p style="color:var(--error)">' + esc(e.message) + '</p>';
+        btn.textContent = 'Try again';
+      } finally { btn.disabled = false; }
+    }
+
+    function renderTracker(rows, container) {
+      if (!rows.length) { container.innerHTML = '<p style="color:var(--text-light)">Sheet is empty.</p>'; return; }
+      const header = rows.shift().map(h => h.trim());
+      const idx = n => header.findIndex(h => h.toLowerCase() === n.toLowerCase());
+      const iVal = idx('Target Value'), iRec = idx('Received?'), iStatus = idx('Status'),
+            iDon = idx('Donation'), iSrc = idx('Source / Application');
+
+      // summary
+      let target = 0, secured = 0, gotCount = 0;
+      rows.forEach(r => {
+        const tv = money(r[iVal]);
+        target += tv;
+        const rec = (r[iRec] || '').trim().toLowerCase();
+        if (rec === 'yes' || rec === 'y' || rec === 'received') { gotCount++; secured += money(r[iDon]) || tv; }
+      });
+      const tiles = `
+        <div class="fr-tiles">
+          <div class="fr-tile"><b>${rows.length}</b>prospects</div>
+          <div class="fr-tile"><b>${gotCount}</b>secured</div>
+          ${iVal >= 0 ? `<div class="fr-tile"><b>$${Math.round(target).toLocaleString()}</b>target value</div>` : ''}
+          ${(iVal >= 0 || iDon >= 0) ? `<div class="fr-tile"><b>$${Math.round(secured).toLocaleString()}</b>value secured</div>` : ''}
+        </div>`;
+
+      const cells = (r) => header.map((h, c) => {
+        let v = r[c] || '';
+        if (c === iStatus && v) return `<td><span class="fr-badge ${badgeClass(v, r[iRec])}">${esc(v)}</span></td>`;
+        if (c === iSrc && /^https?:\/\//.test(v)) return `<td><a href="${esc(v)}" target="_blank" rel="noopener">apply ↗</a></td>`;
+        return `<td>${esc(v)}</td>`;
+      }).join('');
+
+      container.innerHTML = tiles + '<div class="fr-tablewrap"><table class="fr-table"><thead><tr>' +
+        header.map(h => `<th>${esc(h)}</th>`).join('') + '</tr></thead><tbody>' +
+        rows.map(r => `<tr>${cells(r)}</tr>`).join('') + '</tbody></table></div>' +
+        '<p style="font-size:11.5px;color:var(--text-light);margin:8px 0 0">Read-only view. Edit in Google Sheets, then press Refresh.</p>';
+    }
+
+    function money(s) {
+      const n = parseFloat(String(s || '').replace(/[^0-9.]/g, ''));
+      return isNaN(n) ? 0 : n;
+    }
+    function badgeClass(status, received) {
+      if ((received || '').trim().toLowerCase().startsWith('y')) return 'got';
+      const s = status.toLowerCase();
+      if (s.includes('urgent') || s.includes('now')) return 'hot';
+      if (s.includes('apply') || s.includes('outreach') || s.includes('follow')) return 'go';
+      return 'neutral';
+    }
+
+    function parseCSV(text) {
+      const rows = []; let row = [], val = '', q = false;
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (q) { if (c === '"') { if (text[i + 1] === '"') { val += '"'; i++; } else q = false; } else val += c; }
+        else if (c === '"') q = true;
+        else if (c === ',') { row.push(val); val = ''; }
+        else if (c === '\n') { row.push(val); rows.push(row); row = []; val = ''; }
+        else if (c !== '\r') val += c;
+      }
+      if (val !== '' || row.length) { row.push(val); rows.push(row); }
+      return rows.filter(r => r.some(x => x !== ''));
+    }
+  </script>
+</body>
+</html>

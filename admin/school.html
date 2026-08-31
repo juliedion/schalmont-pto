@@ -39,6 +39,7 @@
       <button class="bo-tab active" data-tab="pages">📄 Pages</button>
       <button class="bo-tab" data-tab="files">🖼️ Files &amp; Photos</button>
       <button class="bo-tab" data-tab="plan">✅ Planning</button>
+      <a class="bo-tab" id="fundraising-tab" style="text-decoration:none">💰 Fundraising</a>
       <a class="bo-tab" id="calendar-tab" style="text-decoration:none">📅 Calendar</a>
       <a class="bo-tab" id="yearbook-tab" style="text-decoration:none">📸 Yearbook Photos</a>
     </div>
@@ -153,6 +154,7 @@
         'schalmontpto.com/' + SCHOOL_PREFIX[school] + '/fun-run';
       document.getElementById('yearbook-tab').href = 'yearbook.html?s=' + school;
       document.getElementById('calendar-tab').href = 'calendar.html?s=' + school;
+      document.getElementById('fundraising-tab').href = 'fundraising.html?s=' + school;
 
       // Tabs
       document.querySelectorAll('button.bo-tab').forEach(btn => {
