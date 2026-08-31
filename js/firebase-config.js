@@ -90,5 +90,9 @@ const sawFirebaseConfig = {
    to create their account on the site.
    ============================================================ */
 const adminEmails = [
-  "julie@schalmontpto.com"
+  "julie@schalmontpto.com",
+  "rachel@schalmontpto.com",
+  "vanesa@schalmontpto.com",
+  "kirstyn@schalmontpto.com",
+  "nicolle@schalmontpto.com"
 ];

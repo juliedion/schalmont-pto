@@ -98,8 +98,9 @@ service cloud.firestore {
       // A person can read their own record; any back-office admin can read the
       // roster (needed to assign planning tasks).
       allow read: if signedIn() && (request.auth.uid == userId || isAnyAdmin());
-      allow create: if signedIn() && request.auth.uid == userId
-                    && request.resource.data.status in ['pending', 'approved'];
+      allow create: if isOwner() ||
+                    (signedIn() && request.auth.uid == userId
+                     && request.resource.data.status in ['pending', 'approved']);
       // A person may keep their own directory profile fields up to date, but may
       // NOT give themselves a role. Only the owner changes role / adminSchools.
       allow update: if signedIn() && (
