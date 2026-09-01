@@ -1330,33 +1330,11 @@ const HERO_HEADLINES = [
   ['Leaders of', 'a legacy.'],
 ];
 
-const HERO_DEFAULT_SLIDES = [
-  'images/hero/hero-01.jpg',
-  'images/hero/hero-02.jpg',
-  'images/hero/hero-03.jpg',
-  'images/hero/hero-04.jpg',
-  'images/hero/hero-05.jpg',
-  'images/hero/hero-06.jpg',
-  'images/hero/hero-07.jpg',
-  'images/hero/hero-08.jpg',
-  'images/hero/hero-09.jpg',
-  'images/hero/hero-10.jpg',
-  'images/hero/hero-11.jpg',
-];
+const HERO_DEFAULT_SLIDES = Array.from({ length: 31 }, (_, i) =>
+  `images/hero/hero-${String(i + 1).padStart(2, '0')}.jpg`);
 
-const HERO_MOBILE_SLIDES = [
-  'images/hero/mobile/hero-01.jpg',
-  'images/hero/mobile/hero-02.jpg',
-  'images/hero/mobile/hero-03.jpg',
-  'images/hero/mobile/hero-04.jpg',
-  'images/hero/mobile/hero-05.jpg',
-  'images/hero/mobile/hero-06.jpg',
-  'images/hero/mobile/hero-07.jpg',
-  'images/hero/mobile/hero-08.jpg',
-  'images/hero/mobile/hero-09.jpg',
-  'images/hero/mobile/hero-10.jpg',
-  'images/hero/mobile/hero-11.jpg',
-];
+const HERO_MOBILE_SLIDES = Array.from({ length: 31 }, (_, i) =>
+  `images/hero/mobile/hero-${String(i + 1).padStart(2, '0')}.jpg`);
 
 function initHeroSlider() {
   const section = document.getElementById('hero-slider');
