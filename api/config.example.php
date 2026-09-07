@@ -22,7 +22,8 @@ return [
   'provider' => 'gemini',
 
   // ---- Google Gemini (used when provider = 'gemini') ----
-  'gemini_api_key' => 'REPLACE-ME',
+  'gemini_api_key' => 'AQ.Ab8RN6LyShezzL1908FPLutzeaFNCEojMvo4Lpak3woOO9QfNw
+',
   // Model. gemini-2.5-flash is fast and cheap; gemini-2.5-pro is smarter.
   // (This 'model' line is also used for Anthropic when provider = 'anthropic'.)
   'model' => 'gemini-2.5-flash',
