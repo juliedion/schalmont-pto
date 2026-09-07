@@ -87,6 +87,7 @@
     </div>
 
     <div class="cal-legend" id="legend"></div>
+    <div id="cal-count" style="font-size:12px;color:var(--text-light);margin:-6px 0 12px"></div>
     <div id="calendar"></div>
   </main>
 
@@ -307,6 +308,8 @@
       }
     }
 
+    const isYMD = v => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
+
     function refresh() {
       const filter = document.getElementById('school-filter').value;
       const showPromo = document.getElementById('show-promo').checked;
@@ -317,34 +320,44 @@
         // the "All schools" view show them, not each school's tab.
         .filter(ev => filter === 'all' || ev.school === 'all' || (ev.school || 'all') === filter)
         .forEach(ev => {
-          const color = schoolColor(ev.school);
-          const timed = !!ev.time;
-          fcEvents.push({
-            id: ev.id,
-            title: ev.title + (ev.status === 'idea' ? ' (idea)' : ''),
-            start: timed ? `${ev.date}T${ev.time}` : ev.date,
-            end: ev.endDate ? addDays(ev.endDate, 1) : undefined,
-            allDay: !timed,
-            backgroundColor: color, borderColor: color,
-            classNames: ev.status === 'done' ? ['done'] : [],
-            extendedProps: { docId: ev.id, kind: 'event' }
-          });
-          if (showPromo && ev.promo) {
-            Object.entries(ev.promo).forEach(([k, date]) => {
-              if (!date) return;
-              const done = ev.promoDone && ev.promoDone[k];
-              fcEvents.push({
-                title: (done ? '✓ ' : '📢 ') + PROMO_LABELS[k] + ': ' + ev.title,
-                start: date, allDay: true,
-                backgroundColor: '#fff', borderColor: color, textColor: '#555',
-                classNames: ['promo'],
-                extendedProps: { kind: 'promo', parentId: ev.id, promoKey: k }
-              });
+          try {
+            if (!isYMD(ev.date)) return;                 // skip a row with an unusable date
+            const color = schoolColor(ev.school);
+            const timed = /^\d{2}:\d{2}/.test(ev.time || '');
+            fcEvents.push({
+              id: ev.id,
+              title: (ev.title || '(untitled)') + (ev.status === 'idea' ? ' (idea)' : ''),
+              start: timed ? `${ev.date}T${ev.time}` : ev.date,
+              end: isYMD(ev.endDate) ? addDays(ev.endDate, 1) : undefined,
+              allDay: !timed,
+              backgroundColor: color, borderColor: color,
+              classNames: ev.status === 'done' ? ['done'] : [],
+              extendedProps: { docId: ev.id, kind: 'event' }
             });
-          }
+            if (showPromo && ev.promo) {
+              Object.entries(ev.promo).forEach(([k, date]) => {
+                if (!isYMD(date) || !PROMO_LABELS[k]) return;
+                const done = ev.promoDone && ev.promoDone[k];
+                fcEvents.push({
+                  title: (done ? '✓ ' : '📢 ') + PROMO_LABELS[k] + ': ' + ev.title,
+                  start: date, allDay: true,
+                  backgroundColor: '#fff', borderColor: color, textColor: '#555',
+                  classNames: ['promo'],
+                  extendedProps: { kind: 'promo', parentId: ev.id, promoKey: k }
+                });
+              });
+            }
+          } catch (err) { console.warn('calendar: skipped event', ev.id, err); }
         });
       cal.removeAllEvents();
-      fcEvents.forEach(e => cal.addEvent(e));
+      fcEvents.forEach(e => { try { cal.addEvent(e); } catch (err) { console.warn('addEvent failed', e, err); } });
+
+      const nEv = fcEvents.filter(e => e.extendedProps.kind === 'event').length;
+      const total = allEvents.filter(e => isYMD(e.date)).length;
+      const cnt = document.getElementById('cal-count');
+      if (cnt) cnt.textContent = filter === 'all'
+        ? `${total} event${total === 1 ? '' : 's'}`
+        : `${nEv} of ${total} shown — ${SCHOOL_LABEL[filter] || filter}`;
     }
 
     /* ---------- modal ---------- */
