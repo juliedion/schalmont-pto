@@ -201,6 +201,26 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 #bo-toast.show { opacity: 1; transform: translate(-50%, 0); }
 #bo-toast.error { background: var(--error); }
 
+/* ---------- Floating "get help" widget (every page) ---------- */
+#bo-help { position: fixed; right: 20px; bottom: 20px; z-index: 90; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+#bo-help-menu { display: none; flex-direction: column; gap: 8px; }
+#bo-help.open #bo-help-menu { display: flex; }
+#bo-help-menu a {
+  display: flex; align-items: center; gap: 8px; background: #fff; color: var(--primary-dark);
+  border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; font-size: 13.5px;
+  font-weight: 700; text-decoration: none; box-shadow: 0 6px 20px rgba(0,0,0,.14); white-space: nowrap;
+}
+#bo-help-menu a:hover { background: var(--light-bg); }
+#bo-help-toggle {
+  display: flex; align-items: center; gap: 8px; background: var(--primary); color: #fff;
+  border: none; border-radius: 24px; padding: 12px 18px; font-size: 14px; font-weight: 800;
+  cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,.2);
+}
+#bo-help-toggle:hover { background: var(--primary-dark); }
+#bo-help.open #bo-help-toggle { background: var(--primary-dark); }
+@media (max-width: 860px) { #bo-help { right: 12px; bottom: 12px; } }
+@media print { #bo-help { display: none; } }
+
 /* ---------- Mobile ---------- */
 @media (max-width: 860px) {
   body.bo-has-shell { grid-template-columns: 1fr; }

@@ -169,6 +169,39 @@ function renderShell() {
     </aside>`;
 
   document.body.classList.add('bo-has-shell');
+  renderHelpWidget();
+}
+
+/* A floating "get help" button on every back-office page:
+   ask the AI assistant, or email Julie. */
+function renderHelpWidget() {
+  if (document.getElementById('bo-help')) return;
+  const here = window.location.pathname.split('/').pop();
+  const subject = encodeURIComponent('Back Office help — ' + here);
+  const body = encodeURIComponent(
+    'Hi Julie,\n\nI need help with the PTO Back Office.\n\n' +
+    'Page: ' + window.location.href + '\n' +
+    'What I was trying to do:\n\n');
+  const el = document.createElement('div');
+  el.id = 'bo-help';
+  el.innerHTML = `
+    <div id="bo-help-menu">
+      <a href="assistant.html">💬 Ask the AI Assistant</a>
+      <a href="mailto:julie@schalmontpto.com?subject=${subject}&body=${body}">✉️ Email Julie for help</a>
+    </div>
+    <button id="bo-help-toggle" type="button" aria-label="Get help">＋ Need help?</button>`;
+  document.body.appendChild(el);
+  const toggle = el.querySelector('#bo-help-toggle');
+  toggle.addEventListener('click', () => {
+    const open = el.classList.toggle('open');
+    toggle.textContent = open ? '✕ Close' : '＋ Need help?';
+  });
+  document.addEventListener('click', (e) => {
+    if (!el.contains(e.target) && el.classList.contains('open')) {
+      el.classList.remove('open');
+      toggle.textContent = '＋ Need help?';
+    }
+  });
 }
 
 /* ---- small helpers ---------------------------------------- */
