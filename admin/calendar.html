@@ -84,6 +84,7 @@
       <span class="spacer" style="flex:1"></span>
       <button class="bo-btn sm" id="add-btn">＋ New event</button>
       <button class="bo-btn ghost sm" id="sheet-btn">⬆ Update from the planning spreadsheet</button>
+      <button class="bo-btn ghost sm" id="district-btn">↻ Sync District calendar</button>
     </div>
 
     <div class="cal-legend" id="legend"></div>
@@ -271,6 +272,7 @@
       document.getElementById('save-ev-btn').onclick = saveEvent;
       document.getElementById('del-btn').onclick = deleteEvent;
       document.getElementById('f-date').onchange = syncPromoFromDate;
+      document.getElementById('district-btn').onclick = () => syncDistrict(false);
 
       loadEvents();
     });
@@ -305,12 +307,22 @@
       cal.render();
     }
 
+    const BOOKKEEPING = new Set(['meta_deleted', 'meta_gcal']);
+    let districtAutoDone = false;
+
     async function loadEvents() {
       try {
         const snap = await db.collection('pto_events').get();
+        const lastGcal = snap.docs.find(d => d.id === 'meta_gcal');
         allEvents = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-          .filter(e => !e.id.startsWith('__') && e.id !== 'meta_deleted');       // skip internal bookkeeping docs
+          .filter(e => !e.id.startsWith('__') && !BOOKKEEPING.has(e.id));
         refresh();
+        // Keep the District calendar fresh, but at most every 6 hours per browser hit.
+        if (!districtAutoDone) {
+          districtAutoDone = true;
+          const at = lastGcal && lastGcal.exists ? (lastGcal.data().at || 0) : 0;
+          if (Date.now() - at > 6 * 3600e3) syncDistrict(true);
+        }
       } catch (e) {
         toast('Could not load calendar: ' + e.message, 'error');
       }
@@ -454,8 +466,8 @@
       if (!confirm('Delete this event from the calendar?')) return;
       const ev = allEvents.find(e => e.id === editingId);
       try {
-        // If it came from the planning sheet, remember not to re-add it on the next sync.
-        if (ev && ev.source === 'sheet') {
+        // If it came from a sync (planning sheet or District calendar), remember not to re-add it.
+        if (ev && (ev.source === 'sheet' || ev.source === 'gcal')) {
           await db.collection('pto_events').doc('meta_deleted').set(
             { ids: firebase.firestore.FieldValue.arrayUnion(editingId) }, { merge: true });
         }
@@ -770,6 +782,199 @@
       } catch (e) {
         rep.innerHTML = '<span style="color:var(--error)">Import failed: ' + e.message + '</span>';
         btn.disabled = false;
+      }
+    }
+
+    /* ================= Sync District events from the Google Calendar feed ================= */
+    const DISTRICT_CAL_ID = '9b60l7e14ii7jvaeee0n5q0ghk@group.calendar.google.com';
+
+    // UTC wall-clock -> America/New_York {date, time}
+    function utcToNY(y, mo, d, h, mi) {
+      const s = new Date(Date.UTC(y, mo - 1, d, h, mi)).toLocaleString('en-CA', {
+        timeZone: 'America/New_York', hour12: false,
+        year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+      });
+      const m = s.match(/(\d{4})-(\d{2})-(\d{2})[,\sT]+(\d{2}):(\d{2})/);
+      return m ? { date: `${m[1]}-${m[2]}-${m[3]}`, time: (m[4] === '24' ? '00' : m[4]) + ':' + m[5] }
+               : { date: `${y}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`, time: '' };
+    }
+
+    // One DTSTART/DTEND pair -> {date, endDate, time}
+    function icsWhen(param, val, endVal) {
+      if (/VALUE=DATE/i.test(param) || /^\d{8}$/.test(val)) {
+        const d = val.slice(0, 8);
+        const date = `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}`;
+        let endDate = '';
+        if (/^\d{8}/.test(endVal)) {
+          const e = endVal.slice(0, 8);
+          const ed = new Date(`${e.slice(0,4)}-${e.slice(4,6)}-${e.slice(6,8)}T12:00:00`);
+          ed.setDate(ed.getDate() - 1);                 // ICS all-day DTEND is exclusive
+          const eymd = toYMD(ed);
+          if (eymd > date) endDate = eymd;
+        }
+        return { date, endDate, time: '' };
+      }
+      const m = val.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z)?/);
+      if (!m) return null;
+      if (m[7] === 'Z') { const ny = utcToNY(+m[1], +m[2], +m[3], +m[4], +m[5]); return { date: ny.date, endDate: '', time: ny.time }; }
+      return { date: `${m[1]}-${m[2]}-${m[3]}`, endDate: '', time: `${m[4]}:${m[5]}` };
+    }
+
+    function expandRecurrence(base, rrule, exdates) {
+      const p = {};
+      rrule.split(';').forEach(x => { const [k, v] = x.split('='); if (k) p[k.toUpperCase()] = v; });
+      const freq = (p.FREQ || '').toUpperCase();
+      if (!['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'].includes(freq)) return [base];
+      const interval = Math.max(1, parseInt(p.INTERVAL || '1', 10) || 1);
+      const count = p.COUNT ? parseInt(p.COUNT, 10) : null;
+      let until = null;
+      if (p.UNTIL) { const u = p.UNTIL.replace(/[T Z].*$/, ''); until = `${u.slice(0,4)}-${u.slice(4,6)}-${u.slice(6,8)}`; }
+      const byday = p.BYDAY ? p.BYDAY.split(',').map(s => s.replace(/^[+-]?\d+/, '')) : null;
+      const DOW = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+      const start = new Date(base.date + 'T12:00:00');
+      const horizon = toYMD(new Date(Date.now() + 430 * 864e5));
+      const stop = new Date((until && until < horizon ? until : horizon) + 'T23:59:59');
+      const res = []; let cur = new Date(start); let n = 0, guard = 0;
+      const emit = (dt) => {
+        const ymd = toYMD(dt);
+        if (exdates.includes(ymd)) return;
+        res.push({ ...base, date: ymd, endDate: '', occDate: ymd });
+        n++;
+      };
+      while (guard++ < 800) {
+        if (count != null && n >= count) break;
+        if (cur > stop) break;
+        if (freq === 'WEEKLY' && byday) {
+          const wk = new Date(cur); wk.setDate(cur.getDate() - cur.getDay());
+          for (const bd of byday) {
+            const idx = DOW.indexOf(bd); if (idx < 0) continue;
+            const dt = new Date(wk); dt.setDate(wk.getDate() + idx);
+            if (dt < start || dt > stop) continue;
+            if (count != null && n >= count) break;
+            emit(dt);
+          }
+        } else if (cur >= start) emit(new Date(cur));
+        if (freq === 'DAILY') cur.setDate(cur.getDate() + interval);
+        else if (freq === 'WEEKLY') cur.setDate(cur.getDate() + 7 * interval);
+        else if (freq === 'MONTHLY') cur.setMonth(cur.getMonth() + interval);
+        else cur.setFullYear(cur.getFullYear() + interval);
+      }
+      return res.length ? res : [base];
+    }
+
+    function parseICS(raw) {
+      const text = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\n[ \t]/g, '');
+      // key -> { ev, override } ; a one-off change to a recurrence (RECURRENCE-ID) wins over
+      // the same slot generated by the RRULE, so a moved meeting isn't shown twice.
+      const map = new Map();
+      const add = (ev, key, override) => {
+        key = key.toLowerCase();
+        if (override || !map.has(key)) map.set(key, ev);
+      };
+      const re = /BEGIN:VEVENT\n([\s\S]*?)\nEND:VEVENT/g; let m;
+      const clean = s => (s || '').replace(/\\n/g, ' ').replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\\\/g, '\\').trim();
+      while ((m = re.exec(text))) {
+        const b = m[1];
+        const grab = prop => {
+          const r = new RegExp('(?:^|\\n)' + prop + '([^\\n:]*)?:([^\\n]*)', 'i');
+          const v = b.match(r); return v ? { param: v[1] || '', val: v[2].trim() } : null;
+        };
+        const sum = grab('SUMMARY'), ds = grab('DTSTART');
+        if (!sum || !ds || !sum.val) continue;
+        if (/CANCELLED/i.test((grab('STATUS') || {}).val || '')) continue;
+        const de = grab('DTEND');
+        const when = icsWhen(ds.param, ds.val, de ? de.val : '');
+        if (!when) continue;
+        const exdates = [];
+        const exre = /(?:^|\n)EXDATE(?:;[^\n:]*)?:([^\n]*)/gi; let em;
+        while ((em = exre.exec(b))) em[1].split(',').forEach(x => { const t = x.trim().slice(0, 8); if (/^\d{8}$/.test(t)) exdates.push(`${t.slice(0,4)}-${t.slice(4,6)}-${t.slice(6,8)}`); });
+        const base = {
+          uid: (grab('UID') || {}).val || (sum.val + when.date),
+          title: clean(sum.val),
+          location: clean((grab('LOCATION') || {}).val),
+          notes: clean((grab('DESCRIPTION') || {}).val).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 1000),
+          ...when
+        };
+        const rid = grab('RECURRENCE-ID');
+        if (rid) {                                        // a single moved/edited occurrence
+          const o = (rid.val.match(/^(\d{4})(\d{2})(\d{2})/) || []).slice(1).join('-') || base.date;
+          base.occDate = o;                               // keep it distinct from its siblings
+          add(base, base.uid + '|' + o, true);
+          continue;
+        }
+        const rr = grab('RRULE');
+        const occ = rr && rr.val ? expandRecurrence(base, rr.val, exdates) : [base];
+        occ.forEach(o => add(o, o.uid + '|' + o.date, false));
+      }
+      return [...map.values()];
+    }
+
+    let districtSyncing = false;
+    async function syncDistrict(silent) {
+      if (districtSyncing) return;
+      districtSyncing = true;
+      const btn = document.getElementById('district-btn');
+      if (btn) { btn.disabled = true; btn.textContent = '↻ Syncing District…'; }
+      try {
+        const icsUrl = 'https://calendar.google.com/calendar/ical/' +
+          encodeURIComponent(DISTRICT_CAL_ID) + '/public/basic.ics';
+        const res = await fetch('/ical-proxy.php?url=' + encodeURIComponent(icsUrl), { cache: 'no-store' });
+        const text = await res.text();
+        if (!res.ok || text.indexOf('BEGIN:VCALENDAR') === -1)
+          throw new Error('could not read the District calendar feed (is it shared publicly?)');
+
+        const lo = toYMD(new Date(Date.now() - 31 * 864e5));
+        const hi = toYMD(new Date(Date.now() + 430 * 864e5));
+        const events = parseICS(text).filter(e => isYMD(e.date) && e.date >= lo && e.date <= hi);
+
+        const col = db.collection('pto_events');
+        const byId = new Map(allEvents.map(e => [e.id, e]));
+        const pinned = new Set(allEvents.filter(e => e.pinned).map(e => e.id));
+        let skip = new Set();
+        try { const dd = await col.doc('meta_deleted').get(); if (dd.exists) skip = new Set(dd.data().ids || []); } catch (_) {}
+
+        const ops = []; const seen = new Set(); let added = 0, updated = 0;
+        for (const ev of events) {
+          const id = ('gcal_' + ev.uid + (ev.occDate ? '_' + ev.occDate : ''))
+            .toLowerCase().replace(/[^a-z0-9_]+/g, '_').replace(/_+/g, '_').slice(0, 120);
+          if (seen.has(id)) continue;
+          seen.add(id);
+          if (skip.has(id) || pinned.has(id)) continue;
+          const cur = byId.get(id);
+          const f = {
+            title: ev.title || '(untitled)', date: ev.date, endDate: ev.endDate || '',
+            time: ev.time || '', location: ev.location || '', notes: ev.notes || '',
+            category: 'District Calendar', school: 'pto', status: 'confirmed',
+            source: 'gcal', gcalUid: ev.uid
+          };
+          if (cur && cur.title === f.title && cur.date === f.date && cur.time === f.time &&
+              (cur.endDate || '') === f.endDate && (cur.location || '') === f.location &&
+              (cur.notes || '') === f.notes) continue;                 // unchanged — skip the write
+          f.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+          f.updatedBy = ME.email;
+          if (!cur) {
+            f.promo = {}; f.promoDone = {};
+            f.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            f.createdBy = ME.email;
+            added++;
+          } else updated++;
+          ops.push(b => b.set(col.doc(id), f, { merge: true }));
+        }
+        // Drop District-calendar events that have disappeared from the feed (leave hand-edited ones).
+        let removed = 0;
+        allEvents.forEach(e => {
+          if (e.source === 'gcal' && !e.pinned && !seen.has(e.id)) { ops.push(b => b.delete(col.doc(e.id))); removed++; }
+        });
+        ops.push(b => b.set(col.doc('meta_gcal'), { at: Date.now(), by: ME.email }));
+        await commitOps(ops);
+        if (!silent) toast(`District calendar synced — ${added} new, ${updated} updated` + (removed ? `, ${removed} removed` : ''));
+        loadEvents();
+      } catch (e) {
+        if (!silent) toast('District sync problem: ' + e.message, 'error');
+        else console.warn('district auto-sync:', e);
+      } finally {
+        districtSyncing = false;
+        if (btn) { btn.disabled = false; btn.textContent = '↻ Sync District calendar'; }
       }
     }
 
