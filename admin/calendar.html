@@ -12,9 +12,19 @@
   <style>
     .cal-bar { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:16px; }
     .cal-bar select { padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-family:inherit; font-size:13.5px; }
-    .cal-legend { display:flex; gap:12px; flex-wrap:wrap; font-size:12px; color:var(--text); margin-bottom:14px; }
-    .cal-legend span { display:inline-flex; align-items:center; gap:5px; }
     .cal-dot { width:11px; height:11px; border-radius:3px; display:inline-block; }
+    .cal-toggles { display:flex; gap:6px; flex-wrap:wrap; }
+    .cal-toggles label {
+      display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600;
+      padding:5px 10px; border:1px solid var(--border); border-radius:20px; cursor:pointer;
+      background:var(--white); user-select:none; opacity:.45;
+    }
+    .cal-toggles label.on { opacity:1; border-color:currentColor; }
+    .cal-toggles input { position:absolute; opacity:0; width:0; height:0; }
+    .cal-toggle-all {
+      font-size:12px; padding:5px 10px; border:1px solid var(--border); border-radius:20px;
+      background:var(--white); cursor:pointer; color:var(--text-light); font-weight:600;
+    }
     #calendar { background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px; }
     .fc .fc-toolbar-title { font-size:1.15rem; }
     .fc-event { cursor:pointer; }
@@ -68,27 +78,22 @@
        event date &mdash; turn them on with the checkbox below.</p>
 
     <div class="cal-bar">
-      <label style="font-weight:700;font-size:13px">Show:
-        <select id="school-filter">
-          <option value="all">Everything</option>
-          <option value="pto">District only</option>
-          <option value="woestina">Woestina Pre-K</option>
-          <option value="jefferson">Jefferson Elementary</option>
-          <option value="middle">Middle School</option>
-          <option value="high">High School</option>
-        </select>
-      </label>
+      <span style="font-weight:700;font-size:13px">Show:</span>
+      <div id="school-toggles" class="cal-toggles"></div>
+      <button type="button" class="cal-toggle-all" id="toggle-all">all</button>
+      <span class="spacer" style="flex:1"></span>
       <label style="font-weight:700;font-size:13px;display:flex;align-items:center;gap:6px">
         <input type="checkbox" id="show-promo"> Show flyer &amp; social dates
       </label>
+    </div>
+    <div class="cal-bar" style="margin-bottom:10px">
       <span class="spacer" style="flex:1"></span>
       <button class="bo-btn sm" id="add-btn">＋ New event</button>
       <button class="bo-btn ghost sm" id="sheet-btn">⬆ Update from the planning spreadsheet</button>
       <button class="bo-btn ghost sm" id="district-btn">↻ Sync District calendar</button>
     </div>
 
-    <div class="cal-legend" id="legend"></div>
-    <div id="cal-count" style="font-size:12px;color:var(--text-light);margin:-6px 0 12px"></div>
+    <div id="cal-count" style="font-size:12px;color:var(--text-light);margin:0 0 12px"></div>
     <div id="calendar"></div>
   </main>
 
@@ -253,18 +258,17 @@
 
     requireAdmin((me) => {
       const s = getParam('s');
+      // Opened from a school workspace → start with just that calendar (plus District);
+      // opened from the top level → show every calendar.
+      const preselect = s && SCHOOLS[s] && s !== 'pto' ? [s, 'pto'] : Object.keys(SCHOOL_LABEL);
       if (s && SCHOOLS[s]) {
-        document.getElementById('school-filter').value = s === 'pto' ? 'pto' : s;
         const b = document.getElementById('back-school');
         b.style.display = ''; b.href = 'school.html?s=' + s;
         document.getElementById('back-school-name').textContent = SCHOOLS[s];
       }
 
-      document.getElementById('legend').innerHTML = Object.keys(SCHOOL_COLOR)
-        .map(k => `<span><i class="cal-dot" style="background:${SCHOOL_COLOR[k]}"></i>${SCHOOL_LABEL[k]}</span>`).join('');
-
+      buildSchoolToggles(preselect);
       buildCalendar();
-      document.getElementById('school-filter').onchange = refresh;
       document.getElementById('show-promo').onchange = refresh;
       document.getElementById('add-btn').onclick = () => openModal(null, toYMD(new Date()));
       setupSheetModal(s && SCHOOLS[s] ? s : 'all');
@@ -330,14 +334,40 @@
 
     const isYMD = v => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
 
+    // ---- which calendars are ticked ----
+    function buildSchoolToggles(preselect) {
+      const on = new Set(preselect);
+      const wrap = document.getElementById('school-toggles');
+      wrap.innerHTML = Object.keys(SCHOOL_LABEL).map(k => `
+        <label data-k="${k}" style="color:${SCHOOL_COLOR[k]}">
+          <input type="checkbox" value="${k}" ${on.has(k) ? 'checked' : ''}>
+          <i class="cal-dot" style="background:${SCHOOL_COLOR[k]}"></i>${SCHOOL_LABEL[k]}
+        </label>`).join('');
+      wrap.querySelectorAll('input').forEach(c => c.onchange = () => { paintToggles(); refresh(); });
+      document.getElementById('toggle-all').onclick = () => {
+        const boxes = [...wrap.querySelectorAll('input')];
+        const makeOn = !boxes.every(b => b.checked);
+        boxes.forEach(b => b.checked = makeOn);
+        paintToggles(); refresh();
+      };
+      paintToggles();
+    }
+    function paintToggles() {
+      document.querySelectorAll('#school-toggles label').forEach(l =>
+        l.classList.toggle('on', l.querySelector('input').checked));
+      const boxes = [...document.querySelectorAll('#school-toggles input')];
+      document.getElementById('toggle-all').textContent = boxes.every(b => b.checked) ? 'none' : 'all';
+    }
+    function shownSchools() {
+      return new Set([...document.querySelectorAll('#school-toggles input:checked')].map(c => c.value));
+    }
+
     function refresh() {
-      const filter = document.getElementById('school-filter').value;
+      const shown = shownSchools();
       const showPromo = document.getElementById('show-promo').checked;
       const fcEvents = [];
       allEvents
-        // Each event belongs to exactly one school (or the District). "Everything" shows all;
-        // any other filter shows only that school's events.
-        .filter(ev => filter === 'all' || (ev.school || 'pto') === filter)
+        .filter(ev => shown.has(ev.school || 'pto'))
         .forEach(ev => {
           try {
             if (!isYMD(ev.date)) return;                 // skip a row with an unusable date
@@ -373,10 +403,11 @@
 
       const nEv = fcEvents.filter(e => e.extendedProps.kind === 'event').length;
       const total = allEvents.filter(e => isYMD(e.date)).length;
+      const nCal = shown.size, allCal = Object.keys(SCHOOL_LABEL).length;
       const cnt = document.getElementById('cal-count');
-      if (cnt) cnt.textContent = filter === 'all'
-        ? `${total} event${total === 1 ? '' : 's'}`
-        : `${nEv} of ${total} shown — ${SCHOOL_LABEL[filter] || filter}`;
+      if (cnt) cnt.textContent = nCal === allCal
+        ? `${total} event${total === 1 ? '' : 's'} · all calendars`
+        : `${nEv} of ${total} event${total === 1 ? '' : 's'} · ${[...shown].map(k => SCHOOL_LABEL[k]).join(', ')}`;
     }
 
     /* ---------- modal ---------- */
