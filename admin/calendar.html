@@ -164,14 +164,15 @@
         events; anything you edited here by hand is left alone unless you tick the reset box below.
       </p>
 
-      <label>Google Sheet link</label>
-      <input type="text" id="sh-url" placeholder="https://docs.google.com/spreadsheets/d/…">
-
       <div class="cal-row">
         <div>
-          <label>These events belong to</label>
+          <label>Spreadsheet tab</label>
+          <select id="sh-tab"></select>
+        </div>
+        <div>
+          <label>Import as</label>
           <select id="sh-school">
-            <option value="all">All schools (master planning sheet)</option>
+            <option value="all">All schools</option>
             <option value="pto">District only</option>
             <option value="woestina">Woestina Pre-K</option>
             <option value="jefferson">Jefferson Elementary</option>
@@ -185,6 +186,8 @@
         </div>
       </div>
       <p style="font-size:12px;color:var(--text-light);margin:8px 0 0">
+        Each tab of the <a id="sh-open" href="#" target="_blank" rel="noopener">master planning
+        sheet</a> maps to one school; the <strong>Master Tracker</strong> tab covers all schools.
         Pick the school year so dates without a year (e.g. &ldquo;September 8&rdquo;) land correctly.
       </p>
 
@@ -454,10 +457,27 @@
       return String(h).padStart(2, '0') + ':' + min;
     }
 
-    /* ================= Update the calendar from an uploaded spreadsheet ================= */
-    let shParsed = null;   // { rows, school, startYear }
+    /* ================= Update the calendar from the master planning sheet ================= */
+    // Each tab of the master sheet maps to a school scope. "Master Tracker" = all schools.
+    const SHEET_TABS = [
+      { name: 'Master Tracker (all schools)', gid: '1948940234', school: 'all' },
+      { name: 'Woestina',      gid: '1827827881', school: 'woestina' },
+      { name: 'Jefferson',     gid: '0',          school: 'jefferson' },
+      { name: 'Middle School', gid: '1872292183', school: 'middle' },
+      { name: 'High School',   gid: '1874166284', school: 'high' }
+    ];
+    let shParsed = null;   // { events, school, sheetId, gid, startYear }
 
     function setupSheetModal(defaultSchool) {
+      const tabSel = document.getElementById('sh-tab');
+      SHEET_TABS.forEach((t, i) => tabSel.add(new Option(t.name, String(i))));
+      const openLink = document.getElementById('sh-open');
+      const syncTab = () => {
+        const t = SHEET_TABS[+tabSel.value];
+        document.getElementById('sh-school').value = t.school;
+        openLink.href = SHEET_URL + '#gid=' + t.gid;
+      };
+      tabSel.onchange = syncTab;
       const yearSel = document.getElementById('sh-year');
       const now = new Date();
       const base = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1;
@@ -465,8 +485,9 @@
         yearSel.add(new Option(`${y}–${y + 1}`, String(y)));
       }
       yearSel.value = String(base);
-      document.getElementById('sh-school').value = defaultSchool || 'all';
-      document.getElementById('sh-url').value = SHEET_URL;
+      const wantTab = SHEET_TABS.findIndex(t => t.school === defaultSchool);
+      tabSel.value = String(wantTab >= 0 ? wantTab : 0);
+      syncTab();
 
       document.getElementById('sheet-btn').onclick = () => {
         document.getElementById('sh-report').style.display = 'none';
@@ -478,13 +499,6 @@
         () => document.getElementById('sheet-modal').classList.remove('open');
       document.getElementById('sh-preview').onclick = sheetPreview;
       document.getElementById('sh-import').onclick = sheetImport;
-    }
-
-    function sheetIdFromUrl(url) {
-      const m = String(url).match(/\/spreadsheets\/d\/([A-Za-z0-9_-]{20,64})/);
-      const id = m ? m[1] : (String(url).match(/^[A-Za-z0-9_-]{20,64}$/) ? String(url) : '');
-      const g = String(url).match(/[?#&]gid=(\d+)/);
-      return { id, gid: g ? g[1] : '0' };
     }
 
     const MONTHS = ['january','february','march','april','may','june','july',
@@ -572,18 +586,16 @@
       return out;
     }
 
-    async function fetchSheetCsv() {
-      const { id, gid } = sheetIdFromUrl(document.getElementById('sh-url').value.trim());
-      if (!id) throw new Error('that does not look like a Google Sheets link');
+    async function fetchSheetCsv(gid) {
       const idToken = await auth.currentUser.getIdToken();
-      const res = await fetch('../api/sheet-proxy.php?id=' + id + '&gid=' + gid +
+      const res = await fetch('../api/sheet-proxy.php?id=' + SHEET_ID + '&gid=' + gid +
                               '&idToken=' + encodeURIComponent(idToken));
       const raw = await res.text();
       let data;
       try { data = JSON.parse(raw); }
       catch (_) { throw new Error('the server did not respond correctly — is api/sheet-proxy.php on the server?'); }
       if (!res.ok || !data.ok) throw new Error(data.error || 'could not read the sheet');
-      return { id, csv: data.csv };
+      return data.csv;
     }
 
     // A "district" event = one we keep when the sheet is made the source of truth:
@@ -595,6 +607,13 @@
     }
     const schoolLabel = s =>
       s === 'all' ? 'all schools' : s === 'pto' ? 'the District' : (SCHOOLS[s] || s);
+
+    // Which existing events a "reset" import would delete before loading the tab:
+    // for the Master Tracker (all) — every non-district, non-pinned event;
+    // for a single-school tab — only that school's non-district, non-pinned events.
+    const wipeTargets = (school) => allEvents.filter(e =>
+      !isDistrictCal(e) && !e.pinned &&
+      (school === 'all' || (e.school || 'all') === school));
 
     // Firestore batches cap at 500 writes — commit in chunks.
     async function commitOps(ops) {
@@ -612,10 +631,11 @@
       document.getElementById('sh-import').disabled = true;
       try {
         const startYear = +document.getElementById('sh-year').value;
-        const { id, csv } = await fetchSheetCsv();
+        const tab = SHEET_TABS[+document.getElementById('sh-tab').value];
+        const csv = await fetchSheetCsv(tab.gid);
         const events = sheetToEvents(csv, startYear);
         const school = document.getElementById('sh-school').value;
-        shParsed = { events, school, sheetId: id, startYear };
+        shParsed = { events, school, sheetId: SHEET_ID, gid: tab.gid, startYear };
         const list = events.slice(0, 12).map(e =>
           `<li>${prettyYMD(e.date)} &mdash; ${e.title}</li>`).join('');
         let html = `<strong>${events.length}</strong> event${events.length === 1 ? '' : 's'} in the sheet` +
@@ -623,11 +643,10 @@
           `<ul style="margin:6px 0 0;padding-left:18px">${list}` +
           (events.length > 12 ? `<li>…and ${events.length - 12} more</li>` : '') + '</ul>';
         if (document.getElementById('sh-wipe').checked) {
-          const del = allEvents.filter(e => !isDistrictCal(e));
-          const keep = allEvents.length - del.length;
+          const del = wipeTargets(school);
           html += `<p style="margin:10px 0 0;color:var(--error);font-weight:700">` +
-            `⚠ Will first DELETE ${del.length} existing event${del.length === 1 ? '' : 's'} ` +
-            `(keeping ${keep} District Calendar event${keep === 1 ? '' : 's'}).</p>`;
+            `⚠ Will first DELETE ${del.length} existing ${schoolLabel(school)} event` +
+            `${del.length === 1 ? '' : 's'} (District Calendar entries and your hand edits are kept).</p>`;
         }
         rep.innerHTML = html;
         document.getElementById('sh-import').disabled = false;
@@ -644,14 +663,15 @@
       const rep = document.getElementById('sh-report');
       rep.innerHTML = 'Importing…';
       try {
-        const { events, school, sheetId } = shParsed;
+        const { events, school, sheetId, gid } = shParsed;
+        const src = sheetId + '#' + gid;
         const wipe = document.getElementById('sh-wipe').checked;
         const col = db.collection('pto_events');
 
         if (wipe) {
-          const del = allEvents.filter(e => !isDistrictCal(e));
-          if (!confirm(`This will permanently delete ${del.length} existing event(s) from the ` +
-            `back-office calendar (District Calendar entries are kept), then load ${events.length} ` +
+          const del = wipeTargets(school);
+          if (!confirm(`This will permanently delete ${del.length} existing ${schoolLabel(school)} ` +
+            `event(s) (District Calendar entries and hand edits are kept), then load ${events.length} ` +
             `event(s) from the sheet.\n\nContinue?`)) { btn.disabled = false; rep.innerHTML = ''; return; }
           const ops = del.map(e => (b => b.delete(col.doc(e.id))));
           // clear the "don't re-add" list so the sheet is a clean slate
@@ -659,7 +679,7 @@
           await commitOps(ops);
         }
 
-        const pinned = new Set(wipe ? [] : allEvents.filter(e => e.pinned).map(e => e.id));
+        const pinned = new Set(allEvents.filter(e => e.pinned).map(e => e.id));
         let skip = new Set();
         if (!wipe) {
           try {
@@ -673,7 +693,7 @@
         let added = 0, updated = 0, kept = 0;
         const seen = new Set();
         for (const ev of events) {
-          const id = ('sheet_' + ev.date + '_' + ev.title).toLowerCase()
+          const id = ('sheet_' + school + '_' + ev.date + '_' + ev.title).toLowerCase()
             .replace(/[^a-z0-9_]+/g, '_').replace(/_+/g, '_').slice(0, 120);
           seen.add(id);
           if (skip.has(id)) continue;
@@ -683,7 +703,7 @@
             time: ev.time || '', category: ev.category, audience: ev.audience,
             owner: ev.owner, notes: ev.notes, status: 'planned', school,
             promo: computePromo(ev.date, ev.promoSeed),
-            source: 'sheet', sheetSrc: sheetId, sheetKey: ev.title + '||' + ev.date,
+            source: 'sheet', sheetSrc: src, sheetKey: ev.title + '||' + ev.date,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: ME.email
           };
           if (!known.has(id)) {
@@ -698,8 +718,7 @@
         let removed = 0;
         if (!wipe && document.getElementById('sh-prune').checked) {
           allEvents.forEach(e => {
-            if (e.source === 'sheet' && e.sheetSrc === sheetId && e.school === school &&
-                !e.pinned && !seen.has(e.id)) {
+            if (e.source === 'sheet' && e.sheetSrc === src && !e.pinned && !seen.has(e.id)) {
               ops.push(b => b.delete(col.doc(e.id)));
               removed++;
             }
