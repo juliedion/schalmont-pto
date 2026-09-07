@@ -218,20 +218,22 @@
     // Single source of truth for every school's events (see "Update from a spreadsheet").
     const SHEET_ID = '1vIPpzz79LgBSm2lWDkFgjwKjb-h7JrSLFzdbtTf4JyM';
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/edit';
-    const CAT_COLOR = {
-      'Event': '#295c38', 'Program': '#2b6cb0', 'Fundraiser': '#b7791f',
-      'Meeting': '#6b46c1', 'Staff Appreciation': '#d53f8c',
-      'District Calendar': '#718096', 'Other': '#4a5568'
+    // Events are coloured by school / scope.
+    const SCHOOL_COLOR = {
+      all:       '#295c38',   // All schools  — PTO green
+      pto:       '#6b46c1',   // District     — purple
+      woestina:  '#0d9488',   // Woestina     — teal
+      jefferson: '#2b6cb0',   // Jefferson    — blue
+      middle:    '#b7791f',   // Middle       — amber
+      high:      '#c53030'    // High         — red
     };
-    function catColor(c) {
-      if (CAT_COLOR[c]) return CAT_COLOR[c];
-      const s = (c || '').toLowerCase();
-      if (s.includes('fundrais')) return CAT_COLOR.Fundraiser;
-      if (s.includes('meeting')) return CAT_COLOR.Meeting;
-      if (s.includes('appreciat')) return CAT_COLOR['Staff Appreciation'];
-      if (s.includes('district') || s.includes('no school')) return CAT_COLOR['District Calendar'];
-      if (s.includes('program')) return CAT_COLOR.Program;
-      return CAT_COLOR.Event;
+    const SCHOOL_LABEL = {
+      all: 'All schools', pto: 'District', woestina: 'Woestina Pre-K',
+      jefferson: 'Jefferson Elementary', middle: 'Middle School', high: 'High School'
+    };
+    function schoolColor(s) {
+      if (s === 'district') s = 'pto';
+      return SCHOOL_COLOR[s] || SCHOOL_COLOR.all;
     }
 
     let cal, allEvents = [], editingId = null;
@@ -245,8 +247,8 @@
         document.getElementById('back-school-name').textContent = SCHOOLS[s];
       }
 
-      document.getElementById('legend').innerHTML = Object.entries(CAT_COLOR)
-        .map(([k, v]) => `<span><i class="cal-dot" style="background:${v}"></i>${k}</span>`).join('');
+      document.getElementById('legend').innerHTML = Object.keys(SCHOOL_COLOR)
+        .map(k => `<span><i class="cal-dot" style="background:${SCHOOL_COLOR[k]}"></i>${SCHOOL_LABEL[k]}</span>`).join('');
 
       buildCalendar();
       document.getElementById('school-filter').onchange = refresh;
@@ -312,7 +314,7 @@
         // the "All schools" view show them, not each school's tab.
         .filter(ev => filter === 'all' || ev.school === 'all' || (ev.school || 'all') === filter)
         .forEach(ev => {
-          const color = catColor(ev.category);
+          const color = schoolColor(ev.school);
           const timed = !!ev.time;
           fcEvents.push({
             id: ev.id,
