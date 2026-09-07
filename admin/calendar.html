@@ -82,9 +82,8 @@
         <input type="checkbox" id="show-promo"> Show flyer &amp; social dates
       </label>
       <span class="spacer" style="flex:1"></span>
-      <span id="sync-status" style="font-size:12px;color:var(--text-light)"></span>
       <button class="bo-btn sm" id="add-btn">＋ New event</button>
-      <button class="bo-btn ghost sm" id="import-btn" style="display:none">↻ Re-sync from planning sheet</button>
+      <button class="bo-btn ghost sm" id="sheet-btn">⬆ Update from the planning spreadsheet</button>
     </div>
 
     <div class="cal-legend" id="legend"></div>
@@ -152,6 +151,61 @@
     </div>
   </div>
 
+  <!-- Update-from-spreadsheet modal -->
+  <div class="cal-modal" id="sheet-modal">
+    <div class="cal-dialog">
+      <h2>Update the calendar from a spreadsheet</h2>
+      <p style="font-size:13px;color:var(--text-light);margin:0 0 6px">
+        The planning spreadsheet is the <strong>single source of truth</strong> for every school's
+        events. This loads it into the <strong>back-office calendar only</strong> &mdash; nothing on
+        the public website changes. The sheet must be shared
+        <strong>&ldquo;Anyone with the link can view&rdquo;</strong>. Re-running updates matching
+        events; anything you edited here by hand is left alone unless you tick the reset box below.
+      </p>
+
+      <label>Google Sheet link</label>
+      <input type="text" id="sh-url" placeholder="https://docs.google.com/spreadsheets/d/…">
+
+      <div class="cal-row">
+        <div>
+          <label>These events belong to</label>
+          <select id="sh-school">
+            <option value="pto">All schools (one shared list)</option>
+            <option value="woestina">Woestina Pre-K</option>
+            <option value="jefferson">Jefferson Elementary</option>
+            <option value="middle">Middle School</option>
+            <option value="high">High School</option>
+          </select>
+        </div>
+        <div>
+          <label>School year</label>
+          <select id="sh-year"></select>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--text-light);margin:8px 0 0">
+        Pick the school year so dates without a year (e.g. &ldquo;September 8&rdquo;) land correctly.
+      </p>
+
+      <label style="display:flex;align-items:flex-start;gap:7px;font-weight:600;font-size:12.5px;margin:14px 0 0">
+        <input type="checkbox" id="sh-wipe" style="width:auto;margin-top:2px">
+        <span>Make this sheet the single source of truth &mdash; before importing, delete every
+          existing calendar event <em>except</em> ones marked <strong>District Calendar</strong>.</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:7px;font-weight:600;font-size:12.5px;margin:8px 0 0">
+        <input type="checkbox" id="sh-prune" style="width:auto"> Otherwise, just remove past imports from this same sheet that are no longer in it
+      </label>
+
+      <div id="sh-report" style="display:none;margin-top:14px;background:var(--light-bg);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:13px;max-height:240px;overflow:auto"></div>
+
+      <div class="cal-actions">
+        <span class="spacer"></span>
+        <button class="bo-btn ghost sm" id="sh-cancel">Cancel</button>
+        <button class="bo-btn ghost sm" id="sh-preview">Preview</button>
+        <button class="bo-btn sm" id="sh-import" disabled>Import</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
@@ -159,7 +213,9 @@
   <script src="../js/firebase-config.js"></script>
   <script src="admin-core.js"></script>
   <script>
-    const SHEET_ID = '125BxlKchxGULKFtK_nl9pE67UdJwU0kqKU_ftEUC7SA';
+    // Single source of truth for every school's events (see "Update from a spreadsheet").
+    const SHEET_ID = '1vIPpzz79LgBSm2lWDkFgjwKjb-h7JrSLFzdbtTf4JyM';
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/edit';
     const CAT_COLOR = {
       'Event': '#295c38', 'Program': '#2b6cb0', 'Fundraiser': '#b7791f',
       'Meeting': '#6b46c1', 'Staff Appreciation': '#d53f8c',
@@ -176,7 +232,7 @@
       return CAT_COLOR.Event;
     }
 
-    let cal, allEvents = [], editingId = null, autoImportTried = false;
+    let cal, allEvents = [], editingId = null;
 
     requireAdmin((me) => {
       const s = getParam('s');
@@ -194,9 +250,7 @@
       document.getElementById('school-filter').onchange = refresh;
       document.getElementById('show-promo').onchange = refresh;
       document.getElementById('add-btn').onclick = () => openModal(null, toYMD(new Date()));
-      // The manual re-sync link only appears on the top-level Calendar (not a school tab).
-      if (!s) document.getElementById('import-btn').style.display = '';
-      document.getElementById('import-btn').onclick = () => importSheet(false);
+      setupSheetModal(s && SCHOOLS[s] ? (s === 'pto' ? 'pto' : s) : 'pto');
       document.getElementById('cancel-btn').onclick = closeModal;
       document.getElementById('save-ev-btn').onclick = saveEvent;
       document.getElementById('del-btn').onclick = deleteEvent;
@@ -241,11 +295,6 @@
         allEvents = snap.docs.map(d => ({ id: d.id, ...d.data() }))
           .filter(e => !e.id.startsWith('__'));       // skip internal bookkeeping docs
         refresh();
-        // First time the calendar is ever opened, pull the planning sheet automatically.
-        if (!autoImportTried && !allEvents.some(e => e.source === 'sheet')) {
-          autoImportTried = true;
-          importSheet(true);
-        }
       } catch (e) {
         toast('Could not load calendar: ' + e.message, 'error');
       }
@@ -389,106 +438,6 @@
       } catch (e) { toast('Could not delete: ' + e.message, 'error'); }
     }
 
-    /* ---------- sync from the planning Google Sheet ---------- */
-    let syncing = false;
-    async function importSheet(silent) {
-      if (syncing) return;
-      if (!silent && !confirm('Re-sync events from the PTO planning spreadsheet?\n\n' +
-        'New rows are added, rows already synced are refreshed, and events you added by hand are left alone.')) return;
-      syncing = true;
-      const btn = document.getElementById('import-btn');
-      const stat = document.getElementById('sync-status');
-      btn.disabled = true;
-      stat.textContent = silent ? 'Loading events from the planning sheet…' : 'Syncing…';
-      try {
-        const idToken = await auth.currentUser.getIdToken();
-        const res = await fetch('../api/sheet-proxy.php?id=' + SHEET_ID + '&idToken=' + encodeURIComponent(idToken));
-        const raw = await res.text();
-        let data;
-        try { data = JSON.parse(raw); }
-        catch (_) { throw new Error('the server did not respond correctly — is api/sheet-proxy.php uploaded to Bluehost?'); }
-        if (!res.ok || !data.ok) throw new Error(data.error || 'Sync failed');
-        const rows = parseCSV(data.csv);
-        const header = rows.shift().map(h => h.trim());
-        const col = name => header.findIndex(h => h.toLowerCase() === name.toLowerCase());
-        const ci = {
-          date: col('Event Date'), title: col('Event / Initiative'), cat: col('Category'),
-          audience: col('Audience'), flyer: col('Flyer / Take-Home Date'),
-          social1: col('First Social Post'), reminder: col('Reminder Post'),
-          plan: col('Suggested Planning Start'), owner: col('Owner'),
-          status: col('Status'), notes: col('Notes')
-        };
-        const known = new Set(allEvents.map(e => e.id));
-        const pinned = new Set(allEvents.filter(e => e.pinned).map(e => e.id));
-        let skip = new Set();
-        try {
-          const dd = await db.collection('pto_events').doc('__deleted__').get();
-          if (dd.exists) skip = new Set(dd.data().ids || []);
-        } catch (_) {}
-
-        let added = 0, updated = 0, kept = 0;
-        const batch = db.batch();
-        for (const r of rows) {
-          const rawDate = (r[ci.date] || '').trim();
-          const title = (r[ci.title] || '').trim();
-          if (!rawDate || !title) continue;
-          const d = new Date(rawDate);
-          if (isNaN(d)) continue;
-          const date = toYMD(d);
-          // deterministic id => running the sync again upserts instead of duplicating
-          const id = ('sheet_' + date + '_' + title).toLowerCase()
-            .replace(/[^a-z0-9_]+/g, '_').replace(/_+/g, '_').slice(0, 120);
-          // leave hand-edited or hand-deleted sheet events alone
-          if (skip.has(id)) { continue; }
-          if (pinned.has(id)) { kept++; continue; }
-          const mapStatus = (s) => /complete/i.test(s) ? 'done' : /progress/i.test(s) ? 'confirmed' : 'planned';
-          const parseD = (v) => { const x = new Date((v || '').trim()); return isNaN(x) ? '' : toYMD(x); };
-          const fields = {
-            title, date,
-            category: (r[ci.cat] || 'Event').trim(),
-            audience: (r[ci.audience] || '').trim(),
-            owner: (r[ci.owner] || '').trim(),
-            notes: (r[ci.notes] || '').trim(),
-            status: mapStatus(r[ci.status] || ''),
-            school: 'pto',
-            promo: {
-              planningStart: parseD(r[ci.plan]) || addDays(date, -PROMO_OFFSETS.planningStart),
-              flyer:         parseD(r[ci.flyer]) || addDays(date, -PROMO_OFFSETS.flyer),
-              firstSocial:   parseD(r[ci.social1]) || addDays(date, -PROMO_OFFSETS.firstSocial),
-              reminder:      parseD(r[ci.reminder]) || addDays(date, -PROMO_OFFSETS.reminder)
-            },
-            source: 'sheet', sheetKey: title + '||' + date,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: ME.email
-          };
-          // best-effort start time pulled from the Notes column ("6:30–8:30 PM" -> 18:30)
-          const t = timeFromText(r[ci.notes] || '');
-          if (t || !known.has(id)) fields.time = t;
-          if (!known.has(id)) {
-            fields.promoDone = {};
-            fields.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-            fields.createdBy = ME.email;
-            added++;
-          } else {
-            updated++;
-          }
-          batch.set(db.collection('pto_events').doc(id), fields, { merge: true });
-        }
-        await batch.commit();
-        stat.style.color = 'var(--text-light)';
-        stat.textContent = 'Synced from planning sheet · ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-        if (!silent) toast(`Synced: ${added} new, ${updated} updated` + (kept ? `, ${kept} of your edits kept` : ''));
-        loadEvents();
-      } catch (e) {
-        const stat = document.getElementById('sync-status');
-        stat.style.color = 'var(--error)';
-        stat.textContent = 'Planning sheet: ' + e.message;
-        toast('Sheet sync problem: ' + e.message, 'error');
-      } finally {
-        syncing = false;
-        document.getElementById('import-btn').disabled = false;
-      }
-    }
-
     // Pull a start time out of free text like "6:30–8:30 PM", "6 PM", "10:00 AM"
     function timeFromText(txt) {
       const m = (txt || '').match(/(\d{1,2})(?::(\d{2}))?\s*(?:[–-]\s*\d{1,2}(?::\d{2})?\s*)?([ap])\.?\s*m\.?/i);
@@ -500,6 +449,267 @@
       if (pm && h !== 12) h += 12;
       if (!pm && h === 12) h = 0;
       return String(h).padStart(2, '0') + ':' + min;
+    }
+
+    /* ================= Update the calendar from an uploaded spreadsheet ================= */
+    let shParsed = null;   // { rows, school, startYear }
+
+    function setupSheetModal(defaultSchool) {
+      const yearSel = document.getElementById('sh-year');
+      const now = new Date();
+      const base = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1;
+      for (let y = base + 1; y >= base - 2; y--) {
+        yearSel.add(new Option(`${y}–${y + 1}`, String(y)));
+      }
+      yearSel.value = String(base);
+      document.getElementById('sh-school').value = defaultSchool || 'pto';
+      document.getElementById('sh-url').value = SHEET_URL;
+
+      document.getElementById('sheet-btn').onclick = () => {
+        document.getElementById('sh-report').style.display = 'none';
+        document.getElementById('sh-import').disabled = true;
+        shParsed = null;
+        document.getElementById('sheet-modal').classList.add('open');
+      };
+      document.getElementById('sh-cancel').onclick =
+        () => document.getElementById('sheet-modal').classList.remove('open');
+      document.getElementById('sh-preview').onclick = sheetPreview;
+      document.getElementById('sh-import').onclick = sheetImport;
+    }
+
+    function sheetIdFromUrl(url) {
+      const m = String(url).match(/\/spreadsheets\/d\/([A-Za-z0-9_-]{20,64})/);
+      const id = m ? m[1] : (String(url).match(/^[A-Za-z0-9_-]{20,64}$/) ? String(url) : '');
+      const g = String(url).match(/[?#&]gid=(\d+)/);
+      return { id, gid: g ? g[1] : '0' };
+    }
+
+    const MONTHS = ['january','february','march','april','may','june','july',
+                    'august','september','october','november','december'];
+    // Parse "September 8", "Sep 8, 2026", "9/8", "9/8/26", "2026-09-08".
+    // startYear = first calendar year of the school year (Aug–Dec => startYear, Jan–Jul => startYear+1).
+    function flexDate(raw, startYear) {
+      const v = String(raw || '').trim();
+      if (!v) return '';
+      let m = v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+      if (m) return `${m[1]}-${String(+m[2]).padStart(2,'0')}-${String(+m[3]).padStart(2,'0')}`;
+      m = v.match(/^([A-Za-z]{3,})\.?\s+(\d{1,2})(?:\s*,\s*(\d{4}))?$/);
+      if (m) {
+        const mi = MONTHS.findIndex(x => x.startsWith(m[1].toLowerCase()));
+        if (mi < 0) return '';
+        const yr = m[3] ? +m[3] : (mi >= 7 ? startYear : startYear + 1);
+        return `${yr}-${String(mi + 1).padStart(2,'0')}-${String(+m[2]).padStart(2,'0')}`;
+      }
+      m = v.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?$/);
+      if (m) {
+        const mo = +m[1], da = +m[2];
+        if (mo < 1 || mo > 12) return '';
+        let yr = m[3] ? +m[3] : (mo >= 8 ? startYear : startYear + 1);
+        if (yr < 100) yr += 2000;
+        return `${yr}-${String(mo).padStart(2,'0')}-${String(da).padStart(2,'0')}`;
+      }
+      const d = new Date(v);
+      return isNaN(d) ? '' : toYMD(d);
+    }
+
+    // Build event records from CSV rows using fuzzy header matching.
+    function sheetToEvents(csv, startYear) {
+      const rows = parseCSV(csv);
+      if (!rows.length) throw new Error('the sheet looks empty');
+      const header = rows.shift().map(h => h.trim().toLowerCase());
+      const find = (...needles) =>
+        header.findIndex(h => needles.some(n => h === n || h.startsWith(n) || h.includes(n)));
+      const ci = {
+        title:  find('event / initiative', 'event/initiative', 'event name', 'event', 'initiative', 'title', 'name'),
+        date:   find('event date', 'start date', 'date'),
+        end:    find('end date'),
+        time:   find('event time', 'start time', 'time'),
+        cat:    find('category', 'type'),
+        aud:    find('audience'),
+        owner:  find('owner', 'lead', 'chair'),
+        notes:  find('comments', 'notes', 'details'),
+        flyer:  find('flyer to classes', 'flyer / take-home', 'flyer date', 'flyer'),
+        social: find('fb event goes live', 'first social', 'facebook'),
+        signup: find('volunteer sign-up posted', 'sign-up posted', 'planning start')
+      };
+      if (ci.title < 0 || ci.date < 0)
+        throw new Error('could not find an "Event" name column and a "Event Date" column in the sheet');
+      const get = (r, i) => (i >= 0 ? (r[i] || '').trim() : '');
+      // When the sheet has no Category column, colour events by keywords in the name.
+      const guessCat = (t) => {
+        const s = t.toLowerCase();
+        if (/\bmeeting\b|^pto\b/.test(s)) return 'Meeting';
+        if (/appreciat|luncheon|custodian/.test(s)) return 'Staff Appreciation';
+        if (/fundrais|\bsale\b|coin war|color run|cheesy|spiritwear/.test(s)) return 'Fundraiser';
+        if (/spirit|seuss|screens|fox in socks|cat in hat|green eggs|places you/.test(s)) return 'Program';
+        if (/no school|half day|district|early release|recess\b/.test(s)) return 'District Calendar';
+        return 'Event';
+      };
+      const out = [];
+      for (const r of rows) {
+        const title = get(r, ci.title);
+        const date = flexDate(get(r, ci.date), startYear);
+        if (!title || !date) continue;
+        const p = {};
+        const f = flexDate(get(r, ci.flyer), startYear);   if (f) p.flyer = f;
+        const s = flexDate(get(r, ci.social), startYear);   if (s) p.firstSocial = s;
+        const u = flexDate(get(r, ci.signup), startYear);   if (u) p.planningStart = u;
+        out.push({
+          title, date,
+          endDate: flexDate(get(r, ci.end), startYear),
+          time: timeFromText(get(r, ci.time)) || timeFromText(get(r, ci.notes)),
+          category: get(r, ci.cat) || guessCat(title),
+          audience: get(r, ci.aud),
+          owner: get(r, ci.owner),
+          notes: get(r, ci.notes),
+          promoSeed: p
+        });
+      }
+      if (!out.length) throw new Error('no rows had both an event name and a valid date');
+      return out;
+    }
+
+    async function fetchSheetCsv() {
+      const { id, gid } = sheetIdFromUrl(document.getElementById('sh-url').value.trim());
+      if (!id) throw new Error('that does not look like a Google Sheets link');
+      const idToken = await auth.currentUser.getIdToken();
+      const res = await fetch('../api/sheet-proxy.php?id=' + id + '&gid=' + gid +
+                              '&idToken=' + encodeURIComponent(idToken));
+      const raw = await res.text();
+      let data;
+      try { data = JSON.parse(raw); }
+      catch (_) { throw new Error('the server did not respond correctly — is api/sheet-proxy.php on the server?'); }
+      if (!res.ok || !data.ok) throw new Error(data.error || 'could not read the sheet');
+      return { id, csv: data.csv };
+    }
+
+    // A "district calendar" event = one we keep when the sheet is made the source of truth.
+    function isDistrictCal(e) {
+      const c = (e.category || '').toLowerCase();
+      return /district/.test(c) || /no school/.test(c) || e.school === 'district';
+    }
+    const schoolLabel = s => s === 'pto' ? 'every school (shared list)' : (SCHOOLS[s] || s);
+
+    // Firestore batches cap at 500 writes — commit in chunks.
+    async function commitOps(ops) {
+      for (let i = 0; i < ops.length; i += 450) {
+        const b = db.batch();
+        ops.slice(i, i + 450).forEach(op => op(b));
+        await b.commit();
+      }
+    }
+
+    async function sheetPreview() {
+      const rep = document.getElementById('sh-report');
+      rep.style.display = 'block';
+      rep.innerHTML = 'Reading the sheet…';
+      document.getElementById('sh-import').disabled = true;
+      try {
+        const startYear = +document.getElementById('sh-year').value;
+        const { id, csv } = await fetchSheetCsv();
+        const events = sheetToEvents(csv, startYear);
+        const school = document.getElementById('sh-school').value;
+        shParsed = { events, school, sheetId: id, startYear };
+        const list = events.slice(0, 12).map(e =>
+          `<li>${prettyYMD(e.date)} &mdash; ${e.title}</li>`).join('');
+        let html = `<strong>${events.length}</strong> event${events.length === 1 ? '' : 's'} in the sheet` +
+          `, importing onto <strong>${schoolLabel(school)}</strong>:` +
+          `<ul style="margin:6px 0 0;padding-left:18px">${list}` +
+          (events.length > 12 ? `<li>…and ${events.length - 12} more</li>` : '') + '</ul>';
+        if (document.getElementById('sh-wipe').checked) {
+          const del = allEvents.filter(e => !isDistrictCal(e));
+          const keep = allEvents.length - del.length;
+          html += `<p style="margin:10px 0 0;color:var(--error);font-weight:700">` +
+            `⚠ Will first DELETE ${del.length} existing event${del.length === 1 ? '' : 's'} ` +
+            `(keeping ${keep} District Calendar event${keep === 1 ? '' : 's'}).</p>`;
+        }
+        rep.innerHTML = html;
+        document.getElementById('sh-import').disabled = false;
+      } catch (e) {
+        shParsed = null;
+        rep.innerHTML = '<span style="color:var(--error)">Could not read the sheet: ' + e.message + '</span>';
+      }
+    }
+
+    async function sheetImport() {
+      if (!shParsed) { toast('Press Preview first', 'error'); return; }
+      const btn = document.getElementById('sh-import');
+      btn.disabled = true;
+      const rep = document.getElementById('sh-report');
+      rep.innerHTML = 'Importing…';
+      try {
+        const { events, school, sheetId } = shParsed;
+        const wipe = document.getElementById('sh-wipe').checked;
+        const col = db.collection('pto_events');
+
+        if (wipe) {
+          const del = allEvents.filter(e => !isDistrictCal(e));
+          if (!confirm(`This will permanently delete ${del.length} existing event(s) from the ` +
+            `back-office calendar (District Calendar entries are kept), then load ${events.length} ` +
+            `event(s) from the sheet.\n\nContinue?`)) { btn.disabled = false; rep.innerHTML = ''; return; }
+          const ops = del.map(e => (b => b.delete(col.doc(e.id))));
+          // clear the "don't re-add" list so the sheet is a clean slate
+          ops.push(b => b.set(col.doc('__deleted__'), { ids: [] }));
+          await commitOps(ops);
+        }
+
+        const pinned = new Set(wipe ? [] : allEvents.filter(e => e.pinned).map(e => e.id));
+        let skip = new Set();
+        if (!wipe) {
+          try {
+            const dd = await col.doc('__deleted__').get();
+            if (dd.exists) skip = new Set(dd.data().ids || []);
+          } catch (_) {}
+        }
+        const known = new Set(wipe ? [] : allEvents.map(e => e.id));
+
+        const ops = [];
+        let added = 0, updated = 0, kept = 0;
+        const seen = new Set();
+        for (const ev of events) {
+          const id = ('sheet_' + ev.date + '_' + ev.title).toLowerCase()
+            .replace(/[^a-z0-9_]+/g, '_').replace(/_+/g, '_').slice(0, 120);
+          seen.add(id);
+          if (skip.has(id)) continue;
+          if (pinned.has(id)) { kept++; continue; }
+          const fields = {
+            title: ev.title, date: ev.date, endDate: ev.endDate || '',
+            time: ev.time || '', category: ev.category, audience: ev.audience,
+            owner: ev.owner, notes: ev.notes, status: 'planned', school,
+            promo: computePromo(ev.date, ev.promoSeed),
+            source: 'sheet', sheetSrc: sheetId, sheetKey: ev.title + '||' + ev.date,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: ME.email
+          };
+          if (!known.has(id)) {
+            fields.promoDone = {};
+            fields.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            fields.createdBy = ME.email;
+            added++;
+          } else { updated++; }
+          ops.push(b => b.set(col.doc(id), fields, { merge: true }));
+        }
+
+        let removed = 0;
+        if (!wipe && document.getElementById('sh-prune').checked) {
+          allEvents.forEach(e => {
+            if (e.source === 'sheet' && e.sheetSrc === sheetId && e.school === school &&
+                !e.pinned && !seen.has(e.id)) {
+              ops.push(b => b.delete(col.doc(e.id)));
+              removed++;
+            }
+          });
+        }
+
+        await commitOps(ops);
+        document.getElementById('sheet-modal').classList.remove('open');
+        toast(`Imported: ${added} new, ${updated} updated` +
+          (kept ? `, ${kept} of your edits kept` : '') +
+          (removed ? `, ${removed} removed` : ''));
+        loadEvents();
+      } catch (e) {
+        rep.innerHTML = '<span style="color:var(--error)">Import failed: ' + e.message + '</span>';
+        btn.disabled = false;
+      }
     }
 
     // minimal CSV parser (handles quoted fields, commas, newlines, "" escapes)
