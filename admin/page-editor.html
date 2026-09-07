@@ -39,6 +39,7 @@
       <button class="bo-btn ghost sm" id="save-btn">Save draft</button>
       <button class="bo-btn sm" id="publish-btn">Publish</button>
       <button class="bo-btn danger sm" id="unpublish-btn" style="display:none">Unpublish</button>
+      <button class="bo-btn danger ghost sm" id="delete-btn">Delete page</button>
     </div>
 
     <div class="bo-tip">
@@ -291,6 +292,22 @@
       document.getElementById('save-btn').onclick = () => save(false);
       document.getElementById('publish-btn').onclick = () => save('published');
       document.getElementById('unpublish-btn').onclick = () => save('draft');
+      document.getElementById('delete-btn').onclick = deletePage;
+    }
+
+    async function deletePage() {
+      if (!pageId) { history.back(); return; }
+      const label = page.title ? `“${page.title}”` : 'this page';
+      if (!confirm(`Delete ${label}? This permanently removes the page` +
+        (page.status === 'published' ? ' and takes it off the live website' : '') + '. This cannot be undone.')) return;
+      try {
+        await db.collection('pages').doc(pageId).delete();
+        toast('Page deleted');
+        setTimeout(() => {
+          location.href = page.category ? 'section.html?cat=' + page.category
+            : (school ? 'school.html?s=' + school : 'index.html');
+        }, 500);
+      } catch (e) { toast('Could not delete: ' + e.message, 'error'); }
     }
 
     async function loadImages() {

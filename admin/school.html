@@ -225,7 +225,14 @@
             </div>
             <span class="bo-pill ${live ? 'live' : 'draft'}">${live ? 'Published' : 'Draft'}</span>
             ${live ? `<a class="bo-btn ghost sm" href="../${esc(path)}" target="_blank">View</a>` : ''}
-            <a class="bo-btn sm" href="page-editor.html?id=${doc.id}">Edit</a>`;
+            <a class="bo-btn sm" href="page-editor.html?id=${doc.id}">Edit</a>
+            <button class="bo-btn danger ghost sm" data-del>Delete</button>`;
+          row.querySelector('[data-del]').onclick = async (ev) => {
+            if (!confirm('Delete "' + (p.title || 'this page') + '"? This cannot be undone.')) return;
+            ev.target.disabled = true;
+            try { await db.collection('pages').doc(doc.id).delete(); row.remove(); }
+            catch (e) { toast('Could not delete: ' + e.message, 'error'); ev.target.disabled = false; }
+          };
           box.appendChild(row);
         });
       } catch (e) {

@@ -150,7 +150,17 @@
           <span class="pg-pill ${p.status === 'published' ? 'published' : 'draft'}">${p.status === 'published' ? 'Published' : 'Draft'}</span>
           <span class="spacer"></span>
           ${live ? `<a class="bo-btn ghost sm" href="../${pagePath(route, p.slug)}" target="_blank">View ↗</a>` : ''}
-          <a class="bo-btn sm" href="page-editor.html?id=${p.id}">Edit</a>`;
+          <a class="bo-btn sm" href="page-editor.html?id=${p.id}">Edit</a>
+          <button class="bo-btn danger ghost sm" data-del="${p.id}">Delete</button>`;
+        el.querySelector('[data-del]').onclick = async (ev) => {
+          if (!confirm('Delete "' + (p.title || 'this page') + '"? This cannot be undone.')) return;
+          ev.target.disabled = true;
+          try {
+            await db.collection('pages').doc(p.id).delete();
+            pages = pages.filter(x => x.id !== p.id);
+            render();
+          } catch (e) { toast('Could not delete: ' + e.message, 'error'); ev.target.disabled = false; }
+        };
         box.appendChild(el);
       });
     }
