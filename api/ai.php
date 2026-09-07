@@ -26,7 +26,11 @@ if (!file_exists($cfgPath)) {
   bail(503, 'The AI assistant is not set up yet. See api/config.example.php for the 5-minute setup steps.');
 }
 $cfg = require $cfgPath;
-if (empty($cfg['anthropic_api_key']) || strpos($cfg['anthropic_api_key'], 'REPLACE') !== false) {
+$provider = strtolower($cfg['provider'] ?? (!empty($cfg['gemini_api_key']) ? 'gemini' : 'anthropic'));
+$apiKey = $provider === 'gemini'
+  ? ($cfg['gemini_api_key'] ?? '')
+  : ($cfg['anthropic_api_key'] ?? '');
+if (empty($apiKey) || strpos($apiKey, 'REPLACE') !== false) {
   bail(503, 'The AI assistant needs an API key in api/config.php.');
 }
 
@@ -65,33 +69,44 @@ $system =
   "You can also help draft emails, newsletter blurbs, social posts, and event ideas for a K-12 PTA. " .
   "Keep answers concise. If asked something you can't do from here, say so and suggest who to ask.";
 
-$msgs = [];
+$rawMsgs = [];
 foreach (array_slice($body['messages'], -12) as $m) {
-  $role = ($m['role'] === 'assistant') ? 'assistant' : 'user';
+  $isAsst = ($m['role'] === 'assistant');
   $text = mb_substr((string)$m['content'], 0, 6000);
-  if ($text !== '') $msgs[] = ['role' => $role, 'content' => $text];
+  if ($text !== '') $rawMsgs[] = ['asst' => $isAsst, 'text' => $text];
 }
-if (!$msgs) bail(400, 'No message to send.');
+if (!$rawMsgs) bail(400, 'No message to send.');
 
-$payload = json_encode([
-  'model' => $cfg['model'] ?? 'claude-haiku-4-5-20251001',
-  'max_tokens' => 1024,
-  'system' => $system,
-  'messages' => $msgs,
-]);
+/* ---------- 4. Call the AI provider ---------- */
+if ($provider === 'gemini') {
+  $model = $cfg['model'] ?? 'gemini-2.5-flash';
+  $contents = [];
+  foreach ($rawMsgs as $m) {
+    $contents[] = ['role' => $m['asst'] ? 'model' : 'user', 'parts' => [['text' => $m['text']]]];
+  }
+  $payload = json_encode([
+    'system_instruction' => ['parts' => [['text' => $system]]],
+    'contents' => $contents,
+    'generationConfig' => ['maxOutputTokens' => 1024, 'temperature' => 0.6],
+  ]);
+  $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . rawurlencode($model) . ':generateContent';
+  $headers = ['Content-Type: application/json', 'x-goog-api-key: ' . $apiKey];
+} else {
+  $model = $cfg['model'] ?? 'claude-haiku-4-5-20251001';
+  $msgs = [];
+  foreach ($rawMsgs as $m) $msgs[] = ['role' => $m['asst'] ? 'assistant' : 'user', 'content' => $m['text']];
+  $payload = json_encode(['model' => $model, 'max_tokens' => 1024, 'system' => $system, 'messages' => $msgs]);
+  $url = 'https://api.anthropic.com/v1/messages';
+  $headers = ['Content-Type: application/json', 'x-api-key: ' . $apiKey, 'anthropic-version: 2023-06-01'];
+}
 
-/* ---------- 4. Call Anthropic ---------- */
-$ch = curl_init('https://api.anthropic.com/v1/messages');
+$ch = curl_init($url);
 curl_setopt_array($ch, [
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_POST => true,
   CURLOPT_POSTFIELDS => $payload,
   CURLOPT_TIMEOUT => 45,
-  CURLOPT_HTTPHEADER => [
-    'Content-Type: application/json',
-    'x-api-key: ' . $cfg['anthropic_api_key'],
-    'anthropic-version: 2023-06-01',
-  ],
+  CURLOPT_HTTPHEADER => $headers,
 ]);
 $resp = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -105,8 +120,14 @@ if ($httpCode !== 200) {
 }
 
 $reply = '';
-foreach (($data['content'] ?? []) as $part) {
-  if (($part['type'] ?? '') === 'text') $reply .= $part['text'];
+if ($provider === 'gemini') {
+  foreach (($data['candidates'][0]['content']['parts'] ?? []) as $part) {
+    if (isset($part['text'])) $reply .= $part['text'];
+  }
+} else {
+  foreach (($data['content'] ?? []) as $part) {
+    if (($part['type'] ?? '') === 'text') $reply .= $part['text'];
+  }
 }
 if ($reply === '') $reply = "Sorry, I didn't get a response. Please try again.";
 

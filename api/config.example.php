@@ -2,29 +2,35 @@
 /* ============================================================
    AI Assistant configuration  —  EXAMPLE FILE
    ------------------------------------------------------------
-   HOW TO TURN ON THE AI ASSISTANT (one time, ~5 minutes):
+   HOW TO TURN ON THE AI ASSISTANT (one time, ~3 minutes):
 
-   1. Go to  https://console.anthropic.com  → sign in / sign up.
-   2. Add a payment method, then open  Settings → Limits  and set a
-      low monthly spend cap (e.g. $10) so there are no surprises.
-   3. Open  Settings → API keys  → "Create key" → copy it
-      (it starts with  sk-ant-...).
-   4. In your Bluehost File Manager, go to the  /api  folder.
-   5. Make a COPY of this file named exactly  config.php
-      (same folder). Never rename this example file itself.
-   6. Edit  config.php  and paste your key between the quotes below.
-   7. Save. The assistant is now live at  /admin/assistant.html
+   1. Get a Google Gemini API key (free tier is generous):
+        https://aistudio.google.com/apikey   → "Create API key" → copy it.
+   2. In your Bluehost File Manager, open the  /api  folder.
+   3. Make a COPY of this file named exactly  config.php  (same folder).
+      Never rename this example file itself.
+   4. Edit  config.php  and paste your key on the 'gemini_api_key' line.
+   5. Save. The assistant is live at  /admin/assistant.html  and behind
+      the "Need help?" button on every back-office page.
 
    config.php is ignored by Git on purpose so your key is never
    uploaded to GitHub. It lives only on the Bluehost server.
    ============================================================ */
 
 return [
-  // Your Anthropic API key (keep this secret):
-  'anthropic_api_key' => 'sk-ant-REPLACE-ME',
+  // Which AI service to use: 'gemini' (Google) or 'anthropic' (Claude).
+  'provider' => 'gemini',
 
-  // Which model to use. claude-haiku is cheapest; claude-sonnet is smarter.
-  'model' => 'claude-haiku-4-5-20251001',
+  // ---- Google Gemini (used when provider = 'gemini') ----
+  'gemini_api_key' => 'REPLACE-ME',
+  // Model. gemini-2.5-flash is fast and cheap; gemini-2.5-pro is smarter.
+  // (This 'model' line is also used for Anthropic when provider = 'anthropic'.)
+  'model' => 'gemini-2.5-flash',
+
+  // ---- Anthropic Claude (only if provider = 'anthropic') ----
+  'anthropic_api_key' => 'sk-ant-REPLACE-ME',
+  // If you switch provider to 'anthropic', also set 'model' above to e.g.
+  // 'claude-haiku-4-5-20251001'.
 
   // Safety cap: stop answering after this many questions in a calendar month.
   // (Resets automatically on the 1st.) Raise or lower as you like.
