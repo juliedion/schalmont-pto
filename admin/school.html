@@ -31,21 +31,15 @@
     </div>
     <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo; <span id="crumb-school"></span></div>
     <h1 class="bo-h1" id="school-title"></h1>
-    <p class="bo-lead">Everything for this school in one place. Open a <strong>section</strong> below to
-       build web pages for events, clubs, programs and more &mdash; or use the tabs for this school's
-       <strong>Files &amp; Photos</strong>, <strong>Ideas</strong> and <strong>To-Do</strong> list.</p>
+    <p class="bo-lead">Everything for this school in one place. Use the tabs below &mdash; the first
+       four are this school's workspace; the rest open each <strong>section</strong> where you
+       build and manage its web pages.</p>
 
-    <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)">Sections</h2>
-    <div class="bo-grid" id="section-cards" style="margin-bottom:30px"></div>
-
-    <div class="bo-tabs">
+    <div class="bo-tabs" id="bo-tabs">
       <button class="bo-tab active" data-tab="pages">📄 Pages</button>
       <button class="bo-tab" data-tab="files">🖼️ Files &amp; Photos</button>
       <button class="bo-tab" data-tab="ideas">💡 Ideas</button>
       <button class="bo-tab" data-tab="todo">✅ To-Do</button>
-      <a class="bo-tab" id="fundraising-tab" style="text-decoration:none">💰 Fundraising</a>
-      <a class="bo-tab" id="calendar-tab" style="text-decoration:none">📅 Calendar</a>
-      <a class="bo-tab" id="yearbook-tab" style="text-decoration:none">📸 Yearbook Photos</a>
     </div>
 
     <!-- ============ PAGES ============ -->
@@ -160,19 +154,19 @@
       document.getElementById('new-page-btn').href = 'page-editor.html?s=' + school + '&new=1';
       document.getElementById('tip-example').textContent =
         'schalmontpto.com/' + SCHOOL_PREFIX[school] + '/fun-run';
-      document.getElementById('yearbook-tab').href = 'yearbook.html?s=' + school;
-      document.getElementById('calendar-tab').href = 'calendar.html?s=' + school;
-      document.getElementById('fundraising-tab').href = 'fundraising.html?s=' + school;
-
-      // Section cards — every one scoped to this school
-      document.getElementById('section-cards').innerHTML = SECTIONS.map(sec => {
+      // Section tabs — each one a link, scoped to this school. `ideas` is skipped
+      // here because this workspace already has its own "Ideas" tab.
+      const tabBar = document.getElementById('bo-tabs');
+      SECTIONS.filter(sec => sec.cat !== 'ideas').forEach(sec => {
         const base = sec.href.split('?')[0];
         const href = sec.href.includes('?cat=') ? sec.href + '&s=' + school : base + '?s=' + school;
-        return `<a class="bo-card" href="${href}">
-          <span class="bo-cardicon">${sec.icon}</span>
-          <h3>${sec.label}</h3>
-        </a>`;
-      }).join('');
+        const a = document.createElement('a');
+        a.className = 'bo-tab';
+        a.style.textDecoration = 'none';
+        a.href = href;
+        a.innerHTML = sec.icon + ' ' + sec.label;
+        tabBar.appendChild(a);
+      });
 
       // Tabs
       document.querySelectorAll('button.bo-tab').forEach(btn => {
