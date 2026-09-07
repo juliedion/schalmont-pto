@@ -293,7 +293,7 @@
       try {
         const snap = await db.collection('pto_events').get();
         allEvents = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-          .filter(e => !e.id.startsWith('__'));       // skip internal bookkeeping docs
+          .filter(e => !e.id.startsWith('__') && e.id !== 'meta_deleted');       // skip internal bookkeeping docs
         refresh();
       } catch (e) {
         toast('Could not load calendar: ' + e.message, 'error');
@@ -430,7 +430,7 @@
       try {
         // If it came from the planning sheet, remember not to re-add it on the next sync.
         if (ev && ev.source === 'sheet') {
-          await db.collection('pto_events').doc('__deleted__').set(
+          await db.collection('pto_events').doc('meta_deleted').set(
             { ids: firebase.firestore.FieldValue.arrayUnion(editingId) }, { merge: true });
         }
         await db.collection('pto_events').doc(editingId).delete();
@@ -649,7 +649,7 @@
             `event(s) from the sheet.\n\nContinue?`)) { btn.disabled = false; rep.innerHTML = ''; return; }
           const ops = del.map(e => (b => b.delete(col.doc(e.id))));
           // clear the "don't re-add" list so the sheet is a clean slate
-          ops.push(b => b.set(col.doc('__deleted__'), { ids: [] }));
+          ops.push(b => b.set(col.doc('meta_deleted'), { ids: [] }));
           await commitOps(ops);
         }
 
@@ -657,7 +657,7 @@
         let skip = new Set();
         if (!wipe) {
           try {
-            const dd = await col.doc('__deleted__').get();
+            const dd = await col.doc('meta_deleted').get();
             if (dd.exists) skip = new Set(dd.data().ids || []);
           } catch (_) {}
         }
