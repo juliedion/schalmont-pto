@@ -17,6 +17,8 @@
       const ok = ['docs.google.com', 'forms.gle', 'www.google.com', 'calendar.google.com',
                   'www.youtube.com', 'youtube.com', 'youtu.be', 'player.vimeo.com',
                   'www.instagram.com', 'www.facebook.com', 'drive.google.com'];
+      // Same-origin embeds are always allowed (e.g. our own /signup.html sheets).
+      if (u.origin === window.location.origin) return u.href;
       if (u.protocol !== 'https:') return '';
       return ok.some(h => u.hostname === h || u.hostname.endsWith('.' + h)) ? u.href : '';
     } catch (_) { return ''; }

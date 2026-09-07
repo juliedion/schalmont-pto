@@ -100,6 +100,41 @@ service cloud.firestore {
       allow update, delete: if signedIn() && canManage(resource.data.school);
     }
 
+    /* ---- Public sign-up sheets (volunteer slots, event RSVPs) ---- */
+    match /signups/{sid} {
+      allow read: if true;                              // public sign-up pages read this
+      allow write: if isAnyAdmin();
+
+      match /slots/{slotId} {
+        allow read: if true;
+        allow create, delete: if isAnyAdmin();
+        // A public sign-up bumps ONLY the "taken" counter, never past capacity.
+        allow update: if isAnyAdmin() || (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['taken'])
+          && request.resource.data.taken is int
+          && request.resource.data.taken > resource.data.taken
+          && request.resource.data.taken <= resource.data.taken + 20
+          && (resource.data.capacity == 0 || request.resource.data.taken <= resource.data.capacity)
+        );
+      }
+      // Who signed up — name + count only, publicly visible on the sheet.
+      match /entries/{eid} {
+        allow read: if true;
+        allow create: if request.resource.data.keys().hasOnly(['slotId','name','count','at'])
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 80
+          && request.resource.data.count is int
+          && request.resource.data.count > 0 && request.resource.data.count <= 20;
+        allow update, delete: if isAnyAdmin();
+      }
+      // Contact details for the organiser only.
+      match /contacts/{eid} {
+        allow read: if isAnyAdmin();
+        allow create: if request.resource.data.keys().hasOnly(['email','phone','comment']);
+        allow update, delete: if isAnyAdmin();
+      }
+    }
+
     /* ---- Users / roles ---- */
     match /users/{userId} {
       // A person can read their own record; any back-office admin can read the

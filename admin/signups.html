@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PTO Back Office Sign-Up Sheets</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" href="../images/favicon.svg">
+  <style>
+    .su-card { background:#fff; border:1px solid var(--border); border-radius:12px; padding:15px 16px; margin-bottom:11px;
+               display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    .su-card h3 { margin:0; font-size:15.5px; color:var(--primary-dark); }
+    .su-pill { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; padding:2px 9px; border-radius:20px; }
+    .su-pill.open { background:var(--success-light); color:#216e3c; }
+    .su-pill.closed { background:#e6e9ec; color:#4a5568; }
+    .su-badge { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; padding:2px 9px; border-radius:20px; background:var(--light-bg); color:var(--text-light); }
+    .su-card .spacer { flex:1; }
+    .su-field { margin-bottom:12px; }
+    .su-field label { display:block; font-weight:700; font-size:12.5px; margin-bottom:4px; }
+    .su-field input, .su-field select, .su-field textarea { width:100%; padding:9px 10px; border:1px solid var(--border); border-radius:7px; font-family:inherit; font-size:14px; }
+    .su-field textarea { min-height:60px; resize:vertical; }
+    .su-slots { border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:12px; }
+    .su-slotrow { display:grid; grid-template-columns:1.4fr .9fr .8fr .8fr .8fr auto; gap:8px; padding:9px 10px; align-items:center; border-top:1px solid var(--border); }
+    .su-slotrow:first-child { border-top:none; }
+    .su-slothead { background:var(--light-bg); font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--text-light); }
+    .su-slotrow input { width:100%; padding:6px 7px; border:1px solid var(--border); border-radius:6px; font-family:inherit; font-size:13px; }
+    .su-x { background:none; border:none; color:var(--error); font-size:16px; cursor:pointer; }
+    .su-linkbox { background:var(--light-bg); border:1px solid var(--border); border-radius:8px; padding:11px 13px; font-size:13px; margin-bottom:10px; word-break:break-all; }
+    .su-linkbox code { background:#fff; padding:2px 6px; border-radius:4px; }
+    table.su-resp { width:100%; border-collapse:collapse; font-size:13px; }
+    table.su-resp th, table.su-resp td { text-align:left; padding:7px 9px; border-bottom:1px solid var(--border); }
+    table.su-resp th { background:var(--light-bg); font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-light); }
+    @media (max-width:720px){ .su-slotrow { grid-template-columns:1fr 1fr; } .su-slothead { display:none; } }
+  </style>
+</head>
+<body>
+  <div id="bo-loading">Loading…</div>
+  <div id="bo-shell"></div>
+
+  <main id="bo-main" style="display:none">
+    <div style="margin-bottom:14px"><a class="bo-btn ghost sm" href="index.html" id="home-link">← Back Office Home</a></div>
+    <div id="view-list">
+      <h1 class="bo-h1">🖊️ Sign-Up Sheets</h1>
+      <p class="bo-lead">Public sign-up sheets for volunteers, conference slots, food-drive items,
+         and event RSVPs &mdash; with dates, time slots, and spot limits. Share the link, or embed
+         it on a web page.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:16px 0 22px">
+        <button class="bo-btn" id="new-btn">＋ New sign-up sheet</button>
+        <label style="margin-left:auto;font-size:12px;font-weight:700;color:var(--text-light)">School:
+          <select id="school-filter" style="padding:7px 9px;border:1px solid var(--border);border-radius:7px"><option value="all">All</option></select>
+        </label>
+      </div>
+      <div id="su-list"></div>
+    </div>
+
+    <div id="view-edit" hidden>
+      <div class="bo-crumb"><a href="signups.html">Sign-Up Sheets</a> &rsaquo; <span id="edit-crumb">Edit</span></div>
+      <h1 class="bo-h1" id="edit-title">Edit sign-up sheet</h1>
+
+      <div style="display:flex;gap:6px;border-bottom:2px solid var(--border);margin:14px 0 20px">
+        <button class="dir-tab active" data-tab="setup">Set up</button>
+        <button class="dir-tab" data-tab="responses">Responses (<span id="resp-count">0</span>)</button>
+        <button class="dir-tab" data-tab="share">Share &amp; embed</button>
+      </div>
+
+      <section id="tab-setup">
+        <div style="max-width:620px">
+          <div class="su-field"><label>Title</label><input type="text" id="f-title" placeholder="e.g. Fall Conference Sign-Ups"></div>
+          <div class="su-field"><label>Intro / instructions <span style="font-weight:400;color:var(--text-light)">— shown at the top of the sheet</span></label><textarea id="f-intro"></textarea></div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div class="su-field" style="flex:1;min-width:150px"><label>School</label><select id="f-school"></select></div>
+            <div class="su-field" style="flex:1;min-width:150px"><label>Status</label><select id="f-status"><option value="open">Open — accepting sign-ups</option><option value="closed">Closed</option></select></div>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div class="su-field" style="flex:1;min-width:150px"><label>Organiser name</label><input type="text" id="f-cname"></div>
+            <div class="su-field" style="flex:1;min-width:150px"><label>Organiser email</label><input type="email" id="f-cemail"></div>
+          </div>
+        </div>
+
+        <h3 style="font-size:15px;color:var(--primary-dark);margin:18px 0 8px">Slots</h3>
+        <p style="font-size:12.5px;color:var(--text-light);margin:0 0 8px">One row per slot people can claim. Leave
+           <strong>Limit</strong> at 0 for no cap. Date/time are optional (use them for conference or shift slots).</p>
+        <div class="su-slots" id="slots">
+          <div class="su-slotrow su-slothead"><span>Label</span><span>Date</span><span>Start</span><span>End</span><span>Limit</span><span></span></div>
+        </div>
+        <button class="bo-btn ghost sm" id="add-slot">＋ Add slot</button>
+
+        <div style="margin-top:22px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="bo-btn" id="save-btn">Save</button>
+          <a class="bo-btn ghost" id="preview-btn" target="_blank">Open public sheet ↗</a>
+          <span class="spacer" style="flex:1"></span>
+          <button class="bo-btn danger ghost sm" id="del-btn">Delete sheet</button>
+        </div>
+      </section>
+
+      <section id="tab-responses" hidden>
+        <div style="display:flex;gap:8px;margin-bottom:12px"><button class="bo-btn ghost sm" id="csv-btn">⬇ Download CSV</button>
+          <button class="bo-btn ghost sm" id="refresh-btn">↻ Refresh</button></div>
+        <div id="resp-body"></div>
+      </section>
+
+      <section id="tab-share" hidden>
+        <div style="max-width:640px">
+          <p style="font-weight:700;margin:0 0 4px">Public link — share this anywhere</p>
+          <div class="su-linkbox"><code id="pub-link"></code></div>
+          <button class="bo-btn ghost sm" id="copy-link">Copy link</button>
+
+          <p style="font-weight:700;margin:22px 0 4px">Embed on a web page</p>
+          <p style="font-size:12.5px;color:var(--text-light);margin:0 0 6px">In the page editor, add an
+             <strong>Embed</strong> block and paste this address:</p>
+          <div class="su-linkbox"><code id="embed-link"></code></div>
+          <button class="bo-btn ghost sm" id="copy-embed">Copy embed address</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-storage-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="admin-core.js"></script>
+  <script>
+    const SITE = location.origin;
+    let sheets = [], slotRows = [], curId = null, curSheet = null;
+
+    requireAdmin((me) => {
+      const sf = document.getElementById('school-filter');
+      const fs = document.getElementById('f-school');
+      [['pto', 'PTO-wide']].concat(Object.keys(SCHOOLS).filter(s => s !== 'pto').map(s => [s, SCHOOLS[s]]))
+        .forEach(([v, l]) => { sf.add(new Option(l, v)); fs.add(new Option(l, v)); });
+      sf.onchange = renderList;
+
+      document.getElementById('new-btn').onclick = createSheet;
+      document.getElementById('add-slot').onclick = () => addSlotRow({});
+      document.getElementById('save-btn').onclick = saveSheet;
+      document.getElementById('del-btn').onclick = deleteSheet;
+      document.getElementById('csv-btn').onclick = downloadCSV;
+      document.getElementById('refresh-btn').onclick = loadResponses;
+      document.querySelectorAll('.dir-tab').forEach(t => t.onclick = () => showTab(t.dataset.tab));
+      document.getElementById('copy-link').onclick = () => copy(document.getElementById('pub-link').textContent);
+      document.getElementById('copy-embed').onclick = () => copy(document.getElementById('embed-link').textContent);
+
+      curId = getParam('id');
+      if (curId) openEditor(curId);
+      else loadList();
+    });
+
+    /* ---------------- list ---------------- */
+    async function loadList() {
+      document.getElementById('view-edit').hidden = true;
+      document.getElementById('view-list').hidden = false;
+      try {
+        const snap = await db.collection('signups').get();
+        sheets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderList();
+      } catch (e) { document.getElementById('su-list').innerHTML = '<p style="color:var(--error)">' + esc(e.message) + '</p>'; }
+    }
+    function renderList() {
+      const filter = document.getElementById('school-filter').value;
+      const box = document.getElementById('su-list');
+      const list = sheets.filter(s => filter === 'all' || (s.school || 'pto') === filter)
+        .sort((a, b) => (b.updatedAt?.seconds || 0) - (a.updatedAt?.seconds || 0));
+      if (!list.length) { box.innerHTML = '<div class="sec-empty" style="background:#fff;border:1px dashed var(--border);border-radius:12px;padding:30px;text-align:center;color:var(--text-light)">No sign-up sheets yet.</div>'; return; }
+      box.innerHTML = '';
+      list.forEach(s => {
+        const el = document.createElement('div');
+        el.className = 'su-card';
+        el.innerHTML = `
+          <h3>${esc(s.title || '(untitled)')}</h3>
+          <span class="su-badge">${esc(SCHOOLS[s.school || 'pto'] || s.school)}</span>
+          <span class="su-pill ${s.status === 'closed' ? 'closed' : 'open'}">${s.status === 'closed' ? 'Closed' : 'Open'}</span>
+          <span class="spacer"></span>
+          <a class="bo-btn ghost sm" href="../signup.html?id=${s.id}" target="_blank">View ↗</a>
+          <a class="bo-btn sm" href="signups.html?id=${s.id}">Manage</a>`;
+        box.appendChild(el);
+      });
+    }
+
+    async function createSheet() {
+      const ref = await db.collection('signups').add({
+        title: 'Untitled sign-up sheet', intro: '', school: 'pto', status: 'open',
+        contactName: ME.name, contactEmail: ME.email,
+        createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      location.href = 'signups.html?id=' + ref.id;
+    }
+
+    /* ---------------- editor ---------------- */
+    async function openEditor(id) {
+      document.getElementById('view-list').hidden = true;
+      document.getElementById('view-edit').hidden = false;
+      const snap = await db.collection('signups').doc(id).get();
+      if (!snap.exists) { location.href = 'signups.html'; return; }
+      curSheet = { id, ...snap.data() };
+      document.getElementById('edit-crumb').textContent = curSheet.title || 'Edit';
+      document.getElementById('f-title').value = curSheet.title || '';
+      document.getElementById('f-intro').value = curSheet.intro || '';
+      document.getElementById('f-school').value = curSheet.school || 'pto';
+      document.getElementById('f-status').value = curSheet.status || 'open';
+      document.getElementById('f-cname').value = curSheet.contactName || '';
+      document.getElementById('f-cemail').value = curSheet.contactEmail || '';
+      const link = SITE + '/signup.html?id=' + id;
+      document.getElementById('pub-link').textContent = link;
+      document.getElementById('embed-link').textContent = link + '&embed=1';
+      document.getElementById('preview-btn').href = '../signup.html?id=' + id;
+
+      const slots = await db.collection('signups').doc(id).collection('slots').orderBy('order').get();
+      document.querySelectorAll('#slots .su-slotrow:not(.su-slothead)').forEach(r => r.remove());
+      slotRows = [];
+      slots.docs.forEach(d => addSlotRow({ id: d.id, ...d.data() }));
+      if (!slots.size) addSlotRow({});
+      loadResponses();
+    }
+
+    function addSlotRow(s) {
+      const row = document.createElement('div');
+      row.className = 'su-slotrow';
+      row.dataset.id = s.id || '';
+      row.dataset.taken = s.taken || 0;
+      row.innerHTML = `
+        <input data-f="label" placeholder="e.g. Bring cookies / 3:00 slot" value="${esc(s.label || '')}">
+        <input data-f="date" type="date" value="${esc(s.date || '')}">
+        <input data-f="start" type="time" value="${esc(s.start || '')}">
+        <input data-f="end" type="time" value="${esc(s.end || '')}">
+        <input data-f="capacity" type="number" min="0" value="${s.capacity != null ? s.capacity : 0}">
+        <button class="su-x" title="Remove">✕</button>`;
+      row.querySelector('.su-x').onclick = () => { row.remove(); };
+      document.getElementById('slots').appendChild(row);
+    }
+
+    async function saveSheet() {
+      const btn = document.getElementById('save-btn'); btn.disabled = true;
+      try {
+        const id = curSheet.id;
+        await db.collection('signups').doc(id).update({
+          title: document.getElementById('f-title').value.trim() || 'Untitled sign-up sheet',
+          intro: document.getElementById('f-intro').value.trim(),
+          school: document.getElementById('f-school').value,
+          status: document.getElementById('f-status').value,
+          contactName: document.getElementById('f-cname').value.trim(),
+          contactEmail: document.getElementById('f-cemail').value.trim(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: ME.email
+        });
+        // slots: upsert visible rows, delete removed ones
+        const col = db.collection('signups').doc(id).collection('slots');
+        const existing = await col.get();
+        const keep = new Set();
+        const rows = [...document.querySelectorAll('#slots .su-slotrow:not(.su-slothead)')];
+        let order = 0;
+        for (const r of rows) {
+          const v = f => r.querySelector(`[data-f="${f}"]`).value;
+          const data = {
+            label: v('label').trim(), date: v('date'), start: v('start'), end: v('end'),
+            capacity: parseInt(v('capacity'), 10) || 0, order: order++,
+            taken: parseInt(r.dataset.taken, 10) || 0
+          };
+          if (!data.label && !data.date) continue;
+          if (r.dataset.id) { keep.add(r.dataset.id); await col.doc(r.dataset.id).set(data, { merge: true }); }
+          else { const nref = await col.add(data); r.dataset.id = nref.id; keep.add(nref.id); }
+        }
+        for (const d of existing.docs) if (!keep.has(d.id)) await d.ref.delete();
+        toast('Saved');
+        openEditor(id);
+      } catch (e) { toast('Could not save: ' + e.message, 'error'); }
+      finally { btn.disabled = false; }
+    }
+
+    async function deleteSheet() {
+      if (!confirm('Delete this sign-up sheet and everyone who signed up? This cannot be undone.')) return;
+      const id = curSheet.id;
+      for (const sub of ['slots', 'entries', 'contacts']) {
+        const s = await db.collection('signups').doc(id).collection(sub).get();
+        for (const d of s.docs) await d.ref.delete();
+      }
+      await db.collection('signups').doc(id).delete();
+      toast('Deleted');
+      location.href = 'signups.html';
+    }
+
+    /* ---------------- responses ---------------- */
+    let respRows = [];
+    async function loadResponses() {
+      const id = curSheet.id;
+      const [slots, entries, contacts] = await Promise.all([
+        db.collection('signups').doc(id).collection('slots').orderBy('order').get(),
+        db.collection('signups').doc(id).collection('entries').get(),
+        db.collection('signups').doc(id).collection('contacts').get()
+      ]);
+      const slotName = {};
+      slots.docs.forEach(d => { const s = d.data(); slotName[d.id] = [s.label, s.date, s.start].filter(Boolean).join(' · ') || '(slot)'; });
+      const contact = {};
+      contacts.docs.forEach(d => contact[d.id] = d.data());
+      respRows = entries.docs.map(d => {
+        const e = d.data(), c = contact[d.id] || {};
+        return { slot: slotName[e.slotId] || e.slotId, name: e.name, count: e.count || 1,
+                 email: c.email || '', phone: c.phone || '', comment: c.comment || '',
+                 at: e.at?.toDate ? e.at.toDate() : null };
+      }).sort((a, b) => (a.slot > b.slot ? 1 : -1) || (b.at - a.at));
+      document.getElementById('resp-count').textContent = respRows.length;
+      const box = document.getElementById('resp-body');
+      if (!respRows.length) { box.innerHTML = '<p style="color:var(--text-light)">No sign-ups yet.</p>'; return; }
+      box.innerHTML = '<table class="su-resp"><thead><tr><th>Slot</th><th>Name</th><th>#</th><th>Email</th><th>Phone</th><th>Comment</th><th>When</th></tr></thead><tbody>' +
+        respRows.map(r => `<tr><td>${esc(r.slot)}</td><td>${esc(r.name)}</td><td>${r.count}</td><td>${esc(r.email)}</td><td>${esc(r.phone)}</td><td>${esc(r.comment)}</td><td>${r.at ? r.at.toLocaleString() : ''}</td></tr>`).join('') +
+        '</tbody></table>';
+    }
+    function downloadCSV() {
+      const head = ['Slot', 'Name', 'Count', 'Email', 'Phone', 'Comment', 'When'];
+      const rows = respRows.map(r => [r.slot, r.name, r.count, r.email, r.phone, r.comment, r.at ? r.at.toISOString() : '']);
+      const csv = [head].concat(rows).map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+      a.download = (curSheet.title || 'signups').replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.csv';
+      a.click();
+    }
+
+    function showTab(tab) {
+      document.querySelectorAll('.dir-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+      document.getElementById('tab-setup').hidden = tab !== 'setup';
+      document.getElementById('tab-responses').hidden = tab !== 'responses';
+      document.getElementById('tab-share').hidden = tab !== 'share';
+      if (tab === 'responses') loadResponses();
+    }
+    function copy(t) { navigator.clipboard.writeText(t).then(() => toast('Copied')); }
+  </script>
+  <style>
+    .dir-tab { padding:9px 15px; border:none; background:none; font-family:inherit; font-size:14px; font-weight:700;
+               color:var(--text-light); cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; }
+    .dir-tab.active { color:var(--primary-dark); border-bottom-color:var(--primary); }
+  </style>
+</body>
+</html>

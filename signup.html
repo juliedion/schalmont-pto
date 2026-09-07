@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up — Schalmont PTO</title>
+  <link rel="stylesheet" href="css/styles.css?v=6">
+  <link rel="icon" href="images/favicon.svg">
+  <style>
+    .su-wrap { max-width: 720px; margin: 0 auto; padding: 28px 18px 60px; }
+    body.embed .su-wrap { padding: 14px; }
+    body.embed .su-sitehead, body.embed .su-sitefoot { display: none; }
+    .su-sitehead { text-align:center; margin-bottom: 18px; }
+    .su-sitehead img { height: 54px; }
+    .su-intro { color: var(--text); line-height: 1.55; white-space: pre-wrap; margin: 0 0 22px; }
+    .su-closed { background:#fdecea; border:1px solid #f5c6c0; color:#8b1a14; padding:14px 16px; border-radius:10px; font-weight:600; margin-bottom:20px; }
+    .su-slot { border:1px solid var(--border); border-radius:12px; padding:15px 16px; margin-bottom:12px; background:#fff; }
+    .su-slot h3 { margin:0 0 3px; font-size:16px; color:var(--primary-dark); }
+    .su-when { font-size:13px; color:var(--text-light); margin-bottom:8px; }
+    .su-spots { font-size:13px; font-weight:700; margin-bottom:8px; }
+    .su-spots.full { color:#8b1a14; }
+    .su-spots.ok { color:#2a5c1e; }
+    .su-names { font-size:13px; color:var(--text); margin-bottom:10px; }
+    .su-names span { display:inline-block; background:var(--light-bg); border:1px solid var(--border); border-radius:20px; padding:2px 10px; margin:2px 3px 0 0; }
+    .su-form { display:none; border-top:1px dashed var(--border); margin-top:10px; padding-top:12px; }
+    .su-form.open { display:block; }
+    .su-form label { display:block; font-size:12px; font-weight:700; margin:8px 0 3px; }
+    .su-form input { width:100%; padding:9px 10px; border:1px solid var(--border); border-radius:7px; font-family:inherit; font-size:14px; }
+    .su-row2 { display:flex; gap:10px; flex-wrap:wrap; }
+    .su-row2 > div { flex:1; min-width:140px; }
+    .su-btn { background:var(--primary); color:#fff; border:none; border-radius:8px; padding:10px 18px; font-weight:700; font-size:14px; cursor:pointer; }
+    .su-btn.ghost { background:#fff; color:var(--primary); border:1px solid var(--primary); }
+    .su-btn:disabled { opacity:.5; cursor:not-allowed; }
+    .su-msg { margin-top:10px; font-size:13px; font-weight:600; }
+    .su-done { color:#2a5c1e; }
+    .su-err { color:#8b1a14; }
+  </style>
+</head>
+<body>
+  <div class="su-wrap">
+    <div class="su-sitehead"><a href="/"><img src="images/logo-color.png" alt="Schalmont PTO"></a></div>
+    <div id="app"><p style="text-align:center;color:var(--text-light)">Loading…</p></div>
+    <div class="su-sitefoot" style="text-align:center;margin-top:30px;font-size:12px;color:var(--text-light)">
+      Powered by Schalmont Central PTO &middot; <a href="/">schalmontpto.com</a>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script>
+    var params = new URLSearchParams(location.search);
+    var ID = params.get('id');
+    if (params.get('embed') === '1') document.body.classList.add('embed');
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.firestore();
+    var app = document.getElementById('app');
+
+    function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+    function prettyDate(ymd) {
+      if (!ymd) return '';
+      var p = ymd.split('-'); if (p.length !== 3) return ymd;
+      var d = new Date(+p[0], +p[1] - 1, +p[2]);
+      return isNaN(d) ? ymd : d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    }
+    function prettyTime(hm) {
+      if (!hm) return ''; var p = hm.split(':'); if (p.length < 2) return hm;
+      var h = +p[0], ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+      return h + ':' + p[1] + ' ' + ap;
+    }
+
+    if (!ID) { app.innerHTML = '<p class="su-err">Missing sign-up link.</p>'; }
+    else load();
+
+    function load() {
+      db.collection('signups').doc(ID).get().then(function (snap) {
+        if (!snap.exists) { app.innerHTML = '<p class="su-err">This sign-up sheet was not found.</p>'; return; }
+        var sheet = snap.data();
+        Promise.all([
+          db.collection('signups').doc(ID).collection('slots').orderBy('order').get(),
+          db.collection('signups').doc(ID).collection('entries').get()
+        ]).then(function (res) {
+          render(sheet, res[0].docs, res[1].docs);
+        });
+      }).catch(function (e) { app.innerHTML = '<p class="su-err">Could not load this sheet. ' + esc(e.message) + '</p>'; });
+    }
+
+    function render(sheet, slotDocs, entryDocs) {
+      var byName = {};
+      entryDocs.forEach(function (d) {
+        var e = d.data();
+        (byName[e.slotId] = byName[e.slotId] || []).push({ name: e.name, count: e.count || 1 });
+      });
+      var closed = sheet.status === 'closed';
+      var html = '<h1 style="color:var(--primary-dark);margin:0 0 6px">' + esc(sheet.title || 'Sign Up') + '</h1>';
+      if (sheet.contactName || sheet.contactEmail) {
+        html += '<p style="font-size:13px;color:var(--text-light);margin:0 0 14px">Questions? ' +
+          esc(sheet.contactName || '') +
+          (sheet.contactEmail ? ' &middot; <a href="mailto:' + esc(sheet.contactEmail) + '">' + esc(sheet.contactEmail) + '</a>' : '') + '</p>';
+      }
+      if (sheet.intro) html += '<p class="su-intro">' + esc(sheet.intro) + '</p>';
+      if (closed) html += '<div class="su-closed">This sign-up sheet is closed.</div>';
+      if (!slotDocs.length) html += '<p style="color:var(--text-light)">No slots have been added yet.</p>';
+
+      slotDocs.forEach(function (d) {
+        var s = d.data(), taken = s.taken || 0, cap = s.capacity || 0;
+        var left = cap ? Math.max(0, cap - taken) : null;
+        var full = cap && left <= 0;
+        var when = [prettyDate(s.date), [prettyTime(s.start), prettyTime(s.end)].filter(Boolean).join('–')].filter(Boolean).join(' · ');
+        var names = (byName[d.id] || []).map(function (n) {
+          return '<span>' + esc(n.name) + (n.count > 1 ? ' (' + n.count + ')' : '') + '</span>';
+        }).join('');
+        html += '<div class="su-slot" data-slot="' + d.id + '" data-cap="' + cap + '" data-left="' + (left == null ? '' : left) + '">';
+        html += '<h3>' + esc(s.label || 'Slot') + '</h3>';
+        if (when) html += '<div class="su-when">' + esc(when) + '</div>';
+        html += '<div class="su-spots ' + (full ? 'full' : 'ok') + '">' +
+          (cap ? (full ? 'Full' : left + ' of ' + cap + ' spot' + (cap === 1 ? '' : 's') + ' left') : (taken ? taken + ' signed up' : 'Open — sign up below')) + '</div>';
+        if (names) html += '<div class="su-names">' + names + '</div>';
+        if (!closed && !full) {
+          html += '<button class="su-btn ghost su-open">Sign up</button>';
+          html += '<form class="su-form">' +
+            '<label>Your name</label><input name="name" required maxlength="80" placeholder="First and last name">' +
+            '<div class="su-row2">' +
+              '<div><label>How many people / spots?</label><input name="count" type="number" min="1" max="20" value="1"></div>' +
+              '<div><label>Email <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="email" type="email"></div>' +
+            '</div>' +
+            '<div class="su-row2">' +
+              '<div><label>Phone <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="phone"></div>' +
+              '<div><label>Note to organiser <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="comment" maxlength="200"></div>' +
+            '</div>' +
+            '<div style="margin-top:12px"><button type="submit" class="su-btn">Sign me up</button></div>' +
+            '<div class="su-msg"></div>' +
+          '</form>';
+        }
+        html += '</div>';
+      });
+      app.innerHTML = html;
+
+      app.querySelectorAll('.su-open').forEach(function (b) {
+        b.onclick = function () { b.nextElementSibling.classList.toggle('open'); };
+      });
+      app.querySelectorAll('.su-form').forEach(function (form) {
+        form.onsubmit = function (ev) {
+          ev.preventDefault();
+          submit(form);
+        };
+      });
+    }
+
+    function submit(form) {
+      var slotEl = form.closest('.su-slot');
+      var slotId = slotEl.dataset.slot;
+      var name = form.name.value.trim();
+      var count = Math.max(1, Math.min(20, parseInt(form.count.value, 10) || 1));
+      var email = form.email.value.trim(), phone = form.phone.value.trim(), comment = form.comment.value.trim();
+      var msg = form.querySelector('.su-msg');
+      if (!name) { msg.className = 'su-msg su-err'; msg.textContent = 'Please enter your name.'; return; }
+      var btn = form.querySelector('button[type=submit]'); btn.disabled = true;
+      msg.className = 'su-msg'; msg.textContent = 'Saving…';
+
+      var slotRef = db.collection('signups').doc(ID).collection('slots').doc(slotId);
+      db.runTransaction(function (tx) {
+        return tx.get(slotRef).then(function (s) {
+          if (!s.exists) throw new Error('That slot is no longer available.');
+          var d = s.data(), taken = d.taken || 0;
+          if (d.capacity && taken + count > d.capacity) throw new Error('Sorry — not enough spots left.');
+          tx.update(slotRef, { taken: taken + count });
+          var eref = db.collection('signups').doc(ID).collection('entries').doc();
+          tx.set(eref, { slotId: slotId, name: name, count: count, at: firebase.firestore.FieldValue.serverTimestamp() });
+          if (email || phone || comment) {
+            tx.set(db.collection('signups').doc(ID).collection('contacts').doc(eref.id),
+              { email: email, phone: phone, comment: comment });
+          }
+        });
+      }).then(function () {
+        msg.className = 'su-msg su-done'; msg.textContent = '✓ You\'re signed up. Thank you!';
+        setTimeout(load, 900);
+      }).catch(function (e) {
+        btn.disabled = false;
+        msg.className = 'su-msg su-err'; msg.textContent = e.message || 'Something went wrong — please try again.';
+      });
+    }
+  </script>
+</body>
+</html>

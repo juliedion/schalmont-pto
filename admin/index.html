@@ -18,7 +18,7 @@
     <p class="bo-lead">
       This is the PTO Back Office &mdash; the private area where you plan events, build web
       pages, share files, and collect sign-ups. Nothing here is visible to the public until
-      <em>you</em> choose to publish it. Pick a section below to get started.
+      <em>you</em> choose to publish it. Start by opening a school, or jump straight to a section.
     </p>
 
     <div class="bo-tip">
@@ -27,11 +27,20 @@
       pages you create stay as private drafts until you press <strong>Publish</strong>.
     </div>
 
+    <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)">Your schools</h2>
+    <div class="bo-grid" id="school-cards" style="margin-bottom:34px"></div>
+
     <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)">Sections</h2>
     <div class="bo-grid" id="section-cards" style="margin-bottom:34px"></div>
 
     <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)">More</h2>
     <div class="bo-grid">
+      <a class="bo-card" href="signups.html">
+        <span class="bo-cardicon">🖊️</span>
+        <h3>Sign-Up Sheets</h3>
+        <p>Public sign-up sheets with dates, time slots and spot limits &mdash;
+           share a link or embed on a page.</p>
+      </a>
       <a class="bo-card" href="help.html">
         <span class="bo-cardicon">📖</span>
         <h3>Help &amp; How-To</h3>
@@ -72,6 +81,19 @@
         document.getElementById('people-card').style.display = '';
         document.getElementById('directory-card').style.display = '';
       }
+
+      document.getElementById('school-cards').innerHTML = Object.keys(SCHOOLS)
+        .filter(s => s !== 'pto' && (me.isSuper || me.schools.includes(s)))
+        .map(s => `
+        <a class="bo-card" href="school.html?s=${s}">
+          <span class="bo-cardicon">🏫</span>
+          <h3>${SCHOOLS[s]}</h3>
+          <p>Pages, files &amp; photos, and planning for ${SCHOOLS[s]}.</p>
+        </a>`).join('') +
+        `<a class="bo-card" href="school.html?s=pto">
+          <span class="bo-cardicon">🎪</span><h3>PTO-wide</h3>
+          <p>Anything that spans every school.</p>
+        </a>`;
 
       document.getElementById('section-cards').innerHTML = SECTIONS.map(sec => `
         <a class="bo-card" href="${sec.href}">

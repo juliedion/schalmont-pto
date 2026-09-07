@@ -172,6 +172,7 @@ function renderShell() {
         ${link('index.html', 'Home', '🏠', path === 'index.html')}
         ${sectionLinks}
         <div class="bo-navgroup-label">More</div>
+        ${link('signups.html', 'Sign-Up Sheets', '🖊️', path === 'signups.html')}
         ${link('help.html', 'Help &amp; How-To', '📖', path === 'help.html')}
         ${ME.isSuper ? link('directory.html', 'Parent Directory', '📇', path === 'directory.html') : ''}
         ${ME.isSuper ? link('people.html', 'People &amp; Roles', '👥', path === 'people.html') : ''}
