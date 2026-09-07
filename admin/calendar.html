@@ -109,8 +109,7 @@
         <div>
           <label>School / scope</label>
           <select id="f-school">
-            <option value="all">All schools</option>
-            <option value="pto">District only</option>
+            <option value="pto">District</option>
             <option value="woestina">Woestina Pre-K</option>
             <option value="jefferson">Jefferson Elementary</option>
             <option value="middle">Middle School</option>
@@ -173,8 +172,7 @@
         <div>
           <label>Import as</label>
           <select id="sh-school">
-            <option value="all">All schools</option>
-            <option value="pto">District only</option>
+            <option value="pto">District</option>
             <option value="woestina">Woestina Pre-K</option>
             <option value="jefferson">Jefferson Elementary</option>
             <option value="middle">Middle School</option>
@@ -187,9 +185,10 @@
         </div>
       </div>
       <p style="font-size:12px;color:var(--text-light);margin:8px 0 0">
-        Each tab of the <a id="sh-open" href="#" target="_blank" rel="noopener">master planning
-        sheet</a> maps to one school; the <strong>Master Tracker</strong> tab covers all schools.
-        Pick the school year so dates without a year (e.g. &ldquo;September 8&rdquo;) land correctly.
+        Each school tab of the <a id="sh-open" href="#" target="_blank" rel="noopener">master
+        planning sheet</a> fills that school's calendar. The <strong>Master Tracker</strong> tab
+        files each row under the school named in its first column. Pick the school year so dates
+        without a year (e.g. &ldquo;September 8&rdquo;) land correctly.
       </p>
 
       <label style="display:flex;align-items:flex-start;gap:7px;font-weight:600;font-size:12.5px;margin:14px 0 0">
@@ -224,20 +223,29 @@
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/edit';
     // Events are coloured by school / scope.
     const SCHOOL_COLOR = {
-      all:       '#295c38',   // All schools  — PTO green
-      pto:       '#6b46c1',   // District     — purple
-      woestina:  '#0d9488',   // Woestina     — teal
-      jefferson: '#2b6cb0',   // Jefferson    — blue
-      middle:    '#b7791f',   // Middle       — amber
-      high:      '#c53030'    // High         — red
+      pto:       '#6b46c1',   // District   — purple
+      woestina:  '#0d9488',   // Woestina   — teal
+      jefferson: '#2b6cb0',   // Jefferson  — blue
+      middle:    '#b7791f',   // Middle     — amber
+      high:      '#c53030'    // High       — red
     };
     const SCHOOL_LABEL = {
-      all: 'All schools', pto: 'District', woestina: 'Woestina Pre-K',
+      pto: 'District', woestina: 'Woestina Pre-K',
       jefferson: 'Jefferson Elementary', middle: 'Middle School', high: 'High School'
     };
     function schoolColor(s) {
-      if (s === 'district') s = 'pto';
-      return SCHOOL_COLOR[s] || SCHOOL_COLOR.all;
+      if (s === 'district' || s === 'all') s = 'pto';
+      return SCHOOL_COLOR[s] || SCHOOL_COLOR.pto;
+    }
+    // Map a free-text school name from the Master Tracker's "School" column to a key.
+    function schoolKey(name) {
+      const s = (name || '').trim().toLowerCase();
+      if (s.startsWith('woe')) return 'woestina';
+      if (s.startsWith('jef')) return 'jefferson';
+      if (s.startsWith('mid')) return 'middle';
+      if (s.startsWith('high') || s === 'hs') return 'high';
+      if (s.startsWith('dist') || s.startsWith('pto') || s.startsWith('all')) return 'pto';
+      return '';
     }
 
     let cal, allEvents = [], editingId = null;
@@ -315,10 +323,9 @@
       const showPromo = document.getElementById('show-promo').checked;
       const fcEvents = [];
       allEvents
-        // "All schools" events (school:'all', from the master planning sheet) show on every
-        // view. District events (school:'pto') stand on their own — only the District view and
-        // the "All schools" view show them, not each school's tab.
-        .filter(ev => filter === 'all' || ev.school === 'all' || (ev.school || 'all') === filter)
+        // Each event belongs to exactly one school (or the District). "Everything" shows all;
+        // any other filter shows only that school's events.
+        .filter(ev => filter === 'all' || (ev.school || 'pto') === filter)
         .forEach(ev => {
           try {
             if (!isYMD(ev.date)) return;                 // skip a row with an unusable date
@@ -374,7 +381,7 @@
         const o = new Option(cat, cat); o.dataset.extra = '1'; catSel.add(o, 0);
       }
       catSel.value = cat;
-      document.getElementById('f-school').value = ev?.school || 'all';
+      document.getElementById('f-school').value = ev?.school || 'pto';
       document.getElementById('f-date').value = ev?.date || presetDate || '';
       document.getElementById('f-enddate').value = ev?.endDate || '';
       document.getElementById('f-time').value = ev?.time || '';
@@ -471,23 +478,34 @@
     }
 
     /* ================= Update the calendar from the master planning sheet ================= */
-    // Each tab of the master sheet maps to a school scope. "Master Tracker" = all schools.
+    // Each per-school tab maps to one school. The Master Tracker tab has its own "School"
+    // column, so each row there is filed under the school it names.
     const SHEET_TABS = [
-      { name: 'Master Tracker (all schools)', gid: '1948940234', school: 'all' },
+      { name: 'Master Tracker — every school', gid: '1948940234', school: 'mixed' },
       { name: 'Woestina',      gid: '1827827881', school: 'woestina' },
       { name: 'Jefferson',     gid: '0',          school: 'jefferson' },
       { name: 'Middle School', gid: '1872292183', school: 'middle' },
       { name: 'High School',   gid: '1874166284', school: 'high' }
     ];
-    let shParsed = null;   // { events, school, sheetId, gid, startYear }
+    let shParsed = null;   // { events, scope, sheetId, gid, startYear }
 
     function setupSheetModal(defaultSchool) {
       const tabSel = document.getElementById('sh-tab');
+      const schoolSel = document.getElementById('sh-school');
       SHEET_TABS.forEach((t, i) => tabSel.add(new Option(t.name, String(i))));
       const openLink = document.getElementById('sh-open');
       const syncTab = () => {
         const t = SHEET_TABS[+tabSel.value];
-        document.getElementById('sh-school').value = t.school;
+        const mixed = t.school === 'mixed';
+        schoolSel.disabled = mixed;
+        if (mixed) {
+          if (![...schoolSel.options].some(o => o.value === 'mixed'))
+            schoolSel.add(new Option('Each row’s own school', 'mixed'), 0);
+          schoolSel.value = 'mixed';
+        } else {
+          [...schoolSel.querySelectorAll('option[value="mixed"]')].forEach(o => o.remove());
+          schoolSel.value = t.school;
+        }
         openLink.href = SHEET_URL + '#gid=' + t.gid;
       };
       tabSel.onchange = syncTab;
@@ -550,6 +568,7 @@
       const find = (...needles) =>
         header.findIndex(h => needles.some(n => h === n || h.startsWith(n) || h.includes(n)));
       const ci = {
+        school: find('school', 'building'),
         title:  find('event / initiative', 'event/initiative', 'event name', 'event', 'initiative', 'title', 'name'),
         date:   find('event date', 'start date', 'date'),
         end:    find('end date'),
@@ -586,6 +605,7 @@
         const u = flexDate(get(r, ci.signup), startYear);   if (u) p.planningStart = u;
         out.push({
           title, date,
+          rowSchool: ci.school >= 0 ? schoolKey(get(r, ci.school)) : '',
           endDate: flexDate(get(r, ci.end), startYear),
           time: timeFromText(get(r, ci.time)) || timeFromText(get(r, ci.notes)),
           category: get(r, ci.cat) || guessCat(title),
@@ -619,14 +639,14 @@
              /district/.test(c) || /no school/.test(c);
     }
     const schoolLabel = s =>
-      s === 'all' ? 'all schools' : s === 'pto' ? 'the District' : (SCHOOLS[s] || s);
+      s === 'mixed' ? 'every school' : s === 'pto' ? 'the District' : (SCHOOLS[s] || s);
 
     // Which existing events a "reset" import would delete before loading the tab:
-    // for the Master Tracker (all) — every non-district, non-pinned event;
-    // for a single-school tab — only that school's non-district, non-pinned events.
-    const wipeTargets = (school) => allEvents.filter(e =>
+    // the Master Tracker ('mixed') — every non-district, non-pinned event;
+    // a single-school tab — only that school's non-district, non-pinned events.
+    const wipeTargets = (scope) => allEvents.filter(e =>
       !isDistrictCal(e) && !e.pinned &&
-      (school === 'all' || (e.school || 'all') === school));
+      (scope === 'mixed' || (e.school || 'pto') === scope));
 
     // Firestore batches cap at 500 writes — commit in chunks.
     async function commitOps(ops) {
@@ -647,18 +667,20 @@
         const tab = SHEET_TABS[+document.getElementById('sh-tab').value];
         const csv = await fetchSheetCsv(tab.gid);
         const events = sheetToEvents(csv, startYear);
-        const school = document.getElementById('sh-school').value;
-        shParsed = { events, school, sheetId: SHEET_ID, gid: tab.gid, startYear };
-        const list = events.slice(0, 12).map(e =>
-          `<li>${prettyYMD(e.date)} &mdash; ${e.title}</li>`).join('');
+        const scope = tab.school;                       // a school key, or 'mixed'
+        shParsed = { events, scope, sheetId: SHEET_ID, gid: tab.gid, startYear };
+        const list = events.slice(0, 12).map(e => {
+          const es = scope === 'mixed' ? (e.rowSchool || 'pto') : scope;
+          return `<li>${prettyYMD(e.date)} &mdash; ${e.title} <span style="color:var(--text-light)">(${SCHOOL_LABEL[es] || es})</span></li>`;
+        }).join('');
         let html = `<strong>${events.length}</strong> event${events.length === 1 ? '' : 's'} in the sheet` +
-          `, importing onto <strong>${schoolLabel(school)}</strong>:` +
+          `, filing under <strong>${schoolLabel(scope)}</strong>:` +
           `<ul style="margin:6px 0 0;padding-left:18px">${list}` +
           (events.length > 12 ? `<li>…and ${events.length - 12} more</li>` : '') + '</ul>';
         if (document.getElementById('sh-wipe').checked) {
-          const del = wipeTargets(school);
+          const del = wipeTargets(scope);
           html += `<p style="margin:10px 0 0;color:var(--error);font-weight:700">` +
-            `⚠ Will first DELETE ${del.length} existing ${schoolLabel(school)} event` +
+            `⚠ Will first DELETE ${del.length} existing ${schoolLabel(scope)} event` +
             `${del.length === 1 ? '' : 's'} (District Calendar entries and your hand edits are kept).</p>`;
         }
         rep.innerHTML = html;
@@ -676,14 +698,14 @@
       const rep = document.getElementById('sh-report');
       rep.innerHTML = 'Importing…';
       try {
-        const { events, school, sheetId, gid } = shParsed;
+        const { events, scope, sheetId, gid } = shParsed;
         const src = sheetId + '#' + gid;
         const wipe = document.getElementById('sh-wipe').checked;
         const col = db.collection('pto_events');
 
         if (wipe) {
-          const del = wipeTargets(school);
-          if (!confirm(`This will permanently delete ${del.length} existing ${schoolLabel(school)} ` +
+          const del = wipeTargets(scope);
+          if (!confirm(`This will permanently delete ${del.length} existing ${schoolLabel(scope)} ` +
             `event(s) (District Calendar entries and hand edits are kept), then load ${events.length} ` +
             `event(s) from the sheet.\n\nContinue?`)) { btn.disabled = false; rep.innerHTML = ''; return; }
           const ops = del.map(e => (b => b.delete(col.doc(e.id))));
@@ -706,7 +728,8 @@
         let added = 0, updated = 0, kept = 0;
         const seen = new Set();
         for (const ev of events) {
-          const id = ('sheet_' + school + '_' + ev.date + '_' + ev.title).toLowerCase()
+          const evSchool = scope === 'mixed' ? (ev.rowSchool || 'pto') : scope;
+          const id = ('sheet_' + evSchool + '_' + ev.date + '_' + ev.title).toLowerCase()
             .replace(/[^a-z0-9_]+/g, '_').replace(/_+/g, '_').slice(0, 120);
           seen.add(id);
           if (skip.has(id)) continue;
@@ -714,7 +737,7 @@
           const fields = {
             title: ev.title, date: ev.date, endDate: ev.endDate || '',
             time: ev.time || '', category: ev.category, audience: ev.audience,
-            owner: ev.owner, notes: ev.notes, status: 'planned', school,
+            owner: ev.owner, notes: ev.notes, status: 'planned', school: evSchool,
             promo: computePromo(ev.date, ev.promoSeed),
             source: 'sheet', sheetSrc: src, sheetKey: ev.title + '||' + ev.date,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: ME.email
