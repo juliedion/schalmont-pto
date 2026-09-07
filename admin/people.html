@@ -115,7 +115,12 @@
       { name: 'Vanesa McDonough', email: 'vanesa@schalmontpto.com',  org: 'schalmont', title: 'Vice President', role: 'superadmin' },
       { name: 'Kirstyn Galea',    email: 'kirstyn@schalmontpto.com', org: 'schalmont', title: 'Secretary',      role: 'superadmin' },
       { name: 'Nicolle Kane',     email: 'nicolle@schalmontpto.com', org: 'schalmont', title: 'Treasurer',      role: 'superadmin' },
-      { name: 'Demo Account',     email: 'demo@schalmontpto.com',    org: '',          title: 'Presentation / demo', role: 'superadmin' }
+      { name: 'Demo Account',     email: 'demo@schalmontpto.com',    org: '',          title: 'Presentation / demo', role: 'superadmin' },
+      // Woestina + Jefferson + PTO-wide administrators (no Middle / High School access)
+      { name: 'Corrie Hoffman-Haddix', email: 'corrie@schalmontpto.com',    org: 'jefferson', title: '', role: 'admin', pass: 'Maxthemighty100!', schools: ['woestina', 'jefferson', 'pto'] },
+      { name: 'Cara',                  email: 'cara@schalmontpto.com',      org: 'jefferson', title: '', role: 'admin', pass: 'Maxthemighty100!', schools: ['woestina', 'jefferson', 'pto'] },
+      { name: 'Jennifer Sitors',       email: 'jennifer@schalmontpto.com',  org: 'jefferson', title: '', role: 'admin', pass: 'Maxthemighty100!', schools: ['woestina', 'jefferson', 'pto'] },
+      { name: 'Christina Pelham',      email: 'christina@schalmontpto.com', org: 'jefferson', title: '', role: 'admin', pass: 'Maxthemighty100!', schools: ['woestina', 'jefferson', 'pto'] }
     ];
 
     requireAdmin((me) => {
@@ -143,10 +148,14 @@
         if (!p) return;
         document.getElementById('c-name').value = p.name;
         document.getElementById('c-email').value = p.email;
-        document.getElementById('c-org').value = p.org;
-        document.getElementById('c-title').value = p.title;
+        document.getElementById('c-org').value = p.org || '';
+        document.getElementById('c-title').value = p.title || '';
+        document.getElementById('c-pass').value = p.pass || '';
         roleSel.value = p.role;
         wrap.style.display = p.role === 'admin' ? '' : 'none';
+        document.querySelectorAll('#c-schools input').forEach(c => {
+          c.checked = Array.isArray(p.schools) && p.schools.includes(c.value);
+        });
         document.getElementById('c-pass').focus();
       };
 
