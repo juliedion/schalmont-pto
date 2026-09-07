@@ -274,11 +274,9 @@ function newWebPage(cat, presetSchool) {
   const preset = new Set(
     presetSchool && opts.includes(presetSchool) ? [presetSchool] : []
   );
-  const checks = opts.map(s => `
-    <label style="display:flex;gap:7px;align-items:center;font-size:14px;font-weight:600;margin:5px 0">
-      <input type="checkbox" class="nwp-school" value="${s}" ${preset.has(s) ? 'checked' : ''}>
-      ${esc(SCHOOLS[s])}
-    </label>`).join('');
+  const checks = opts.map(s =>
+    `<label><input type="checkbox" class="nwp-school" value="${s}" ${preset.has(s) ? 'checked' : ''}> ${esc(SCHOOLS[s])}</label>`
+  ).join('');
 
   const back = document.createElement('div');
   back.className = 'bo-modal-back';
@@ -294,7 +292,7 @@ function newWebPage(cat, presetSchool) {
         <a href="${PLANNING_SHEET_URL}" target="_blank" rel="noopener">Open the planning spreadsheet ↗</a>
       </div>` : ''}
       <label class="bo-modal-lbl">Which school(s) is this for? <span style="font-weight:400;color:var(--text-light)">— tick every one it belongs to</span></label>
-      <div style="margin:2px 0 6px">${checks}</div>
+      <div class="bo-modal-checklist">${checks}</div>
       <p style="font-size:12px;color:var(--text-light);margin:0 0 8px">
         Tick more than one and the page gets a shared address at
         <code>schalmontpto.com/pto/&hellip;</code>.
