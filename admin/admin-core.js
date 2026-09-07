@@ -143,6 +143,31 @@ function showDenied() {
 
 function signOutNow() { auth.signOut().then(() => window.location.href = '../login.html'); }
 
+/* Let a signed-in admin set a new password without leaving the back office.
+   Firebase blocks this if the session is old ("requires-recent-login") — in that
+   case we send them to sign out and back in, then try again. */
+async function changePasswordNow() {
+  const user = auth.currentUser;
+  if (!user) { window.location.href = '../login.html'; return; }
+  const pw = prompt('Enter a new password (at least 6 characters):');
+  if (pw === null) return;
+  if (pw.length < 6) { toast('Password must be at least 6 characters', 'error'); return; }
+  if (prompt('Type the new password again to confirm:') !== pw) {
+    toast('The two passwords did not match — nothing changed', 'error');
+    return;
+  }
+  try {
+    await user.updatePassword(pw);
+    toast('Password updated — use it next time you sign in');
+  } catch (e) {
+    if (e.code === 'auth/requires-recent-login') {
+      toast('For security, sign out and sign back in, then change it again', 'error');
+    } else {
+      toast('Could not change password: ' + e.message, 'error');
+    }
+  }
+}
+
 /* ------------------------------------------------------------
    The shared dark sidebar + top bar.
    Any page that includes a <div id="bo-shell"></div> gets it.
@@ -179,6 +204,7 @@ function renderShell() {
       </nav>
       <div class="bo-sidebar-foot">
         <div class="bo-me">${esc(ME.name)}</div>
+        <a href="#" onclick="changePasswordNow();return false;">Change password</a> ·
         <a href="../index.html">View website ↗</a> ·
         <a href="#" onclick="signOutNow();return false;">Sign out</a>
       </div>
