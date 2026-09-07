@@ -38,6 +38,8 @@
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
       <a class="bo-btn ghost sm" href="index.html">← Back Office Home</a>
       <a class="bo-btn ghost sm" id="back-school" href="#">← <span id="back-school-name">School</span> Workspace</a>
+      <span style="flex:1"></span>
+      <button class="bo-btn sm" id="newpage-btn">＋ Add New Fundraiser Web Page</button>
     </div>
     <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo;
       <a id="crumb-school" href="#">School</a> &rsaquo; Fundraising</div>
@@ -92,7 +94,7 @@
     const school = getParam('s');
 
     requireAdmin((me) => {
-      if (!school || !SCHOOLS[school]) { location.href = 'index.html'; return; }
+      if (!school || !SCHOOLS[school]) { pickSchool(); return; }
       if (!canManage(school)) {
         document.getElementById('bo-main').innerHTML =
           '<p class="bo-lead">You don\'t have access to this school. <a href="index.html">Go back</a>.</p>';
@@ -104,8 +106,22 @@
       document.getElementById('back-school-name').textContent = SCHOOLS[school];
       document.getElementById('title').textContent = SCHOOLS[school] + ' — Fundraising';
       document.getElementById('fr-form').onsubmit = addFundraiser;
+      document.getElementById('newpage-btn').onclick = () => newWebPage('fundraising');
       load();
     });
+
+    function pickSchool() {
+      const opts = (ME.schools || []).filter(s => s !== 'pto');
+      document.getElementById('bo-main').innerHTML =
+        '<div style="margin-bottom:14px"><a class="bo-btn ghost sm" href="index.html">← Back Office Home</a></div>' +
+        '<h1 class="bo-h1">💰 Fundraising</h1>' +
+        '<p class="bo-lead">Pick a school to see and add its fundraisers.</p>' +
+        '<div class="bo-grid">' + opts.map(s =>
+          `<a class="bo-card" href="fundraising.html?s=${s}"><span class="bo-cardicon">🏫</span><h3>${SCHOOLS[s]}</h3></a>`
+        ).join('') +
+        `<a class="bo-card" href="fundraising.html?s=pto"><span class="bo-cardicon">🎪</span><h3>PTO-wide</h3></a></div>`;
+      document.getElementById('bo-main').style.display = '';
+    }
 
     function sheetId(url) {
       const m = (url || '').match(/\/spreadsheets\/d\/([A-Za-z0-9_-]{20,64})/);

@@ -33,6 +33,22 @@ const SCHOOL_PREFIX = {
 };
 function pagePath(school, slug) { return SCHOOL_PREFIX[school] + '/' + slug; }
 
+/* The top-level back-office sections, in nav order. `cat` is the page-category key
+   stored on `pages` docs. `singular` (when set) turns on an "Add New ___ Web Page"
+   button; `sheet:true` adds the "also add this to the planning spreadsheet" notice. */
+const SECTIONS = [
+  { cat: 'calendar',   label: 'Calendar',              icon: '📅', href: 'calendar.html' },
+  { cat: 'events',     label: 'Events',                icon: '🎪', href: 'section.html?cat=events',     singular: 'Event',       sheet: true },
+  { cat: 'clubs',      label: 'Clubs',                 icon: '🤝', href: 'section.html?cat=clubs',      singular: 'Club',        sheet: true },
+  { cat: 'programs',   label: 'Programs',              icon: '🎓', href: 'section.html?cat=programs',   singular: 'Program',     sheet: true },
+  { cat: 'spiritwear', label: 'Spiritwear',            icon: '👕', href: 'section.html?cat=spiritwear', singular: 'Spiritwear page' },
+  { cat: 'fundraising',label: 'Fundraising',           icon: '💰', href: 'fundraising.html',            singular: 'Fundraiser',  sheet: true },
+  { cat: 'facilities', label: 'Building &amp; Facilities', icon: '🏫', href: 'section.html?cat=facilities', singular: 'Facilities page' },
+  { cat: 'yearbook',   label: 'Yearbook Photos',       icon: '📸', href: 'yearbook.html' },
+  { cat: 'ideas',      label: 'Extra Ideas',           icon: '💡', href: 'section.html?cat=ideas',      singular: 'Idea page' }
+];
+function sectionByCat(cat) { return SECTIONS.find(s => s.cat === cat) || null; }
+
 /* Bootstrap super-admin. This email is ALWAYS treated as the owner,
    even before any roles are set up in the database. Additional
    super-admins are granted from the People & Roles page. */
@@ -136,14 +152,16 @@ function renderShell() {
   if (!shell || !ME) return;
 
   const path = window.location.pathname.split('/').pop();
-  const link = (href, label, icon) =>
-    `<a href="${href}" class="bo-navlink${path === href ? ' active' : ''}">
+  const cat = getParam('cat');
+  const link = (href, label, icon, active) =>
+    `<a href="${href}" class="bo-navlink${active ? ' active' : ''}">
        <span class="bo-navicon">${icon}</span>${label}</a>`;
 
-  let schoolLinks = ME.schools.map(s =>
-    `<a href="school.html?s=${s}" class="bo-navlink bo-navsub${
-        (path === 'school.html' && getParam('s') === s) ? ' active' : ''}">${SCHOOLS[s]}</a>`
-  ).join('');
+  const sectionLinks = SECTIONS.map(s => {
+    const base = s.href.split('?')[0];
+    const active = s.href.includes('?cat=') ? (path === 'section.html' && cat === s.cat) : (path === base);
+    return link(s.href, s.label, s.icon, active);
+  }).join('');
 
   shell.innerHTML = `
     <aside class="bo-sidebar">
@@ -151,15 +169,12 @@ function renderShell() {
         <img src="../images/logo.png" alt=""> <span>PTO Back Office</span>
       </a>
       <nav class="bo-nav">
-        ${link('index.html', 'Home', '🏠')}
-        <div class="bo-navgroup-label">Schools</div>
-        ${schoolLinks}
-        <div class="bo-navgroup-label">Tools</div>
-        ${link('calendar.html', 'Calendar', '📅')}
-        ${link('assistant.html', 'AI Assistant', '💬')}
-        ${link('help.html', 'Help &amp; How-To', '📖')}
-        ${ME.isSuper ? link('directory.html', 'Parent Directory', '📇') : ''}
-        ${ME.isSuper ? link('people.html', 'People &amp; Roles', '👥') : ''}
+        ${link('index.html', 'Home', '🏠', path === 'index.html')}
+        ${sectionLinks}
+        <div class="bo-navgroup-label">More</div>
+        ${link('help.html', 'Help &amp; How-To', '📖', path === 'help.html')}
+        ${ME.isSuper ? link('directory.html', 'Parent Directory', '📇', path === 'directory.html') : ''}
+        ${ME.isSuper ? link('people.html', 'People &amp; Roles', '👥', path === 'people.html') : ''}
       </nav>
       <div class="bo-sidebar-foot">
         <div class="bo-me">${esc(ME.name)}</div>
@@ -202,6 +217,66 @@ function renderHelpWidget() {
       toggle.textContent = '＋ Need help?';
     }
   });
+}
+
+/* The master planning spreadsheet (also used by the calendar importer). */
+const PLANNING_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1vIPpzz79LgBSm2lWDkFgjwKjb-h7JrSLFzdbtTf4JyM/edit';
+
+/* Start a brand-new web page for a section (Events, Clubs, Programs, …).
+   Shows the "you'll also need the spreadsheet" notice, collects a school + working
+   title, creates the draft, then opens the guided page editor. */
+function newWebPage(cat) {
+  const sec = sectionByCat(cat);
+  const singular = (sec && sec.singular) || 'Web';
+  const schools = (ME.schools || []).filter(s => s !== 'pto');
+  const schoolOpts = [['pto', 'PTO-wide / all schools']]
+    .concat(schools.map(s => [s, SCHOOLS[s]]))
+    .map(([v, l]) => `<option value="${v}">${l}</option>`).join('');
+
+  const back = document.createElement('div');
+  back.className = 'bo-modal-back';
+  back.innerHTML = `
+    <div class="bo-modal">
+      <h2>Add a new ${esc(singular)} web page</h2>
+      ${sec && sec.sheet ? `
+      <div class="bo-notice">
+        <strong>Heads up:</strong> a web page lives on the website, but it does <em>not</em>
+        add itself to the planning spreadsheet. After you create the page, also add this
+        ${esc(singular).toLowerCase()} to the master planning sheet so the calendar, flyer
+        dates, and reminders stay in sync.
+        <a href="${PLANNING_SHEET_URL}" target="_blank" rel="noopener">Open the planning spreadsheet ↗</a>
+      </div>` : ''}
+      <label class="bo-modal-lbl">Which school is this for?</label>
+      <select id="nwp-school">${schoolOpts}</select>
+      <label class="bo-modal-lbl">Working title <span style="font-weight:400;color:var(--text-light)">— you can change it later</span></label>
+      <input type="text" id="nwp-title" placeholder="e.g. Fall Fun Run 2026">
+      <div class="bo-modal-actions">
+        <button class="bo-btn ghost sm" id="nwp-cancel">Cancel</button>
+        <button class="bo-btn sm" id="nwp-go">Create &amp; start building →</button>
+      </div>
+    </div>`;
+  document.body.appendChild(back);
+  const close = () => back.remove();
+  back.addEventListener('click', e => { if (e.target === back) close(); });
+  back.querySelector('#nwp-cancel').onclick = close;
+  back.querySelector('#nwp-title').focus();
+  back.querySelector('#nwp-go').onclick = async () => {
+    const school = back.querySelector('#nwp-school').value;
+    const title = back.querySelector('#nwp-title').value.trim();
+    if (!title) { toast('Give it a working title', 'error'); return; }
+    back.querySelector('#nwp-go').disabled = true;
+    try {
+      const ref = await db.collection('pages').add({
+        category: cat, school, title, slug: slugify(title),
+        status: 'draft', blocks: [],
+        createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      location.href = 'page-editor.html?id=' + ref.id + '&guide=1';
+    } catch (e) {
+      toast('Could not create the page: ' + e.message, 'error');
+      back.querySelector('#nwp-go').disabled = false;
+    }
+  };
 }
 
 /* ---- small helpers ---------------------------------------- */

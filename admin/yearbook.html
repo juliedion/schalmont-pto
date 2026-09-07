@@ -84,7 +84,17 @@
     let folders = [], photos = [];
 
     requireAdmin(async (me) => {
-      if (!school || !SCHOOLS[school]) { location.href = 'index.html'; return; }
+      if (!school || !SCHOOLS[school]) {
+        const opts = (ME.schools || []).filter(s => s !== 'pto');
+        document.getElementById('bo-main').innerHTML =
+          '<div style="margin-bottom:14px"><a class="bo-btn ghost sm" href="index.html">← Back Office Home</a></div>' +
+          '<h1 class="bo-h1">📸 Yearbook Photos</h1>' +
+          '<p class="bo-lead">Pick a school to manage its yearbook photo folders.</p><div class="bo-grid">' +
+          opts.map(s => `<a class="bo-card" href="yearbook.html?s=${s}"><span class="bo-cardicon">🏫</span><h3>${SCHOOLS[s]}</h3></a>`).join('') +
+          '</div>';
+        document.getElementById('bo-main').style.display = '';
+        return;
+      }
       if (!canManage(school)) {
         document.getElementById('bo-main').innerHTML =
           '<p class="bo-lead">You don\'t have access to this school. <a href="index.html">Go back</a>.</p>';

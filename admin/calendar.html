@@ -89,6 +89,7 @@
     <div class="cal-bar" style="margin-bottom:10px">
       <span class="spacer" style="flex:1"></span>
       <button class="bo-btn sm" id="add-btn">＋ New event</button>
+      <button class="bo-btn ghost sm" id="newpage-btn">＋ Add New Event Web Page</button>
       <button class="bo-btn ghost sm" id="sheet-btn">⬆ Update from the planning spreadsheet</button>
       <button class="bo-btn ghost sm" id="district-btn">↻ Sync District calendar</button>
     </div>
@@ -277,6 +278,7 @@
       document.getElementById('del-btn').onclick = deleteEvent;
       document.getElementById('f-date').onchange = syncPromoFromDate;
       document.getElementById('district-btn').onclick = () => syncDistrict(false);
+      document.getElementById('newpage-btn').onclick = () => newWebPage('events');
 
       loadEvents();
     });

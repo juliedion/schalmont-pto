@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PTO Back Office</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" href="../images/favicon.svg">
+  <style>
+    .sec-add { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:18px 0 24px; }
+    .sec-filter { margin-left:auto; }
+    .sec-filter select { padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-family:inherit; font-size:13px; }
+    .pg-card { background:#fff; border:1px solid var(--border); border-radius:12px; padding:15px 16px; margin-bottom:11px;
+               display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    .pg-card h3 { margin:0; font-size:15.5px; color:var(--primary-dark); }
+    .pg-badge { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; padding:2px 9px; border-radius:20px; background:var(--light-bg); color:var(--text-light); }
+    .pg-pill { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; padding:2px 9px; border-radius:20px; }
+    .pg-pill.published { background:var(--success-light); color:#216e3c; }
+    .pg-pill.draft { background:#fde9d0; color:#8a4b16; }
+    .pg-card .spacer { flex:1; }
+    .sec-empty { background:#fff; border:1px dashed var(--border); border-radius:12px; padding:30px; text-align:center; color:var(--text-light); }
+  </style>
+</head>
+<body>
+  <div id="bo-loading">Loading…</div>
+  <div id="bo-shell"></div>
+
+  <main id="bo-main" style="display:none">
+    <div style="margin-bottom:14px"><a class="bo-btn ghost sm" href="index.html">← Back Office Home</a></div>
+    <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo; <span id="crumb"></span></div>
+    <h1 class="bo-h1" id="sec-title"></h1>
+    <p class="bo-lead" id="sec-lead"></p>
+
+    <div class="sec-add">
+      <button class="bo-btn" id="add-btn" style="display:none"></button>
+      <span class="sec-filter">
+        <label style="font-size:12px;font-weight:700;color:var(--text-light)">School:
+          <select id="school-filter"><option value="all">All</option></select>
+        </label>
+      </span>
+    </div>
+
+    <div id="sec-list"></div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-storage-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="admin-core.js"></script>
+  <script>
+    const LEAD = {
+      events:     'Every event that gets its own web page — fun runs, dances, nights out, family events.',
+      clubs:      'Student clubs and their web pages — sign-ups, meeting info, contacts.',
+      programs:   'Ongoing programs — reading nights, enrichment, mentoring, spirit initiatives.',
+      spiritwear: 'Spiritwear stores and order pages.',
+      facilities: 'Building and facilities info — room requests, maps, hours, contacts.',
+      ideas:      'A place to park ideas as draft pages before they are real events.'
+    };
+    let pages = [];
+
+    requireAdmin((me) => {
+      const cat = getParam('cat');
+      const sec = sectionByCat(cat);
+      if (!sec || !LEAD[cat]) { location.href = 'index.html'; return; }
+
+      document.title = 'PTO Back Office ' + sec.label.replace(/&amp;/g, '&');
+      document.getElementById('crumb').innerHTML = sec.label;
+      document.getElementById('sec-title').innerHTML = sec.icon + ' ' + sec.label;
+      document.getElementById('sec-lead').textContent = LEAD[cat];
+
+      if (sec.singular) {
+        const b = document.getElementById('add-btn');
+        b.style.display = '';
+        b.textContent = '＋ Add New ' + sec.singular + ' Web Page';
+        b.onclick = () => newWebPage(cat);
+      }
+
+      const sf = document.getElementById('school-filter');
+      [['pto', 'PTO-wide']].concat(Object.keys(SCHOOLS).filter(s => s !== 'pto').map(s => [s, SCHOOLS[s]]))
+        .forEach(([v, l]) => sf.add(new Option(l, v)));
+      sf.onchange = render;
+
+      load(cat);
+    });
+
+    async function load(cat) {
+      const box = document.getElementById('sec-list');
+      try {
+        const snap = await db.collection('pages').where('category', '==', cat).get();
+        pages = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        render();
+      } catch (e) {
+        box.innerHTML = '<p style="color:var(--error)">Could not load: ' + esc(e.message) + '</p>';
+      }
+    }
+
+    function render() {
+      const filter = document.getElementById('school-filter').value;
+      const box = document.getElementById('sec-list');
+      const list = pages
+        .filter(p => filter === 'all' || (p.school || 'pto') === filter)
+        .sort((a, b) => (b.updatedAt?.seconds || b.createdAt?.seconds || 0) - (a.updatedAt?.seconds || a.createdAt?.seconds || 0));
+      if (!list.length) {
+        box.innerHTML = '<div class="sec-empty">No pages here yet.' +
+          (document.getElementById('add-btn').style.display !== 'none'
+            ? ' Press the button above to make one.' : '') + '</div>';
+        return;
+      }
+      box.innerHTML = '';
+      list.forEach(p => {
+        const school = p.school || 'pto';
+        const live = p.status === 'published' && p.slug;
+        const el = document.createElement('div');
+        el.className = 'pg-card';
+        el.innerHTML = `
+          <h3>${esc(p.title || '(untitled)')}</h3>
+          <span class="pg-badge">${esc(SCHOOLS[school] || school)}</span>
+          <span class="pg-pill ${p.status === 'published' ? 'published' : 'draft'}">${p.status === 'published' ? 'Published' : 'Draft'}</span>
+          <span class="spacer"></span>
+          ${live ? `<a class="bo-btn ghost sm" href="../${pagePath(school, p.slug)}" target="_blank">View ↗</a>` : ''}
+          <a class="bo-btn sm" href="page-editor.html?id=${p.id}">Edit</a>`;
+        box.appendChild(el);
+      });
+    }
+  </script>
+</body>
+</html>

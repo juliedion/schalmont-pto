@@ -201,6 +201,19 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 #bo-toast.show { opacity: 1; transform: translate(-50%, 0); }
 #bo-toast.error { background: var(--error); }
 
+/* ---------- Generic modal (new-page notice, etc.) ---------- */
+.bo-modal-back { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex;
+  align-items: flex-start; justify-content: center; padding: 44px 16px; z-index: 95; overflow-y: auto; }
+.bo-modal { background: #fff; border-radius: 14px; width: 100%; max-width: 460px; padding: 24px; }
+.bo-modal h2 { margin: 0 0 12px; font-size: 19px; color: var(--primary-dark); }
+.bo-modal-lbl { display: block; font-weight: 700; font-size: 12.5px; margin: 12px 0 4px; }
+.bo-modal select, .bo-modal input { width: 100%; padding: 9px 10px; border: 1px solid var(--border);
+  border-radius: 7px; font-family: inherit; font-size: 14px; }
+.bo-modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+.bo-notice { background: #fff8e6; border: 1px solid #e8d492; border-radius: 8px; padding: 12px 14px;
+  font-size: 13px; line-height: 1.5; color: #6b5300; margin-bottom: 6px; }
+.bo-notice a { display: inline-block; margin-top: 6px; font-weight: 700; color: var(--primary-dark); }
+
 /* ---------- Floating "get help" widget (every page) ---------- */
 #bo-help { position: fixed; right: 20px; bottom: 20px; z-index: 90; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
 #bo-help-menu { display: none; flex-direction: column; gap: 8px; }

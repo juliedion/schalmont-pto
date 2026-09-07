@@ -18,7 +18,7 @@
     <p class="bo-lead">
       This is the PTO Back Office &mdash; the private area where you plan events, build web
       pages, share files, and collect sign-ups. Nothing here is visible to the public until
-      <em>you</em> choose to publish it. Pick a school below to get started.
+      <em>you</em> choose to publish it. Pick a section below to get started.
     </p>
 
     <div class="bo-tip">
@@ -27,23 +27,11 @@
       pages you create stay as private drafts until you press <strong>Publish</strong>.
     </div>
 
-    <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)">Your schools</h2>
-    <div class="bo-grid" id="school-cards" style="margin-bottom:34px"></div>
+    <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)">Sections</h2>
+    <div class="bo-grid" id="section-cards" style="margin-bottom:34px"></div>
 
-    <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)">Tools</h2>
+    <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)">More</h2>
     <div class="bo-grid">
-      <a class="bo-card" href="calendar.html">
-        <span class="bo-cardicon">📅</span>
-        <h3>Calendar</h3>
-        <p>Every event, program &amp; fundraiser in month / week / day / list views. Auto
-           flyer &amp; social-media dates. Import from the planning spreadsheet.</p>
-      </a>
-      <a class="bo-card" href="assistant.html">
-        <span class="bo-cardicon">💬</span>
-        <h3>AI Assistant</h3>
-        <p>Ask questions in plain language &mdash; "How do I add a photo?", "Write a
-           reminder email for our fundraiser", "Ideas for a spring event".</p>
-      </a>
       <a class="bo-card" href="help.html">
         <span class="bo-cardicon">📖</span>
         <h3>Help &amp; How-To</h3>
@@ -85,12 +73,10 @@
         document.getElementById('directory-card').style.display = '';
       }
 
-      const wrap = document.getElementById('school-cards');
-      wrap.innerHTML = me.schools.map(s => `
-        <a class="bo-card" href="school.html?s=${s}">
-          <span class="bo-cardicon">🏫</span>
-          <h3>${SCHOOLS[s]}</h3>
-          <p>Pages, files &amp; photos, and planning for ${SCHOOLS[s]}.</p>
+      document.getElementById('section-cards').innerHTML = SECTIONS.map(sec => `
+        <a class="bo-card" href="${sec.href}">
+          <span class="bo-cardicon">${sec.icon}</span>
+          <h3>${sec.label}</h3>
         </a>`).join('');
     });
   </script>
