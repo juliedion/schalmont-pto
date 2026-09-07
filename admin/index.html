@@ -18,7 +18,8 @@
     <p class="bo-lead">
       This is the PTO Back Office &mdash; the private area where you plan events, build web
       pages, share files, and collect sign-ups. Nothing here is visible to the public until
-      <em>you</em> choose to publish it. Start by opening a school, or jump straight to a section.
+      <em>you</em> choose to publish it. <strong>Pick a school below to get started</strong> &mdash;
+      its events, clubs, programs, pages, files, calendar and to-dos all live inside it.
     </p>
 
     <div class="bo-tip">
@@ -27,11 +28,8 @@
       pages you create stay as private drafts until you press <strong>Publish</strong>.
     </div>
 
-    <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)">Your schools</h2>
+    <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)">Choose a school</h2>
     <div class="bo-grid" id="school-cards" style="margin-bottom:34px"></div>
-
-    <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)">Sections</h2>
-    <div class="bo-grid" id="section-cards" style="margin-bottom:34px"></div>
 
     <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)">More</h2>
     <div class="bo-grid">
@@ -88,18 +86,12 @@
         <a class="bo-card" href="school.html?s=${s}">
           <span class="bo-cardicon">🏫</span>
           <h3>${SCHOOLS[s]}</h3>
-          <p>Pages, files &amp; photos, and planning for ${SCHOOLS[s]}.</p>
+          <p>Events, clubs, programs, pages, files &amp; planning for ${SCHOOLS[s]}.</p>
         </a>`).join('') +
-        `<a class="bo-card" href="school.html?s=pto">
+        ((me.isSuper || me.schools.includes('pto')) ? `<a class="bo-card" href="school.html?s=pto">
           <span class="bo-cardicon">🎪</span><h3>PTO-wide</h3>
           <p>Anything that spans every school.</p>
-        </a>`;
-
-      document.getElementById('section-cards').innerHTML = SECTIONS.map(sec => `
-        <a class="bo-card" href="${sec.href}">
-          <span class="bo-cardicon">${sec.icon}</span>
-          <h3>${sec.label}</h3>
-        </a>`).join('');
+        </a>` : '');
     });
   </script>
 </body>

@@ -178,15 +178,28 @@ function renderShell() {
 
   const path = window.location.pathname.split('/').pop();
   const cat = getParam('cat');
+  // The school we're currently working inside, if any (school.html, section.html?s=,
+  // calendar/fundraising/yearbook?s=, page-editor of a single-school page…).
+  const ctxSchool = getParam('s');
+  const inSchool = ctxSchool && SCHOOLS[ctxSchool] && canManage(ctxSchool);
   const link = (href, label, icon, active) =>
     `<a href="${href}" class="bo-navlink${active ? ' active' : ''}">
        <span class="bo-navicon">${icon}</span>${label}</a>`;
 
-  const sectionLinks = SECTIONS.map(s => {
+  // Section links only make sense inside a school — scope each one with ?s=<school>.
+  const sectionLinks = inSchool ? SECTIONS.map(s => {
     const base = s.href.split('?')[0];
+    const scoped = s.href.includes('?cat=')
+      ? s.href + '&s=' + ctxSchool
+      : base + '?s=' + ctxSchool;
     const active = s.href.includes('?cat=') ? (path === 'section.html' && cat === s.cat) : (path === base);
-    return link(s.href, s.label, s.icon, active);
-  }).join('');
+    return link(scoped, s.label, s.icon, active);
+  }).join('') : '';
+
+  const mySchools = (ME.isSuper ? Object.keys(SCHOOLS) : (ME.schools || []));
+  const schoolLinks = mySchools.map(s =>
+    link('school.html?s=' + s, SCHOOLS[s], '🏫', path === 'school.html' && ctxSchool === s)
+  ).join('');
 
   shell.innerHTML = `
     <aside class="bo-sidebar">
@@ -195,11 +208,13 @@ function renderShell() {
       </a>
       <nav class="bo-nav">
         ${link('index.html', 'Home', '🏠', path === 'index.html')}
-        ${sectionLinks}
+        <div class="bo-navgroup-label">Schools</div>
+        ${schoolLinks}
+        ${inSchool ? `<div class="bo-navgroup-label">${esc(SCHOOLS[ctxSchool])} — sections</div>${sectionLinks}` : ''}
         <div class="bo-navgroup-label">More</div>
-        ${link('signups.html', 'Sign-Up Sheets', '🖊️', path === 'signups.html')}
+        ${link(inSchool ? 'signups.html?s=' + ctxSchool : 'signups.html', 'Sign-Up Sheets', '🖊️', path === 'signups.html')}
         ${link('help.html', 'Help &amp; How-To', '📖', path === 'help.html')}
-        ${ME.isSuper ? link('directory.html', 'Parent Directory', '📇', path === 'directory.html') : ''}
+        ${ME.isSuper ? link('directory.html', 'Directory Sign-Ups', '✅', path === 'directory.html') : ''}
         ${ME.isSuper ? link('people.html', 'People &amp; Roles', '👥', path === 'people.html') : ''}
       </nav>
       <div class="bo-sidebar-foot">
@@ -252,13 +267,18 @@ const PLANNING_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1vIPpzz79LgBS
 /* Start a brand-new web page for a section (Events, Clubs, Programs, …).
    Shows the "you'll also need the spreadsheet" notice, collects a school + working
    title, creates the draft, then opens the guided page editor. */
-function newWebPage(cat) {
+function newWebPage(cat, presetSchool) {
   const sec = sectionByCat(cat);
   const singular = (sec && sec.singular) || 'Web';
-  const schools = (ME.schools || []).filter(s => s !== 'pto');
-  const schoolOpts = [['pto', 'PTO-wide / all schools']]
-    .concat(schools.map(s => [s, SCHOOLS[s]]))
-    .map(([v, l]) => `<option value="${v}">${l}</option>`).join('');
+  const opts = manageableSchools();
+  const preset = new Set(
+    presetSchool && opts.includes(presetSchool) ? [presetSchool] : []
+  );
+  const checks = opts.map(s => `
+    <label style="display:flex;gap:7px;align-items:center;font-size:14px;font-weight:600;margin:5px 0">
+      <input type="checkbox" class="nwp-school" value="${s}" ${preset.has(s) ? 'checked' : ''}>
+      ${esc(SCHOOLS[s])}
+    </label>`).join('');
 
   const back = document.createElement('div');
   back.className = 'bo-modal-back';
@@ -273,8 +293,12 @@ function newWebPage(cat) {
         dates, and reminders stay in sync.
         <a href="${PLANNING_SHEET_URL}" target="_blank" rel="noopener">Open the planning spreadsheet ↗</a>
       </div>` : ''}
-      <label class="bo-modal-lbl">Which school is this for?</label>
-      <select id="nwp-school">${schoolOpts}</select>
+      <label class="bo-modal-lbl">Which school(s) is this for? <span style="font-weight:400;color:var(--text-light)">— tick every one it belongs to</span></label>
+      <div style="margin:2px 0 6px">${checks}</div>
+      <p style="font-size:12px;color:var(--text-light);margin:0 0 8px">
+        Tick more than one and the page gets a shared address at
+        <code>schalmontpto.com/pto/&hellip;</code>.
+      </p>
       <label class="bo-modal-lbl">Working title <span style="font-weight:400;color:var(--text-light)">— you can change it later</span></label>
       <input type="text" id="nwp-title" placeholder="e.g. Fall Fun Run 2026">
       <div class="bo-modal-actions">
@@ -288,13 +312,16 @@ function newWebPage(cat) {
   back.querySelector('#nwp-cancel').onclick = close;
   back.querySelector('#nwp-title').focus();
   back.querySelector('#nwp-go').onclick = async () => {
-    const school = back.querySelector('#nwp-school').value;
+    const schools = [...back.querySelectorAll('.nwp-school:checked')].map(c => c.value);
     const title = back.querySelector('#nwp-title').value.trim();
+    if (!schools.length) { toast('Pick at least one school', 'error'); return; }
     if (!title) { toast('Give it a working title', 'error'); return; }
+    if (!canManageAll(schools)) { toast('You can only create pages for your own school(s)', 'error'); return; }
     back.querySelector('#nwp-go').disabled = true;
     try {
       const ref = await db.collection('pages').add({
-        category: cat, school, title, slug: slugify(title),
+        category: cat, schools, school: routingSchool(schools),
+        title, slug: slugify(title),
         status: 'draft', blocks: [],
         createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
@@ -345,6 +372,34 @@ function toast(msg, kind) {
 /* Guard: can the current person manage this school? */
 function canManage(school) {
   return ME && (ME.isSuper || ME.schools.includes(school));
+}
+
+/* A page can belong to more than one school. These helpers keep the rest of the
+   app simple:
+     pageSchools(p)  -> always an array, even for old single-school docs
+     routingSchool() -> the ONE school key used for the public URL / prefix:
+                        a single-school page keeps its school; a page shared by
+                        two or more schools lives under the PTO-wide prefix. */
+function pageSchools(p) {
+  if (!p) return [];
+  if (Array.isArray(p.schools) && p.schools.length) return p.schools;
+  return p.school ? [p.school] : [];
+}
+function routingSchool(schools) {
+  const list = Array.isArray(schools) ? schools.filter(Boolean) : pageSchools(schools);
+  if (list.length === 1) return list[0];
+  return 'pto';
+}
+/* Can the current person manage EVERY school in the list? (super-admins always can) */
+function canManageAll(list) {
+  if (!ME) return false;
+  if (ME.isSuper) return true;
+  return (list || []).length > 0 && (list || []).every(s => ME.schools.includes(s));
+}
+/* The schools the current person is allowed to publish pages for, in nav order. */
+function manageableSchools() {
+  const keys = Object.keys(SCHOOLS);
+  return ME && ME.isSuper ? keys : keys.filter(s => ME && ME.schools.includes(s));
 }
 
 /* ---- date helpers (used by the calendar) ---- */

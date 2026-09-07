@@ -62,27 +62,40 @@
     };
     let pages = [];
 
+    const scopeSchool = getParam('s');   // when set, this section is scoped to one school
+
     requireAdmin((me) => {
       const cat = getParam('cat');
       const sec = sectionByCat(cat);
       if (!sec || !LEAD[cat]) { location.href = 'index.html'; return; }
+      if (scopeSchool && !canManage(scopeSchool)) { location.href = 'index.html'; return; }
 
       document.title = 'PTO Back Office ' + sec.label.replace(/&amp;/g, '&');
-      document.getElementById('crumb').innerHTML = sec.label;
-      document.getElementById('sec-title').innerHTML = sec.icon + ' ' + sec.label;
+      const where = scopeSchool ? ' — ' + (SCHOOLS[scopeSchool] || scopeSchool) : '';
+      document.getElementById('crumb').innerHTML =
+        (scopeSchool ? '<a href="school.html?s=' + scopeSchool + '">' + esc(SCHOOLS[scopeSchool] || scopeSchool) + '</a> &rsaquo; ' : '') + sec.label;
+      document.getElementById('sec-title').innerHTML = sec.icon + ' ' + sec.label + esc(where);
       document.getElementById('sec-lead').textContent = LEAD[cat];
+      if (scopeSchool) {
+        const home = document.querySelector('.bo-btn.ghost.sm[href="index.html"]');
+        if (home) { home.href = 'school.html?s=' + scopeSchool; home.textContent = '← ' + (SCHOOLS[scopeSchool] || scopeSchool) + ' Workspace'; }
+      }
 
       if (sec.singular) {
         const b = document.getElementById('add-btn');
         b.style.display = '';
         b.textContent = '＋ Add New ' + sec.singular + ' Web Page';
-        b.onclick = () => newWebPage(cat);
+        b.onclick = () => newWebPage(cat, scopeSchool || undefined);
       }
 
       const sf = document.getElementById('school-filter');
-      [['pto', 'PTO-wide']].concat(Object.keys(SCHOOLS).filter(s => s !== 'pto').map(s => [s, SCHOOLS[s]]))
-        .forEach(([v, l]) => sf.add(new Option(l, v)));
-      sf.onchange = render;
+      if (scopeSchool) {
+        sf.closest('.sec-filter').style.display = 'none';
+      } else {
+        [['pto', 'PTO-wide']].concat(Object.keys(SCHOOLS).filter(s => s !== 'pto').map(s => [s, SCHOOLS[s]]))
+          .forEach(([v, l]) => sf.add(new Option(l, v)));
+        sf.onchange = render;
+      }
 
       load(cat);
     });
@@ -90,8 +103,21 @@
     async function load(cat) {
       const box = document.getElementById('sec-list');
       try {
-        const snap = await db.collection('pages').where('category', '==', cat).get();
-        pages = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        let docs;
+        if (scopeSchool) {
+          // Constrain the query to this school so Firestore rules can vet every row
+          // (an unconstrained category query would trip over other schools' drafts).
+          const [a, b] = await Promise.all([
+            db.collection('pages').where('school', '==', scopeSchool).get(),
+            db.collection('pages').where('schools', 'array-contains', scopeSchool).get()
+          ]);
+          const seen = new Map();
+          [...a.docs, ...b.docs].forEach(d => seen.set(d.id, d));
+          docs = [...seen.values()].filter(d => (d.data().category || '') === cat);
+        } else {
+          docs = (await db.collection('pages').where('category', '==', cat).get()).docs;
+        }
+        pages = docs.map(d => ({ id: d.id, ...d.data() }));
         render();
       } catch (e) {
         box.innerHTML = '<p style="color:var(--error)">Could not load: ' + esc(e.message) + '</p>';
@@ -99,10 +125,10 @@
     }
 
     function render() {
-      const filter = document.getElementById('school-filter').value;
+      const filter = scopeSchool || document.getElementById('school-filter').value;
       const box = document.getElementById('sec-list');
       const list = pages
-        .filter(p => filter === 'all' || (p.school || 'pto') === filter)
+        .filter(p => filter === 'all' || pageSchools(p).includes(filter))
         .sort((a, b) => (b.updatedAt?.seconds || b.createdAt?.seconds || 0) - (a.updatedAt?.seconds || a.createdAt?.seconds || 0));
       if (!list.length) {
         box.innerHTML = '<div class="sec-empty">No pages here yet.' +
@@ -112,16 +138,18 @@
       }
       box.innerHTML = '';
       list.forEach(p => {
-        const school = p.school || 'pto';
+        const sList = pageSchools(p);
+        const route = routingSchool(sList);
         const live = p.status === 'published' && p.slug;
+        const badge = sList.length ? sList.map(s => esc(SCHOOLS[s] || s)).join(' + ') : 'PTO-wide';
         const el = document.createElement('div');
         el.className = 'pg-card';
         el.innerHTML = `
           <h3>${esc(p.title || '(untitled)')}</h3>
-          <span class="pg-badge">${esc(SCHOOLS[school] || school)}</span>
+          <span class="pg-badge">${badge}</span>
           <span class="pg-pill ${p.status === 'published' ? 'published' : 'draft'}">${p.status === 'published' ? 'Published' : 'Draft'}</span>
           <span class="spacer"></span>
-          ${live ? `<a class="bo-btn ghost sm" href="../${pagePath(school, p.slug)}" target="_blank">View ↗</a>` : ''}
+          ${live ? `<a class="bo-btn ghost sm" href="../${pagePath(route, p.slug)}" target="_blank">View ↗</a>` : ''}
           <a class="bo-btn sm" href="page-editor.html?id=${p.id}">Edit</a>`;
         box.appendChild(el);
       });

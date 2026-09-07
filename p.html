@@ -86,9 +86,15 @@
       if (!slug) { body.innerHTML = notFound(); return; }
       try {
         const snap = await db.collection('pages').where('slug', '==', slug).get();
+        // A page can be shared by several schools; two or more => it lives under /pto/.
+        const routeOf = d => {
+          const list = Array.isArray(d.schools) && d.schools.length ? d.schools
+                     : (d.school ? [d.school] : []);
+          return list.length === 1 ? list[0] : 'pto';
+        };
         const match = snap.docs
           .map(d => d.data())
-          .find(d => (preview || d.status === 'published') && (!wantSchool || d.school === wantSchool));
+          .find(d => (preview || d.status === 'published') && (!wantSchool || routeOf(d) === wantSchool));
         if (!match) { body.innerHTML = notFound(); return; }
         const p = match;
         document.title = p.title + ' — Schalmont PTO';

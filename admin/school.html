@@ -31,10 +31,12 @@
     </div>
     <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo; <span id="crumb-school"></span></div>
     <h1 class="bo-h1" id="school-title"></h1>
-    <p class="bo-lead">Everything for this school in one place &mdash; use the tabs for web
-       <strong>Pages</strong>, <strong>Files &amp; Photos</strong>, <strong>Ideas</strong>, the
-       <strong>To-Do</strong> list, <strong>Fundraising</strong>, the <strong>Calendar</strong>,
-       and <strong>Yearbook Photos</strong>.</p>
+    <p class="bo-lead">Everything for this school in one place. Open a <strong>section</strong> below to
+       build web pages for events, clubs, programs and more &mdash; or use the tabs for this school's
+       <strong>Files &amp; Photos</strong>, <strong>Ideas</strong> and <strong>To-Do</strong> list.</p>
+
+    <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)">Sections</h2>
+    <div class="bo-grid" id="section-cards" style="margin-bottom:30px"></div>
 
     <div class="bo-tabs">
       <button class="bo-tab active" data-tab="pages">📄 Pages</button>
@@ -162,6 +164,16 @@
       document.getElementById('calendar-tab').href = 'calendar.html?s=' + school;
       document.getElementById('fundraising-tab').href = 'fundraising.html?s=' + school;
 
+      // Section cards — every one scoped to this school
+      document.getElementById('section-cards').innerHTML = SECTIONS.map(sec => {
+        const base = sec.href.split('?')[0];
+        const href = sec.href.includes('?cat=') ? sec.href + '&s=' + school : base + '?s=' + school;
+        return `<a class="bo-card" href="${href}">
+          <span class="bo-cardicon">${sec.icon}</span>
+          <h3>${sec.label}</h3>
+        </a>`;
+      }).join('');
+
       // Tabs
       document.querySelectorAll('button.bo-tab').forEach(btn => {
         btn.onclick = () => {
@@ -186,18 +198,27 @@
     async function loadPages() {
       const box = document.getElementById('pages-list');
       try {
-        const snap = await db.collection('pages').where('school', '==', school).get();
-        if (snap.empty) {
+        const [byField, byArray] = await Promise.all([
+          db.collection('pages').where('school', '==', school).get(),
+          db.collection('pages').where('schools', 'array-contains', school).get()
+        ]);
+        const seen = new Map();
+        [...byField.docs, ...byArray.docs].forEach(d => seen.set(d.id, d));
+        const allDocs = [...seen.values()];
+        if (!allDocs.length) {
           box.innerHTML = '<p style="color:var(--text-light)">No pages yet. Press <strong>＋ New page</strong> to make your first one.</p>';
           return;
         }
-        const docs = snap.docs.slice().sort((a, b) =>
+        const docs = allDocs.sort((a, b) =>
           (b.data().updatedAt?.seconds || 0) - (a.data().updatedAt?.seconds || 0));
         box.innerHTML = '';
         docs.forEach(doc => {
           const p = doc.data();
           const live = p.status === 'published';
-          const path = pagePath(school, p.slug);
+          const sList = pageSchools(p);
+          const path = pagePath(routingSchool(sList), p.slug);
+          const shared = sList.length > 1
+            ? ` &nbsp;·&nbsp; shared: ${sList.map(s => esc(SCHOOLS[s] || s)).join(', ')}` : '';
           const row = document.createElement('div');
           row.className = 'bo-row';
           row.innerHTML = `
@@ -205,7 +226,7 @@
               <h4>${esc(p.title || 'Untitled page')}</h4>
               <div class="bo-meta">
                 ${live ? 'Live at <code>/' + esc(path) + '</code>' : 'Draft — not visible to the public'}
-                &nbsp;·&nbsp; edited ${fmtDate(p.updatedAt)}
+                &nbsp;·&nbsp; edited ${fmtDate(p.updatedAt)}${shared}
               </div>
             </div>
             <span class="bo-pill ${live ? 'live' : 'draft'}">${live ? 'Published' : 'Draft'}</span>

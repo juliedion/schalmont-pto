@@ -35,6 +35,20 @@ service cloud.firestore {
     function canManage(school) {
       return isOwner() || (school in adminSchools());
     }
+    // A page may belong to several schools. Old docs only have `school`.
+    function pageSchoolList(d) {
+      return ('schools' in d && d.schools is list && d.schools.size() > 0)
+        ? d.schools
+        : (('school' in d && d.school != null) ? [d.school] : []);
+    }
+    // true only if EVERY school in the list is one the caller manages
+    function canManageAllOf(list) {
+      return isOwner() || (list.size() > 0 && list.hasOnly(adminSchools()));
+    }
+    // true if the caller manages AT LEAST ONE school in the list
+    function canManageAnyOf(list) {
+      return isOwner() || list.hasAny(adminSchools());
+    }
     function isAnyAdmin() {
       return isOwner() || (
         exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
@@ -42,12 +56,20 @@ service cloud.firestore {
       );
     }
 
-    /* ---- Back office: pages ---- */
+    /* ---- Back office: pages (may be shared by several schools) ---- */
     match /pages/{pageId} {
       allow read: if resource.data.status == 'published'
-                  || (signedIn() && canManage(resource.data.school));
-      allow create: if signedIn() && canManage(request.resource.data.school);
-      allow update, delete: if signedIn() && canManage(resource.data.school);
+                  || (signedIn() && canManageAnyOf(pageSchoolList(resource.data)));
+      allow create: if signedIn()
+                  && canManageAllOf(pageSchoolList(request.resource.data));
+      // You may edit a page if you manage at least one of its schools, as long as
+      // you don't add or remove any school you don't manage yourself.
+      allow update: if signedIn()
+                  && canManageAnyOf(pageSchoolList(resource.data))
+                  && (isOwner() ||
+                      pageSchoolList(request.resource.data).toSet().difference(adminSchools().toSet())
+                      == pageSchoolList(resource.data).toSet().difference(adminSchools().toSet()));
+      allow delete: if signedIn() && canManageAllOf(pageSchoolList(resource.data));
     }
 
     /* ---- Back office: uploaded files/photos metadata ---- */
