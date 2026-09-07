@@ -22,8 +22,9 @@ return [
   'provider' => 'gemini',
 
   // ---- Google Gemini (used when provider = 'gemini') ----
-  'gemini_api_key' => 'AQ.Ab8RN6LyShezzL1908FPLutzeaFNCEojMvo4Lpak3woOO9QfNw
-',
+  // Paste your key here ONLY in your private copy named config.php — never in this
+  // example file (this one is on GitHub and any key added here becomes public).
+  'gemini_api_key' => 'REPLACE-WITH-YOUR-GEMINI-KEY',
   // Model. gemini-2.5-flash is fast and cheap; gemini-2.5-pro is smarter.
   // (This 'model' line is also used for Anthropic when provider = 'anthropic'.)
   'model' => 'gemini-2.5-flash',
