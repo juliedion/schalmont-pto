@@ -95,5 +95,6 @@ const adminEmails = [
   "vanesa@schalmontpto.com",
   "kirstyn@schalmontpto.com",
   "nicolle@schalmontpto.com",
+  "ackerley915@gmail.com",      // Cara Ackerley — super admin
   "demo@schalmontpto.com"       // sample/presentation login
 ];

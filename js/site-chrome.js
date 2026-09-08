@@ -27,11 +27,7 @@
             <li><a href="high-school.html">🎓 High School</a></li>
           </ul>
         </li>
-        <li class="has-dropdown"><a href="events.html">Events</a>
-          <ul class="nav-dropdown">
-            <li><a href="staff-appreciation-week.html">🌟 Staff Appreciation Week</a></li>
-          </ul>
-        </li>
+        <li><a href="events.html">Events</a></li>
         <li class="has-dropdown">
           <a href="shop.html">Shop</a>
           <ul class="nav-dropdown">
