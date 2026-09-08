@@ -49,6 +49,7 @@
 
     const params = new URLSearchParams(location.search);
     const isPreview = params.get('preview') === '1';
+    const pageIdParam = params.get('id');       // editor previews link straight to the doc
     let slug = params.get('slug');
     let prefix = params.get('prefix');
     if (!slug) {
@@ -60,15 +61,31 @@
 
     const body = document.getElementById('pg-body');
 
-    if (isPreview) {
-      firebase.auth().onAuthStateChanged(async (user) => {
-        if (!user) { body.innerHTML = '<h1>Preview</h1><p>Please <a href="login.html">sign in</a> as a PTO administrator to preview this page.</p>'; return; }
-        const ok = await canPreview(user);
-        if (!ok) { body.innerHTML = '<h1>Preview</h1><p>Your account can\'t preview this page.</p>'; return; }
-        render(true);
-      });
-    } else {
-      render(false);
+    // Never leave the reader staring at "Loading…" with no explanation.
+    const stuckTimer = setTimeout(() => {
+      if (/Loading/.test(body.textContent)) {
+        body.innerHTML = '<h1>Preview</h1><p>This is taking longer than expected. ' +
+          'Try refreshing, or make sure you are signed in to the back office in this browser.</p>';
+      }
+    }, 12000);
+    const done = () => clearTimeout(stuckTimer);
+
+    try {
+      if (isPreview) {
+        firebase.auth().onAuthStateChanged(async (user) => {
+          done();
+          if (!user) { body.innerHTML = '<h1>Preview</h1><p>Please <a href="login.html">sign in</a> as a PTO administrator, then reopen the preview.</p>'; return; }
+          const ok = await canPreview(user);
+          if (!ok) { body.innerHTML = '<h1>Preview</h1><p>Your account can\'t preview this page.</p>'; return; }
+          render(true);
+        });
+      } else {
+        done();
+        render(false);
+      }
+    } catch (e) {
+      done();
+      body.innerHTML = '<h1>Preview</h1><p>Could not start: ' + escapeHtml(e.message) + '</p>';
     }
 
     async function canPreview(user) {
@@ -83,18 +100,23 @@
     }
 
     async function render(preview) {
-      if (!slug) { body.innerHTML = notFound(); return; }
       try {
-        const snap = await db.collection('pages').where('slug', '==', slug).get();
         // A page can be shared by several schools; two or more => it lives under /pto/.
         const routeOf = d => {
           const list = Array.isArray(d.schools) && d.schools.length ? d.schools
                      : (d.school ? [d.school] : []);
           return list.length === 1 ? list[0] : 'pto';
         };
-        const match = snap.docs
-          .map(d => d.data())
-          .find(d => (preview || d.status === 'published') && (!wantSchool || routeOf(d) === wantSchool));
+        let match = null;
+        if (pageIdParam) {
+          const doc = await db.collection('pages').doc(pageIdParam).get();
+          if (doc.exists && (preview || doc.data().status === 'published')) match = doc.data();
+        } else {
+          if (!slug) { body.innerHTML = notFound(); return; }
+          const snap = await db.collection('pages').where('slug', '==', slug).get();
+          match = snap.docs.map(d => d.data())
+            .find(d => (preview || d.status === 'published') && (!wantSchool || routeOf(d) === wantSchool));
+        }
         if (!match) { body.innerHTML = notFound(); return; }
         const p = match;
         document.title = p.title + ' — Schalmont PTO';
@@ -103,7 +125,9 @@
         document.getElementById('pg-foot').innerHTML =
           `${SCHOOL_LABEL[p.school] || 'Schalmont PTO'} &nbsp;·&nbsp; <a href="index.html">Schalmont PTO home</a>`;
       } catch (e) {
-        body.innerHTML = '<p>Sorry, this page could not be loaded right now.</p>';
+        body.innerHTML = isPreview
+          ? '<h1>Preview</h1><p>Could not load this page: ' + escapeHtml(e.message || String(e)) + '</p>'
+          : '<p>Sorry, this page could not be loaded right now.</p>';
       }
     }
 

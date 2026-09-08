@@ -480,7 +480,7 @@
       btn.textContent = 'Saving…';
       try {
         await save(false);                    // save current work as a draft
-        if (pageId) window.open('../' + pagePath(school, page.slug) + '?preview=1', '_blank');
+        if (pageId) window.open('../p.html?id=' + pageId + '&preview=1', '_blank');
       } finally {
         btn.textContent = '👁 Preview';
       }
