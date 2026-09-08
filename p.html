@@ -8,48 +8,62 @@
   <link rel="stylesheet" href="admin/admin.css">
   <link rel="icon" href="images/favicon.svg">
   <style>
-    body { background: var(--light-bg); margin: 0; }
-    .pg-header { background: var(--primary-dark); padding: 14px 20px; }
-    .pg-header a { display: inline-flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font-weight: 800; }
-    .pg-header img { height: 34px; background:#fff; border-radius:6px; padding:3px; }
-    .pg-wrap { max-width: 760px; margin: 0 auto; padding: 34px 20px 80px; }
-    .pg-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: clamp(20px, 5vw, 44px); }
-    .pg-foot { text-align: center; font-size: 13px; color: var(--text-light); margin-top: 26px; }
-    .pg-foot a { color: var(--primary); }
+    .pg-preview-banner { background:#8a6d1a; color:#fff; text-align:center; font-weight:700;
+      font-size:13px; padding:8px 14px; }
+    .page-hero h1 { margin:0; }
+    .page-hero p { margin:10px 0 0; }
+    #pg-body { max-width:760px; }
   </style>
 </head>
 <body>
+
   <div id="preview-banner" class="pg-preview-banner" hidden>
     👁 PREVIEW — this is a draft. It is not visible to the public until you press Publish.
   </div>
-  <div class="pg-header">
-    <a href="index.html"><img src="images/logo.png" alt=""> Schalmont Central PTO</a>
-  </div>
-  <div class="pg-wrap">
-    <div class="pg-card">
-      <div class="pg-body" id="pg-body">
-        <p style="color:var(--text-light)">Loading…</p>
-      </div>
+
+  <div id="sc-header"></div>
+
+  <div class="homepage-layout">
+    <div id="sc-sidenav"></div>
+    <div class="homepage-main">
+
+      <section class="page-hero" style="background:linear-gradient(135deg,#045c28 0%,#087d40 100%)">
+        <div class="container">
+          <h1 id="hero-title">Loading…</h1>
+          <p id="hero-sub" hidden></p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="pg-body" id="pg-body"><p style="color:var(--text-light)">Loading…</p></div>
+        </div>
+      </section>
+
     </div>
-    <div class="pg-foot" id="pg-foot"></div>
   </div>
+
+  <div id="sc-footer"></div>
 
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js"></script>
+  <script src="js/site-chrome.js"></script>
   <script src="admin/render-blocks.js"></script>
   <script>
+    renderSiteChrome();
+
+    const PREFIX_TO_SCHOOL = { woestina:'woestina', jes:'jefferson', ms:'middle', hs:'high', pto:'pto' };
     const SCHOOL_LABEL = { woestina:'Woestina Pre-K', jefferson:'Jefferson Elementary',
       middle:'Middle School', high:'High School', pto:'Schalmont PTO' };
-    const PREFIX_TO_SCHOOL = { woestina:'woestina', jes:'jefferson', ms:'middle', hs:'high', pto:'pto' };
     const OWNER_EMAIL = 'julie@schalmontpto.com';
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
     const params = new URLSearchParams(location.search);
     const isPreview = params.get('preview') === '1';
-    const pageIdParam = params.get('id');       // editor previews link straight to the doc
+    const pageIdParam = params.get('id');
     let slug = params.get('slug');
     let prefix = params.get('prefix');
     if (!slug) {
@@ -60,33 +74,29 @@
     const wantSchool = prefix ? PREFIX_TO_SCHOOL[prefix] : null;
 
     const body = document.getElementById('pg-body');
+    const hero = document.getElementById('hero-title');
 
-    // Never leave the reader staring at "Loading…" with no explanation.
     const stuckTimer = setTimeout(() => {
       if (/Loading/.test(body.textContent)) {
-        body.innerHTML = '<h1>Preview</h1><p>This is taking longer than expected. ' +
-          'Try refreshing, or make sure you are signed in to the back office in this browser.</p>';
+        hero.textContent = 'Preview';
+        body.innerHTML = '<p>This is taking longer than expected. Try refreshing, or make sure ' +
+          'you are signed in to the back office in this browser.</p>';
       }
     }, 12000);
-    const done = () => clearTimeout(stuckTimer);
+    const clearStuck = () => clearTimeout(stuckTimer);
 
     try {
       if (isPreview) {
         firebase.auth().onAuthStateChanged(async (user) => {
-          done();
-          if (!user) { body.innerHTML = '<h1>Preview</h1><p>Please <a href="login.html">sign in</a> as a PTO administrator, then reopen the preview.</p>'; return; }
-          const ok = await canPreview(user);
-          if (!ok) { body.innerHTML = '<h1>Preview</h1><p>Your account can\'t preview this page.</p>'; return; }
+          clearStuck();
+          if (!user) { fail('Please <a href="login.html">sign in</a> as a PTO administrator, then reopen the preview.'); return; }
+          if (!await canPreview(user)) { fail('Your account can\'t preview this page.'); return; }
           render(true);
         });
-      } else {
-        done();
-        render(false);
-      }
-    } catch (e) {
-      done();
-      body.innerHTML = '<h1>Preview</h1><p>Could not start: ' + escapeHtml(e.message) + '</p>';
-    }
+      } else { clearStuck(); render(false); }
+    } catch (e) { clearStuck(); fail('Could not start: ' + escapeHtml(e.message)); }
+
+    function fail(msgHtml) { hero.textContent = 'Preview'; body.innerHTML = '<p>' + msgHtml + '</p>'; }
 
     async function canPreview(user) {
       if (user.email === OWNER_EMAIL) return true;
@@ -101,39 +111,39 @@
 
     async function render(preview) {
       try {
-        // A page can be shared by several schools; two or more => it lives under /pto/.
         const routeOf = d => {
           const list = Array.isArray(d.schools) && d.schools.length ? d.schools
                      : (d.school ? [d.school] : []);
           return list.length === 1 ? list[0] : 'pto';
         };
-        let match = null;
+        let p = null;
         if (pageIdParam) {
           const doc = await db.collection('pages').doc(pageIdParam).get();
-          if (doc.exists && (preview || doc.data().status === 'published')) match = doc.data();
+          if (doc.exists && (preview || doc.data().status === 'published')) p = doc.data();
         } else {
-          if (!slug) { body.innerHTML = notFound(); return; }
+          if (!slug) { notFound(); return; }
           const snap = await db.collection('pages').where('slug', '==', slug).get();
-          match = snap.docs.map(d => d.data())
-            .find(d => (preview || d.status === 'published') && (!wantSchool || routeOf(d) === wantSchool));
+          p = snap.docs.map(d => d.data())
+            .find(d => (preview || d.status === 'published') && (!wantSchool || routeOf(d) === wantSchool)) || null;
         }
-        if (!match) { body.innerHTML = notFound(); return; }
-        const p = match;
+        if (!p) { notFound(); return; }
+
         document.title = p.title + ' — Schalmont PTO';
+        hero.textContent = p.title || 'Untitled page';
         if (preview && p.status !== 'published') document.getElementById('preview-banner').hidden = false;
-        body.innerHTML = `<h1>${escapeHtml(p.title)}</h1>` + renderPageHeader(p) + renderBlocks(p.blocks);
-        document.getElementById('pg-foot').innerHTML =
-          `${SCHOOL_LABEL[p.school] || 'Schalmont PTO'} &nbsp;·&nbsp; <a href="index.html">Schalmont PTO home</a>`;
+        body.innerHTML = renderPageHeader(p) + renderBlocks(p.blocks);
       } catch (e) {
+        hero.textContent = 'Sorry';
         body.innerHTML = isPreview
-          ? '<h1>Preview</h1><p>Could not load this page: ' + escapeHtml(e.message || String(e)) + '</p>'
-          : '<p>Sorry, this page could not be loaded right now.</p>';
+          ? '<p>Could not load this page: ' + escapeHtml(e.message || String(e)) + '</p>'
+          : '<p>This page could not be loaded right now.</p>';
       }
     }
 
     function notFound() {
-      return '<h1>Page not found</h1><p>This page may have been unpublished or the link is ' +
-        'mistyped. <a href="index.html">Go to the Schalmont PTO home page</a>.</p>';
+      hero.textContent = 'Page not found';
+      body.innerHTML = '<p>This page may have been unpublished, or the link is mistyped. ' +
+        '<a href="index.html">Go to the Schalmont PTO home page</a>.</p>';
     }
     function escapeHtml(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
   </script>

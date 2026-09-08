@@ -7,54 +7,72 @@
   <link rel="stylesheet" href="css/styles.css?v=6">
   <link rel="icon" href="images/favicon.svg">
   <style>
-    .su-wrap { max-width: 720px; margin: 0 auto; padding: 28px 18px 60px; }
-    body.embed .su-wrap { padding: 14px; }
-    body.embed .su-sitehead, body.embed .su-sitefoot { display: none; }
-    .su-sitehead { text-align:center; margin-bottom: 18px; }
-    .su-sitehead img { height: 54px; }
-    .su-intro { color: var(--text); line-height: 1.55; white-space: pre-wrap; margin: 0 0 22px; }
+    .page-hero h1 { margin:0; }
+    .page-hero p { margin:8px 0 0; opacity:.92; }
+    #app { max-width:720px; }
+    .su-intro { color: var(--text); line-height: 1.6; white-space: pre-wrap; margin: 0 0 22px; }
     .su-closed { background:#fdecea; border:1px solid #f5c6c0; color:#8b1a14; padding:14px 16px; border-radius:10px; font-weight:600; margin-bottom:20px; }
-    .su-slot { border:1px solid var(--border); border-radius:12px; padding:15px 16px; margin-bottom:12px; background:#fff; }
-    .su-slot h3 { margin:0 0 3px; font-size:16px; color:var(--primary-dark); }
-    .su-when { font-size:13px; color:var(--text-light); margin-bottom:8px; }
-    .su-spots { font-size:13px; font-weight:700; margin-bottom:8px; }
+    .su-slot { border:1px solid var(--border); border-radius:12px; padding:16px 18px; margin-bottom:14px; background:#fff; box-shadow:var(--shadow); }
+    .su-slot h3 { margin:0 0 3px; font-size:17px; color:var(--primary-dark); }
+    .su-when { font-size:13.5px; color:var(--text-light); margin-bottom:8px; }
+    .su-spots { font-size:13.5px; font-weight:700; margin-bottom:8px; }
     .su-spots.full { color:#8b1a14; }
     .su-spots.ok { color:#2a5c1e; }
     .su-names { font-size:13px; color:var(--text); margin-bottom:10px; }
     .su-names span { display:inline-block; background:var(--light-bg); border:1px solid var(--border); border-radius:20px; padding:2px 10px; margin:2px 3px 0 0; }
-    .su-form { display:none; border-top:1px dashed var(--border); margin-top:10px; padding-top:12px; }
+    .su-form { display:none; border-top:1px dashed var(--border); margin-top:12px; padding-top:14px; }
     .su-form.open { display:block; }
     .su-form label { display:block; font-size:12px; font-weight:700; margin:8px 0 3px; }
     .su-form input { width:100%; padding:9px 10px; border:1px solid var(--border); border-radius:7px; font-family:inherit; font-size:14px; }
     .su-row2 { display:flex; gap:10px; flex-wrap:wrap; }
     .su-row2 > div { flex:1; min-width:140px; }
-    .su-btn { background:var(--primary); color:#fff; border:none; border-radius:8px; padding:10px 18px; font-weight:700; font-size:14px; cursor:pointer; }
-    .su-btn.ghost { background:#fff; color:var(--primary); border:1px solid var(--primary); }
-    .su-btn:disabled { opacity:.5; cursor:not-allowed; }
     .su-msg { margin-top:10px; font-size:13px; font-weight:600; }
     .su-done { color:#2a5c1e; }
     .su-err { color:#8b1a14; }
+    body.embed .site-header, body.embed .homepage-sidenav, body.embed .site-footer { display:none !important; }
+    body.embed .homepage-layout { display:block; }
+    body.embed .homepage-main { padding:0; }
+    body.embed .page-hero { padding:18px 0; }
   </style>
 </head>
 <body>
-  <div class="su-wrap">
-    <div class="su-sitehead"><a href="/"><img src="images/logo-color.png" alt="Schalmont PTO"></a></div>
-    <div id="app"><p style="text-align:center;color:var(--text-light)">Loading…</p></div>
-    <div class="su-sitefoot" style="text-align:center;margin-top:30px;font-size:12px;color:var(--text-light)">
-      Powered by Schalmont Central PTO &middot; <a href="/">schalmontpto.com</a>
+
+  <div id="sc-header"></div>
+  <div class="homepage-layout">
+    <div id="sc-sidenav"></div>
+    <div class="homepage-main">
+
+      <section class="page-hero" style="background:linear-gradient(135deg,#045c28 0%,#087d40 100%)">
+        <div class="container">
+          <h1 id="su-title">Sign Up</h1>
+          <p id="su-contact" hidden></p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div id="app"><p style="color:var(--text-light)">Loading…</p></div>
+        </div>
+      </section>
+
     </div>
   </div>
+  <div id="sc-footer"></div>
 
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js"></script>
+  <script src="js/site-chrome.js"></script>
   <script>
     var params = new URLSearchParams(location.search);
     var ID = params.get('id');
     if (params.get('embed') === '1') document.body.classList.add('embed');
+    renderSiteChrome();
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
     var app = document.getElementById('app');
+    var titleEl = document.getElementById('su-title');
+    var contactEl = document.getElementById('su-contact');
 
     function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
     function prettyDate(ymd) {
@@ -92,12 +110,15 @@
         (byName[e.slotId] = byName[e.slotId] || []).push({ name: e.name, count: e.count || 1 });
       });
       var closed = sheet.status === 'closed';
-      var html = '<h1 style="color:var(--primary-dark);margin:0 0 6px">' + esc(sheet.title || 'Sign Up') + '</h1>';
+      document.title = (sheet.title || 'Sign Up') + ' — Schalmont PTO';
+      titleEl.textContent = sheet.title || 'Sign Up';
       if (sheet.contactName || sheet.contactEmail) {
-        html += '<p style="font-size:13px;color:var(--text-light);margin:0 0 14px">Questions? ' +
-          esc(sheet.contactName || '') +
-          (sheet.contactEmail ? ' &middot; <a href="mailto:' + esc(sheet.contactEmail) + '">' + esc(sheet.contactEmail) + '</a>' : '') + '</p>';
+        contactEl.hidden = false;
+        contactEl.innerHTML = 'Questions? ' + esc(sheet.contactName || '') +
+          (sheet.contactEmail ? ' &middot; <a href="mailto:' + esc(sheet.contactEmail) + '" style="color:#fff;text-decoration:underline">' + esc(sheet.contactEmail) + '</a>' : '');
       }
+
+      var html = '';
       if (sheet.intro) html += '<p class="su-intro">' + esc(sheet.intro) + '</p>';
       if (closed) html += '<div class="su-closed">This sign-up sheet is closed.</div>';
       if (!slotDocs.length) html += '<p style="color:var(--text-light)">No slots have been added yet.</p>';
@@ -110,14 +131,14 @@
         var names = (byName[d.id] || []).map(function (n) {
           return '<span>' + esc(n.name) + (n.count > 1 ? ' (' + n.count + ')' : '') + '</span>';
         }).join('');
-        html += '<div class="su-slot" data-slot="' + d.id + '" data-cap="' + cap + '" data-left="' + (left == null ? '' : left) + '">';
+        html += '<div class="su-slot" data-slot="' + d.id + '">';
         html += '<h3>' + esc(s.label || 'Slot') + '</h3>';
         if (when) html += '<div class="su-when">' + esc(when) + '</div>';
         html += '<div class="su-spots ' + (full ? 'full' : 'ok') + '">' +
           (cap ? (full ? 'Full' : left + ' of ' + cap + ' spot' + (cap === 1 ? '' : 's') + ' left') : (taken ? taken + ' signed up' : 'Open — sign up below')) + '</div>';
         if (names) html += '<div class="su-names">' + names + '</div>';
         if (!closed && !full) {
-          html += '<button class="su-btn ghost su-open">Sign up</button>';
+          html += '<button class="btn btn-outline su-open" style="padding:7px 16px;font-size:13px">Sign up</button>';
           html += '<form class="su-form">' +
             '<label>Your name</label><input name="name" required maxlength="80" placeholder="First and last name">' +
             '<div class="su-row2">' +
@@ -126,9 +147,9 @@
             '</div>' +
             '<div class="su-row2">' +
               '<div><label>Phone <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="phone"></div>' +
-              '<div><label>Note to organiser <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="comment" maxlength="200"></div>' +
+              '<div><label>Note to organizer <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="comment" maxlength="200"></div>' +
             '</div>' +
-            '<div style="margin-top:12px"><button type="submit" class="su-btn">Sign me up</button></div>' +
+            '<div style="margin-top:12px"><button type="submit" class="btn btn-primary" style="color:#000">Sign me up</button></div>' +
             '<div class="su-msg"></div>' +
           '</form>';
         }
@@ -140,10 +161,7 @@
         b.onclick = function () { b.nextElementSibling.classList.toggle('open'); };
       });
       app.querySelectorAll('.su-form').forEach(function (form) {
-        form.onsubmit = function (ev) {
-          ev.preventDefault();
-          submit(form);
-        };
+        form.onsubmit = function (ev) { ev.preventDefault(); submit(form); };
       });
     }
 
