@@ -81,6 +81,14 @@
       background: var(--light-bg);
     }
     .login-footer a { color: var(--primary); font-weight: 600; }
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 60px; }
+    .pw-toggle {
+      position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--primary); font-family: inherit;
+      font-size: 12px; font-weight: 700; cursor: pointer; padding: 6px 8px;
+    }
+    .pw-toggle:hover { text-decoration: underline; }
     @media (max-width: 480px) {
       .login-body { padding: 20px; }
       .login-header { padding: 24px 20px 20px; }
@@ -130,7 +138,10 @@
             </div>
             <div class="form-group">
               <label for="login-password">Password</label>
-              <input type="password" id="login-password" name="password" required placeholder="••••••••" autocomplete="current-password">
+              <div class="pw-wrap">
+                <input type="password" id="login-password" name="password" required placeholder="••••••••" autocomplete="current-password">
+                <button type="button" class="pw-toggle" data-target="login-password" aria-label="Show password">Show</button>
+              </div>
             </div>
             <div style="text-align:right;margin-top:-10px;margin-bottom:18px">
               <a href="#" id="forgot-link" style="font-size:13px;color:var(--text-light)">Forgot password?</a>
@@ -162,11 +173,17 @@
             </div>
             <div class="form-group">
               <label for="su-password">Password</label>
-              <input type="password" id="su-password" name="password" required placeholder="At least 6 characters" autocomplete="new-password">
+              <div class="pw-wrap">
+                <input type="password" id="su-password" name="password" required placeholder="At least 6 characters" autocomplete="new-password">
+                <button type="button" class="pw-toggle" data-target="su-password" aria-label="Show password">Show</button>
+              </div>
             </div>
             <div class="form-group">
               <label for="su-confirm">Confirm Password</label>
-              <input type="password" id="su-confirm" name="confirm" required placeholder="Repeat your password" autocomplete="new-password">
+              <div class="pw-wrap">
+                <input type="password" id="su-confirm" name="confirm" required placeholder="Repeat your password" autocomplete="new-password">
+                <button type="button" class="pw-toggle" data-target="su-confirm" aria-label="Show password">Show</button>
+              </div>
             </div>
             <div class="form-group">
               <label class="form-check">
@@ -197,6 +214,18 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js"></script>
-  <script src="js/auth.js"></script>
+  <script src="js/auth.js?v=2"></script>
+  <script>
+    // Show / hide password toggles
+    document.querySelectorAll('.pw-toggle').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var inp = document.getElementById(btn.dataset.target);
+        var reveal = inp.type === 'password';
+        inp.type = reveal ? 'text' : 'password';
+        btn.textContent = reveal ? 'Hide' : 'Show';
+        btn.setAttribute('aria-label', reveal ? 'Hide password' : 'Show password');
+      });
+    });
+  </script>
 </body>
 </html>
