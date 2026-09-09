@@ -83,9 +83,22 @@ async function resetPassword(email) {
 function initLoginPage() {
   if (!document.getElementById('login-form')) return;
 
-  // If already signed in AND email verified (or admin), redirect away from login page
-  auth.onAuthStateChanged(user => {
-    if (user && (user.emailVerified || (typeof adminEmails !== 'undefined' && adminEmails.includes(user.email)))) {
+  // A back-office admin created by an owner on the People & Roles page may not have
+  // verified their email yet — but an owner explicitly approved them, so let them in.
+  async function canEnter(user) {
+    if (!user) return false;
+    if (user.emailVerified) return true;
+    if (typeof adminEmails !== 'undefined' && adminEmails.includes(user.email)) return true;
+    try {
+      const snap = await firebase.firestore().collection('users').doc(user.uid).get();
+      const d = snap.exists ? snap.data() : {};
+      return d.role === 'admin' || d.role === 'superadmin';
+    } catch (_) { return false; }
+  }
+
+  // If already signed in and allowed, redirect away from the login page
+  auth.onAuthStateChanged(async user => {
+    if (await canEnter(user)) {
       const params  = new URLSearchParams(window.location.search);
       const next    = params.get('next') || 'directory.html';
       window.location.href = next;
@@ -133,14 +146,13 @@ function initLoginPage() {
     setLoading(loginForm, true);
     try {
       const user = await signIn(fd.get('email'), fd.get('password'));
-      const isAdmin = typeof adminEmails !== 'undefined' && adminEmails.includes(user.email);
-      if (!user.emailVerified && !isAdmin) {
+      if (!(await canEnter(user))) {
         await auth.signOut();
         alertEl.innerHTML = `<div class="alert alert-error"><span>✕</span><span>Please verify your email first. Check your inbox for the verification link sent when you registered.</span></div>`;
         setLoading(loginForm, false);
         return;
       }
-      // Verified — onAuthStateChanged will handle redirect
+      // Allowed — onAuthStateChanged will handle the redirect
     } catch (err) {
       alertEl.innerHTML = `<div class="alert alert-error"><span>✕</span><span>${friendlyError(err.code)}</span></div>`;
       setLoading(loginForm, false);
