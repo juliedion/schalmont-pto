@@ -167,6 +167,13 @@
         a.innerHTML = sec.icon + ' ' + sec.label;
         tabBar.appendChild(a);
       });
+      // Sign-Up Sheets live here now (not on the back-office home / sidebar)
+      const su = document.createElement('a');
+      su.className = 'bo-tab';
+      su.style.textDecoration = 'none';
+      su.href = 'signups.html?s=' + school;
+      su.innerHTML = '🖊️ Sign-Up Sheets';
+      tabBar.appendChild(su);
 
       // Tabs
       document.querySelectorAll('button.bo-tab').forEach(btn => {

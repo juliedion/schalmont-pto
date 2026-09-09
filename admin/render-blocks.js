@@ -48,6 +48,38 @@
       }
       case 'divider':
         return '<hr>';
+      case 'columns': {
+        // A responsive row of 2 or 3 simple cells. Stacks to one column on phones.
+        const n = (b.count === 3) ? 3 : 2;
+        const cells = (b.cells || []).slice(0, n);
+        while (cells.length < n) cells.push({});
+        const inner = cells.map(c => {
+          let h = '';
+          if (c.imageUrl) h += `<img src="${e(c.imageUrl)}" alt="${e(c.imageAlt || '')}" style="max-width:100%;border-radius:8px">`;
+          if (c.heading)  h += `<h3>${e(c.heading)}</h3>`;
+          if (c.body)     h += e(c.body).split(/\n{2,}/).map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+          if (c.buttonLabel) {
+            const href = /^https?:|^mailto:|^\//.test(c.buttonHref || '') ? c.buttonHref : '#';
+            h += `<p><a class="pg-btn" href="${e(href)}" ${/^https?:/.test(href) ? 'target="_blank" rel="noopener"' : ''}>${e(c.buttonLabel)}</a></p>`;
+          }
+          return `<div class="pg-col">${h}</div>`;
+        }).join('');
+        return `<div class="pg-cols pg-cols-${n}">${inner}</div>`;
+      }
+      case 'signup': {
+        if (!b.sheetId) return '';
+        const href = '/signup.html?id=' + encodeURIComponent(b.sheetId);
+        return `<div class="pg-signup">
+                  <div class="pg-signup-body">
+                    <div class="pg-signup-icon">🖊️</div>
+                    <div>
+                      <strong>${e(b.sheetTitle || 'Sign-Up Sheet')}</strong>
+                      ${b.note ? `<p style="margin:4px 0 0">${e(b.note)}</p>` : ''}
+                    </div>
+                  </div>
+                  <a class="pg-btn" href="${e(href)}" target="_blank" rel="noopener">Sign up &rarr;</a>
+                </div>`;
+      }
       case 'embed': {
         const src = safeEmbedSrc(b.src || '');
         return src

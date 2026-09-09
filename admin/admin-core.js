@@ -212,7 +212,6 @@ function renderShell() {
         ${schoolLinks}
         ${inSchool ? `<div class="bo-navgroup-label">${esc(SCHOOLS[ctxSchool])} — sections</div>${sectionLinks}` : ''}
         <div class="bo-navgroup-label">More</div>
-        ${link(inSchool ? 'signups.html?s=' + ctxSchool : 'signups.html', 'Sign-Up Sheets', '🖊️', path === 'signups.html')}
         ${link('help.html', 'Help &amp; How-To', '📖', path === 'help.html')}
         ${ME.isSuper ? link('directory.html', 'Directory Sign-Ups', '✅', path === 'directory.html') : ''}
         ${ME.isSuper ? link('people.html', 'People &amp; Roles', '👥', path === 'people.html') : ''}
@@ -299,9 +298,12 @@ function newWebPage(cat, presetSchool) {
       </p>
       <label class="bo-modal-lbl">Working title <span style="font-weight:400;color:var(--text-light)">— you can change it later</span></label>
       <input type="text" id="nwp-title" placeholder="e.g. Fall Fun Run 2026">
+      <p id="nwp-hint" style="font-size:12px;color:var(--text-light);margin:8px 0 0">
+        Tick at least one school and enter a title to continue.
+      </p>
       <div class="bo-modal-actions">
         <button class="bo-btn ghost sm" id="nwp-cancel">Cancel</button>
-        <button class="bo-btn sm" id="nwp-go">Create &amp; start building →</button>
+        <button class="bo-btn sm" id="nwp-go" disabled>Create &amp; start building →</button>
       </div>
     </div>`;
   document.body.appendChild(back);
@@ -309,7 +311,21 @@ function newWebPage(cat, presetSchool) {
   back.addEventListener('click', e => { if (e.target === back) close(); });
   back.querySelector('#nwp-cancel').onclick = close;
   back.querySelector('#nwp-title').focus();
-  back.querySelector('#nwp-go').onclick = async () => {
+
+  // Gate the "Create" button on: at least one school ticked AND a title entered.
+  const goBtn = back.querySelector('#nwp-go');
+  const hint  = back.querySelector('#nwp-hint');
+  const revalidate = () => {
+    const hasSchool = back.querySelectorAll('.nwp-school:checked').length > 0;
+    const hasTitle  = back.querySelector('#nwp-title').value.trim().length > 0;
+    goBtn.disabled = !(hasSchool && hasTitle);
+    hint.style.display = goBtn.disabled ? '' : 'none';
+  };
+  back.querySelectorAll('.nwp-school').forEach(c => c.addEventListener('change', revalidate));
+  back.querySelector('#nwp-title').addEventListener('input', revalidate);
+  revalidate();
+
+  goBtn.onclick = async () => {
     const schools = [...back.querySelectorAll('.nwp-school:checked')].map(c => c.value);
     const title = back.querySelector('#nwp-title').value.trim();
     if (!schools.length) { toast('Pick at least one school', 'error'); return; }

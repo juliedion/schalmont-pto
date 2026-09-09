@@ -67,7 +67,7 @@
     </div>
 
     <details style="margin:8px 0 4px;max-width:none">
-      <summary style="cursor:pointer;font-weight:700;font-size:13.5px;color:var(--text)">Event details &amp; flyer (optional)</summary>
+      <summary style="cursor:pointer;font-weight:700;font-size:13.5px;color:var(--text)">Event details &amp; main image / flyer (optional)</summary>
       <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:10px">
         <div class="bo-tip" style="margin-bottom:14px">
           Fill these in if this page is for an event. The date, time and location show in a
@@ -82,10 +82,10 @@
         <div class="bo-blockfield"><label>Location <span style="font-weight:400;color:var(--text-light)">— name and/or address; becomes a Google Maps link</span></label>
           <input type="text" id="event-location" placeholder="Jefferson Elementary gym, 2 Sabre Lane, Schenectady NY"></div>
         <div class="bo-blockfield" style="margin-top:10px">
-          <label>Flyer image <span style="font-weight:400;color:var(--text-light)">— JPG or PNG, up to 12 MB</span></label>
+          <label>Flyer or main image <span style="font-weight:400;color:var(--text-light)">— shows big at the top of the page. JPG or PNG, up to 12 MB</span></label>
           <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-            <button type="button" class="bo-btn ghost sm" id="flyer-pick">Upload flyer</button>
-            <button type="button" class="bo-btn ghost sm" id="flyer-remove" style="display:none">Remove flyer</button>
+            <button type="button" class="bo-btn ghost sm" id="flyer-pick">Upload flyer or image</button>
+            <button type="button" class="bo-btn ghost sm" id="flyer-remove" style="display:none">Remove</button>
             <span id="flyer-status" style="font-size:12px;color:var(--text-light)"></span>
             <input type="file" id="flyer-input" accept="image/png,image/jpeg,image/webp" hidden>
           </div>
@@ -104,6 +104,8 @@
           <button data-add="list">＋ Bullet list</button>
           <button data-add="image">＋ Photo</button>
           <button data-add="button">＋ Button</button>
+          <button data-add="columns">＋ Columns</button>
+          <button data-add="signup">＋ Sign-up sheet</button>
           <button data-add="divider">＋ Divider line</button>
           <button data-add="embed">＋ Embed (Google Form, video&hellip;)</button>
         </div>
@@ -137,6 +139,7 @@
     let school = getParam('s');          // routing school (derived); kept in sync
     let page = { title:'', slug:'', schools:[], status:'draft', blocks:[] };
     let images = [];          // uploaded photos for this school, for the Photo block
+    let signupSheets = [];    // available sign-up sheets, for the Sign-up sheet block
     let slugTouched = false;
     let lockedSchools = [];   // schools already on this page that I can't manage (super: none)
 
@@ -175,7 +178,17 @@
       refreshPreview();
       reflectStatus();
       loadImages();
+      loadSignupSheets();
     });
+
+    async function loadSignupSheets() {
+      try {
+        const snap = await db.collection('signups').get();
+        signupSheets = snap.docs.map(d => ({ id: d.id, title: d.data().title || '(untitled)' }))
+          .sort((a, b) => a.title.localeCompare(b.title));
+      } catch (_) { signupSheets = []; }
+      renderBlockEditors();
+    }
 
     /* ---- which school(s) this page is for ---- */
     function renderSchoolPicker() {
@@ -283,6 +296,8 @@
           const starter = { heading:{type:'heading',level:2,text:''}, paragraph:{type:'paragraph',text:''},
             list:{type:'list',items:['']}, image:{type:'image',url:'',alt:'',caption:''},
             button:{type:'button',label:'',href:'',style:'solid'}, divider:{type:'divider'},
+            columns:{type:'columns',count:2,cells:[{},{}]},
+            signup:{type:'signup',sheetId:'',sheetTitle:'',note:''},
             embed:{type:'embed',src:''} }[t];
           page.blocks.push(starter);
           renderBlockEditors(); refreshPreview();
@@ -347,7 +362,8 @@
 
     function labelFor(t) {
       return { heading:'Heading', paragraph:'Paragraph', list:'Bullet list', image:'Photo',
-               button:'Button', divider:'Divider line', embed:'Embed' }[t] || t;
+               button:'Button', columns:'Columns', signup:'Sign-up sheet',
+               divider:'Divider line', embed:'Embed' }[t] || t;
     }
 
     function field(labelText, hint, control) {
@@ -440,6 +456,65 @@
         st.value = b.style || 'solid';
         st.onchange = () => { b.style = st.value; upd(); };
         out.push(field('Button text','', lab), field('Where it goes','full web address', href), field('Style','', st));
+      }
+      else if (b.type === 'columns') {
+        if (!Array.isArray(b.cells)) b.cells = [{}, {}];
+        const cnt = document.createElement('select');
+        cnt.innerHTML = '<option value="2">2 columns</option><option value="3">3 columns</option>';
+        cnt.value = String(b.count === 3 ? 3 : 2);
+        cnt.onchange = () => {
+          b.count = +cnt.value;
+          while (b.cells.length < b.count) b.cells.push({});
+          b.cells = b.cells.slice(0, b.count);
+          renderBlockEditors(); upd();
+        };
+        out.push(field('How many columns', 'they stack into one column on phones automatically', cnt));
+
+        (b.cells || []).slice(0, b.count || 2).forEach((c, ci) => {
+          const wrap = document.createElement('div');
+          wrap.style.cssText = 'border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:8px;background:var(--light-bg)';
+          const hd = document.createElement('div');
+          hd.style.cssText = 'font-weight:700;font-size:12px;color:var(--text-light);margin-bottom:6px';
+          hd.textContent = 'Column ' + (ci + 1);
+          wrap.appendChild(hd);
+          const mk = (ph, key, multiline) => {
+            const el = document.createElement(multiline ? 'textarea' : 'input');
+            if (!multiline) el.type = 'text';
+            el.placeholder = ph; el.value = c[key] || '';
+            el.oninput = () => { c[key] = el.value; upd(); };
+            const f = document.createElement('div'); f.className = 'bo-blockfield';
+            f.appendChild(el); return f;
+          };
+          wrap.appendChild(mk('Image link (optional)', 'imageUrl'));
+          wrap.appendChild(mk('Heading (optional)', 'heading'));
+          wrap.appendChild(mk('Text', 'body', true));
+          wrap.appendChild(mk('Button label (optional)', 'buttonLabel'));
+          wrap.appendChild(mk('Button link (https://… or /jes/page)', 'buttonHref'));
+          out.push(wrap);
+        });
+      }
+      else if (b.type === 'signup') {
+        const sel = document.createElement('select');
+        sel.innerHTML = '<option value="">— choose a sign-up sheet —</option>' +
+          (signupSheets || []).map(s => `<option value="${esc(s.id)}">${esc(s.title || '(untitled)')}</option>`).join('');
+        sel.value = b.sheetId || '';
+        sel.onchange = () => {
+          b.sheetId = sel.value;
+          const hit = (signupSheets || []).find(s => s.id === sel.value);
+          b.sheetTitle = hit ? hit.title : '';
+          upd();
+        };
+        const note = document.createElement('input');
+        note.type = 'text'; note.value = b.note || ''; note.placeholder = 'Optional line under the title, e.g. "2 volunteers per slot"';
+        note.oninput = () => { b.note = note.value; upd(); };
+        const help = document.createElement('div');
+        help.style.cssText = 'font-size:12px;color:var(--text-light);margin-top:4px';
+        help.innerHTML = (signupSheets && signupSheets.length)
+          ? 'Visitors click through to the sheet to pick a slot.'
+          : 'No sign-up sheets yet — make one in <a href="signups.html" target="_blank">Sign-Up Sheets</a> first, then come back.';
+        out.push(field('Which sheet', '', sel));
+        out.push(field('Note', 'optional', note));
+        const d = document.createElement('div'); d.className = 'bo-blockfield'; d.appendChild(help); out.push(d);
       }
       else if (b.type === 'divider') {
         const p = document.createElement('div');
