@@ -12,6 +12,12 @@
   <meta name="description" content="Order yearbooks for Jefferson Elementary, Schalmont Middle School, and Schalmont High School.">
   <link rel="stylesheet" href="css/styles.css?v=5">
   <link rel="icon" href="images/favicon.svg">
+  <style>
+    /* Yearbook hub: all four school cards on one row on desktop */
+    .yb-hub-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; align-items:stretch; }
+    @media (max-width:1024px) { .yb-hub-grid { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:560px)  { .yb-hub-grid { grid-template-columns:1fr; } }
+  </style>
 </head>
 <body>
 
@@ -198,7 +204,7 @@
 
   <section class="section">
     <div class="container">
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px">
+      <div class="yb-hub-grid">
 
         <!-- Woestina Pre-K -->
         <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column">
