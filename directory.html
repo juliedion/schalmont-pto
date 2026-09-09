@@ -419,6 +419,7 @@
     <div class="user-bar">
       <div class="container">
         <span class="user-bar-email">Signed in as <strong class="auth-user-email"></strong></span>
+        <a href="/admin/" id="dir-admin-btn" class="btn btn-sm" style="display:none;padding:5px 14px;font-size:13px;background:var(--secondary);color:var(--primary-dark);border:1px solid var(--secondary);font-weight:700;text-decoration:none">🔧 PTO Back Office →</a>
         <button onclick="signOut()" class="btn btn-sm" style="padding:5px 14px;font-size:13px;background:rgba(255,255,255,0.12);color:#fff;border:1px solid rgba(255,255,255,0.25)">Sign Out</button>
       </div>
     </div>
@@ -800,6 +801,17 @@
       document.querySelectorAll('.auth-user-email').forEach(function(el) {
         el.textContent = user.email;
       });
+
+      // Show a shortcut to the back office for PTO admins
+      try {
+        var backOffice = isAdmin;
+        if (!backOffice) {
+          var udoc = await firebase.firestore().collection('users').doc(user.uid).get();
+          var role = udoc.exists ? udoc.data().role : '';
+          backOffice = role === 'admin' || role === 'superadmin';
+        }
+        if (backOffice) document.getElementById('dir-admin-btn').style.display = '';
+      } catch (e) { /* leave the button hidden */ }
     });
 
     function switchGateTab(tab, btn) {
