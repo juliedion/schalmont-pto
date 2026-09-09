@@ -23,9 +23,10 @@
       <strong>Try asking:</strong> "How do I add a photo to a page?" &nbsp;·&nbsp;
       "Write a friendly reminder email for the Jefferson Fun Run on May 3" &nbsp;·&nbsp;
       "Give me 5 fall fundraiser ideas for an elementary school" &nbsp;·&nbsp;
+      "Build me a page for Trunk or Treat" &nbsp;·&nbsp;
       "Turn these notes into a short Facebook post: …"<br>
-      <span style="font-size:12px">The assistant can't see private student data and doesn't make
-      changes for you &mdash; it gives you words and steps, you do the clicking.</span>
+      <span style="font-size:12px">The assistant can't see private student data. If you ask it to
+      build a page, it drafts one for you to review &mdash; nothing goes live until <em>you</em> press Publish.</span>
     </div>
 
     <div class="bo-chat">
@@ -67,6 +68,85 @@
       return el;
     }
 
+    const BLOCK_TYPES = ['heading', 'paragraph', 'list', 'button', 'columns', 'divider'];
+    const CATS = ['events', 'clubs', 'programs', 'spiritwear', 'facilities', 'ideas'];
+
+    /* Pull a ```pto-page {json}``` block out of an AI reply. Returns {text, draft} */
+    function extractDraft(reply) {
+      const m = reply.match(/```pto-page\s*([\s\S]*?)```/i);
+      if (!m) return { text: reply, draft: null };
+      let draft = null;
+      try { draft = JSON.parse(m[1].trim()); } catch (_) {}
+      return { text: reply.replace(m[0], '').trim(), draft };
+    }
+
+    /* Keep only fields/blocks we understand, and only schools this admin manages. */
+    function sanitizeDraft(d) {
+      if (!d || typeof d !== 'object') return null;
+      const mine = manageableSchools();
+      let schools = Array.isArray(d.schools) ? d.schools.filter(s => mine.includes(s)) : [];
+      if (!schools.length) schools = mine.includes('pto') ? ['pto'] : mine.slice(0, 1);
+      if (!schools.length) return null;
+      const blocks = (Array.isArray(d.blocks) ? d.blocks : []).filter(b => b && BLOCK_TYPES.includes(b.type)).map(b => {
+        if (b.type === 'heading')   return { type: 'heading', level: [1,2,3].includes(+b.level) ? +b.level : 2, text: String(b.text || '') };
+        if (b.type === 'paragraph') return { type: 'paragraph', text: String(b.text || '') };
+        if (b.type === 'list')      return { type: 'list', items: (Array.isArray(b.items) ? b.items : []).map(String) };
+        if (b.type === 'button')    return { type: 'button', label: String(b.label || ''), href: String(b.href || ''), style: b.style === 'outline' ? 'outline' : 'solid' };
+        if (b.type === 'columns') {
+          const count = b.count === 3 ? 3 : 2;
+          const cells = (Array.isArray(b.cells) ? b.cells : []).slice(0, count).map(c => ({
+            heading: String(c.heading || ''), body: String(c.body || ''),
+            buttonLabel: String(c.buttonLabel || ''), buttonHref: String(c.buttonHref || '')
+          }));
+          while (cells.length < count) cells.push({});
+          return { type: 'columns', count, cells };
+        }
+        return { type: 'divider' };
+      });
+      return {
+        title: String(d.title || '').trim() || 'Untitled draft',
+        category: CATS.includes(d.category) ? d.category : 'events',
+        schools,
+        eventDate: /^\d{4}-\d{2}-\d{2}$/.test(d.eventDate || '') ? d.eventDate : '',
+        eventTime: /^\d{2}:\d{2}$/.test(d.eventTime || '') ? d.eventTime : '',
+        eventLocation: String(d.eventLocation || '').trim(),
+        blocks: blocks.length ? blocks : [{ type: 'heading', level: 1, text: String(d.title || 'New page') }]
+      };
+    }
+
+    function routeSchool(list) { return (list && list.length === 1) ? list[0] : 'pto'; }
+
+    /* Add a "Create this as a draft" card under an AI message. */
+    function addDraftOffer(afterEl, draft) {
+      const card = document.createElement('div');
+      card.className = 'bo-msg ai';
+      card.style.cssText = 'background:#eef6ec;border:1px solid #cfe6c8';
+      const schoolNames = draft.schools.map(s => SCHOOLS[s] || s).join(', ');
+      card.innerHTML =
+        '<div style="font-weight:700;margin-bottom:4px">📄 Draft page ready</div>' +
+        '<div style="font-size:13px;color:var(--text-light);margin-bottom:10px">' +
+        '<strong>' + esc(draft.title) + '</strong> — ' + esc(schoolNames) + ' · ' + draft.blocks.length + ' blocks</div>' +
+        '<button class="bo-btn sm" id="mk-draft">Create this as a draft →</button>';
+      document.getElementById('log').appendChild(card);
+      card.scrollIntoView({ block: 'end' });
+      card.querySelector('#mk-draft').onclick = async (ev) => {
+        ev.target.disabled = true; ev.target.textContent = 'Creating…';
+        try {
+          const ref = await db.collection('pages').add({
+            category: draft.category, schools: draft.schools, school: routeSchool(draft.schools),
+            title: draft.title, slug: slugify(draft.title), status: 'draft', blocks: draft.blocks,
+            eventDate: draft.eventDate, eventTime: draft.eventTime, eventLocation: draft.eventLocation,
+            createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            aiGenerated: true
+          });
+          location.href = 'page-editor.html?id=' + ref.id + '&guide=1';
+        } catch (e) {
+          ev.target.disabled = false; ev.target.textContent = 'Create this as a draft →';
+          toast('Could not create the draft: ' + e.message, 'error');
+        }
+      };
+    }
+
     async function send(e) {
       e.preventDefault();
       const input = document.getElementById('chat-input');
@@ -88,8 +168,12 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Request failed');
-        thinking.textContent = data.reply;
         history.push({ role: 'assistant', content: data.reply });
+
+        const { text, draft } = extractDraft(data.reply);
+        thinking.textContent = text || "Here's a draft you can build from:";
+        const clean = draft && sanitizeDraft(draft);
+        if (clean) addDraftOffer(thinking, clean);
       } catch (err) {
         thinking.textContent = '⚠️ ' + err.message;
         thinking.style.color = 'var(--error)';

@@ -92,7 +92,20 @@ $system =
   "get a link like schalmontpto.com/p/page-name. " .
   "Answer in plain, friendly language. Give short numbered steps for how-to questions. " .
   "You can also help draft emails, newsletter blurbs, social posts, and event ideas for a K-12 PTA. " .
-  "Keep answers concise. If asked something you can't do from here, say so and suggest who to ask.";
+  "Keep answers concise. If asked something you can't do from here, say so and suggest who to ask.\n\n" .
+  "BUILDING A PAGE: If (and ONLY if) the user clearly asks you to create, build, draft, or make a web " .
+  "page, first give a one-line reply, then output a single fenced code block that starts with " .
+  "```pto-page and contains JSON only, shaped like:\n" .
+  "{\"title\":\"...\",\"category\":\"events|clubs|programs|spiritwear|facilities|ideas\"," .
+  "\"schools\":[\"woestina|jefferson|middle|high|pto\"],\"eventDate\":\"YYYY-MM-DD or empty\"," .
+  "\"eventTime\":\"HH:MM 24h or empty\",\"eventLocation\":\"... or empty\"," .
+  "\"blocks\":[ {\"type\":\"heading\",\"level\":2,\"text\":\"...\"}, {\"type\":\"paragraph\",\"text\":\"...\"}, " .
+  "{\"type\":\"list\",\"items\":[\"...\"]}, {\"type\":\"button\",\"label\":\"...\",\"href\":\"https://... or /jes/page\",\"style\":\"solid|outline\"}, " .
+  "{\"type\":\"columns\",\"count\":2,\"cells\":[{\"heading\":\"...\",\"body\":\"...\",\"buttonLabel\":\"...\",\"buttonHref\":\"...\"}]}, " .
+  "{\"type\":\"divider\"} ] }\n" .
+  "Rules for the JSON: never invent image URLs or photo blocks; guess a sensible category and school " .
+  "from context (default schools to [\"pto\"] if unclear); keep it to 4-8 blocks; the user will review " .
+  "and edit the draft before publishing, so it's fine to leave placeholders in the text.";
 
 $rawMsgs = [];
 foreach (array_slice($body['messages'], -12) as $m) {

@@ -120,8 +120,18 @@
       </div>
       <div>
         <div class="bo-preview">
-          <div class="bo-preview-label">Live preview — what visitors see</div>
-          <div class="pg-body" id="preview"></div>
+          <div class="bo-preview-label" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span>Live preview — what visitors see</span>
+            <span style="flex:1"></span>
+            <span id="pv-size" style="display:inline-flex;gap:2px;border:1px solid var(--border);border-radius:6px;overflow:hidden">
+              <button type="button" class="pv-btn" data-w="full" style="border:none;background:var(--primary);color:#fff;font:inherit;font-size:11px;padding:3px 8px;cursor:pointer">Desktop</button>
+              <button type="button" class="pv-btn" data-w="768" style="border:none;background:none;color:var(--text);font:inherit;font-size:11px;padding:3px 8px;cursor:pointer">Tablet</button>
+              <button type="button" class="pv-btn" data-w="380" style="border:none;background:none;color:var(--text);font:inherit;font-size:11px;padding:3px 8px;cursor:pointer">Phone</button>
+            </span>
+          </div>
+          <div id="pv-frame" style="margin:0 auto;transition:max-width .15s">
+            <div class="pg-body" id="preview"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -289,6 +299,22 @@
         e.preventDefault();
         openPreview();
       };
+
+      // Preview width toggle (Desktop / Tablet / Phone) — simulates responsive stacking
+      document.querySelectorAll('.pv-btn').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('.pv-btn').forEach(b => {
+            b.style.background = 'none'; b.style.color = 'var(--text)';
+          });
+          btn.style.background = 'var(--primary)'; btn.style.color = '#fff';
+          const w = btn.dataset.w;
+          document.getElementById('pv-frame').style.maxWidth = w === 'full' ? 'none' : (w + 'px');
+          const pv = document.getElementById('preview');
+          pv.classList.remove('pv-tablet', 'pv-phone');
+          if (w === '768') pv.classList.add('pv-tablet');
+          if (w === '380') pv.classList.add('pv-phone');
+        };
+      });
 
       document.querySelectorAll('[data-add]').forEach(btn => {
         btn.onclick = () => {
