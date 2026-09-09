@@ -43,7 +43,31 @@ if (!is_array($body) || empty($body['messages']) || empty($body['idToken'])) {
 require __DIR__ . '/_verify.php';
 $claims = firebase_verify_token($body['idToken'], $cfg['firebase_project_id']);
 if (!$claims) bail(401, 'Please sign in again.');
-$userEmail = $claims['email'] ?? 'unknown';
+$userEmail = strtolower($claims['email'] ?? '');
+$userUid   = $claims['sub'] ?? '';
+
+/* ---------- 1b. Caller must be a back-office admin ---------- */
+$isAdmin = false;
+$ownerEmails = array_map('strtolower', $cfg['admin_emails'] ?? ['julie@schalmontpto.com']);
+if (in_array($userEmail, $ownerEmails, true)) {
+  $isAdmin = true;
+} elseif ($userUid) {
+  // Read the caller's OWN user record — Firestore rules allow self-reads, so the
+  // caller's own ID token is enough. Check for an admin / superadmin role.
+  $pid = $cfg['firebase_project_id'] ?? 'schalmont-pto';
+  $furl = "https://firestore.googleapis.com/v1/projects/{$pid}/databases/(default)/documents/users/" . rawurlencode($userUid);
+  $fch = curl_init($furl);
+  curl_setopt_array($fch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_TIMEOUT => 15,
+    CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $body['idToken']],
+  ]);
+  $fres = curl_exec($fch);
+  curl_close($fch);
+  $role = json_decode((string)$fres, true)['fields']['role']['stringValue'] ?? '';
+  if ($role === 'admin' || $role === 'superadmin') $isAdmin = true;
+}
+if (!$isAdmin) bail(403, 'The assistant is for PTO back-office administrators only.');
 
 /* ---------- 2. Monthly usage cap ---------- */
 $usageFile = __DIR__ . '/.ai-usage.json';

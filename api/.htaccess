@@ -1,0 +1,13 @@
+# Never serve config, usage logs, cert caches or dotfiles over the web.
+# (The .php proxies stay reachable; only their data files are blocked.)
+<FilesMatch "(^\.|\.(json|md|example\.php)$)">
+  Require all denied
+</FilesMatch>
+
+# Belt-and-suspenders for older Apache
+<IfModule !mod_authz_core.c>
+  <FilesMatch "(^\.|\.(json|md|example\.php)$)">
+    Order allow,deny
+    Deny from all
+  </FilesMatch>
+</IfModule>
