@@ -125,21 +125,32 @@ if ($provider === 'gemini') {
   $headers = ['Content-Type: application/json', 'x-api-key: ' . $apiKey, 'anthropic-version: 2023-06-01'];
 }
 
-$ch = curl_init($url);
-curl_setopt_array($ch, [
-  CURLOPT_RETURNTRANSFER => true,
-  CURLOPT_POST => true,
-  CURLOPT_POSTFIELDS => $payload,
-  CURLOPT_TIMEOUT => 45,
-  CURLOPT_HTTPHEADER => $headers,
-]);
-$resp = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-if ($resp === false) bail(502, 'Could not reach the AI service: ' . curl_error($ch));
-curl_close($ch);
+// Retry on transient "model overloaded" / rate-limit responses (429, 500, 503),
+// which the Gemini free tier throws fairly often under load.
+$resp = false; $httpCode = 0; $curlErr = '';
+for ($attempt = 1; $attempt <= 3; $attempt++) {
+  $ch = curl_init($url);
+  curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST => true,
+    CURLOPT_POSTFIELDS => $payload,
+    CURLOPT_TIMEOUT => 45,
+    CURLOPT_HTTPHEADER => $headers,
+  ]);
+  $resp = curl_exec($ch);
+  $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+  $curlErr = curl_error($ch);
+  curl_close($ch);
+  if ($resp !== false && !in_array($httpCode, [429, 500, 503], true)) break;
+  if ($attempt < 3) sleep($attempt);   // 1s, then 2s
+}
+if ($resp === false) bail(502, 'Could not reach the AI service: ' . $curlErr);
 
 $data = json_decode($resp, true);
 if ($httpCode !== 200) {
+  if (in_array($httpCode, [429, 500, 503], true)) {
+    bail(503, 'The AI assistant is busy right now — give it a minute and try again.');
+  }
   $detail = $data['error']['message'] ?? ('HTTP ' . $httpCode);
   bail(502, 'AI service error: ' . $detail);
 }
