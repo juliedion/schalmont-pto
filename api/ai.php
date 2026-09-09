@@ -64,7 +64,8 @@ if (in_array($userEmail, $ownerEmails, true)) {
   ]);
   $fres = curl_exec($fch);
   curl_close($fch);
-  $role = json_decode((string)$fres, true)['fields']['role']['stringValue'] ?? '';
+  $fdoc = json_decode((string)$fres, true);
+  $role = is_array($fdoc) ? ($fdoc['fields']['role']['stringValue'] ?? '') : '';
   if ($role === 'admin' || $role === 'superadmin') $isAdmin = true;
 }
 if (!$isAdmin) bail(403, 'The assistant is for PTO back-office administrators only.');
