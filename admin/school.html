@@ -103,7 +103,7 @@
         </label>
         <label>Sort:
           <select id="pg-sort">
-            <option value="upcoming">Upcoming first</option>
+            <option value="upcoming" selected>Live first, then past (A–Z)</option>
             <option value="past">Past first</option>
             <option value="type">By type</option>
             <option value="az">A–Z</option>
@@ -301,6 +301,35 @@
     // Group key + label for each sort mode. Sorting only ever reorders/groups —
     // it never removes a page from the list. Landing-page cards have no eventDate, so
     // their badgeType ('past' vs anything else) stands in for "is this in the past".
+    // Landing-page cards used to open a separate "Programs & Events" editor. That tool is
+    // gone -- clicking Edit now converts the card into a real page (once) and opens it in
+    // the normal page editor, same as everything else on this site.
+    async function editCard(docId, btn) {
+      const c = allCardDocs.find(x => x.docId === docId);
+      if (!c) return;
+      if (btn) btn.disabled = true;
+      try {
+        if (c.pageId) { location.href = 'page-editor.html?id=' + c.pageId; return; }
+        const blocks = [{ type: 'heading', level: 2, text: c.title || '' }];
+        if (c.desc) blocks.push({ type: 'paragraph', text: c.desc });
+        (c.actions || []).forEach(a => {
+          if (a.label && a.href) blocks.push({ type: 'button', label: a.label.replace(/\s*→\s*$/, ''), href: a.href, style: 'solid' });
+        });
+        const ref = await db.collection('pages').add({
+          category: '', schools: [school], school,
+          title: c.title || 'Untitled card', slug: slugify(c.title || c.id || 'card'),
+          status: (c.badgeType === 'past' || !c.badgeType) ? 'published' : 'draft',
+          blocks, createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        await db.collection('program_cards').doc(docId).update({ pageId: ref.id });
+        c.pageId = ref.id;
+        location.href = 'page-editor.html?id=' + ref.id;
+      } catch (e) {
+        toast('Could not open editor: ' + e.message, 'error');
+        if (btn) btn.disabled = false;
+      }
+    }
+
     function sortGroup(item, mode, today) {
       const p = item.p;
       if (mode === 'type') {
@@ -348,13 +377,9 @@
 
       list.sort((a, b) => {
         if (showGroups && a.grp.key !== b.grp.key) return a.grp.key < b.grp.key ? -1 : 1;
-        if (sortMode === 'az') return (a.p.title || '').localeCompare(b.p.title || '');
         if (sortMode === 'recent') return (b.p.updatedAt?.seconds || 0) - (a.p.updatedAt?.seconds || 0);
-        // date-ish sort within a group: soonest upcoming first / most-recent past first, undated last by edit date
-        const ad = a.p.eventDate, bd = b.p.eventDate;
-        if (ad && bd) return sortMode === 'past' ? (ad < bd ? 1 : ad > bd ? -1 : 0) : (ad < bd ? -1 : ad > bd ? 1 : 0);
-        if (ad !== bd) return ad ? -1 : 1;   // dated pages before undated within the same group
-        return (b.p.updatedAt?.seconds || 0) - (a.p.updatedAt?.seconds || 0);
+        // 'upcoming' (default), 'past', 'type' and 'az' all sort alphabetically within a group
+        return (a.p.title || '').localeCompare(b.p.title || '');
       });
 
       const total = allPageDocs.length + allCardDocs.length;
@@ -399,10 +424,11 @@
             <div class="bo-meta">On the ${esc(SCHOOLS[school])} page${p.cardAnchor ? ' — #' + esc(p.cardAnchor) : ''}</div>
             <div class="pg-card-actions">
               ${viewHref ? `<a class="bo-btn ghost sm" href="${esc(viewHref)}" target="_blank">View on site</a>` : ''}
-              <a class="bo-btn sm" href="program-cards.html?s=${school}">Edit</a>
+              <button class="bo-btn sm" data-edit>Edit</button>
               <button class="bo-btn danger ghost sm" data-del>Delete</button>
             </div>`;
           grid.appendChild(row);
+          row.querySelector('[data-edit]').onclick = (ev) => editCard(doc.id, ev.target);
           row.querySelector('[data-del]').onclick = async (ev) => {
             if (!confirm('Delete "' + (p.title || 'this card') + '"? This cannot be undone.')) return;
             ev.target.disabled = true;
