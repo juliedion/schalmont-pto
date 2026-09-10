@@ -28,6 +28,15 @@
     .pg-date.past { color:var(--text-light); }
     .pg-date.upcoming { color:var(--primary-dark); }
     .pg-count { font-size:12.5px; color:var(--text-light); margin-bottom:10px; }
+    .pg-cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; margin-bottom:6px; }
+    .pg-card {
+      background:#fff; border:1px solid var(--border); border-radius:12px; padding:16px;
+      display:flex; flex-direction:column; gap:6px; box-shadow:var(--shadow-sm);
+    }
+    .pg-card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
+    .pg-card h4 { margin:0; font-size:15px; color:var(--primary-dark); line-height:1.3; }
+    .pg-card .bo-meta { font-size:12px; line-height:1.5; }
+    .pg-card-actions { display:flex; gap:6px; flex-wrap:wrap; margin-top:auto; padding-top:10px; }
   </style>
 </head>
 <body>
@@ -287,19 +296,22 @@
       // Default view (no date filter picked): show upcoming AND past automatically,
       // grouped under headers so both are visible at once with no clicking required.
       const showGroups = whenF === 'all';
-      let lastGroup = null;
+      let lastGroup = null, grid = null;
 
       box.innerHTML = '';
       list.forEach(({ doc, p }) => {
-        if (showGroups) {
-          const grp = (p.eventDate && p.eventDate >= today) ? 'upcoming' : 'other';
-          if (grp !== lastGroup) {
+        const grp = showGroups ? ((p.eventDate && p.eventDate >= today) ? 'upcoming' : 'other') : 'all';
+        if (grp !== lastGroup) {
+          if (showGroups) {
             const head = document.createElement('div');
-            head.style.cssText = 'font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin:' + (lastGroup ? '20px' : '0') + ' 0 8px';
+            head.style.cssText = 'font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin:' + (lastGroup ? '20px' : '0') + ' 0 10px';
             head.textContent = grp === 'upcoming' ? 'Upcoming & live' : 'Past events & everything else';
             box.appendChild(head);
-            lastGroup = grp;
           }
+          grid = document.createElement('div');
+          grid.className = 'pg-cards-grid';
+          box.appendChild(grid);
+          lastGroup = grp;
         }
         const live = p.status === 'published';
         const sList = pageSchools(p);
@@ -309,22 +321,26 @@
         const sec = sectionByCat(p.category);
         const isUpcoming = p.eventDate && p.eventDate >= today;
         const dateHtml = p.eventDate
-          ? `<span class="pg-date ${isUpcoming ? 'upcoming' : 'past'}">${esc(prettyYMD(p.eventDate))}</span> &nbsp;·&nbsp; ` : '';
+          ? `<span class="pg-date ${isUpcoming ? 'upcoming' : 'past'}">${esc(prettyYMD(p.eventDate))}</span><br>` : '';
         const row = document.createElement('div');
-        row.className = 'bo-row';
+        row.className = 'pg-card';
         row.innerHTML = `
-          <div class="bo-row-main">
-            <h4>${esc(p.title || 'Untitled page')} ${sec ? `<span class="pg-cat-badge">${esc(sec.label.replace(/&amp;/g, '&'))}</span>` : ''}</h4>
-            <div class="bo-meta">
-              ${dateHtml}${live ? 'Live at <code>/' + esc(path) + '</code>' : 'Draft — not visible to the public'}
-              &nbsp;·&nbsp; edited ${fmtDate(p.updatedAt)}${shared}
-            </div>
+          <div class="pg-card-top">
+            <h4>${esc(p.title || 'Untitled page')}</h4>
+            <span class="bo-pill ${live ? 'live' : 'draft'}">${live ? 'Live' : 'Draft'}</span>
           </div>
-          <span class="bo-pill ${live ? 'live' : 'draft'}">${live ? 'Published' : 'Draft'}</span>
-          ${live ? `<a class="bo-btn ghost sm" href="../${esc(path)}" target="_blank">View</a>` : ''}
-          <a class="bo-btn sm" href="page-editor.html?id=${doc.id}">Edit</a>
-          <button class="bo-btn ghost sm" data-dup>Duplicate</button>
-          <button class="bo-btn danger ghost sm" data-del>Delete</button>`;
+          ${sec ? `<span class="pg-cat-badge" style="align-self:flex-start">${esc(sec.label.replace(/&amp;/g, '&'))}</span>` : ''}
+          <div class="bo-meta">
+            ${dateHtml}${live ? 'Live at <code>/' + esc(path) + '</code>' : 'Draft — not visible to the public'}
+            &nbsp;·&nbsp; edited ${fmtDate(p.updatedAt)}${shared}
+          </div>
+          <div class="pg-card-actions">
+            ${live ? `<a class="bo-btn ghost sm" href="../${esc(path)}" target="_blank">View</a>` : ''}
+            <a class="bo-btn sm" href="page-editor.html?id=${doc.id}">Edit</a>
+            <button class="bo-btn ghost sm" data-dup>Duplicate</button>
+            <button class="bo-btn danger ghost sm" data-del>Delete</button>
+          </div>`;
+        grid.appendChild(row);
         row.querySelector('[data-dup]').onclick = (ev) => duplicatePage(doc.id, p, ev.target);
         row.querySelector('[data-del]').onclick = async (ev) => {
           if (!confirm('Delete "' + (p.title || 'this page') + '"? This cannot be undone.')) return;
@@ -335,7 +351,6 @@
             renderPages();
           } catch (e) { toast('Could not delete: ' + e.message, 'error'); ev.target.disabled = false; }
         };
-        box.appendChild(row);
       });
     }
 
