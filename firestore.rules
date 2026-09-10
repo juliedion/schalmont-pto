@@ -122,6 +122,13 @@ service cloud.firestore {
       allow update, delete: if signedIn() && canManage(resource.data.school);
     }
 
+    /* ---- Programs & Events cards on each school's public landing page ---- */
+    match /program_cards/{id} {
+      allow read: if true;
+      allow create: if signedIn() && canManage(request.resource.data.school);
+      allow update, delete: if signedIn() && canManage(resource.data.school);
+    }
+
     /* ---- Chocolate Bar Fundraiser: seller pickup requests (public form) ---- */
     match /chocolate_seller_requests/{id} {
       allow read, update, delete: if isAnyAdmin();

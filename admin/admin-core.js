@@ -212,6 +212,7 @@ function renderShell() {
         ${schoolLinks}
         ${inSchool ? `<div class="bo-navgroup-label">${esc(SCHOOLS[ctxSchool])} — sections</div>${sectionLinks}` : ''}
         <div class="bo-navgroup-label">More</div>
+        ${link('program-cards.html', 'Programs &amp; Events Cards', '🗂️', path === 'program-cards.html')}
         ${link('chocolate-requests.html', 'Chocolate Requests', '🍫', path === 'chocolate-requests.html')}
         ${link('help.html', 'Help &amp; How-To', '📖', path === 'help.html')}
         ${ME.isSuper ? link('directory.html', 'Directory Sign-Ups', '✅', path === 'directory.html') : ''}
