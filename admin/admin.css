@@ -32,7 +32,7 @@ body.bo-has-shell {
   font-weight: 800; font-size: 15px;
 }
 .bo-brand img { height: 30px; }
-.bo-nav { flex: 1; display: flex; flex-direction: column; gap: 2px; padding: 6px 10px; }
+.bo-nav { flex: 1; display: flex; flex-direction: column; gap: 2px; padding: 6px 10px 14px; }
 .bo-navgroup-label {
   font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
   color: rgba(255,255,255,.45); padding: 16px 10px 5px;
@@ -48,7 +48,7 @@ body.bo-has-shell {
 .bo-navsub { padding-left: 14px; font-weight: 500; font-size: 13.5px; }
 .bo-navicon { width: 18px; text-align: center; }
 .bo-sidebar-foot {
-  padding: 14px 18px 4px; font-size: 12px;
+  padding: 14px 18px; font-size: 12px; flex-shrink: 0;
   color: rgba(255,255,255,.6); border-top: 1px solid rgba(255,255,255,.12);
 }
 .bo-sidebar-foot a { color: rgba(255,255,255,.85); }

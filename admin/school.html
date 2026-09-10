@@ -204,6 +204,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-storage-compat.js"></script>
   <script src="../js/firebase-config.js"></script>
   <script src="admin-core.js"></script>
+  <script src="../js/program-cards.js"></script>
   <script>
     const school = getParam('s');
 
@@ -249,6 +250,11 @@
     /* ---------------- PAGES ---------------- */
     let allPageDocs = [];   // every page for this school, any category — loaded once
 
+    let allCardDocs = [];   // this school's landing-page grid cards (program_cards) — the
+                            // dances/past-events/etc. shown on jefferson.html and friends
+    const SCHOOL_PAGE_FILE = { woestina: 'woestina.html', jefferson: 'jefferson.html',
+      middle: 'middle-school.html', high: 'high-school.html' };
+
     async function loadPages() {
       const box = document.getElementById('pages-list');
       try {
@@ -259,20 +265,50 @@
         const seen = new Map();
         [...byField.docs, ...byArray.docs].forEach(d => seen.set(d.id, d));
         allPageDocs = [...seen.values()];
+        await loadProgramCards();
         renderPages();
       } catch (e) {
         box.innerHTML = '<p style="color:var(--error)">Could not load pages: ' + esc(e.message) + '</p>';
       }
     }
 
+    // The landing-page cards (dances, past events, etc.) live in a separate collection.
+    // The first time a school is opened here, seed it from the built-in defaults that used
+    // to be hardcoded on the page, so they show up immediately instead of an empty list.
+    async function loadProgramCards() {
+      try {
+        let snap = await db.collection('program_cards').where('school', '==', school).get();
+        if (snap.empty) {
+          const defaults = (typeof PROGRAM_CARDS_DEFAULTS !== 'undefined' ? PROGRAM_CARDS_DEFAULTS[school] : null) || [];
+          if (defaults.length) {
+            const batch = db.batch();
+            defaults.forEach((c, i) => {
+              batch.set(db.collection('program_cards').doc(), {
+                school, order: i, icon: c.icon || '', title: c.title || '',
+                badgeType: c.badgeType || '', badgeText: c.badgeText || '', id: c.id || '',
+                desc: c.desc || '', actions: c.actions || [],
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(), createdBy: ME.email
+              });
+            });
+            await batch.commit();
+            snap = await db.collection('program_cards').where('school', '==', school).get();
+          }
+        }
+        allCardDocs = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+      } catch (e) { allCardDocs = []; /* rules may not be published yet — pages still show */ }
+    }
+
     // Group key + label for each sort mode. Sorting only ever reorders/groups —
-    // it never removes a page from the list.
-    function sortGroup(p, mode, today) {
+    // it never removes a page from the list. Landing-page cards have no eventDate, so
+    // their badgeType ('past' vs anything else) stands in for "is this in the past".
+    function sortGroup(item, mode, today) {
+      const p = item.p;
       if (mode === 'type') {
+        if (item.kind === 'card') return { key: 'zz', label: 'Landing page cards' };
         const sec = sectionByCat(p.category);
         return { key: p.category || 'zz', label: sec ? sec.label.replace(/&amp;/g, '&') : 'Other' };
       }
-      const upcoming = p.eventDate && p.eventDate >= today;
+      const upcoming = item.kind === 'card' ? p.cardBadge !== 'past' : (p.eventDate && p.eventDate >= today);
       if (mode === 'past') {
         return upcoming
           ? { key: 'b', label: 'Upcoming & everything else' }
@@ -291,18 +327,24 @@
       const sortMode = document.getElementById('pg-sort').value;
       const today = toYMD(new Date());
 
-      let list = allPageDocs.map(doc => ({ doc, p: doc.data() }));
+      let list = allPageDocs.map(doc => ({ kind: 'page', doc, p: doc.data() }));
+      list = list.concat(allCardDocs.map(c => ({
+        kind: 'card',
+        doc: { id: c.docId },
+        p: { title: c.title, category: '', cardBadge: c.badgeType, cardBadgeText: c.badgeText, cardAnchor: c.id }
+      })));
       if (!list.length) {
         box.innerHTML = '<p style="color:var(--text-light)">No pages yet. Press <strong>＋ New page</strong> to make your first one.</p>';
         document.getElementById('pg-count').textContent = '';
         return;
       }
       // Type/Status only narrow the list if you deliberately change them — both default to "all".
+      // (Landing-page cards have no type/status, so they're only affected by "All types"/"Live & drafts".)
       if (catF !== 'all') list = list.filter(({ p }) => (p.category || '') === catF);
-      if (statusF !== 'all') list = list.filter(({ p }) => (p.status === 'published' ? 'published' : 'draft') === statusF);
+      if (statusF !== 'all') list = list.filter(({ kind, p }) => kind === 'page' && (p.status === 'published' ? 'published' : 'draft') === statusF);
 
       const showGroups = sortMode !== 'az' && sortMode !== 'recent';
-      list.forEach(item => { item.grp = showGroups ? sortGroup(item.p, sortMode, today) : null; });
+      list.forEach(item => { item.grp = showGroups ? sortGroup(item, sortMode, today) : null; });
 
       list.sort((a, b) => {
         if (showGroups && a.grp.key !== b.grp.key) return a.grp.key < b.grp.key ? -1 : 1;
@@ -315,15 +357,18 @@
         return (b.p.updatedAt?.seconds || 0) - (a.p.updatedAt?.seconds || 0);
       });
 
+      const total = allPageDocs.length + allCardDocs.length;
       document.getElementById('pg-count').textContent =
-        list.length + ' of ' + allPageDocs.length + ' page' + (allPageDocs.length === 1 ? '' : 's');
+        list.length + ' of ' + total + ' item' + (total === 1 ? '' : 's') +
+        ' (' + allPageDocs.length + ' web page' + (allPageDocs.length === 1 ? '' : 's') +
+        ', ' + allCardDocs.length + ' landing-page card' + (allCardDocs.length === 1 ? '' : 's') + ')';
 
       if (!list.length) { box.innerHTML = '<p style="color:var(--text-light)">Nothing matches Type/Status — pick "All" to see everything again.</p>'; return; }
 
       let lastGroupKey = undefined, grid = null;
 
       box.innerHTML = '';
-      list.forEach(({ doc, p, grp }) => {
+      list.forEach(({ kind, doc, p, grp }) => {
         const key = grp ? grp.key : 'all';
         if (key !== lastGroupKey) {
           if (grp) {
@@ -337,6 +382,39 @@
           box.appendChild(grid);
           lastGroupKey = key;
         }
+        const row = document.createElement('div');
+        row.className = 'pg-card';
+
+        if (kind === 'card') {
+          const siteFile = SCHOOL_PAGE_FILE[school];
+          const viewHref = siteFile ? '../' + siteFile + (p.cardAnchor ? '#' + p.cardAnchor : '') : null;
+          const badgeMap = { active: ['Active', 'live'], coming: ['Coming soon', 'draft'], past: ['Past event', 'draft'] };
+          const [badgeTxt, badgeCls] = badgeMap[p.cardBadge] || [p.cardBadgeText || '', 'draft'];
+          row.innerHTML = `
+            <div class="pg-card-top">
+              <h4>${esc(p.title || 'Untitled card')}</h4>
+              ${badgeTxt ? `<span class="bo-pill ${badgeCls}">${esc(badgeTxt)}</span>` : ''}
+            </div>
+            <span class="pg-cat-badge" style="align-self:flex-start">Landing page card</span>
+            <div class="bo-meta">On the ${esc(SCHOOLS[school])} page${p.cardAnchor ? ' — #' + esc(p.cardAnchor) : ''}</div>
+            <div class="pg-card-actions">
+              ${viewHref ? `<a class="bo-btn ghost sm" href="${esc(viewHref)}" target="_blank">View on site</a>` : ''}
+              <a class="bo-btn sm" href="program-cards.html?s=${school}">Edit</a>
+              <button class="bo-btn danger ghost sm" data-del>Delete</button>
+            </div>`;
+          grid.appendChild(row);
+          row.querySelector('[data-del]').onclick = async (ev) => {
+            if (!confirm('Delete "' + (p.title || 'this card') + '"? This cannot be undone.')) return;
+            ev.target.disabled = true;
+            try {
+              await db.collection('program_cards').doc(doc.id).delete();
+              allCardDocs = allCardDocs.filter(c => c.docId !== doc.id);
+              renderPages();
+            } catch (e) { toast('Could not delete: ' + e.message, 'error'); ev.target.disabled = false; }
+          };
+          return;
+        }
+
         const live = p.status === 'published';
         const sList = pageSchools(p);
         const path = pagePath(routingSchool(sList), p.slug);
@@ -346,8 +424,6 @@
         const isUpcoming = p.eventDate && p.eventDate >= today;
         const dateHtml = p.eventDate
           ? `<span class="pg-date ${isUpcoming ? 'upcoming' : 'past'}">${esc(prettyYMD(p.eventDate))}</span><br>` : '';
-        const row = document.createElement('div');
-        row.className = 'pg-card';
         row.innerHTML = `
           <div class="pg-card-top">
             <h4>${esc(p.title || 'Untitled page')}</h4>
