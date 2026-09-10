@@ -101,15 +101,20 @@
             <option value="draft">Drafts only</option>
           </select>
         </label>
-        <label>Show:
-          <select id="pg-filter-when">
-            <option value="all">All dates</option>
-            <option value="upcoming">Upcoming events</option>
-            <option value="past">Past events</option>
-            <option value="nodate">No date set</option>
+        <label>Sort:
+          <select id="pg-sort">
+            <option value="upcoming">Upcoming first</option>
+            <option value="past">Past first</option>
+            <option value="type">By type</option>
+            <option value="az">A–Z</option>
+            <option value="recent">Recently edited</option>
           </select>
         </label>
       </div>
+      <p style="font-size:12px;color:var(--text-light);margin:-10px 0 14px">
+        Sorting never hides anything — every event, club, program and page for this school is
+        always listed below, current and past. Type/Status only narrow the list if you change them.
+      </p>
       <div class="pg-count" id="pg-count"></div>
 
       <div class="bo-list" id="pages-list" style="margin-top:6px">
@@ -213,7 +218,7 @@
       document.getElementById('crumb-school').textContent = SCHOOLS[school];
       document.getElementById('school-title').textContent = SCHOOLS[school] + ' — Workspace';
       document.getElementById('new-page-btn').onclick = () => newWebPage(document.getElementById('new-page-cat').value, school);
-      ['pg-filter-cat', 'pg-filter-status', 'pg-filter-when'].forEach(id =>
+      ['pg-filter-cat', 'pg-filter-status', 'pg-sort'].forEach(id =>
         document.getElementById(id).onchange = renderPages);
       document.getElementById('tip-example').textContent =
         'schalmontpto.com/' + SCHOOL_PREFIX[school] + '/fun-run';
@@ -260,11 +265,30 @@
       }
     }
 
+    // Group key + label for each sort mode. Sorting only ever reorders/groups —
+    // it never removes a page from the list.
+    function sortGroup(p, mode, today) {
+      if (mode === 'type') {
+        const sec = sectionByCat(p.category);
+        return { key: p.category || 'zz', label: sec ? sec.label.replace(/&amp;/g, '&') : 'Other' };
+      }
+      const upcoming = p.eventDate && p.eventDate >= today;
+      if (mode === 'past') {
+        return upcoming
+          ? { key: 'b', label: 'Upcoming & everything else' }
+          : { key: 'a', label: 'Past events' };
+      }
+      // 'upcoming' (default), and used as the date grouping for 'az'/'recent' too
+      return upcoming
+        ? { key: 'a', label: 'Upcoming & live' }
+        : { key: 'b', label: 'Past events & everything else' };
+    }
+
     function renderPages() {
       const box = document.getElementById('pages-list');
       const catF = document.getElementById('pg-filter-cat').value;
       const statusF = document.getElementById('pg-filter-status').value;
-      const whenF = document.getElementById('pg-filter-when').value;
+      const sortMode = document.getElementById('pg-sort').value;
       const today = toYMD(new Date());
 
       let list = allPageDocs.map(doc => ({ doc, p: doc.data() }));
@@ -273,45 +297,45 @@
         document.getElementById('pg-count').textContent = '';
         return;
       }
+      // Type/Status only narrow the list if you deliberately change them — both default to "all".
       if (catF !== 'all') list = list.filter(({ p }) => (p.category || '') === catF);
       if (statusF !== 'all') list = list.filter(({ p }) => (p.status === 'published' ? 'published' : 'draft') === statusF);
-      if (whenF === 'upcoming') list = list.filter(({ p }) => p.eventDate && p.eventDate >= today);
-      if (whenF === 'past') list = list.filter(({ p }) => p.eventDate && p.eventDate < today);
-      if (whenF === 'nodate') list = list.filter(({ p }) => !p.eventDate);
 
-      // Upcoming events lead (soonest first); past events and undated pages follow, most-recently-edited first.
+      const showGroups = sortMode !== 'az' && sortMode !== 'recent';
+      list.forEach(item => { item.grp = showGroups ? sortGroup(item.p, sortMode, today) : null; });
+
       list.sort((a, b) => {
+        if (showGroups && a.grp.key !== b.grp.key) return a.grp.key < b.grp.key ? -1 : 1;
+        if (sortMode === 'az') return (a.p.title || '').localeCompare(b.p.title || '');
+        if (sortMode === 'recent') return (b.p.updatedAt?.seconds || 0) - (a.p.updatedAt?.seconds || 0);
+        // date-ish sort within a group: soonest upcoming first / most-recent past first, undated last by edit date
         const ad = a.p.eventDate, bd = b.p.eventDate;
-        const aUp = ad && ad >= today, bUp = bd && bd >= today;
-        if (aUp !== bUp) return aUp ? -1 : 1;
-        if (aUp && bUp) return ad < bd ? -1 : ad > bd ? 1 : 0;
+        if (ad && bd) return sortMode === 'past' ? (ad < bd ? 1 : ad > bd ? -1 : 0) : (ad < bd ? -1 : ad > bd ? 1 : 0);
+        if (ad !== bd) return ad ? -1 : 1;   // dated pages before undated within the same group
         return (b.p.updatedAt?.seconds || 0) - (a.p.updatedAt?.seconds || 0);
       });
 
       document.getElementById('pg-count').textContent =
         list.length + ' of ' + allPageDocs.length + ' page' + (allPageDocs.length === 1 ? '' : 's');
 
-      if (!list.length) { box.innerHTML = '<p style="color:var(--text-light)">Nothing matches these filters.</p>'; return; }
+      if (!list.length) { box.innerHTML = '<p style="color:var(--text-light)">Nothing matches Type/Status — pick "All" to see everything again.</p>'; return; }
 
-      // Default view (no date filter picked): show upcoming AND past automatically,
-      // grouped under headers so both are visible at once with no clicking required.
-      const showGroups = whenF === 'all';
-      let lastGroup = null, grid = null;
+      let lastGroupKey = undefined, grid = null;
 
       box.innerHTML = '';
-      list.forEach(({ doc, p }) => {
-        const grp = showGroups ? ((p.eventDate && p.eventDate >= today) ? 'upcoming' : 'other') : 'all';
-        if (grp !== lastGroup) {
-          if (showGroups) {
+      list.forEach(({ doc, p, grp }) => {
+        const key = grp ? grp.key : 'all';
+        if (key !== lastGroupKey) {
+          if (grp) {
             const head = document.createElement('div');
-            head.style.cssText = 'font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin:' + (lastGroup ? '20px' : '0') + ' 0 10px';
-            head.textContent = grp === 'upcoming' ? 'Upcoming & live' : 'Past events & everything else';
+            head.style.cssText = 'font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin:' + (lastGroupKey !== undefined ? '20px' : '0') + ' 0 10px';
+            head.textContent = grp.label;
             box.appendChild(head);
           }
           grid = document.createElement('div');
           grid.className = 'pg-cards-grid';
           box.appendChild(grid);
-          lastGroup = grp;
+          lastGroupKey = key;
         }
         const live = p.status === 'published';
         const sList = pageSchools(p);
