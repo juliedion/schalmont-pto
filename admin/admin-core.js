@@ -210,9 +210,7 @@ function renderShell() {
         ${link('index.html', 'Home', '🏠', path === 'index.html')}
         <div class="bo-navgroup-label">Schools</div>
         ${schoolLinks}
-        ${inSchool ? `<div class="bo-navgroup-label">${esc(SCHOOLS[ctxSchool])} — sections</div>${sectionLinks}
-        ${link('program-cards.html?s=' + ctxSchool, 'Programs &amp; Events Cards', '🗂️', path === 'program-cards.html')}
-        ${link('signups.html?s=' + ctxSchool, 'Sign-Up Sheets', '🖊️', path === 'signups.html')}` : ''}
+        ${inSchool ? `<div class="bo-navgroup-label">${esc(SCHOOLS[ctxSchool])} — sections</div>${sectionLinks}` : ''}
         <div class="bo-navgroup-label">More</div>
         ${link('help.html', 'Help &amp; How-To', '📖', path === 'help.html')}
         ${ME.isSuper ? link('directory.html', 'Directory Sign-Ups', '✅', path === 'directory.html') : ''}

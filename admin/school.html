@@ -19,6 +19,15 @@
                     border-radius:8px; padding:12px 14px; }
     .bo-checkitem input { margin-top:3px; }
     .bo-checkitem.done label { text-decoration:line-through; color:var(--text-light); }
+    .pg-filters { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:14px 0 18px; }
+    .pg-filters select { padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-family:inherit; font-size:13px; }
+    .pg-filters label { font-size:12px; font-weight:700; color:var(--text-light); }
+    .pg-cat-badge { font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.04em;
+                    padding:2px 8px; border-radius:20px; background:var(--light-bg); color:var(--text-light); }
+    .pg-date { font-weight:700; }
+    .pg-date.past { color:var(--text-light); }
+    .pg-date.upcoming { color:var(--primary-dark); }
+    .pg-count { font-size:12.5px; color:var(--text-light); margin-bottom:10px; }
   </style>
 </head>
 <body>
@@ -50,8 +59,51 @@
         Nobody can see it until you press <strong>Publish</strong>. After that it has its own link
         you can share, e.g. <code id="tip-example">schalmontpto.com/&hellip;</code>.
       </div>
-      <p><a class="bo-btn" href="#" id="new-page-btn">＋ New page</a></p>
-      <div class="bo-list" id="pages-list" style="margin-top:18px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <select id="new-page-cat" style="padding:9px 10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13.5px">
+          <option value="events">Event</option>
+          <option value="clubs">Club</option>
+          <option value="programs">Program</option>
+          <option value="spiritwear">Spiritwear page</option>
+          <option value="fundraising">Fundraiser</option>
+          <option value="facilities">Facilities page</option>
+          <option value="ideas">Idea page</option>
+        </select>
+        <button class="bo-btn" id="new-page-btn">＋ New page</button>
+      </div>
+
+      <div class="pg-filters">
+        <label>Type:
+          <select id="pg-filter-cat">
+            <option value="all">All types</option>
+            <option value="events">Events</option>
+            <option value="clubs">Clubs</option>
+            <option value="programs">Programs</option>
+            <option value="spiritwear">Spiritwear</option>
+            <option value="fundraising">Fundraising</option>
+            <option value="facilities">Building &amp; Facilities</option>
+            <option value="ideas">Extra Ideas</option>
+          </select>
+        </label>
+        <label>Status:
+          <select id="pg-filter-status">
+            <option value="all">Live &amp; drafts</option>
+            <option value="published">Live only</option>
+            <option value="draft">Drafts only</option>
+          </select>
+        </label>
+        <label>Show:
+          <select id="pg-filter-when">
+            <option value="all">All dates</option>
+            <option value="upcoming">Upcoming events</option>
+            <option value="past">Past events</option>
+            <option value="nodate">No date set</option>
+          </select>
+        </label>
+      </div>
+      <div class="pg-count" id="pg-count"></div>
+
+      <div class="bo-list" id="pages-list" style="margin-top:6px">
         <p style="color:var(--text-light)">Loading pages…</p>
       </div>
     </section>
@@ -151,7 +203,9 @@
       }
       document.getElementById('crumb-school').textContent = SCHOOLS[school];
       document.getElementById('school-title').textContent = SCHOOLS[school] + ' — Workspace';
-      document.getElementById('new-page-btn').href = 'page-editor.html?s=' + school + '&new=1';
+      document.getElementById('new-page-btn').onclick = () => newWebPage(document.getElementById('new-page-cat').value, school);
+      ['pg-filter-cat', 'pg-filter-status', 'pg-filter-when'].forEach(id =>
+        document.getElementById(id).onchange = renderPages);
       document.getElementById('tip-example').textContent =
         'schalmontpto.com/' + SCHOOL_PREFIX[school] + '/fun-run';
       // Events / Clubs / Programs / Fundraising / etc. already live in the left
@@ -179,6 +233,8 @@
     });
 
     /* ---------------- PAGES ---------------- */
+    let allPageDocs = [];   // every page for this school, any category — loaded once
+
     async function loadPages() {
       const box = document.getElementById('pages-list');
       try {
@@ -188,45 +244,106 @@
         ]);
         const seen = new Map();
         [...byField.docs, ...byArray.docs].forEach(d => seen.set(d.id, d));
-        const allDocs = [...seen.values()];
-        if (!allDocs.length) {
-          box.innerHTML = '<p style="color:var(--text-light)">No pages yet. Press <strong>＋ New page</strong> to make your first one.</p>';
-          return;
-        }
-        const docs = allDocs.sort((a, b) =>
-          (b.data().updatedAt?.seconds || 0) - (a.data().updatedAt?.seconds || 0));
-        box.innerHTML = '';
-        docs.forEach(doc => {
-          const p = doc.data();
-          const live = p.status === 'published';
-          const sList = pageSchools(p);
-          const path = pagePath(routingSchool(sList), p.slug);
-          const shared = sList.length > 1
-            ? ` &nbsp;·&nbsp; shared: ${sList.map(s => esc(SCHOOLS[s] || s)).join(', ')}` : '';
-          const row = document.createElement('div');
-          row.className = 'bo-row';
-          row.innerHTML = `
-            <div class="bo-row-main">
-              <h4>${esc(p.title || 'Untitled page')}</h4>
-              <div class="bo-meta">
-                ${live ? 'Live at <code>/' + esc(path) + '</code>' : 'Draft — not visible to the public'}
-                &nbsp;·&nbsp; edited ${fmtDate(p.updatedAt)}${shared}
-              </div>
-            </div>
-            <span class="bo-pill ${live ? 'live' : 'draft'}">${live ? 'Published' : 'Draft'}</span>
-            ${live ? `<a class="bo-btn ghost sm" href="../${esc(path)}" target="_blank">View</a>` : ''}
-            <a class="bo-btn sm" href="page-editor.html?id=${doc.id}">Edit</a>
-            <button class="bo-btn danger ghost sm" data-del>Delete</button>`;
-          row.querySelector('[data-del]').onclick = async (ev) => {
-            if (!confirm('Delete "' + (p.title || 'this page') + '"? This cannot be undone.')) return;
-            ev.target.disabled = true;
-            try { await db.collection('pages').doc(doc.id).delete(); row.remove(); }
-            catch (e) { toast('Could not delete: ' + e.message, 'error'); ev.target.disabled = false; }
-          };
-          box.appendChild(row);
-        });
+        allPageDocs = [...seen.values()];
+        renderPages();
       } catch (e) {
         box.innerHTML = '<p style="color:var(--error)">Could not load pages: ' + esc(e.message) + '</p>';
+      }
+    }
+
+    function renderPages() {
+      const box = document.getElementById('pages-list');
+      const catF = document.getElementById('pg-filter-cat').value;
+      const statusF = document.getElementById('pg-filter-status').value;
+      const whenF = document.getElementById('pg-filter-when').value;
+      const today = toYMD(new Date());
+
+      let list = allPageDocs.map(doc => ({ doc, p: doc.data() }));
+      if (!list.length) {
+        box.innerHTML = '<p style="color:var(--text-light)">No pages yet. Press <strong>＋ New page</strong> to make your first one.</p>';
+        document.getElementById('pg-count').textContent = '';
+        return;
+      }
+      if (catF !== 'all') list = list.filter(({ p }) => (p.category || '') === catF);
+      if (statusF !== 'all') list = list.filter(({ p }) => (p.status === 'published' ? 'published' : 'draft') === statusF);
+      if (whenF === 'upcoming') list = list.filter(({ p }) => p.eventDate && p.eventDate >= today);
+      if (whenF === 'past') list = list.filter(({ p }) => p.eventDate && p.eventDate < today);
+      if (whenF === 'nodate') list = list.filter(({ p }) => !p.eventDate);
+
+      // Upcoming events lead (soonest first); past events and undated pages follow, most-recently-edited first.
+      list.sort((a, b) => {
+        const ad = a.p.eventDate, bd = b.p.eventDate;
+        const aUp = ad && ad >= today, bUp = bd && bd >= today;
+        if (aUp !== bUp) return aUp ? -1 : 1;
+        if (aUp && bUp) return ad < bd ? -1 : ad > bd ? 1 : 0;
+        return (b.p.updatedAt?.seconds || 0) - (a.p.updatedAt?.seconds || 0);
+      });
+
+      document.getElementById('pg-count').textContent =
+        list.length + ' of ' + allPageDocs.length + ' page' + (allPageDocs.length === 1 ? '' : 's');
+
+      if (!list.length) { box.innerHTML = '<p style="color:var(--text-light)">Nothing matches these filters.</p>'; return; }
+
+      box.innerHTML = '';
+      list.forEach(({ doc, p }) => {
+        const live = p.status === 'published';
+        const sList = pageSchools(p);
+        const path = pagePath(routingSchool(sList), p.slug);
+        const shared = sList.length > 1
+          ? ` &nbsp;·&nbsp; shared: ${sList.map(s => esc(SCHOOLS[s] || s)).join(', ')}` : '';
+        const sec = sectionByCat(p.category);
+        const isUpcoming = p.eventDate && p.eventDate >= today;
+        const dateHtml = p.eventDate
+          ? `<span class="pg-date ${isUpcoming ? 'upcoming' : 'past'}">${esc(prettyYMD(p.eventDate))}</span> &nbsp;·&nbsp; ` : '';
+        const row = document.createElement('div');
+        row.className = 'bo-row';
+        row.innerHTML = `
+          <div class="bo-row-main">
+            <h4>${esc(p.title || 'Untitled page')} ${sec ? `<span class="pg-cat-badge">${esc(sec.label.replace(/&amp;/g, '&'))}</span>` : ''}</h4>
+            <div class="bo-meta">
+              ${dateHtml}${live ? 'Live at <code>/' + esc(path) + '</code>' : 'Draft — not visible to the public'}
+              &nbsp;·&nbsp; edited ${fmtDate(p.updatedAt)}${shared}
+            </div>
+          </div>
+          <span class="bo-pill ${live ? 'live' : 'draft'}">${live ? 'Published' : 'Draft'}</span>
+          ${live ? `<a class="bo-btn ghost sm" href="../${esc(path)}" target="_blank">View</a>` : ''}
+          <a class="bo-btn sm" href="page-editor.html?id=${doc.id}">Edit</a>
+          <button class="bo-btn ghost sm" data-dup>Duplicate</button>
+          <button class="bo-btn danger ghost sm" data-del>Delete</button>`;
+        row.querySelector('[data-dup]').onclick = (ev) => duplicatePage(doc.id, p, ev.target);
+        row.querySelector('[data-del]').onclick = async (ev) => {
+          if (!confirm('Delete "' + (p.title || 'this page') + '"? This cannot be undone.')) return;
+          ev.target.disabled = true;
+          try {
+            await db.collection('pages').doc(doc.id).delete();
+            allPageDocs = allPageDocs.filter(d => d.id !== doc.id);
+            renderPages();
+          } catch (e) { toast('Could not delete: ' + e.message, 'error'); ev.target.disabled = false; }
+        };
+        box.appendChild(row);
+      });
+    }
+
+    async function duplicatePage(id, p, btn) {
+      btn.disabled = true; btn.textContent = 'Duplicating…';
+      try {
+        const title = (p.title || 'Untitled page') + ' (Copy)';
+        const copy = {
+          title, slug: slugify(title),
+          category: p.category || '', schools: pageSchools(p), school: routingSchool(pageSchools(p)),
+          blocks: p.blocks || [],
+          eventDate: p.eventDate || '', eventTime: p.eventTime || '', eventLocation: p.eventLocation || '',
+          flyerUrl: p.flyerUrl || '',
+          status: 'draft',
+          createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedBy: ME.email, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        const ref = await db.collection('pages').add(copy);
+        toast('Duplicated — opening the copy to edit');
+        location.href = 'page-editor.html?id=' + ref.id;
+      } catch (e) {
+        toast('Could not duplicate: ' + e.message, 'error');
+        btn.disabled = false; btn.textContent = 'Duplicate';
       }
     }
 
