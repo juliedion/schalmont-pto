@@ -5,16 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="canonical" href="https://schalmontpto.com/chocolate">
   <meta property="og:title" content="Gertrude Hawk Chocolate Bar Fundraiser | Schalmont PTO">
-  <meta property="og:description" content="For Schalmont Middle + High School families — sign up to sell Gertrude Hawk chocolate, or order bars or a case to have sent home.">
+  <meta property="og:description" content="For Schalmont Middle + High School families — sign up to sell Gertrude Hawk chocolate, or buy a bar from a Schalmont family who's selling.">
   <meta property="og:image" content="https://schalmontpto.com/images/Schalmont-PTO-logo.png">
   <meta property="og:url" content="https://schalmontpto.com/chocolate">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Gertrude Hawk Chocolate Bar Fundraiser | Schalmont PTO">
-  <meta name="twitter:description" content="For Schalmont Middle + High School families — sign up to sell Gertrude Hawk chocolate, or order bars or a case to have sent home.">
+  <meta name="twitter:description" content="For Schalmont Middle + High School families — sign up to sell Gertrude Hawk chocolate, or buy a bar from a Schalmont family who's selling.">
   <meta name="twitter:image" content="https://schalmontpto.com/images/Schalmont-PTO-logo.png">
   <title>Gertrude Hawk Chocolate Bar Fundraiser | Schalmont PTO</title>
-  <meta name="description" content="For Schalmont Middle + High School families — sign up to sell Gertrude Hawk chocolate, or order bars or a case to have sent home. $2.50 per bar.">
+  <meta name="description" content="For Schalmont Middle + High School families — sign up to sell Gertrude Hawk chocolate, or buy a bar from a Schalmont family who's selling. $2.50 per bar.">
   <link rel="stylesheet" href="css/styles.css?v=5">
   <link rel="icon" href="images/favicon.svg">
   <style>
@@ -244,11 +244,11 @@
           <img src="images/logo-color.png" alt="Schalmont PTO" class="gh-hero-logo">
           <p class="gh-eyebrow">Schalmont PTO Fundraiser</p>
           <h1>Gertrude Hawk Chocolate Bar Fundraiser</h1>
-          <p class="gh-hero-sub">For Schalmont Middle and High School families — sign up to sell chocolate, or order bars or a case to have sent home with your student. Every purchase supports PTO programs.</p>
+          <p class="gh-hero-sub">For Schalmont Middle and High School families — sign up to sell chocolate, or buy a bar from a Schalmont family who's selling. Every purchase supports PTO programs.</p>
           <div class="gh-price"><span class="amt" id="gh-hero-price">$2.50</span><span class="unit">per bar</span></div>
           <div class="gh-cta-row">
-            <a href="#buy" class="btn btn-primary gh-focusable" id="cta-buy">Buy Chocolate</a>
-            <a href="#sell" class="btn gh-btn-light gh-focusable" id="cta-sell">Start Selling</a>
+            <a href="#sell" class="btn btn-primary gh-focusable" id="cta-sell">Start Selling</a>
+            <a href="#buy" class="btn gh-btn-light gh-focusable" id="cta-buy">Buy From a Family</a>
           </div>
           <a href="#details" class="gh-tertiary gh-focusable">Fundraiser Details ↓</a>
           <div class="gh-partner">
@@ -266,8 +266,8 @@
           <p style="font-size:15.5px;line-height:1.8;color:var(--text)">
             The Schalmont PTO is launching a Gertrude Hawk chocolate bar sale for
             <strong>Schalmont Middle School</strong> and <strong>Schalmont High School</strong> families.
-            Sign up to sell, or order chocolate for your own family — it's an easy way to support
-            PTO programs while getting something you already love.
+            Sign up to sell, or buy a bar from a Schalmont family who's selling — it's an easy way to
+            support PTO programs while getting something you already love.
           </p>
         </div>
       </section>
@@ -277,18 +277,13 @@
         <div class="gh-section-inner">
           <div class="gh-section-head">
             <h2>Buy Chocolate</h2>
-            <p>Order bars or a full case online — it's sent home with your student. Or, buy directly from a Schalmont family who's selling.</p>
+            <p>Chocolate isn't sold on this website — buy directly from a Schalmont family who's selling.</p>
           </div>
           <div class="gh-buy-grid">
             <div class="gh-card">
-              <h3>Order Online — Sent Home</h3>
-              <p>Order online and choose bars or a full case. Your order is sent home with your student, and every purchase goes directly to support Schalmont PTO programs.</p>
-              <a id="gh-zeffy-btn" href="#" target="_blank" rel="noopener" class="btn btn-primary gh-focusable">Buy Chocolate Online</a>
-            </div>
-            <div class="gh-card">
               <h3>From a Selling Family</h3>
-              <p>Chocolate is also available directly from participating Schalmont families who've signed up to sell — while supplies last.</p>
-              <a href="#sell" class="btn gh-btn-light gh-focusable">Sign Up to Sell</a>
+              <p>Chocolate is available directly from participating Schalmont families who've signed up to sell — while supplies last.</p>
+              <a href="#sell" class="btn btn-primary gh-focusable">Sign Up to Sell</a>
             </div>
           </div>
         </div>
@@ -522,12 +517,8 @@
       return isNaN(d) ? ymd : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
-    // Price + Zeffy link
+    // Price
     document.getElementById('gh-hero-price').textContent = '$' + CF.price.toFixed(2);
-    document.getElementById('gh-zeffy-btn').href = CF.zeffyUrl;
-    document.getElementById('cta-buy').href = CF.zeffyUrl;
-    document.getElementById('cta-buy').target = '_blank';
-    document.getElementById('cta-buy').rel = 'noopener';
 
     // Seller batch text
     document.getElementById('gh-batch-size').textContent = CF.sellerBatch.min + '–' + CF.sellerBatch.max + ' bars';
