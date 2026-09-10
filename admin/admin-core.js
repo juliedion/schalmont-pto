@@ -314,8 +314,11 @@ function newWebPage(cat, presetSchool) {
       <label class="bo-modal-lbl">Working title <span style="font-weight:400;color:var(--text-light)">— you can change it later</span></label>
       <input type="text" id="nwp-title" placeholder="e.g. Fall Fun Run 2026">
       <label class="bo-modal-lbl">Where should this show up?</label>
+      <p style="font-size:12px;color:var(--text-light);margin:0 0 6px">
+        Every page gets a landing-page card automatically once you publish it — no need to
+        pick that here. You can turn it off, or fine-tune the card, from the page editor.
+      </p>
       <div class="bo-modal-checklist">
-        <label><input type="checkbox" id="nwp-homepage" checked> Add a card for it on the school's landing page</label>
         <label><input type="checkbox" id="nwp-topmenu"> Show in the top menu</label>
         <label><input type="checkbox" id="nwp-leftmenu" checked> Show in the left (Browse) menu</label>
       </div>
@@ -350,7 +353,6 @@ function newWebPage(cat, presetSchool) {
     const schools = [...back.querySelectorAll('.nwp-school:checked')].map(c => c.value);
     const title = back.querySelector('#nwp-title').value.trim();
     const chosenCat = back.querySelector('#nwp-type').value;
-    const showOnHomepage = back.querySelector('#nwp-homepage').checked;
     const showInTopMenu = back.querySelector('#nwp-topmenu').checked;
     const showInLeftMenu = back.querySelector('#nwp-leftmenu').checked;
     if (!schools.length) { toast('Pick at least one school', 'error'); return; }
@@ -358,28 +360,15 @@ function newWebPage(cat, presetSchool) {
     if (!canManageAll(schools)) { toast('You can only create pages for your own school(s)', 'error'); return; }
     back.querySelector('#nwp-go').disabled = true;
     try {
-      const slug = slugify(title);
-      const routingS = routingSchool(schools);
       const ref = await db.collection('pages').add({
-        category: chosenCat, schools, school: routingS,
-        title, slug,
-        showOnHomepage, showInTopMenu, showInLeftMenu,
+        category: chosenCat, schools, school: routingSchool(schools),
+        title, slug: slugify(title),
+        showInTopMenu, showInLeftMenu,
         status: 'draft', blocks: [],
         createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-      if (showOnHomepage) {
-        // One landing-page card per school it belongs to (skips the pto-wide bucket,
-        // which has no landing page of its own to put a card on).
-        const cardSchools = schools.filter(s => s !== 'pto');
-        for (const s of cardSchools) {
-          await db.collection('program_cards').add({
-            school: s, pageId: ref.id, order: 999,
-            icon: '📌', title, badgeType: 'coming', badgeText: 'More Info Coming Soon',
-            id: slug, desc: '', actions: [],
-            createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
-        }
-      }
+      // The landing-page card itself is created automatically the first time this page
+      // is published (see page-editor.html's syncCard) -- not here.
       location.href = 'page-editor.html?id=' + ref.id + '&guide=1';
     } catch (e) {
       toast('Could not create the page: ' + e.message, 'error');

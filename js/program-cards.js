@@ -869,17 +869,31 @@ const PROGRAM_CARDS_DEFAULTS = {
     el.innerHTML = cards.length ? cards.map(cardHTML).join('') : '';
   }
 
+  // Homepage cards show what's current and coming up, soonest first. Past events drop off
+  // the page entirely (the page itself can stay live/published as a record — it just
+  // doesn't get a card). Cards with no date (ongoing programs/clubs) sort after dated ones,
+  // in their manually-set `order`.
+  function sortAndFilter(cards) {
+    var today = new Date().toISOString().slice(0, 10);
+    return cards
+      .filter(function (c) { return c.badgeType !== 'past' && !(c.eventDate && c.eventDate < today); })
+      .sort(function (a, b) {
+        if (a.eventDate && b.eventDate) return a.eventDate < b.eventDate ? -1 : a.eventDate > b.eventDate ? 1 : 0;
+        if (a.eventDate !== b.eventDate) return a.eventDate ? -1 : 1;
+        return (a.order || 0) - (b.order || 0);
+      });
+  }
+
   function loadInto(el) {
     var school = el.dataset.school;
-    var fallback = (PROGRAM_CARDS_DEFAULTS[school] || []).slice().sort(function (a, b) { return (a.order || 0) - (b.order || 0); });
+    var fallback = sortAndFilter((PROGRAM_CARDS_DEFAULTS[school] || []).slice());
     render(el, fallback);   // instant, no flash of empty content
     try {
       if (!window.firebase || !firebase.apps || !firebase.apps.length) return;
       firebase.firestore().collection('program_cards').where('school', '==', school).get()
         .then(function (snap) {
           if (snap.empty) return;   // keep the fallback shown
-          var cards = snap.docs.map(function (d) { return d.data(); })
-            .sort(function (a, b) { return (a.order || 0) - (b.order || 0); });
+          var cards = sortAndFilter(snap.docs.map(function (d) { return d.data(); }));
           render(el, cards);
         })
         .catch(function () { /* keep the fallback shown */ });

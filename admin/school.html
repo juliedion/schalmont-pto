@@ -108,10 +108,11 @@
             <option value="type">By type</option>
             <option value="az">A–Z</option>
             <option value="recent">Recently edited</option>
+            <option value="cardorder">Homepage card order (drag to reorder)</option>
           </select>
         </label>
       </div>
-      <p style="font-size:12px;color:var(--text-light);margin:-10px 0 14px">
+      <p id="pg-sort-hint" style="font-size:12px;color:var(--text-light);margin:-10px 0 14px">
         Sorting never hides anything — every event, club, program and page for this school is
         always listed below, current and past. Type/Status only narrow the list if you change them.
       </p>
@@ -266,6 +267,7 @@
         [...byField.docs, ...byArray.docs].forEach(d => seen.set(d.id, d));
         allPageDocs = [...seen.values()];
         await loadProgramCards();
+        await backfillCards();
         renderPages();
       } catch (e) {
         box.innerHTML = '<p style="color:var(--error)">Could not load pages: ' + esc(e.message) + '</p>';
@@ -296,6 +298,35 @@
         }
         allCardDocs = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
       } catch (e) { allCardDocs = []; /* rules may not be published yet — pages still show */ }
+    }
+
+    // Every published page should have a landing-page card -- automatically, not as a
+    // separate step. Catches pages published before this existed, and anything the page
+    // editor's own syncCard() missed (e.g. edited from before that logic existed).
+    async function backfillCards() {
+      const linkedPageIds = new Set(allCardDocs.map(c => c.pageId).filter(Boolean));
+      const today = toYMD(new Date());
+      const missing = allPageDocs.filter(doc => {
+        const p = doc.data();
+        return p.status === 'published' && !p.hideCard && !linkedPageIds.has(doc.id);
+      });
+      if (!missing.length) return;
+      try {
+        const batch = db.batch();
+        missing.forEach(doc => {
+          const p = doc.data();
+          batch.set(db.collection('program_cards').doc(), {
+            school, pageId: doc.id, order: 999,
+            icon: '📌', title: p.title || 'Untitled',
+            badgeType: (p.eventDate && p.eventDate < today) ? 'past' : 'active', badgeText: '',
+            eventDate: p.eventDate || '', id: p.slug || '', desc: '',
+            actions: [{ label: 'Learn More →', href: '/' + pagePath(school, p.slug), cls: 'btn btn-primary' }],
+            createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        });
+        await batch.commit();
+        await loadProgramCards();
+      } catch (e) { /* rules may not be published yet — pages still show */ }
     }
 
     // Group key + label for each sort mode. Sorting only ever reorders/groups —
@@ -349,12 +380,85 @@
         : { key: 'b', label: 'Past events & everything else' };
     }
 
+    // Drag-and-drop reordering of the homepage card grid. Only shows cards that are
+    // actually eligible to appear on the public page (not past, not hidden) in their
+    // current order — dragging updates each card's `order` field so the public grid
+    // (sorted the same way, see js/program-cards.js) picks up the new order.
+    function renderCardOrder() {
+      const box = document.getElementById('pages-list');
+      document.getElementById('pg-filter-cat').disabled = true;
+      document.getElementById('pg-filter-status').disabled = true;
+      document.getElementById('pg-sort-hint').textContent =
+        'Drag a card to change where it appears on the homepage. Past and unpublished pages never show here — they never appear on the public page either.';
+      const today = toYMD(new Date());
+      const cards = allCardDocs
+        .filter(c => c.badgeType !== 'past' && !(c.eventDate && c.eventDate < today))
+        .sort((a, b) => {
+          if (a.eventDate && b.eventDate) return a.eventDate < b.eventDate ? -1 : a.eventDate > b.eventDate ? 1 : 0;
+          if (a.eventDate !== b.eventDate) return a.eventDate ? -1 : 1;
+          return (a.order || 0) - (b.order || 0);
+        });
+      document.getElementById('pg-count').textContent = cards.length + ' card' + (cards.length === 1 ? '' : 's') + ' shown on the homepage';
+      if (!cards.length) { box.innerHTML = '<p style="color:var(--text-light)">No current or upcoming cards to reorder.</p>'; return; }
+
+      const grid = document.createElement('div');
+      grid.className = 'pg-cards-grid';
+      box.innerHTML = '';
+      box.appendChild(grid);
+
+      let dragId = null;
+      cards.forEach(c => {
+        const row = document.createElement('div');
+        row.className = 'pg-card';
+        row.draggable = true;
+        row.dataset.docId = c.docId;
+        row.style.cursor = 'grab';
+        row.innerHTML = `
+          <div class="pg-card-top">
+            <h4>⠿ ${esc(c.title || 'Untitled card')}</h4>
+          </div>
+          <div class="bo-meta">${esc(c.eventDate ? prettyDate(c.eventDate) : 'No date')}</div>`;
+        row.addEventListener('dragstart', () => { dragId = c.docId; row.style.opacity = '0.4'; });
+        row.addEventListener('dragend', () => { row.style.opacity = ''; });
+        row.addEventListener('dragover', (e) => e.preventDefault());
+        row.addEventListener('drop', async (e) => {
+          e.preventDefault();
+          if (!dragId || dragId === c.docId) return;
+          const fromIdx = cards.findIndex(x => x.docId === dragId);
+          const toIdx = cards.findIndex(x => x.docId === c.docId);
+          const [moved] = cards.splice(fromIdx, 1);
+          cards.splice(toIdx, 0, moved);
+          const batch = db.batch();
+          cards.forEach((c2, i) => { c2.order = i; batch.update(db.collection('program_cards').doc(c2.docId), { order: i }); });
+          try { await batch.commit(); } catch (err) { toast('Could not save new order: ' + err.message, 'error'); }
+          allCardDocs = allCardDocs.map(orig => {
+            const updated = cards.find(c2 => c2.docId === orig.docId);
+            return updated ? Object.assign({}, orig, { order: updated.order }) : orig;
+          });
+          renderCardOrder();
+        });
+        grid.appendChild(row);
+      });
+    }
+
+    function prettyDate(ymd) {
+      const p = ymd.split('-'); const d = new Date(+p[0], +p[1] - 1, +p[2]);
+      return isNaN(d) ? ymd : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
     function renderPages() {
       const box = document.getElementById('pages-list');
       const catF = document.getElementById('pg-filter-cat').value;
       const statusF = document.getElementById('pg-filter-status').value;
       const sortMode = document.getElementById('pg-sort').value;
       const today = toYMD(new Date());
+
+      document.getElementById('pg-filter-cat').disabled = false;
+      document.getElementById('pg-filter-status').disabled = false;
+      document.getElementById('pg-sort-hint').textContent =
+        'Sorting never hides anything — every event, club, program and page for this school is ' +
+        'always listed below, current and past. Type/Status only narrow the list if you change them.';
+      if (sortMode === 'cardorder') { renderCardOrder(); return; }
 
       let list = allPageDocs.map(doc => ({ kind: 'page', doc, p: doc.data() }));
       list = list.concat(allCardDocs.map(c => ({

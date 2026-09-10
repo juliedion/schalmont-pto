@@ -94,6 +94,36 @@
       </div>
     </details>
 
+    <details style="margin:8px 0 4px;max-width:none" open>
+      <summary style="cursor:pointer;font-weight:700;font-size:13.5px;color:var(--text)">Landing page card</summary>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:10px">
+        <div class="bo-tip" style="margin-bottom:14px">
+          Every published page automatically gets a card on its school's landing page, so
+          you don't have to build it twice. Fill these in to control how the card looks;
+          leave them blank and sensible defaults are used.
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;margin-bottom:12px">
+          <input type="checkbox" id="card-hide"> Don't show a card for this page on the landing page
+        </label>
+        <div style="display:flex;gap:14px;flex-wrap:wrap">
+          <div class="bo-blockfield" style="max-width:100px"><label>Icon <span style="font-weight:400;color:var(--text-light)">— one emoji</span></label>
+            <input type="text" id="card-icon" placeholder="🎪" maxlength="4"></div>
+          <div class="bo-blockfield" style="max-width:200px"><label>Badge</label>
+            <select id="card-badge-type">
+              <option value="active">Active</option>
+              <option value="coming">Coming soon</option>
+              <option value="past">Past event</option>
+            </select></div>
+          <div class="bo-blockfield" style="flex:1;min-width:200px"><label>Badge text <span style="font-weight:400;color:var(--text-light)">— optional override</span></label>
+            <input type="text" id="card-badge-text" placeholder="e.g. Sign up now"></div>
+        </div>
+        <div class="bo-blockfield">
+          <label>Card description <span style="font-weight:400;color:var(--text-light)">— shown on the card; leave blank to use the page title only</span></label>
+          <textarea id="card-desc" rows="2" placeholder="A short one- or two-sentence teaser"></textarea>
+        </div>
+      </div>
+    </details>
+
     <div class="bo-editor" style="margin-top:20px">
       <div>
         <div class="bo-preview-label">Building blocks</div>
@@ -152,6 +182,7 @@
     let signupSheets = [];    // available sign-up sheets, for the Sign-up sheet block
     let slugTouched = false;
     let lockedSchools = [];   // schools already on this page that I can't manage (super: none)
+    let cardDocs = [];        // existing program_cards docs linked to this page (one per school)
 
     requireAdmin(async (me) => {
       if (pageId) {
@@ -189,7 +220,70 @@
       reflectStatus();
       loadImages();
       loadSignupSheets();
+      loadCard();
     });
+
+    // Landing-page card fields live on this page's linked program_cards doc(s), not on
+    // the page itself -- one card per school this page belongs to. All cards for a page
+    // share the same icon/badge/description, edited here in one place.
+    async function loadCard() {
+      if (!pageId) return;
+      try {
+        const snap = await db.collection('program_cards').where('pageId', '==', pageId).get();
+        cardDocs = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+      } catch (e) { cardDocs = []; return; }
+      const c = cardDocs[0];
+      document.getElementById('card-hide').checked = page.hideCard === true;
+      document.getElementById('card-icon').value = (c && c.icon) || '';
+      document.getElementById('card-badge-type').value = (c && c.badgeType) || 'active';
+      document.getElementById('card-badge-text').value = (c && c.badgeText) || '';
+      document.getElementById('card-desc').value = (c && c.desc) || '';
+    }
+
+    // Create/update/delete the linked program_cards doc(s) for the current schools so
+    // every published page has a matching card, and only a published page does.
+    async function syncCard() {
+      const hide = document.getElementById('card-hide').checked;
+      const icon = document.getElementById('card-icon').value.trim();
+      const today = toYMD(new Date());
+      // A dated page that's already happened is "past" no matter what the badge dropdown
+      // says -- past events shouldn't need a human to remember to flip it by hand.
+      const badgeType = (page.eventDate && page.eventDate < today) ? 'past' : document.getElementById('card-badge-type').value;
+      const badgeText = document.getElementById('card-badge-text').value.trim();
+      const desc = document.getElementById('card-desc').value.trim();
+      const wantSchools = hide || page.status !== 'published'
+        ? []
+        : page.schools.filter(s => s !== 'pto');
+
+      const byDocId = new Map(cardDocs.map(c => [c.docId, c]));
+      const bySchool = new Map(cardDocs.map(c => [c.school, c]));
+      const keep = new Set();
+
+      for (const s of wantSchools) {
+        const existing = bySchool.get(s);
+        const fields = {
+          school: s, pageId, order: (existing && existing.order != null) ? existing.order : 999,
+          icon: icon || '📌', title: page.title,
+          badgeType, badgeText, eventDate: page.eventDate || '',
+          id: page.slug, desc,
+          actions: [{ label: 'Learn More →', href: '/' + pagePath(s, page.slug), cls: 'btn btn-primary' }]
+        };
+        if (existing) {
+          await db.collection('program_cards').doc(existing.docId).update(fields);
+          keep.add(existing.docId);
+        } else {
+          const ref = await db.collection('program_cards').add(Object.assign(fields, {
+            createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          }));
+          keep.add(ref.id);
+        }
+      }
+      for (const c of cardDocs) {
+        if (!keep.has(c.docId)) await db.collection('program_cards').doc(c.docId).delete();
+      }
+      cardDocs = (await db.collection('program_cards').where('pageId', '==', pageId).get())
+        .docs.map(d => ({ docId: d.id, ...d.data() }));
+    }
 
     async function loadSignupSheets() {
       try {
@@ -343,6 +437,7 @@
         (page.status === 'published' ? ' and takes it off the live website' : '') + '. This cannot be undone.')) return;
       try {
         await db.collection('pages').doc(pageId).delete();
+        await Promise.all(cardDocs.map(c => db.collection('program_cards').doc(c.docId).delete()));
         toast('Page deleted');
         setTimeout(() => {
           location.href = page.category ? 'section.html?cat=' + page.category
@@ -616,12 +711,14 @@
       }
 
       btns.forEach(b => b.disabled = true);
+      page.hideCard = document.getElementById('card-hide').checked;
       const data = {
         title: page.title.trim(), slug: page.slug.trim(),
         schools: page.schools, school,
         blocks: page.blocks,
         eventDate: page.eventDate || '', eventTime: page.eventTime || '',
         eventLocation: page.eventLocation || '', flyerUrl: page.flyerUrl || '',
+        hideCard: page.hideCard,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedBy: ME.email
       };
@@ -639,6 +736,7 @@
           history.replaceState(null, '', 'page-editor.html?id=' + pageId);
         }
         if (statusChange) page.status = statusChange;
+        await syncCard();
         reflectStatus();
         toast(statusChange === 'published' ? '✓ Published! Share your link.' :
               statusChange === 'draft' ? 'Page unpublished (now a draft)' : 'Draft saved');
