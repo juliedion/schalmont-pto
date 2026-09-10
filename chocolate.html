@@ -3,15 +3,145 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta property="og:title" content="Gertrude Hawk Chocolate Bar Fundraiser — Schalmont PTO">
+  <link rel="canonical" href="https://schalmontpto.com/chocolate">
+  <meta property="og:title" content="Gertrude Hawk Chocolate Bar Fundraiser | Schalmont PTO">
+  <meta property="og:description" content="Grab a Gertrude Hawk chocolate bar and support Schalmont Middle + High School students. Learn how to buy, sell and participate.">
   <meta property="og:image" content="https://schalmontpto.com/images/Schalmont-PTO-logo.png">
+  <meta property="og:url" content="https://schalmontpto.com/chocolate">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Gertrude Hawk Chocolate Bar Fundraiser | Schalmont PTO">
+  <meta name="twitter:description" content="Grab a Gertrude Hawk chocolate bar and support Schalmont Middle + High School students. Learn how to buy, sell and participate.">
   <meta name="twitter:image" content="https://schalmontpto.com/images/Schalmont-PTO-logo.png">
-  <title>Gertrude Hawk Chocolate Bar Fundraiser — Schalmont PTO</title>
-  <meta name="description" content="Support the Schalmont PTO with our Gertrude Hawk Chocolate Bar Fundraiser — delicious chocolate bars, and every sale helps fund PTO programs and events.">
+  <title>Gertrude Hawk Chocolate Bar Fundraiser | Schalmont PTO</title>
+  <meta name="description" content="Grab a Gertrude Hawk chocolate bar and support Schalmont Middle + High School students. Learn how to buy, sell and participate — $2.50 per bar.">
   <link rel="stylesheet" href="css/styles.css?v=5">
   <link rel="icon" href="images/favicon.svg">
+  <style>
+    /* ---- Gertrude Hawk fundraiser page — scoped styles ---- */
+    .gh-eyebrow {
+      font-family:'Urbanist',sans-serif; font-weight:800; font-size:12.5px; color:var(--primary);
+      text-transform:uppercase; letter-spacing:2px; margin:0 0 14px;
+    }
+    .gh-hero {
+      background:#fff; border-bottom:1px solid var(--border); padding:56px 20px 44px; text-align:center;
+    }
+    .gh-hero-inner { max-width:640px; margin:0 auto; }
+    .gh-hero-logo { height:84px; width:auto; margin:0 auto 22px; display:block; }
+    .gh-hero h1 {
+      font-size:clamp(28px,4.2vw,42px); line-height:1.15; color:var(--primary-dark);
+      margin:0 0 16px; font-weight:800; letter-spacing:-0.3px;
+    }
+    .gh-hero-sub { font-size:17px; line-height:1.6; color:var(--text); max-width:520px; margin:0 auto 26px; }
+    .gh-price {
+      display:inline-flex; align-items:baseline; gap:6px; background:var(--light-bg);
+      border:1px solid var(--border); border-radius:999px; padding:10px 24px; margin-bottom:28px;
+    }
+    .gh-price .amt { font-size:26px; font-weight:800; color:var(--primary-dark); font-family:'Urbanist',sans-serif; }
+    .gh-price .unit { font-size:14px; color:var(--text-light); font-weight:600; }
+    .gh-cta-row { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:18px; }
+    .gh-cta-row .btn { min-width:180px; justify-content:center; padding:14px 28px; font-size:15px; }
+    .gh-tertiary { font-size:13.5px; font-weight:700; color:var(--text-light); }
+    .gh-tertiary:hover { color:var(--primary); }
+    .gh-partner {
+      display:flex; align-items:center; justify-content:center; gap:10px; margin-top:34px;
+      font-size:12.5px; color:var(--text-light);
+    }
+    .gh-partner strong { color:var(--text); font-family:'Urbanist',sans-serif; font-weight:800; font-size:14px; letter-spacing:0.2px; }
+
+    .gh-divider { height:3px; width:56px; background:var(--primary); border-radius:2px; margin:0 auto 20px; border:none; }
+    .gh-section { padding:52px 20px; }
+    .gh-section.alt { background:var(--light-bg); }
+    .gh-section-inner { max-width:920px; margin:0 auto; }
+    .gh-section-head { text-align:center; max-width:640px; margin:0 auto 36px; }
+    .gh-section-head h2 { font-size:clamp(22px,3vw,28px); color:var(--primary-dark); margin:0 0 10px; }
+    .gh-section-head p { font-size:15px; color:var(--text-light); line-height:1.7; margin:0; }
+
+    .gh-buy-grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+    .gh-card {
+      background:#fff; border:1px solid var(--border); border-radius:var(--radius-lg);
+      padding:28px; box-shadow:var(--shadow-sm);
+    }
+    .gh-card h3 { font-size:17px; color:var(--primary-dark); margin:0 0 8px; }
+    .gh-card p { font-size:14px; color:var(--text-light); line-height:1.65; margin:0 0 18px; }
+    .gh-card .btn { width:100%; justify-content:center; }
+
+    .gh-dates { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:16px; }
+    .gh-date-card {
+      background:#fff; border:1px solid var(--border); border-left:3px solid var(--primary);
+      border-radius:var(--radius); padding:16px 18px;
+    }
+    .gh-date-card .d { font-family:'Urbanist',sans-serif; font-weight:800; font-size:13px; color:var(--primary); letter-spacing:0.3px; margin-bottom:4px; }
+    .gh-date-card .l { font-size:14.5px; color:var(--text); font-weight:600; }
+
+    .gh-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:14px; }
+    .gh-list li { display:flex; gap:12px; align-items:flex-start; font-size:14.5px; color:var(--text); line-height:1.6; }
+    .gh-list li .n {
+      flex-shrink:0; width:24px; height:24px; border-radius:50%; background:var(--primary); color:#fff;
+      display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800;
+      font-family:'Urbanist',sans-serif; margin-top:1px;
+    }
+
+    .gh-form { max-width:640px; margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:var(--radius-lg); padding:30px; }
+    .gh-form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+    .gh-field { display:flex; flex-direction:column; gap:6px; }
+    .gh-field label { font-size:13px; font-weight:700; color:var(--text); }
+    .gh-field .req { color:var(--primary); }
+    .gh-field input, .gh-field select, .gh-field textarea {
+      padding:11px 12px; border:1.5px solid var(--border); border-radius:var(--radius);
+      font-family:inherit; font-size:14.5px; color:var(--text); background:#fff;
+    }
+    .gh-field textarea { min-height:80px; resize:vertical; }
+    .gh-field .err { font-size:12.5px; color:#9b2c2c; min-height:16px; }
+    .gh-form-msg { font-size:14px; font-weight:600; padding:12px 14px; border-radius:var(--radius); margin-top:6px; display:none; }
+    .gh-form-msg.show { display:block; }
+    .gh-form-msg.ok { background:#e8f5e4; color:#216e3c; }
+    .gh-form-msg.error { background:#fdecea; color:#8b1a14; }
+
+    .gh-faq { max-width:760px; margin:0 auto; }
+    .gh-faq details {
+      background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:4px 18px; margin-bottom:10px;
+    }
+    .gh-faq summary {
+      cursor:pointer; padding:14px 0; font-weight:700; font-size:15px; color:var(--primary-dark);
+      list-style:none; display:flex; justify-content:space-between; align-items:center; gap:12px;
+    }
+    .gh-faq summary::-webkit-details-marker { display:none; }
+    .gh-faq summary::after { content:'+'; font-size:22px; color:var(--primary); font-weight:400; flex-shrink:0; }
+    .gh-faq details[open] summary::after { content:'−'; }
+    .gh-faq .a { font-size:14.5px; color:var(--text-light); line-height:1.65; padding:0 0 16px; margin:0; }
+
+    .gh-contact-box, .gh-share-box {
+      max-width:560px; margin:0 auto; text-align:center; background:#fff; border:1px solid var(--border);
+      border-radius:var(--radius-lg); padding:32px;
+    }
+    .gh-share-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:18px; }
+    .gh-share-row button, .gh-share-row a {
+      display:inline-flex; align-items:center; gap:7px; padding:9px 16px; border-radius:999px;
+      border:1.5px solid var(--border); background:#fff; color:var(--text); font-family:inherit;
+      font-size:13.5px; font-weight:700; cursor:pointer; text-decoration:none;
+    }
+    .gh-share-row button:hover, .gh-share-row a:hover { border-color:var(--primary); color:var(--primary); }
+    .gh-copy-note { font-size:12.5px; color:var(--primary); font-weight:700; margin-top:10px; min-height:16px; }
+
+    a.gh-focusable:focus-visible, button.gh-focusable:focus-visible,
+    .gh-share-row a:focus-visible, .gh-share-row button:focus-visible,
+    .gh-cta-row a:focus-visible, .gh-faq summary:focus-visible {
+      outline:3px solid var(--primary-light); outline-offset:2px;
+    }
+
+    @media (max-width:720px) {
+      .gh-buy-grid { grid-template-columns:1fr; }
+      .gh-form-row { grid-template-columns:1fr; }
+      .gh-hero { padding:40px 16px 32px; }
+      .gh-section { padding:40px 16px; }
+    }
+    @media (max-width:480px) {
+      .gh-cta-row { flex-direction:column; }
+      .gh-cta-row .btn { width:100%; }
+      .gh-hero-logo { height:64px; }
+    }
+  </style>
 </head>
 <body>
 
@@ -51,8 +181,8 @@
           </ul>
         </li>
         <li><a href="login.html" class="btn btn-primary" style="padding:6px 16px;font-size:14px;color:#000000" id="nav-login-btn">Login/Register</a></li>
-        <li><a href="https://www.facebook.com/groups/schalmontpto/" target="_blank" rel="noopener" class="nav-social-icon" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a></li>
-        <li><a href="https://www.instagram.com/schalmontpto/" target="_blank" rel="noopener" class="nav-social-icon" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li>
+        <li><a href="https://www.facebook.com/groups/schalmontpto/" target="_blank" rel="noopener" class="nav-social-icon" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a></li>
+        <li><a href="https://www.instagram.com/schalmontpto/" target="_blank" rel="noopener" class="nav-social-icon" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li>
       </ul>
       <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
     </nav>
@@ -70,73 +200,11 @@
       <a href="schools.html" class="sidenav-item">All Schools</a>
 
       <div class="sidenav-group">
-        <button class="sidenav-item sidenav-toggle" data-target="snav-woestina">Woestina Pre-K <span class="sidenav-arrow">&#9660;</span></button>
-        <div class="sidenav-submenu" id="snav-woestina">
-          <a href="woestina.html" class="sidenav-item sub">Overview</a>
-          <a href="book-fairs.html" class="sidenav-item sub">Book Fairs</a>
-          <a href="appreciation-days.html" class="sidenav-item sub">Appreciation Days</a>
-          <a href="fundraisers-jefferson.html" class="sidenav-item sub">Fundraisers</a>
-          <a href="incoming-kindergarten.html" class="sidenav-item sub">Incoming Kindergarten</a>
-          <a href="journey-to-jefferson.html" class="sidenav-item sub">Journey to Jefferson</a>
-          <a href="picture-days.html" class="sidenav-item sub">Picture Days</a>
-          <a href="shop.html" class="sidenav-item sub">Spiritwear</a>
-          <a href="classof2040.html" class="sidenav-item sub">Class of 2040 — Pre-Kindergarten</a>
-        </div>
-      </div>
-
-      <div class="sidenav-group">
-        <button class="sidenav-item sidenav-toggle" data-target="snav-jefferson">Jefferson Elementary <span class="sidenav-arrow">&#9660;</span></button>
-        <div class="sidenav-submenu" id="snav-jefferson">
-          <a href="jefferson.html" class="sidenav-item sub">Overview</a>
-          <a href="k2-glow-dance.html" class="sidenav-item sub">K-2 Dance</a>
-          <a href="glitz-and-glam-dance.html" class="sidenav-item sub">3rd/4th Dance</a>
-          <a href="school-banking.html" class="sidenav-item sub">School Banking</a>
-          <a href="birthdays-jefferson.html" class="sidenav-item sub">Birthdays</a>
-          <a href="book-fairs.html" class="sidenav-item sub">Book Fairs</a>
-          <a href="appreciation-days.html" class="sidenav-item sub">Appreciation Days</a>
-          <a href="fundraisers-jefferson.html" class="sidenav-item sub">Fundraisers</a>
-          <a href="craft-fair-santa.html" class="sidenav-item sub">Craft Fair &amp; Santa</a>
-          <a href="holiday-shoppe.html" class="sidenav-item sub">Holiday Shoppe</a>
-          <a href="journey-to-jefferson.html" class="sidenav-item sub">Journey to Jefferson</a>
-          <a href="incoming-kindergarten.html" class="sidenav-item sub">Incoming Kindergarten</a>
-          <a href="k-lunch-volunteers.html" class="sidenav-item sub">K Lunch Team</a>
-          <a href="picture-days.html" class="sidenav-item sub">Picture Days</a>
-          <a href="scholarships-jefferson.html" class="sidenav-item sub">Scholarships</a>
-          <a href="shop.html" class="sidenav-item sub">Spiritwear</a>
-          <a href="sports.html" class="sidenav-item sub">Sports &amp; Cheer</a>
-          <a href="school-supplies.html" class="sidenav-item sub">School Supplies</a>
-          <a href="trunk-or-treat.html" class="sidenav-item sub">Trunk or Treat</a>
-          <a href="turn-off-screens.html" class="sidenav-item sub">Turn Off the Screens</a>
-          <a href="yearbook-jefferson.html" class="sidenav-item sub">Yearbook</a>
-          <a href="classof2035.html" class="sidenav-item sub">Class of 2035 — 4th Grade</a>
-          <a href="classof2036.html" class="sidenav-item sub">Class of 2036 — 3rd Grade</a>
-          <a href="classof2037.html" class="sidenav-item sub">Class of 2037 — 2nd Grade</a>
-          <a href="classof2038.html" class="sidenav-item sub">Class of 2038 — 1st Grade</a>
-          <a href="classof2039.html" class="sidenav-item sub">Class of 2039 — Kindergarten</a>
-        </div>
-      </div>
-
-      <div class="sidenav-group">
         <button class="sidenav-item sidenav-toggle" data-target="snav-middle">Middle School <span class="sidenav-arrow">&#9660;</span></button>
         <div class="sidenav-submenu" id="snav-middle">
           <a href="middle-school.html" class="sidenav-item sub">Overview</a>
-          <a href="middle-school.html#grade5-dance" class="sidenav-item sub">5th Grade Dance</a>
-          <a href="casinoroyale.html" class="sidenav-item sub">6/7 Casino Night</a>
-          <a href="middle-school.html#grade8-formal" class="sidenav-item sub">8th Grade Formal</a>
-          <a href="book-fairs-middle.html" class="sidenav-item sub">Book Fairs</a>
-          <a href="appreciation-days.html" class="sidenav-item sub">Appreciation Days</a>
           <a href="middle-school.html#fundraisers" class="sidenav-item sub">Fundraisers</a>
-          <a href="sports.html" class="sidenav-item sub">Sports &amp; Athletics</a>
-          <a href="middle-school.html#yearbook" class="sidenav-item sub">Yearbook</a>
-          <a href="middle-school.html#picture-days" class="sidenav-item sub">Picture Days</a>
-          <a href="student-council.html" class="sidenav-item sub">Student Council</a>
-          <a href="middle-school.html#sabre-nation" class="sidenav-item sub">Sabre Nation</a>
-          <a href="middle-school.html#spiritwear" class="sidenav-item sub">Spiritwear</a>
-          <a href="middle-school.html#trail-of-treats" class="sidenav-item sub">Trail of Treats</a>
-          <a href="classof2031.html" class="sidenav-item sub">Class of 2031 — 8th Grade</a>
-          <a href="classof2032.html" class="sidenav-item sub">Class of 2032 — 7th Grade</a>
-          <a href="classof2033.html" class="sidenav-item sub">Class of 2033 — 6th Grade</a>
-          <a href="classof2034.html" class="sidenav-item sub">Class of 2034 — 5th Grade</a>
+          <a href="chocolate.html" class="sidenav-item sub">Chocolate Bar Fundraiser</a>
         </div>
       </div>
 
@@ -144,13 +212,7 @@
         <button class="sidenav-item sidenav-toggle" data-target="snav-high">High School <span class="sidenav-arrow">&#9660;</span></button>
         <div class="sidenav-submenu" id="snav-high">
           <a href="high-school.html" class="sidenav-item sub">Overview</a>
-          <a href="appreciation-days.html" class="sidenav-item sub">Appreciation Days</a>
-          <a href="shop.html" class="sidenav-item sub">Spiritwear</a>
-          <a href="sports.html" class="sidenav-item sub">Sports &amp; Athletics</a>
-          <a href="classof2027.html" class="sidenav-item sub">Class of 2027 — Seniors</a>
-          <a href="classof2028.html" class="sidenav-item sub">Class of 2028 — Juniors</a>
-          <a href="classof2029.html" class="sidenav-item sub">Class of 2029 — Sophomores</a>
-          <a href="classof2030.html" class="sidenav-item sub">Class of 2030 — Freshmen</a>
+          <a href="chocolate.html" class="sidenav-item sub">Chocolate Bar Fundraiser</a>
         </div>
       </div>
 
@@ -161,88 +223,225 @@
       <a href="fundraisers.html" class="sidenav-item">Fundraisers</a>
       <a href="gallery.html" class="sidenav-item">Gallery</a>
       <a href="schools.html" class="sidenav-item">Schools</a>
-      <a href="family-scouts.html" class="sidenav-item">Scouts</a>
       <a href="shop.html" class="sidenav-item">Shop</a>
       <a href="social.html" class="sidenav-item">Social Media</a>
-      <a href="sports.html" class="sidenav-item">Sports</a>
 
       <div class="sidenav-heading">Connect</div>
       <a href="about.html" class="sidenav-item">About the PTO</a>
-      <a href="social.html" class="sidenav-item">Social Media Links</a>
       <a href="contact.html" class="sidenav-item">Contact Us</a>
-      <div class="sidenav-donate-wrap" style="display:flex;flex-direction:column;gap:5px;padding:10px 8px 8px">
-        <a href="https://woestina-pre-k-pto-donations.cheddarup.com" target="_blank" rel="noopener" style="font-size:12px">Give back: &#127807; Woestina PTO</a>
-        <a href="https://my.cheddarup.com/c/jefferson-pto-donation" target="_blank" rel="noopener" style="font-size:12px">Give back: &#127979; Jefferson PTO</a>
-        <a href="https://schalmont-central-pto.cheddarup.com" target="_blank" rel="noopener" style="font-size:12px">Give back: &#128154; Schalmont PTO</a>
-      </div>
     </aside>
 
     <!-- MAIN CONTENT -->
     <div class="homepage-main">
 
-      <!-- PAGE HERO -->
-      <section class="page-hero" style="background:linear-gradient(135deg,#045c28 0%,#087d40 100%)">
-        <div class="container">
-          <h1>🍫 Gertrude Hawk Chocolate Bar Fundraiser</h1>
-          <p>Delicious chocolate bars, sold to support Schalmont PTO programs and events!</p>
+      <!-- HERO -->
+      <section class="gh-hero">
+        <div class="gh-hero-inner">
+          <img src="images/logo-color.png" alt="Schalmont PTO" class="gh-hero-logo">
+          <p class="gh-eyebrow">Schalmont PTO Fundraiser</p>
+          <h1>Gertrude Hawk Chocolate Bar Fundraiser</h1>
+          <p class="gh-hero-sub">Grab a chocolate bar and help support programs, activities and opportunities for Schalmont Middle and High School students.</p>
+          <div class="gh-price"><span class="amt" id="gh-hero-price">$2.50</span><span class="unit">per bar</span></div>
+          <div class="gh-cta-row">
+            <a href="#buy" class="btn btn-primary gh-focusable" id="cta-buy">Buy Chocolate</a>
+            <a href="#sell" class="btn btn-outline gh-focusable" id="cta-sell">Start Selling</a>
+          </div>
+          <a href="#details" class="gh-tertiary gh-focusable">Fundraiser Details ↓</a>
+          <div class="gh-partner">
+            <span>In partnership with</span>
+            <strong>Gertrude Hawk Chocolates</strong>
+          </div>
         </div>
       </section>
 
-      <!-- FUNDRAISER DETAILS -->
-      <section class="section">
-        <div class="container" style="max-width:760px">
-
-          <div style="font-family:'Urbanist',sans-serif;font-weight:700;font-size:13px;color:#087d40;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px">PTO-Wide Fundraiser</div>
-          <h2 style="font-size:clamp(22px,3vw,30px);margin-bottom:16px">Chocolate Bar Sale</h2>
-          <p style="font-size:15px;line-height:1.8;color:var(--text-light);margin-bottom:24px">
-            Our Gertrude Hawk Chocolate Bar Fundraiser is back! Students will have the chance to sell
-            delicious Gertrude Hawk chocolate bars to family, friends, and neighbors. It's a simple,
-            popular fundraiser — and every bar sold helps support Schalmont PTO programs, events, and
-            classroom enhancements across our schools.
+      <!-- INTRO / DETAILS -->
+      <section class="gh-section" id="details">
+        <div class="gh-section-inner" style="max-width:680px;text-align:center">
+          <hr class="gh-divider">
+          <h2 style="font-size:clamp(20px,2.6vw,26px);color:var(--primary-dark);margin:0 0 14px">A sweet way to support our students</h2>
+          <p style="font-size:15.5px;line-height:1.8;color:var(--text)">
+            The Schalmont PTO is launching a Gertrude Hawk chocolate bar sale for
+            <strong>Schalmont Middle School</strong> and <strong>Schalmont High School</strong> families.
+            Chocolate is an easy way for students, families, staff and community members to support
+            PTO programs while getting something they already love.
           </p>
+        </div>
+      </section>
 
-          <div style="background:var(--light-bg);border-radius:var(--radius-lg);padding:20px;margin-bottom:24px">
-            <div style="display:flex;flex-direction:column;gap:12px">
-              <div style="display:flex;gap:12px;align-items:flex-start">
-                <span style="font-size:20px">🍫</span>
-                <div>
-                  <div style="font-weight:700;margin-bottom:2px">Gertrude Hawk Chocolate Bars</div>
-                  <div style="font-size:14px;color:var(--text-light)">Order and pay securely online below, or watch for a paper order form sent home with students.</div>
-                </div>
-              </div>
-              <div style="display:flex;gap:12px;align-items:flex-start">
-                <span style="font-size:20px">💰</span>
-                <div>
-                  <div style="font-weight:700;margin-bottom:2px">Supports Schalmont PTO</div>
-                  <div style="font-size:14px;color:var(--text-light)">A portion of every sale comes back to support PTO programs and events district-wide.</div>
-                </div>
-              </div>
-              <div style="display:flex;gap:12px;align-items:flex-start">
-                <span style="font-size:20px">📅</span>
-                <div>
-                  <div style="font-weight:700;margin-bottom:2px">Sale dates &amp; order deadline — coming soon</div>
-                  <div style="font-size:14px;color:var(--text-light)">Check back here or watch for a note home from your school for exact dates.</div>
-                </div>
-              </div>
+      <!-- HOW TO BUY -->
+      <section class="gh-section alt" id="buy">
+        <div class="gh-section-inner">
+          <div class="gh-section-head">
+            <h2>Buy Chocolate</h2>
+            <p>Two easy ways to grab a bar — order online any time, or catch us in person at an upcoming event.</p>
+          </div>
+          <div class="gh-buy-grid">
+            <div class="gh-card">
+              <h3>Online</h3>
+              <p>Order and pay securely online. Every bar purchased goes directly to support Schalmont PTO programs.</p>
+              <a id="gh-zeffy-btn" href="#" target="_blank" rel="noopener" class="btn btn-primary gh-focusable">Buy Chocolate Online</a>
+            </div>
+            <div class="gh-card">
+              <h3>In Person</h3>
+              <p>Chocolate is available from participating student sellers, and at staffed Schalmont PTO tables at upcoming school events while supplies last.</p>
+              <a href="#events" class="btn btn-outline gh-focusable">See Upcoming Events</a>
             </div>
           </div>
+        </div>
+      </section>
 
-          <h3 style="font-size:19px;color:var(--primary-dark);margin:0 0 14px">Order Now</h3>
-          <div>
-            <div data-zeffy-embed data-form-url="/embed/ticketing/gertrude-hawk-chocolate-bar-fundraiser-schalmont-pto"></div>
-            <div data-zeffy-embed-fallback style="display:none;">
-              <div style="position:relative;overflow:hidden;height:450px;width:100%;padding-top:450px;"><iframe title='Donation form powered by Zeffy' style='position: absolute; border: 0; top:0;left:0;bottom:0;right:0;width:100%;height:100%' data-zeffy-embed-src='https://www.zeffy.com/embed/ticketing/gertrude-hawk-chocolate-bar-fundraiser-schalmont-pto' allowpaymentrequest allowTransparency="true"></iframe></div>
+      <!-- UPCOMING FUNDRAISER OPPORTUNITIES -->
+      <section class="gh-section" id="events">
+        <div class="gh-section-inner">
+          <div class="gh-section-head">
+            <h2>Upcoming Fundraiser Opportunities</h2>
+            <p>Look for the Schalmont PTO table at these upcoming events.</p>
+          </div>
+          <div class="gh-dates" id="gh-dates"></div>
+        </div>
+      </section>
+
+      <!-- HOW STUDENT SELLING WORKS -->
+      <section class="gh-section alt" id="sell">
+        <div class="gh-section-inner" style="max-width:680px">
+          <div class="gh-section-head">
+            <h2>How Student Selling Works</h2>
+            <p>We're keeping this simple and easy to track for everyone.</p>
+          </div>
+          <ul class="gh-list">
+            <li><span class="n">1</span><span>Students and families can request a starter quantity of chocolate to sell.</span></li>
+            <li><span class="n">2</span><span>Rather than handing out a full 48-bar carrier, the PTO distributes manageable batches — typically <span id="gh-batch-size">12–24 bars</span> to start.</span></li>
+            <li><span class="n">3</span><span>Sellers return payment according to PTO instructions.</span></li>
+            <li><span class="n">4</span><span>Once your first batch is sold and accounted for, additional chocolate can be requested.</span></li>
+            <li><span class="n">5</span><span>Inventory is limited and distributed while supplies last — this system helps us keep accurate records and reduce lost or unpaid product.</span></li>
+          </ul>
+          <div style="text-align:center;margin-top:30px">
+            <a href="#request-form" class="btn btn-primary gh-focusable">Request Chocolate to Sell</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- SELLER REQUEST FORM -->
+      <section class="gh-section" id="request-form">
+        <div class="gh-section-inner">
+          <div class="gh-section-head">
+            <h2>Request Chocolate to Sell</h2>
+            <p>Fill this out and the PTO will follow up with pickup details.</p>
+          </div>
+          <form class="gh-form" id="seller-request-form" novalidate>
+            <div class="gh-form-row">
+              <div class="gh-field">
+                <label for="f-parent">Parent / Guardian Name <span class="req">*</span></label>
+                <input type="text" id="f-parent" name="parentName" required autocomplete="name">
+                <div class="err" id="err-parent" aria-live="polite"></div>
+              </div>
+              <div class="gh-field">
+                <label for="f-student">Student Name <span class="req">*</span></label>
+                <input type="text" id="f-student" name="studentName" required autocomplete="off">
+                <div class="err" id="err-student" aria-live="polite"></div>
+              </div>
             </div>
-            <script
-              src="https://www.zeffy.com/embed/v2/zeffy-embed.js"
-              onerror="document.querySelectorAll('[data-zeffy-embed-fallback]').forEach(function(el){el.style.display='block';el.querySelectorAll('iframe[data-zeffy-embed-src]').forEach(function(f){f.src=f.getAttribute('data-zeffy-embed-src');});});">
-            </script>
-          </div>
+            <div class="gh-form-row">
+              <div class="gh-field">
+                <label for="f-school">School <span class="req">*</span></label>
+                <select id="f-school" name="school" required>
+                  <option value="">Select a school…</option>
+                  <option value="Schalmont Middle School">Schalmont Middle School</option>
+                  <option value="Schalmont High School">Schalmont High School</option>
+                </select>
+                <div class="err" id="err-school" aria-live="polite"></div>
+              </div>
+              <div class="gh-field">
+                <label for="f-grade">Grade <span class="req">*</span></label>
+                <input type="text" id="f-grade" name="grade" required placeholder="e.g. 7th grade">
+                <div class="err" id="err-grade" aria-live="polite"></div>
+              </div>
+            </div>
+            <div class="gh-form-row">
+              <div class="gh-field">
+                <label for="f-email">Email <span class="req">*</span></label>
+                <input type="email" id="f-email" name="email" required autocomplete="email">
+                <div class="err" id="err-email" aria-live="polite"></div>
+              </div>
+              <div class="gh-field">
+                <label for="f-phone">Phone</label>
+                <input type="tel" id="f-phone" name="phone" autocomplete="tel">
+                <div class="err"></div>
+              </div>
+            </div>
+            <div class="gh-form-row">
+              <div class="gh-field">
+                <label for="f-qty">Requested Quantity</label>
+                <select id="f-qty" name="quantity">
+                  <option value="12">12 bars</option>
+                  <option value="24" selected>24 bars</option>
+                  <option value="other">Other (note below)</option>
+                </select>
+              </div>
+              <div class="gh-field">
+                <label for="f-pickup">Preferred Pickup Option</label>
+                <input type="text" id="f-pickup" name="pickup" placeholder="e.g. School office, PTO meeting">
+              </div>
+            </div>
+            <div class="gh-field" style="margin-bottom:18px">
+              <label for="f-notes">Notes</label>
+              <textarea id="f-notes" name="notes" placeholder="Anything else we should know?"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary gh-focusable" id="seller-submit-btn" style="width:100%;justify-content:center">Request Chocolate to Sell</button>
+            <div class="gh-form-msg" id="seller-form-msg" role="status" aria-live="polite"></div>
+          </form>
+        </div>
+      </section>
 
-          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px">
-            <a href="contact.html" class="btn btn-outline">Questions? Contact Us</a>
-          </div>
+      <!-- WHY IT MATTERS -->
+      <section class="gh-section alt">
+        <div class="gh-section-inner" style="max-width:640px;text-align:center">
+          <hr class="gh-divider">
+          <p class="gh-eyebrow" style="text-align:center">Supporting Every Sabre's Story</p>
+          <h2 style="font-size:clamp(20px,2.6vw,26px);color:var(--primary-dark);margin:0 0 14px">Why it matters</h2>
+          <p style="font-size:15.5px;line-height:1.8;color:var(--text)">
+            Every bar sold helps fund Schalmont PTO programs, activities, student experiences,
+            staff support, events and other approved initiatives for Middle and High School students.
+          </p>
+        </div>
+      </section>
 
+      <!-- FAQ -->
+      <section class="gh-section">
+        <div class="gh-section-inner">
+          <div class="gh-section-head">
+            <h2>Frequently Asked Questions</h2>
+          </div>
+          <div class="gh-faq" id="gh-faq"></div>
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section class="gh-section alt">
+        <div class="gh-section-inner">
+          <div class="gh-contact-box">
+            <h2 style="font-size:19px;color:var(--primary-dark);margin:0 0 8px">Questions about the fundraiser?</h2>
+            <p style="font-size:14px;color:var(--text-light);margin:0 0 18px">We're happy to help with orders, selling, or anything else.</p>
+            <a id="gh-contact-btn" href="contact.html" class="btn btn-primary gh-focusable">Contact the PTO</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- SHARE -->
+      <section class="gh-section">
+        <div class="gh-section-inner">
+          <div class="gh-share-box">
+            <h2 style="font-size:19px;color:var(--primary-dark);margin:0 0 8px">Share This Fundraiser</h2>
+            <p style="font-size:14px;color:var(--text-light);margin:0">Help spread the word — every share helps!</p>
+            <div class="gh-share-row">
+              <button type="button" id="gh-share-native" class="gh-focusable" hidden>Share</button>
+              <a id="gh-share-fb" href="#" target="_blank" rel="noopener" class="gh-focusable">Facebook</a>
+              <a id="gh-share-sms" href="#" class="gh-focusable">Text</a>
+              <a id="gh-share-email" href="#" class="gh-focusable">Email</a>
+              <button type="button" id="gh-share-copy" class="gh-focusable">Copy Link</button>
+            </div>
+            <div class="gh-copy-note" id="gh-copy-note" aria-live="polite"></div>
+          </div>
         </div>
       </section>
 
@@ -260,14 +459,9 @@
           <div style="display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap">
             <a href="login.html" class="btn btn-primary" style="padding:6px 14px;font-size:13px;color:#000000">Login/Register</a>
             <div class="footer-social-icons" style="margin-top:0">
-              <a href="https://www.facebook.com/groups/schalmontpto/" target="_blank" rel="noopener" class="footer-social-icon" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
-              <a href="https://www.instagram.com/schalmontpto/" target="_blank" rel="noopener" class="footer-social-icon" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+              <a href="https://www.facebook.com/groups/schalmontpto/" target="_blank" rel="noopener" class="footer-social-icon" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+              <a href="https://www.instagram.com/schalmontpto/" target="_blank" rel="noopener" class="footer-social-icon" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
             </div>
-          </div>
-          <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
-            <a href="https://woestina-pre-k-pto-donations.cheddarup.com" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-align:center;padding:6px 14px;font-size:13px;color:#000000">Give back: &#127807; Woestina PTO</a>
-            <a href="https://my.cheddarup.com/c/jefferson-pto-donation" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-align:center;padding:6px 14px;font-size:13px;color:#000000">Give back: &#127979; Jefferson PTO</a>
-            <a href="https://schalmont-central-pto.cheddarup.com" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-align:center;padding:6px 14px;font-size:13px;color:#000000">Give back: &#128154; Schalmont PTO</a>
           </div>
         </div>
         <div>
@@ -307,5 +501,116 @@
   <script src="js/firebase-config.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/chocolate-fundraiser.js"></script>
+  <script>
+  (function () {
+    var CF = CHOCOLATE_FUNDRAISER;
+
+    function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+    function prettyDate(ymd) {
+      var p = ymd.split('-'); var d = new Date(+p[0], +p[1] - 1, +p[2]);
+      return isNaN(d) ? ymd : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    // Price + Zeffy link
+    document.getElementById('gh-hero-price').textContent = '$' + CF.price.toFixed(2);
+    document.getElementById('gh-zeffy-btn').href = CF.zeffyUrl;
+    document.getElementById('cta-buy').href = CF.zeffyUrl;
+    document.getElementById('cta-buy').target = '_blank';
+    document.getElementById('cta-buy').rel = 'noopener';
+
+    // Seller batch text
+    document.getElementById('gh-batch-size').textContent = CF.sellerBatch.min + '–' + CF.sellerBatch.max + ' bars';
+
+    // Contact link
+    document.getElementById('gh-contact-btn').href = CF.contact.href;
+    document.getElementById('gh-contact-btn').textContent = CF.contact.label;
+
+    // Upcoming dates
+    document.getElementById('gh-dates').innerHTML = CF.dates.map(function (d) {
+      return '<div class="gh-date-card"><div class="d">' + esc(prettyDate(d.date)) + '</div><div class="l">' + esc(d.label) + '</div></div>';
+    }).join('');
+
+    // FAQ
+    document.getElementById('gh-faq').innerHTML = CF.faqs.map(function (f, i) {
+      return '<details' + (i === 0 ? ' open' : '') + '><summary>' + esc(f.q) + '</summary><p class="a">' + esc(f.a) + '</p></details>';
+    }).join('');
+
+    /* ---- Seller request form -> Firestore ---- */
+    var form = document.getElementById('seller-request-form');
+    var msg = document.getElementById('seller-form-msg');
+    var db = (window.firebase && firebase.apps && firebase.apps.length) ? firebase.firestore() : null;
+
+    function setErr(id, text) { var el = document.getElementById(id); if (el) el.textContent = text || ''; }
+    function showMsg(kind, text) { msg.className = 'gh-form-msg show ' + kind; msg.textContent = text; }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      ['parent', 'student', 'school', 'grade', 'email'].forEach(function (k) { setErr('err-' + k, ''); });
+      msg.className = 'gh-form-msg';
+
+      var parentName = form.parentName.value.trim();
+      var studentName = form.studentName.value.trim();
+      var school = form.school.value;
+      var grade = form.grade.value.trim();
+      var email = form.email.value.trim();
+      var phone = form.phone.value.trim();
+      var quantity = form.quantity.value;
+      var pickup = form.pickup.value.trim();
+      var notes = form.notes.value.trim();
+
+      var ok = true;
+      if (!parentName) { setErr('err-parent', 'Required'); ok = false; }
+      if (!studentName) { setErr('err-student', 'Required'); ok = false; }
+      if (!school) { setErr('err-school', 'Required'); ok = false; }
+      if (!grade) { setErr('err-grade', 'Required'); ok = false; }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('err-email', 'Enter a valid email'); ok = false; }
+      if (!ok) return;
+
+      if (!db) {
+        showMsg('error', 'Sorry — the request form is temporarily unavailable. Please email the PTO instead.');
+        return;
+      }
+
+      var btn = document.getElementById('seller-submit-btn');
+      btn.disabled = true; btn.textContent = 'Sending…';
+
+      db.collection('chocolate_seller_requests').add({
+        parentName: parentName, studentName: studentName, school: school, grade: grade,
+        email: email, phone: phone, quantity: quantity, pickup: pickup, notes: notes,
+        status: 'new', at: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function () {
+        form.reset();
+        showMsg('ok', 'Thanks! Your request has been sent — the PTO will follow up with pickup details.');
+      }).catch(function (err) {
+        showMsg('error', 'Something went wrong sending your request. Please try again, or email the PTO.');
+      }).finally(function () {
+        btn.disabled = false; btn.textContent = 'Request Chocolate to Sell';
+      });
+    });
+
+    /* ---- Share ---- */
+    var shareUrl = CF.social.url, shareTitle = CF.social.title;
+    document.getElementById('gh-share-fb').href = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareUrl);
+    document.getElementById('gh-share-sms').href = 'sms:?&body=' + encodeURIComponent(shareTitle + ' ' + shareUrl);
+    document.getElementById('gh-share-email').href = 'mailto:?subject=' + encodeURIComponent(shareTitle) + '&body=' + encodeURIComponent(shareTitle + '\n\n' + shareUrl);
+
+    var nativeBtn = document.getElementById('gh-share-native');
+    if (navigator.share) {
+      nativeBtn.hidden = false;
+      nativeBtn.textContent = 'Share…';
+      nativeBtn.addEventListener('click', function () {
+        navigator.share({ title: shareTitle, url: shareUrl }).catch(function () {});
+      });
+    }
+    document.getElementById('gh-share-copy').addEventListener('click', function () {
+      var note = document.getElementById('gh-copy-note');
+      (navigator.clipboard ? navigator.clipboard.writeText(shareUrl) : Promise.reject())
+        .then(function () { note.textContent = 'Link copied!'; })
+        .catch(function () { note.textContent = shareUrl; });
+      setTimeout(function () { note.textContent = ''; }, 4000);
+    });
+  })();
+  </script>
 </body>
 </html>

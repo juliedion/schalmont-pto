@@ -122,6 +122,18 @@ service cloud.firestore {
       allow update, delete: if signedIn() && canManage(resource.data.school);
     }
 
+    /* ---- Chocolate Bar Fundraiser: seller pickup requests (public form) ---- */
+    match /chocolate_seller_requests/{id} {
+      allow read, update, delete: if isAnyAdmin();
+      allow create: if request.resource.data.keys().hasOnly(
+                        ['parentName','studentName','school','grade','email','phone','quantity','pickup','notes','status','at'])
+                    && request.resource.data.parentName is string && request.resource.data.parentName.size() > 0 && request.resource.data.parentName.size() <= 100
+                    && request.resource.data.studentName is string && request.resource.data.studentName.size() > 0 && request.resource.data.studentName.size() <= 100
+                    && request.resource.data.school in ['Schalmont Middle School', 'Schalmont High School']
+                    && request.resource.data.email is string && request.resource.data.email.size() > 0 && request.resource.data.email.size() <= 200
+                    && request.resource.data.status == 'new';
+    }
+
     /* ---- Public sign-up sheets (volunteer slots, event RSVPs) ---- */
     match /signups/{sid} {
       allow read: if true;                              // public sign-up pages read this
