@@ -141,9 +141,15 @@ const PROGRAM_CARDS_DEFAULTS = {
       "icon": "📸",
       "title": "Picture Days",
       "badgeType": "past",
-      "badgeText": "✓ Past Event",
+      "badgeText": "Info Available",
       "desc": "Thank you to all the families who participated in Picture Day! Information about ordering and retakes will be posted here when available.",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "picture-days.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 7
     },
     {
@@ -214,40 +220,64 @@ const PROGRAM_CARDS_DEFAULTS = {
       "id": "appreciation-days",
       "icon": "🙏",
       "title": "Appreciation Days",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "Details about upcoming teacher and staff appreciation days will be posted here. Stay tuned!",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "appreciation-days.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 12
     },
     {
       "id": "school-banking",
       "icon": "🏦",
       "title": "Banking",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "For questions about school banking, reach out to our Treasurer Jennifer Sitors.",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "school-banking.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 13
     },
     {
       "id": "book-fairs",
       "icon": "📚",
       "title": "Book Fairs",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "Book fair dates and details for Jefferson Elementary will be posted here. Check back soon!",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "book-fairs.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 14
     },
     {
       "id": "fundraisers",
       "icon": "💰",
       "title": "Fundraisers",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "Support Jefferson Elementary students through our fundraising programs. Every purchase helps fund programs and events.",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "fundraisers-jefferson.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 15
     },
     {
@@ -264,22 +294,19 @@ const PROGRAM_CARDS_DEFAULTS = {
       "id": "incoming-k",
       "icon": "🎒",
       "title": "Incoming Kindergarten",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "Resources and events for families with children entering Kindergarten at Jefferson Elementary will be posted here.",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "incoming-kindergarten.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 17
     },
-    {
-      "id": "journey",
-      "icon": "🚌",
-      "title": "Journey to Jefferson",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
-      "desc": "Learn about the Journey to Jefferson transition program for families moving from Pre-K to Jefferson Elementary.",
-      "actions": [],
-      "order": 18
-    },
+
     {
       "id": "miscellaneous",
       "icon": "📁",
@@ -294,10 +321,16 @@ const PROGRAM_CARDS_DEFAULTS = {
       "id": "scholarships",
       "icon": "🏆",
       "title": "Scholarships",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "Information about Jefferson Elementary PTO scholarship opportunities will be posted here.",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "scholarships-jefferson.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 20
     },
     {
@@ -330,10 +363,16 @@ const PROGRAM_CARDS_DEFAULTS = {
       "id": "sports-cheer",
       "icon": "🏅",
       "title": "Sports &amp; Cheer",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "Share your photos from Jefferson Elementary sports and cheerleading events! Upload them below.",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "sports.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 23
     },
     {
@@ -411,60 +450,81 @@ const PROGRAM_CARDS_DEFAULTS = {
       "id": "appreciation-days",
       "icon": "🙏",
       "title": "Appreciation Days",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "Details about upcoming teacher and staff appreciation days will be posted here. Stay tuned!",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "appreciation-days.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 3
     },
     {
       "id": "book-fairs",
       "icon": "📚",
       "title": "Book Fairs",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "Book fair details for Woestina Pre-K will be posted here. Check back soon or follow us on social media for updates.",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "book-fairs.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 4
     },
     {
       "id": "fundraisers",
       "icon": "💰",
       "title": "Fundraisers",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "Support the Schalmont PTO through our ongoing fundraising programs. Every purchase helps fund programs and events for students.",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "fundraisers-woestina.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 5
     },
     {
       "id": "incoming-kindergarten",
       "icon": "🎒",
       "title": "Incoming Kindergarten",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "Resources for families with children entering Kindergarten — including registration, tours, and Jefferson transition info.",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "incoming-kindergarten.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 6
     },
-    {
-      "id": "journey-to-jefferson",
-      "icon": "🚌",
-      "title": "Journey to Jefferson",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
-      "desc": "Learn about the Journey to Jefferson transition program for families with children moving from Woestina Pre-K to Jefferson Elementary.",
-      "actions": [],
-      "order": 7
-    },
+
     {
       "id": "picture-days",
       "icon": "📸",
       "title": "Picture Days",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "School picture day dates and ordering information will be posted here when available.",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "picture-days.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 8
     }
   ],
@@ -574,40 +634,64 @@ const PROGRAM_CARDS_DEFAULTS = {
       "id": "grade8-formal",
       "icon": "🎩",
       "title": "8th Grade Formal",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "The 8th Grade Formal is a special evening celebrating our 8th grade Sabres. For more information contact our event coordinator.",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "8th-grade-dance.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 6
     },
     {
       "id": "appreciation-days",
       "icon": "🙏",
       "title": "Appreciation Days",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "Details about upcoming teacher and staff appreciation days will be posted here. Stay tuned!",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "appreciation-days.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 7
     },
     {
       "id": "book-fairs",
       "icon": "📚",
       "title": "Book Fairs",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "Book fair dates and details for Schalmont Middle School will be posted here. Check back soon!",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "book-fairs-middle.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 8
     },
     {
       "id": "fundraisers",
       "icon": "💰",
       "title": "Fundraisers",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "Support Schalmont Middle School students through our fundraising programs.",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "fundraisers-middle-school.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 9
     },
     {
@@ -640,20 +724,32 @@ const PROGRAM_CARDS_DEFAULTS = {
       "id": "sports",
       "icon": "🏅",
       "title": "Sports &amp; Athletics",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "For information about middle school sports, schedules, and registration, visit our sports page.",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "sports.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 12
     },
     {
       "id": "student-council",
       "icon": "🏛️",
       "title": "Student Council",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "The SMS Student Council organizes events and activities for middle school students throughout the year.",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "student-council.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 13
     }
   ],
@@ -699,10 +795,16 @@ const PROGRAM_CARDS_DEFAULTS = {
       "id": "appreciation-days",
       "icon": "🙏",
       "title": "Appreciation Days",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "Details about upcoming teacher and staff appreciation days will be posted here. Stay tuned!",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "appreciation-days.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 2
     },
     {
@@ -725,10 +827,16 @@ const PROGRAM_CARDS_DEFAULTS = {
       "id": "sports",
       "icon": "🏅",
       "title": "Sports &amp; Athletics",
-      "badgeType": "coming",
-      "badgeText": "More Info Coming Soon",
+      "badgeType": "active",
+      "badgeText": "Info Available",
       "desc": "For information about high school sports, schedules, and registration, visit our sports page.",
-      "actions": [],
+      "actions": [
+        {
+          "label": "Learn More →",
+          "href": "sports.html",
+          "cls": "btn btn-primary"
+        }
+      ],
       "order": 4
     }
   ]
