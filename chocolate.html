@@ -42,6 +42,10 @@
     .gh-cta-row { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:18px; }
     .gh-cta-row .btn { min-width:180px; justify-content:center; padding:14px 28px; font-size:15px; }
     .gh-tertiary { font-size:13.5px; font-weight:700; color:var(--text-light); }
+    /* .btn-outline is designed for white-on-green (dark hero) use elsewhere on the site —
+       this page's background is white, so outline buttons here need their own light variant. */
+    .gh-btn-light { background:#fff; color:var(--primary); border-color:var(--primary); }
+    .gh-btn-light:hover { background:var(--light-bg); color:var(--primary-dark); border-color:var(--primary-dark); }
     .gh-tertiary:hover { color:var(--primary); }
     .gh-partner {
       display:flex; align-items:center; justify-content:center; gap:10px; margin-top:34px;
@@ -244,7 +248,7 @@
           <div class="gh-price"><span class="amt" id="gh-hero-price">$2.50</span><span class="unit">per bar</span></div>
           <div class="gh-cta-row">
             <a href="#buy" class="btn btn-primary gh-focusable" id="cta-buy">Buy Chocolate</a>
-            <a href="#sell" class="btn btn-outline gh-focusable" id="cta-sell">Start Selling</a>
+            <a href="#sell" class="btn gh-btn-light gh-focusable" id="cta-sell">Start Selling</a>
           </div>
           <a href="#details" class="gh-tertiary gh-focusable">Fundraiser Details ↓</a>
           <div class="gh-partner">
@@ -284,7 +288,7 @@
             <div class="gh-card">
               <h3>From a Selling Family</h3>
               <p>Chocolate is also available directly from participating Schalmont families who've signed up to sell — while supplies last.</p>
-              <a href="#sell" class="btn btn-outline gh-focusable">Sign Up to Sell</a>
+              <a href="#sell" class="btn gh-btn-light gh-focusable">Sign Up to Sell</a>
             </div>
           </div>
         </div>
@@ -463,6 +467,11 @@
               <a href="https://www.instagram.com/schalmontpto/" target="_blank" rel="noopener" class="footer-social-icon" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
             </div>
           </div>
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
+            <a href="https://woestina-pre-k-pto-donations.cheddarup.com" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-align:center;padding:6px 14px;font-size:13px;color:#000000">Give back: &#127807; Woestina PTO</a>
+            <a href="https://my.cheddarup.com/c/jefferson-pto-donation" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-align:center;padding:6px 14px;font-size:13px;color:#000000">Give back: &#127979; Jefferson PTO</a>
+            <a href="https://schalmont-central-pto.cheddarup.com" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-align:center;padding:6px 14px;font-size:13px;color:#000000">Give back: &#128154; Schalmont PTO</a>
+          </div>
         </div>
         <div>
           <div class="footer-heading">Quick Links</div>
@@ -491,6 +500,7 @@
       <div class="footer-bottom">
         <span>© 2026 Schalmont Parent-Teacher Organization. All rights reserved.</span>
         <span>Schenectady, NY</span>
+        <span><a href="/admin/" style="color:inherit;font-weight:600;text-decoration:underline">PTO Admin</a></span>
       </div>
     </div>
   </footer>
