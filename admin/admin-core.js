@@ -266,6 +266,16 @@ const PLANNING_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1vIPpzz79LgBS
 /* Start a brand-new web page for a section (Events, Clubs, Programs, …).
    Shows the "you'll also need the spreadsheet" notice, collects a school + working
    title, creates the draft, then opens the guided page editor. */
+const NWP_TYPES = [
+  { cat: 'events',   label: 'Event' },
+  { cat: 'programs', label: 'Program' },
+  { cat: 'clubs',    label: 'Club' },
+  { cat: 'spiritwear', label: 'Spiritwear' },
+  { cat: 'fundraising', label: 'Fundraiser' },
+  { cat: 'facilities', label: 'Building & Facilities' },
+  { cat: 'ideas',    label: 'Extra idea' }
+];
+
 function newWebPage(cat, presetSchool) {
   const sec = sectionByCat(cat);
   const singular = (sec && sec.singular) || 'Web';
@@ -275,6 +285,9 @@ function newWebPage(cat, presetSchool) {
   );
   const checks = opts.map(s =>
     `<label><input type="checkbox" class="nwp-school" value="${s}" ${preset.has(s) ? 'checked' : ''}> ${esc(SCHOOLS[s])}</label>`
+  ).join('');
+  const typeOpts = NWP_TYPES.map(t =>
+    `<option value="${t.cat}" ${t.cat === cat ? 'selected' : ''}>${esc(t.label)}</option>`
   ).join('');
 
   const back = document.createElement('div');
@@ -296,8 +309,16 @@ function newWebPage(cat, presetSchool) {
         Tick more than one and the page gets a shared address at
         <code>schalmontpto.com/pto/&hellip;</code>.
       </p>
+      <label class="bo-modal-lbl">What kind of page is this?</label>
+      <select id="nwp-type">${typeOpts}</select>
       <label class="bo-modal-lbl">Working title <span style="font-weight:400;color:var(--text-light)">— you can change it later</span></label>
       <input type="text" id="nwp-title" placeholder="e.g. Fall Fun Run 2026">
+      <label class="bo-modal-lbl">Where should this show up?</label>
+      <div class="bo-modal-checklist">
+        <label><input type="checkbox" id="nwp-homepage" checked> Add a card for it on the school's landing page</label>
+        <label><input type="checkbox" id="nwp-topmenu"> Show in the top menu</label>
+        <label><input type="checkbox" id="nwp-leftmenu" checked> Show in the left (Browse) menu</label>
+      </div>
       <p id="nwp-hint" style="font-size:12px;color:var(--text-light);margin:8px 0 0">
         Tick at least one school and enter a title to continue.
       </p>
@@ -328,17 +349,37 @@ function newWebPage(cat, presetSchool) {
   goBtn.onclick = async () => {
     const schools = [...back.querySelectorAll('.nwp-school:checked')].map(c => c.value);
     const title = back.querySelector('#nwp-title').value.trim();
+    const chosenCat = back.querySelector('#nwp-type').value;
+    const showOnHomepage = back.querySelector('#nwp-homepage').checked;
+    const showInTopMenu = back.querySelector('#nwp-topmenu').checked;
+    const showInLeftMenu = back.querySelector('#nwp-leftmenu').checked;
     if (!schools.length) { toast('Pick at least one school', 'error'); return; }
     if (!title) { toast('Give it a working title', 'error'); return; }
     if (!canManageAll(schools)) { toast('You can only create pages for your own school(s)', 'error'); return; }
     back.querySelector('#nwp-go').disabled = true;
     try {
+      const slug = slugify(title);
+      const routingS = routingSchool(schools);
       const ref = await db.collection('pages').add({
-        category: cat, schools, school: routingSchool(schools),
-        title, slug: slugify(title),
+        category: chosenCat, schools, school: routingS,
+        title, slug,
+        showOnHomepage, showInTopMenu, showInLeftMenu,
         status: 'draft', blocks: [],
         createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
+      if (showOnHomepage) {
+        // One landing-page card per school it belongs to (skips the pto-wide bucket,
+        // which has no landing page of its own to put a card on).
+        const cardSchools = schools.filter(s => s !== 'pto');
+        for (const s of cardSchools) {
+          await db.collection('program_cards').add({
+            school: s, pageId: ref.id, order: 999,
+            icon: '📌', title, badgeType: 'coming', badgeText: 'More Info Coming Soon',
+            id: slug, desc: '', actions: [],
+            createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        }
+      }
       location.href = 'page-editor.html?id=' + ref.id + '&guide=1';
     } catch (e) {
       toast('Could not create the page: ' + e.message, 'error');
