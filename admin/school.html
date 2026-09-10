@@ -31,9 +31,9 @@
     </div>
     <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo; <span id="crumb-school"></span></div>
     <h1 class="bo-h1" id="school-title"></h1>
-    <p class="bo-lead">Everything for this school in one place. Use the tabs below &mdash; the first
-       four are this school's workspace; the rest open each <strong>section</strong> where you
-       build and manage its web pages.</p>
+    <p class="bo-lead">Everything for this school in one place. Use the tabs below for pages,
+       files, ideas and the to-do list &mdash; and the <strong>&ldquo;sections&rdquo;</strong> group
+       in the left sidebar for Events, Clubs, Fundraising, and everything else.</p>
 
     <div class="bo-tabs" id="bo-tabs">
       <button class="bo-tab active" data-tab="pages">📄 Pages</button>
@@ -154,26 +154,9 @@
       document.getElementById('new-page-btn').href = 'page-editor.html?s=' + school + '&new=1';
       document.getElementById('tip-example').textContent =
         'schalmontpto.com/' + SCHOOL_PREFIX[school] + '/fun-run';
-      // Section tabs — each one a link, scoped to this school. `ideas` is skipped
-      // here because this workspace already has its own "Ideas" tab.
-      const tabBar = document.getElementById('bo-tabs');
-      SECTIONS.filter(sec => sec.cat !== 'ideas').forEach(sec => {
-        const base = sec.href.split('?')[0];
-        const href = sec.href.includes('?cat=') ? sec.href + '&s=' + school : base + '?s=' + school;
-        const a = document.createElement('a');
-        a.className = 'bo-tab';
-        a.style.textDecoration = 'none';
-        a.href = href;
-        a.innerHTML = sec.icon + ' ' + sec.label;
-        tabBar.appendChild(a);
-      });
-      // Sign-Up Sheets live here now (not on the back-office home / sidebar)
-      const su = document.createElement('a');
-      su.className = 'bo-tab';
-      su.style.textDecoration = 'none';
-      su.href = 'signups.html?s=' + school;
-      su.innerHTML = '🖊️ Sign-Up Sheets';
-      tabBar.appendChild(su);
+      // Events / Clubs / Programs / Fundraising / etc. already live in the left
+      // sidebar under "<School> — sections" — no need to duplicate them as tabs
+      // here too, so this row stays a single line: Pages / Files / Ideas / To-Do.
 
       // Tabs
       document.querySelectorAll('button.bo-tab').forEach(btn => {

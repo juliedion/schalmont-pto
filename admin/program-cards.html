@@ -121,7 +121,8 @@
           txt.value = t === 'active' ? 'Active' : t === 'coming' ? 'More Info Coming Soon' : t === 'past' ? 'Past Event' : '';
         }
       };
-      switchSchool(opts[0]);
+      const wanted = getParam('s');
+      switchSchool(wanted && opts.includes(wanted) ? wanted : opts[0]);
     });
 
     function switchSchool(s) {
