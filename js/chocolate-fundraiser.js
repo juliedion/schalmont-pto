@@ -41,11 +41,11 @@ const CHOCOLATE_FUNDRAISER = {
   faqs: [
     { q: 'How much are the chocolate bars?', a: '$2.50 each.' },
     { q: 'Who benefits from the fundraiser?', a: 'Schalmont Middle School and High School PTO programs and initiatives.' },
-    { q: 'Can I buy chocolate online?', a: 'Yes — use the "Buy Chocolate Online" button on this page to order securely through our fundraiser checkout.' },
+    { q: 'Can I buy chocolate online?', a: 'Yes — order bars or a full case using the "Buy Chocolate Online" button on this page, and it will be sent home with your student.' },
     { q: 'Can my student sell chocolate?', a: 'Yes! Participating Middle and High School students and families can request chocolate to sell using the form on this page.' },
     { q: 'How many bars does a student receive?', a: 'We’re using smaller starter batches — typically around 12–24 bars — so families aren’t required to take a full 48-bar carrier at once.' },
     { q: 'Can we get more bars if we sell out?', a: 'Yes, additional chocolate may be available depending on supply once your first batch is sold and accounted for.' },
-    { q: 'Where can I buy chocolate in person?', a: 'Through participating student sellers, and at staffed Schalmont PTO tables at upcoming school events — see the dates above — while supplies last.' },
+    { q: 'Can I buy directly from a student seller instead of online?', a: 'Yes — chocolate is also available directly from participating Schalmont families who have signed up to sell, while supplies last.' },
     { q: 'Can I return unsold chocolate?', a: 'Unsold chocolate return details will be shared directly with sellers. Please reach out to the PTO with any questions.' },
     { q: 'When is payment due?', a: 'Payment instructions and any deadline will be confirmed and shared with participating families directly, and posted here once finalized.' }
   ],
@@ -53,7 +53,7 @@ const CHOCOLATE_FUNDRAISER = {
   social: {
     url: 'https://schalmontpto.com/chocolate',
     title: 'Gertrude Hawk Chocolate Bar Fundraiser | Schalmont PTO',
-    description: 'Grab a Gertrude Hawk chocolate bar and support Schalmont Middle + High School students. Learn how to buy, sell and participate.',
+    description: 'For Schalmont Middle + High School families — sign up to sell Gertrude Hawk chocolate, or order bars or a case to have sent home.',
     image: 'https://schalmontpto.com/images/Schalmont-PTO-logo.png'
   }
 };
