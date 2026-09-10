@@ -284,8 +284,23 @@
 
       if (!list.length) { box.innerHTML = '<p style="color:var(--text-light)">Nothing matches these filters.</p>'; return; }
 
+      // Default view (no date filter picked): show upcoming AND past automatically,
+      // grouped under headers so both are visible at once with no clicking required.
+      const showGroups = whenF === 'all';
+      let lastGroup = null;
+
       box.innerHTML = '';
       list.forEach(({ doc, p }) => {
+        if (showGroups) {
+          const grp = (p.eventDate && p.eventDate >= today) ? 'upcoming' : 'other';
+          if (grp !== lastGroup) {
+            const head = document.createElement('div');
+            head.style.cssText = 'font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin:' + (lastGroup ? '20px' : '0') + ' 0 8px';
+            head.textContent = grp === 'upcoming' ? 'Upcoming & live' : 'Past events & everything else';
+            box.appendChild(head);
+            lastGroup = grp;
+          }
+        }
         const live = p.status === 'published';
         const sList = pageSchools(p);
         const path = pagePath(routingSchool(sList), p.slug);
