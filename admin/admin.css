@@ -12,18 +12,22 @@ body.bo-has-shell {
   align-items: start;
 }
 
-/* ---------- Sidebar ---------- */
+/* ---------- Sidebar ----------
+   Sticks to the top of the viewport while you scroll the main column, but is
+   NEVER height-capped or made to internally scroll — however long the nav
+   list gets (schools + every section + more), the sidebar simply grows past
+   100vh and its own bottom naturally comes into view as you scroll the page,
+   same as the rest of the content. Nothing about it is ever cut off. */
 .bo-sidebar {
   position: sticky;
   top: 0;
   align-self: start;
-  height: 100vh;
+  min-height: 100vh;
   background: var(--primary-dark);
   color: #fff;
   display: flex;
   flex-direction: column;
   padding: 18px 0;
-  overflow-y: auto;
 }
 .bo-brand {
   display: flex; align-items: center; gap: 10px;
