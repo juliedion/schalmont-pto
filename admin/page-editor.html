@@ -268,6 +268,9 @@
           id: page.slug, desc,
           actions: [{ label: 'Learn More →', href: '/' + pagePath(s, page.slug), cls: 'btn btn-primary' }]
         };
+        // Explicit false -- a freshly-published page's card is never "untouched legacy",
+        // so the one-time archive migration (admin/school.html) must never sweep it up.
+        if (!existing || existing.archived === undefined) fields.archived = false;
         if (existing) {
           await db.collection('program_cards').doc(existing.docId).update(fields);
           keep.add(existing.docId);

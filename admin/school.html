@@ -320,7 +320,7 @@
             school, pageId: doc.id, order: 999,
             icon: '📌', title: p.title || 'Untitled',
             badgeType: (p.eventDate && p.eventDate < today) ? 'past' : 'active', badgeText: '',
-            eventDate: p.eventDate || '', id: p.slug || '', desc: '',
+            eventDate: p.eventDate || '', id: p.slug || '', desc: '', archived: false,
             actions: [{ label: 'Learn More →', href: '/' + pagePath(school, p.slug), cls: 'btn btn-primary' }],
             createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
