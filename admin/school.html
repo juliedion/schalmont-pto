@@ -418,7 +418,7 @@
       try {
         const batch = db.batch();
         untouched.forEach(c => {
-          const archived = !/fall book fair/i.test(c.title || '');
+          const archived = !/fall\s*book\s*fair/i.test(c.title || '');
           batch.update(db.collection('program_cards').doc(c.docId), { archived });
           c.archived = archived;
         });
