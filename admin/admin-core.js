@@ -215,6 +215,7 @@ function renderShell() {
         ${link('help.html', 'Help &amp; How-To', '📖', path === 'help.html')}
         ${ME.isSuper ? link('directory.html', 'Directory Sign-Ups', '✅', path === 'directory.html') : ''}
         ${ME.isSuper ? link('people.html', 'People &amp; Roles', '👥', path === 'people.html') : ''}
+        ${ME.isSuper ? link('roadmap.html', 'Feature Roadmap', '🛠️', path === 'roadmap.html') : ''}
       </nav>
       <div class="bo-sidebar-foot">
         <div class="bo-me">${esc(ME.name)}</div>

@@ -129,6 +129,11 @@ service cloud.firestore {
       allow update, delete: if signedIn() && canManage(resource.data.school);
     }
 
+    /* ---- Back office: feature roadmap / build tracker (owner-only) ---- */
+    match /roadmap_items/{id} {
+      allow read, write: if isOwner();
+    }
+
     /* ---- Chocolate Bar Fundraiser: seller pickup requests (public form) ---- */
     match /chocolate_seller_requests/{id} {
       allow read, update, delete: if isAnyAdmin();

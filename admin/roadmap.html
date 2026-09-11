@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PTO Back Office Feature Roadmap</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" href="../images/favicon.svg">
+  <style>
+    .rm-toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:18px; }
+    .rm-toolbar .spacer { flex:1; }
+    .rm-toolbar select { padding:9px 10px; border:1px solid var(--border); border-radius:8px; font-family:inherit; font-size:13.5px; }
+    .rm-item { background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:10px;
+               display:flex; gap:14px; align-items:flex-start; }
+    .rm-item.done { opacity:.55; }
+    .rm-check { margin-top:3px; width:18px; height:18px; flex-shrink:0; }
+    .rm-main { flex:1; min-width:0; }
+    .rm-top { display:flex; gap:8px; align-items:baseline; flex-wrap:wrap; }
+    .rm-section { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--text-light); }
+    .rm-update { margin:2px 0 8px; font-size:14.5px; color:var(--text); }
+    .rm-item.done .rm-update { text-decoration:line-through; }
+    .rm-pill { font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; padding:2px 9px; border-radius:20px; display:inline-block; }
+    .rm-pill.priority-high { background:#fed7d7; color:#9b2c2c; }
+    .rm-pill.priority-medium { background:#feebc8; color:#9c4221; }
+    .rm-pill.priority-low { background:#e2e8f0; color:#4a5568; }
+    .rm-meta-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:8px; }
+    .rm-meta-row select, .rm-meta-row input[type=date] { padding:5px 8px; border:1px solid var(--border); border-radius:6px; font-family:inherit; font-size:12.5px; }
+    .rm-notes { margin-top:8px; }
+    .rm-notes textarea { width:100%; min-height:44px; padding:7px 9px; border:1px solid var(--border); border-radius:6px; font-family:inherit; font-size:12.5px; }
+    .rm-notes-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px; }
+    .rm-label { font-size:10.5px; font-weight:700; color:var(--text-light); text-transform:uppercase; letter-spacing:.03em; margin:0 0 3px; }
+    .rm-empty { color:var(--text-light); }
+  </style>
+</head>
+<body>
+  <div id="bo-loading">Loading…</div>
+  <div id="bo-shell"></div>
+
+  <main id="bo-main" style="display:none">
+    <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo; Feature Roadmap</div>
+    <h1 class="bo-h1">Feature Roadmap</h1>
+    <p class="bo-lead">
+      Feature requests and fixes, pulled in from the
+      <a href="https://docs.google.com/spreadsheets/d/1R-wSO-a3nsvUtf1rVGIgmS94VHuv-mbLOBQi-1uRfMA/edit" target="_blank" rel="noopener">planning spreadsheet</a>.
+      Check things off, change status/priority, and leave notes right here — editing here does
+      <em>not</em> change the spreadsheet, and re-syncing only adds rows that aren't in this list
+      yet, so nothing you edit here ever gets overwritten.
+    </p>
+
+    <div class="rm-toolbar">
+      <button class="bo-btn" id="sync-btn">↻ Sync from spreadsheet</button>
+      <span class="spacer"></span>
+      <label>Status:
+        <select id="rm-filter-status">
+          <option value="all">All</option>
+          <option value="open" selected>Not done</option>
+          <option value="done">Done</option>
+        </select>
+      </label>
+      <label>Sort:
+        <select id="rm-sort">
+          <option value="priority">By priority</option>
+          <option value="section">By page/section</option>
+          <option value="recent">Most recently added</option>
+        </select>
+      </label>
+    </div>
+    <p id="rm-count" style="font-size:12px;color:var(--text-light);margin:-10px 0 16px"></p>
+
+    <div id="rm-list"></div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="admin-core.js"></script>
+  <script>
+    const SHEET_ID = '1R-wSO-a3nsvUtf1rVGIgmS94VHuv-mbLOBQi-1uRfMA';
+    let items = [];
+
+    requireAdmin((me) => {
+      if (!me.isSuper) { location.href = 'index.html'; return; }
+      load();
+      document.getElementById('sync-btn').onclick = syncFromSheet;
+      ['rm-filter-status', 'rm-sort'].forEach(id =>
+        document.getElementById(id).addEventListener('change', render));
+    });
+
+    async function load() {
+      try {
+        const snap = await db.collection('roadmap_items').get();
+        items = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+      } catch (e) {
+        items = [];
+        toast('Could not load the roadmap: ' + e.message, 'error');
+      }
+      render();
+    }
+
+    function parseCSV(text) {
+      const rows = []; let row = [], val = '', q = false;
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (q) {
+          if (c === '"') { if (text[i + 1] === '"') { val += '"'; i++; } else q = false; }
+          else val += c;
+        } else if (c === '"') q = true;
+        else if (c === ',') { row.push(val); val = ''; }
+        else if (c === '\n') { row.push(val); rows.push(row); row = []; val = ''; }
+        else if (c === '\r') { /* skip */ }
+        else val += c;
+      }
+      if (val !== '' || row.length) { row.push(val); rows.push(row); }
+      return rows.filter(r => r.some(x => x !== ''));
+    }
+
+    // A stable key so re-syncing only adds rows that aren't already here — never touches
+    // (or duplicates) a row that's already been imported, even if its sheet text is edited.
+    function rowKey(section, update) {
+      return (section + '::' + update).trim().toLowerCase().slice(0, 300);
+    }
+
+    async function syncFromSheet() {
+      const btn = document.getElementById('sync-btn');
+      btn.disabled = true; btn.textContent = 'Syncing…';
+      try {
+        const idToken = await auth.currentUser.getIdToken();
+        const res = await fetch('../api/sheet-proxy.php?id=' + SHEET_ID + '&gid=0&idToken=' + encodeURIComponent(idToken));
+        const raw = await res.text();
+        let data;
+        try { data = JSON.parse(raw); }
+        catch (_) { throw new Error('the server did not respond correctly — is api/sheet-proxy.php on the server?'); }
+        if (!res.ok || !data.ok) throw new Error(data.error || 'could not read the sheet');
+
+        const rows = parseCSV(data.csv);
+        if (!rows.length) throw new Error('the sheet looks empty');
+        const header = rows.shift().map(h => h.trim().toLowerCase());
+        const find = (...needles) => header.findIndex(h => needles.some(n => h === n || h.includes(n)));
+        const ci = {
+          done: find('done'), priority: find('priority'), status: find('status'),
+          section: find('page / section', 'page/section', 'section'),
+          update: find('update needed', 'update'),
+          requestedBy: find('requested by'), dateAdded: find('date added'),
+          targetDate: find('target date'), dateCompleted: find('date completed'),
+          julieNotes: find('julie notes'), caraNotes: find('cara notes'),
+          refLink: find('page / reference link', 'reference link', 'link')
+        };
+        if (ci.update < 0) throw new Error('could not find an "Update Needed" column in the sheet');
+        const get = (r, i) => (i >= 0 ? (r[i] || '').trim() : '');
+
+        const existingKeys = new Set(items.map(it => it.sheetKey));
+        const batch = db.batch();
+        let added = 0;
+        rows.forEach(r => {
+          const update = get(r, ci.update);
+          const section = get(r, ci.section);
+          if (!update) return;
+          const key = rowKey(section, update);
+          if (existingKeys.has(key)) return;
+          existingKeys.add(key);
+          added++;
+          batch.set(db.collection('roadmap_items').doc(), {
+            sheetKey: key,
+            done: /^true$/i.test(get(r, ci.done)),
+            priority: get(r, ci.priority) || 'Medium',
+            status: get(r, ci.status) || 'Not Started',
+            section, update,
+            requestedBy: get(r, ci.requestedBy),
+            dateAdded: get(r, ci.dateAdded),
+            targetDate: get(r, ci.targetDate),
+            dateCompleted: get(r, ci.dateCompleted),
+            julieNotes: get(r, ci.julieNotes),
+            caraNotes: get(r, ci.caraNotes),
+            refLink: get(r, ci.refLink),
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        });
+        if (added) { await batch.commit(); toast('✓ Added ' + added + ' new item' + (added === 1 ? '' : 's')); }
+        else toast('Already up to date — nothing new in the sheet');
+        await load();
+      } catch (e) {
+        toast('Could not sync: ' + e.message, 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = '↻ Sync from spreadsheet';
+      }
+    }
+
+    async function saveField(docId, field, value) {
+      try {
+        await db.collection('roadmap_items').doc(docId).update({ [field]: value });
+        const it = items.find(x => x.docId === docId);
+        if (it) it[field] = value;
+      } catch (e) { toast('Could not save: ' + e.message, 'error'); }
+    }
+
+    function render() {
+      const box = document.getElementById('rm-list');
+      const statusF = document.getElementById('rm-filter-status').value;
+      const sortMode = document.getElementById('rm-sort').value;
+
+      let list = items.slice();
+      if (statusF === 'open') list = list.filter(it => !it.done);
+      if (statusF === 'done') list = list.filter(it => it.done);
+
+      const priorityRank = { high: 0, medium: 1, low: 2 };
+      list.sort((a, b) => {
+        if (sortMode === 'priority') {
+          const ra = priorityRank[(a.priority || '').toLowerCase()] ?? 1;
+          const rb = priorityRank[(b.priority || '').toLowerCase()] ?? 1;
+          if (ra !== rb) return ra - rb;
+        }
+        if (sortMode === 'section') {
+          const c = (a.section || '').localeCompare(b.section || '');
+          if (c) return c;
+        }
+        if (sortMode === 'recent') return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
+        return (a.update || '').localeCompare(b.update || '');
+      });
+
+      document.getElementById('rm-count').textContent =
+        list.length + ' of ' + items.length + ' item' + (items.length === 1 ? '' : 's');
+
+      if (!items.length) {
+        box.innerHTML = '<p class="rm-empty">Nothing yet — press <strong>Sync from spreadsheet</strong> to pull in the list.</p>';
+        return;
+      }
+      if (!list.length) {
+        box.innerHTML = '<p class="rm-empty">Nothing matches this filter.</p>';
+        return;
+      }
+
+      box.innerHTML = '';
+      list.forEach(it => {
+        const row = document.createElement('div');
+        row.className = 'rm-item' + (it.done ? ' done' : '');
+        const pr = (it.priority || 'Medium').toLowerCase();
+        row.innerHTML = `
+          <input type="checkbox" class="rm-check" ${it.done ? 'checked' : ''}>
+          <div class="rm-main">
+            <div class="rm-top">
+              ${it.section ? `<span class="rm-section">${esc(it.section)}</span>` : ''}
+              <span class="rm-pill priority-${esc(pr)}">${esc(it.priority || 'Medium')}</span>
+            </div>
+            <p class="rm-update">${esc(it.update || '')}</p>
+            <div class="rm-meta-row">
+              <span style="font-size:12px;color:var(--text-light)">
+                ${it.requestedBy ? 'Requested by ' + esc(it.requestedBy) : ''}${it.dateAdded ? ' · added ' + esc(it.dateAdded) : ''}
+              </span>
+              <select class="rm-status-select">
+                ${['Not Started', 'In Progress', 'Blocked', 'Done'].map(s =>
+                  `<option value="${s}" ${it.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+              </select>
+              <select class="rm-priority-select">
+                ${['High', 'Medium', 'Low'].map(p =>
+                  `<option value="${p}" ${it.priority === p ? 'selected' : ''}>${p} priority</option>`).join('')}
+              </select>
+              ${it.refLink ? `<a class="bo-btn ghost sm" href="${esc(it.refLink)}" target="_blank">Reference link ↗</a>` : ''}
+            </div>
+            <div class="rm-notes-grid">
+              <div>
+                <p class="rm-label">Julie Notes</p>
+                <textarea class="rm-julie-notes" placeholder="Notes…">${esc(it.julieNotes || '')}</textarea>
+              </div>
+              <div>
+                <p class="rm-label">Cara Notes</p>
+                <textarea class="rm-cara-notes" placeholder="Notes…">${esc(it.caraNotes || '')}</textarea>
+              </div>
+            </div>
+          </div>`;
+        row.querySelector('.rm-check').onchange = (ev) => {
+          const done = ev.target.checked;
+          saveField(it.docId, 'done', done);
+          saveField(it.docId, 'status', done ? 'Done' : (it.status === 'Done' ? 'Not Started' : it.status));
+          row.classList.toggle('done', done);
+          row.querySelector('.rm-status-select').value = done ? 'Done' : (it.status || 'Not Started');
+        };
+        row.querySelector('.rm-status-select').onchange = (ev) => {
+          saveField(it.docId, 'status', ev.target.value);
+          const done = ev.target.value === 'Done';
+          if (done !== it.done) {
+            saveField(it.docId, 'done', done);
+            row.classList.toggle('done', done);
+            row.querySelector('.rm-check').checked = done;
+          }
+        };
+        row.querySelector('.rm-priority-select').onchange = (ev) => {
+          saveField(it.docId, 'priority', ev.target.value);
+          row.querySelector('.rm-pill').className = 'rm-pill priority-' + ev.target.value.toLowerCase();
+          row.querySelector('.rm-pill').textContent = ev.target.value;
+        };
+        let noteTimer;
+        row.querySelector('.rm-julie-notes').oninput = (ev) => {
+          clearTimeout(noteTimer);
+          noteTimer = setTimeout(() => saveField(it.docId, 'julieNotes', ev.target.value), 600);
+        };
+        row.querySelector('.rm-cara-notes').oninput = (ev) => {
+          clearTimeout(noteTimer);
+          noteTimer = setTimeout(() => saveField(it.docId, 'caraNotes', ev.target.value), 600);
+        };
+        box.appendChild(row);
+      });
+    }
+  </script>
+</body>
+</html>
