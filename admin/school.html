@@ -423,7 +423,7 @@
     function sortGroup(item, mode, today) {
       const p = item.p;
       if (mode === 'type') {
-        if (item.kind === 'card') return { key: 'zz', label: 'Landing page cards' };
+        if (item.kind === 'card') return { key: 'zz', label: 'Homepage cards' };
         const sec = sectionByCat(p.category);
         return { key: p.category || 'zz', label: sec ? sec.label.replace(/&amp;/g, '&') : 'Other' };
       }
@@ -796,7 +796,7 @@
               <h4>${esc(p.title || 'Untitled card')}</h4>
               ${badgeTxt ? `<span class="bo-pill ${badgeCls}">${esc(badgeTxt)}</span>` : ''}
             </div>
-            <span class="pg-cat-badge" style="align-self:flex-start">Landing page card</span>
+            <span class="pg-cat-badge" style="align-self:flex-start">Homepage card</span>
             <div class="bo-meta">On the ${esc(SCHOOLS[school])} page${p.cardAnchor ? ' — #' + esc(p.cardAnchor) : ''}</div>
             <div class="pg-card-actions">
               ${viewHref ? `<a class="bo-btn ghost sm" href="${esc(viewHref)}" target="_blank">View on site</a>` : ''}
