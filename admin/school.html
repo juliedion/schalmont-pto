@@ -474,173 +474,231 @@
       } catch (e) { trackerOnly = []; /* rules may not be published yet */ }
     }
 
-    // Drag-and-drop reordering of the homepage card grid, split into what's actually
-    // showing on the public page (Present) and a gray archive box below (Past/legacy) —
-    // plus tracker events with no card yet, offered as one-click "Move to Present".
+    // Shared drag state for every draggable grid in this view. Only reorders within the
+    // same `list` (findIndex returns -1 across lists, so a cross-section drop no-ops) --
+    // dragging OUT of a section uses its Move to Present/Past button instead.
+    let cardDragId = null;
+
+    function wireDrag(row, item, list, onSaved) {
+      row.draggable = true;
+      row.style.cursor = 'grab';
+      row.addEventListener('dragstart', () => { cardDragId = item.docId; row.style.opacity = '0.4'; });
+      row.addEventListener('dragend', () => { row.style.opacity = ''; });
+      row.addEventListener('dragover', (e) => e.preventDefault());
+      row.addEventListener('drop', async (e) => {
+        e.preventDefault();
+        if (!cardDragId || cardDragId === item.docId) return;
+        const fromIdx = list.findIndex(x => x.docId === cardDragId);
+        const toIdx = list.findIndex(x => x.docId === item.docId);
+        if (fromIdx < 0 || toIdx < 0) return;
+        const reordered = list.slice();
+        const [moved] = reordered.splice(fromIdx, 1);
+        reordered.splice(toIdx, 0, moved);
+        const batch = db.batch();
+        reordered.forEach((c2, i) => batch.update(db.collection('program_cards').doc(c2.docId), { order: i }));
+        try {
+          await batch.commit();
+        } catch (err) {
+          toast('Could not save the new order — this usually means the Firestore security rules ' +
+            'haven’t been published yet. (' + err.message + ')', 'error');
+          return;   // don't touch local state — leave the grid showing what's actually saved
+        }
+        reordered.forEach((c2, i) => { c2.order = i; });
+        allCardDocs = allCardDocs.map(orig => {
+          const updated = reordered.find(c2 => c2.docId === orig.docId);
+          return updated ? Object.assign({}, orig, { order: updated.order }) : orig;
+        });
+        onSaved();
+      });
+    }
+
+    // A real card's row: title, date, badge, and every action (Edit/Duplicate/Delete,
+    // plus whichever Move button applies). Draggable within whatever `list` it's part of.
+    function cardRow(c, list, moveBtnHTML, moveBtnWire) {
+      const row = document.createElement('div');
+      row.className = 'pg-card';
+      row.dataset.docId = c.docId;
+      row.innerHTML = `
+        <div class="pg-card-top"><h4>⠿ ${esc(c.title || 'Untitled card')}</h4></div>
+        <div class="bo-meta">${esc(c.eventDate ? prettyDate(c.eventDate) : 'No date')}</div>
+        <div class="pg-card-actions">
+          ${moveBtnHTML}
+          <button class="bo-btn ghost sm" data-edit>Edit</button>
+          <button class="bo-btn ghost sm" data-dup>Duplicate</button>
+          <button class="bo-btn danger ghost sm" data-del>Delete</button>
+        </div>`;
+      wireDrag(row, c, list, renderCardOrder);
+      moveBtnWire(row, c);
+      row.querySelector('[data-edit]').onclick = (ev) => editCard(c.docId, ev.target);
+      row.querySelector('[data-dup]').onclick = (ev) => duplicateCard(c.docId, ev.target);
+      row.querySelector('[data-del]').onclick = (ev) => deleteCard(c.docId, c.title, ev.target);
+      return row;
+    }
+
+    function moveToPast(row, c) {
+      row.querySelector('[data-archive]').onclick = async (ev) => {
+        ev.target.disabled = true;
+        try {
+          await db.collection('program_cards').doc(c.docId).update({ archived: true });
+          c.archived = true;
+          renderCardOrder();
+        } catch (err) { toast('Could not move it: ' + err.message, 'error'); ev.target.disabled = false; }
+      };
+    }
+    function moveToPresent(row, c) {
+      row.querySelector('[data-restore]').onclick = async (ev) => {
+        ev.target.disabled = true;
+        try {
+          const patch = { archived: false };
+          if (c.badgeType === 'past') patch.badgeType = 'active';
+          await db.collection('program_cards').doc(c.docId).update(patch);
+          Object.assign(c, patch);
+          renderCardOrder();
+        } catch (err) { toast('Could not move it: ' + err.message, 'error'); ev.target.disabled = false; }
+      };
+    }
+
+    function monthLabel(ymd) {
+      const p = ymd.split('-'); const d = new Date(+p[0], +p[1] - 1, 1);
+      return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    }
+
+    // Three sections: Live & Active (on the public page now, in date order), Upcoming --
+    // Needs Editing (grouped by month: draft/archived cards with a future date, plus
+    // tracker events with no card yet), and Past (everything else). Every card in every
+    // section is fully editable/duplicable/deletable and drag-to-reorder.
     async function renderCardOrder() {
       const box = document.getElementById('pages-list');
       document.getElementById('pg-filter-cat').disabled = true;
       document.getElementById('pg-filter-status').disabled = true;
       document.getElementById('pg-sort-hint').textContent =
-        'Drag a card to change where it appears on the homepage. Cards in the gray box below never show on the public page — use Move to Present to bring one back.';
+        'Drag a card to reorder it within its section. Only "Live & Active" shows on the public page.';
 
       await migrateLegacyCards();
       await loadTrackerOnly();
 
       const today = toYMD(new Date());
-      const present = allCardDocs
-        .filter(c => !c.archived && c.badgeType !== 'past' && !(c.eventDate && c.eventDate < today))
-        .sort((a, b) => {
-          if (a.eventDate && b.eventDate) return a.eventDate < b.eventDate ? -1 : a.eventDate > b.eventDate ? 1 : 0;
-          if (a.eventDate !== b.eventDate) return a.eventDate ? -1 : 1;
-          return (a.order || 0) - (b.order || 0);
-        });
-      const past = allCardDocs
-        .filter(c => c.archived || c.badgeType === 'past' || (c.eventDate && c.eventDate < today))
-        .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+      const isLive = c => !c.archived && c.badgeType !== 'past' && !(c.eventDate && c.eventDate < today);
+      const isUpcomingDraft = c => c.archived && c.badgeType !== 'past' && c.eventDate && c.eventDate >= today;
+
+      const live = allCardDocs.filter(isLive).sort((a, b) => {
+        if (a.eventDate && b.eventDate) return a.eventDate < b.eventDate ? -1 : a.eventDate > b.eventDate ? 1 : 0;
+        if (a.eventDate !== b.eventDate) return a.eventDate ? -1 : 1;
+        return (a.order || 0) - (b.order || 0);
+      });
+      const upcomingDraft = allCardDocs.filter(isUpcomingDraft);
+      const past = allCardDocs.filter(c => !isLive(c) && !isUpcomingDraft(c))
+        .sort((a, b) => (b.eventDate || '').localeCompare(a.eventDate || '') || (a.title || '').localeCompare(b.title || ''));
 
       document.getElementById('pg-count').textContent =
-        present.length + ' shown on the homepage, ' + (past.length + trackerOnly.length) + ' in the archive';
+        live.length + ' live, ' + (upcomingDraft.length + trackerOnly.length) + ' upcoming to edit, ' + past.length + ' past';
 
       box.innerHTML = '';
 
-      const grid = document.createElement('div');
-      grid.className = 'pg-cards-grid';
-      box.appendChild(grid);
-      if (!present.length) {
+      // ---- Section 1: Live & Active ----
+      const s1 = document.createElement('div');
+      s1.style.cssText = 'font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin-bottom:10px';
+      s1.textContent = 'Live & Active — on the homepage now, in date order';
+      box.appendChild(s1);
+      const liveGrid = document.createElement('div');
+      liveGrid.className = 'pg-cards-grid';
+      box.appendChild(liveGrid);
+      if (!live.length) {
         const p = document.createElement('p');
         p.style.cssText = 'color:var(--text-light)';
-        p.textContent = 'Nothing current — move a card up from the archive below, or publish a page.';
+        p.textContent = 'Nothing live — move a card up from below, or publish a page.';
+        liveGrid.replaceWith(p);
+      } else {
+        live.forEach(c => {
+          const row = cardRow(c, live,
+            '<button class="bo-btn ghost sm" data-archive>Move to Past</button>', moveToPast);
+          liveGrid.appendChild(row);
+        });
+      }
+
+      // ---- Section 2: Upcoming — Needs Editing (grouped by month) ----
+      const s2 = document.createElement('div');
+      s2.style.cssText = 'font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin:26px 0 10px';
+      s2.textContent = 'Upcoming — Needs Editing';
+      box.appendChild(s2);
+
+      const monthGroups = new Map();   // 'YYYY-MM' -> { cards: [...], tracker: [...] }
+      upcomingDraft.forEach(c => {
+        const key = c.eventDate.slice(0, 7);
+        if (!monthGroups.has(key)) monthGroups.set(key, { cards: [], tracker: [] });
+        monthGroups.get(key).cards.push(c);
+      });
+      trackerOnly.forEach(ev => {
+        const key = ev.date.slice(0, 7);
+        if (!monthGroups.has(key)) monthGroups.set(key, { cards: [], tracker: [] });
+        monthGroups.get(key).tracker.push(ev);
+      });
+      const monthKeys = [...monthGroups.keys()].sort();
+      if (!monthKeys.length) {
+        const p = document.createElement('p');
+        p.style.cssText = 'color:var(--text-light)';
+        p.textContent = 'Nothing upcoming needs editing.';
         box.appendChild(p);
       }
-
-      let dragId = null;
-      present.forEach(c => {
-        const row = document.createElement('div');
-        row.className = 'pg-card';
-        row.draggable = true;
-        row.dataset.docId = c.docId;
-        row.style.cursor = 'grab';
-        row.innerHTML = `
-          <div class="pg-card-top">
-            <h4>⠿ ${esc(c.title || 'Untitled card')}</h4>
-          </div>
-          <div class="bo-meta">${esc(c.eventDate ? prettyDate(c.eventDate) : 'No date')}</div>
-          <div class="pg-card-actions">
-            <button class="bo-btn sm" data-edit>Edit</button>
-            <button class="bo-btn ghost sm" data-dup>Duplicate</button>
-            <button class="bo-btn ghost sm" data-archive>Move to Past</button>
-            <button class="bo-btn danger ghost sm" data-del>Delete</button>
-          </div>`;
-        row.addEventListener('dragstart', () => { dragId = c.docId; row.style.opacity = '0.4'; });
-        row.addEventListener('dragend', () => { row.style.opacity = ''; });
-        row.addEventListener('dragover', (e) => e.preventDefault());
-        row.addEventListener('drop', async (e) => {
-          e.preventDefault();
-          if (!dragId || dragId === c.docId) return;
-          const fromIdx = present.findIndex(x => x.docId === dragId);
-          const toIdx = present.findIndex(x => x.docId === c.docId);
-          if (fromIdx < 0) return;
-          const reordered = present.slice();
-          const [moved] = reordered.splice(fromIdx, 1);
-          reordered.splice(toIdx, 0, moved);
-          const batch = db.batch();
-          reordered.forEach((c2, i) => batch.update(db.collection('program_cards').doc(c2.docId), { order: i }));
-          try {
-            await batch.commit();
-          } catch (err) {
-            toast('Could not save the new order — this usually means the Firestore security rules ' +
-              'haven’t been published yet. (' + err.message + ')', 'error');
-            return;   // don't touch local state — leave the grid showing what's actually saved
-          }
-          reordered.forEach((c2, i) => { c2.order = i; });
-          allCardDocs = allCardDocs.map(orig => {
-            const updated = reordered.find(c2 => c2.docId === orig.docId);
-            return updated ? Object.assign({}, orig, { order: updated.order }) : orig;
-          });
-          renderCardOrder();
+      monthKeys.forEach(key => {
+        const { cards, tracker } = monthGroups.get(key);
+        const head = document.createElement('div');
+        head.style.cssText = 'font-weight:700;font-size:13.5px;color:var(--primary-dark);margin:14px 0 8px';
+        head.textContent = monthLabel(key + '-01');
+        box.appendChild(head);
+        const mGrid = document.createElement('div');
+        mGrid.className = 'pg-cards-grid';
+        box.appendChild(mGrid);
+        cards.forEach(c => {
+          const row = cardRow(c, cards,
+            '<button class="bo-btn sm" data-restore>Move to Present</button>', moveToPresent);
+          mGrid.appendChild(row);
         });
-        row.querySelector('[data-archive]').onclick = async (ev) => {
-          ev.target.disabled = true;
-          try {
-            await db.collection('program_cards').doc(c.docId).update({ archived: true });
-            c.archived = true;
-            renderCardOrder();
-          } catch (err) { toast('Could not move it: ' + err.message, 'error'); ev.target.disabled = false; }
-        };
-        row.querySelector('[data-edit]').onclick = (ev) => editCard(c.docId, ev.target);
-        row.querySelector('[data-dup]').onclick = (ev) => duplicateCard(c.docId, ev.target);
-        row.querySelector('[data-del]').onclick = (ev) => deleteCard(c.docId, c.title, ev.target);
-        grid.appendChild(row);
+        tracker.forEach(ev => {
+          const row = document.createElement('div');
+          row.className = 'pg-card';
+          row.innerHTML = `
+            <div class="pg-card-top"><h4>${esc(ev.title)}</h4><span class="bo-pill draft">From tracker</span></div>
+            <div class="bo-meta">${esc(prettyDate(ev.date))}</div>
+            <div class="pg-card-actions"><button class="bo-btn sm" data-add>Create Card</button></div>`;
+          row.querySelector('[data-add]').onclick = async (btn) => {
+            btn.target.disabled = true;
+            try {
+              const ref = await db.collection('program_cards').add({
+                school, order: 999, icon: '📌', title: ev.title,
+                badgeType: 'active', badgeText: '', eventDate: ev.date, archived: true,
+                id: slugify(ev.title), desc: ev.location || '', actions: [],
+                createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+              });
+              allCardDocs.push({ docId: ref.id, school, order: 999, icon: '📌', title: ev.title,
+                badgeType: 'active', badgeText: '', eventDate: ev.date, archived: true });
+              renderCardOrder();
+            } catch (err) { toast('Could not add it: ' + err.message, 'error'); btn.target.disabled = false; }
+          };
+          mGrid.appendChild(row);
+        });
       });
 
-      // Gray archive box — previously-created cards, plus tracker events with no card yet.
-      const archiveWrap = document.createElement('div');
-      archiveWrap.style.cssText = 'margin-top:26px;padding:16px;background:#f1f1ef;border:1px solid var(--border);border-radius:12px';
-      archiveWrap.innerHTML = '<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin-bottom:10px">Previously Created Cards &amp; Tracker Events (not shown on the homepage)</div>';
-      const archiveGrid = document.createElement('div');
-      archiveGrid.className = 'pg-cards-grid';
-      archiveWrap.appendChild(archiveGrid);
-      box.appendChild(archiveWrap);
-
-      if (!past.length && !trackerOnly.length) {
+      // ---- Section 3: Past ----
+      const s3 = document.createElement('div');
+      s3.style.cssText = 'font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin:26px 0 10px';
+      s3.textContent = 'Past';
+      box.appendChild(s3);
+      const pastGrid = document.createElement('div');
+      pastGrid.className = 'pg-cards-grid';
+      box.appendChild(pastGrid);
+      if (!past.length) {
         const p = document.createElement('p');
-        p.style.cssText = 'color:var(--text-light);margin:0';
-        p.textContent = 'Nothing archived.';
-        archiveGrid.replaceWith(p);
+        p.style.cssText = 'color:var(--text-light)';
+        p.textContent = 'Nothing past.';
+        pastGrid.replaceWith(p);
+      } else {
+        past.forEach(c => {
+          const row = cardRow(c, past,
+            '<button class="bo-btn sm" data-restore>Move to Present</button>', moveToPresent);
+          pastGrid.appendChild(row);
+        });
       }
-
-      trackerOnly.forEach(ev => {
-        const row = document.createElement('div');
-        row.className = 'pg-card';
-        row.innerHTML = `
-          <div class="pg-card-top"><h4>${esc(ev.title)}</h4><span class="bo-pill draft">From tracker</span></div>
-          <div class="bo-meta">${esc(prettyDate(ev.date))}</div>
-          <div class="pg-card-actions"><button class="bo-btn sm" data-add>Move to Present</button></div>`;
-        row.querySelector('[data-add]').onclick = async (btn) => {
-          btn.target.disabled = true;
-          try {
-            const ref = await db.collection('program_cards').add({
-              school, order: 999, icon: '📌', title: ev.title,
-              badgeType: 'active', badgeText: '', eventDate: ev.date, archived: false,
-              id: slugify(ev.title), desc: ev.location || '', actions: [],
-              createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            allCardDocs.push({ docId: ref.id, school, order: 999, icon: '📌', title: ev.title,
-              badgeType: 'active', badgeText: '', eventDate: ev.date, archived: false });
-            renderCardOrder();
-          } catch (err) { toast('Could not add it: ' + err.message, 'error'); btn.target.disabled = false; }
-        };
-        archiveGrid.appendChild(row);
-      });
-
-      past.forEach(c => {
-        const row = document.createElement('div');
-        row.className = 'pg-card';
-        row.innerHTML = `
-          <div class="pg-card-top"><h4>${esc(c.title || 'Untitled card')}</h4></div>
-          <div class="bo-meta">${esc(c.eventDate ? prettyDate(c.eventDate) : 'No date')}</div>
-          <div class="pg-card-actions">
-            <button class="bo-btn sm" data-restore>Move to Present</button>
-            <button class="bo-btn ghost sm" data-edit>Edit</button>
-            <button class="bo-btn ghost sm" data-dup>Duplicate</button>
-            <button class="bo-btn danger ghost sm" data-del>Delete</button>
-          </div>`;
-        row.querySelector('[data-edit]').onclick = (ev) => editCard(c.docId, ev.target);
-        row.querySelector('[data-dup]').onclick = (ev) => duplicateCard(c.docId, ev.target);
-        row.querySelector('[data-del]').onclick = (ev) => deleteCard(c.docId, c.title, ev.target);
-        row.querySelector('[data-restore]').onclick = async (ev) => {
-          ev.target.disabled = true;
-          try {
-            const patch = { archived: false };
-            if (c.badgeType === 'past') patch.badgeType = 'active';
-            await db.collection('program_cards').doc(c.docId).update(patch);
-            Object.assign(c, patch);
-            renderCardOrder();
-          } catch (err) { toast('Could not move it: ' + err.message, 'error'); ev.target.disabled = false; }
-        };
-        archiveGrid.appendChild(row);
-      });
     }
 
     function prettyDate(ymd) {
