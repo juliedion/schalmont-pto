@@ -30,8 +30,8 @@ const CHOCOLATE_FUNDRAISER = {
   // Dates families can expect chocolate to be available at a staffed PTO table —
   // edit this list to add/remove sale opportunities.
   dates: [
-    { date: '2026-09-16', label: 'Middle & High School Open House' },
-    { date: '2026-10-01', label: 'School Event / Open House' },
+    { date: '2026-09-16', label: 'Middle School Open House' },
+    { date: '2026-10-01', label: 'High School Open House' },
     { date: '2026-10-16', label: 'Homecoming' },
     { date: '2026-10-30', label: 'Trail of Treats' }
   ],
@@ -41,11 +41,9 @@ const CHOCOLATE_FUNDRAISER = {
   faqs: [
     { q: 'How much are the chocolate bars?', a: '$2.50 each.' },
     { q: 'Who benefits from the fundraiser?', a: 'Schalmont Middle School and High School PTO programs and initiatives.' },
-    { q: 'Can I buy chocolate online?', a: 'Yes — order bars or a full case using the "Buy Chocolate Online" button on this page, and it will be sent home with your student.' },
     { q: 'Can my student sell chocolate?', a: 'Yes! Participating Middle and High School students and families can request chocolate to sell using the form on this page.' },
     { q: 'How many bars does a student receive?', a: 'We’re using smaller starter batches — typically around 12–24 bars — so families aren’t required to take a full 48-bar carrier at once.' },
     { q: 'Can we get more bars if we sell out?', a: 'Yes, additional chocolate may be available depending on supply once your first batch is sold and accounted for.' },
-    { q: 'Can I buy directly from a student seller instead of online?', a: 'Yes — chocolate is also available directly from participating Schalmont families who have signed up to sell, while supplies last.' },
     { q: 'Can I return unsold chocolate?', a: 'Unsold chocolate return details will be shared directly with sellers. Please reach out to the PTO with any questions.' },
     { q: 'When is payment due?', a: 'Payment instructions and any deadline will be confirmed and shared with participating families directly, and posted here once finalized.' }
   ],
