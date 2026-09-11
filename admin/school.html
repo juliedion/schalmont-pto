@@ -426,13 +426,21 @@
           if (!dragId || dragId === c.docId) return;
           const fromIdx = cards.findIndex(x => x.docId === dragId);
           const toIdx = cards.findIndex(x => x.docId === c.docId);
-          const [moved] = cards.splice(fromIdx, 1);
-          cards.splice(toIdx, 0, moved);
+          const reordered = cards.slice();
+          const [moved] = reordered.splice(fromIdx, 1);
+          reordered.splice(toIdx, 0, moved);
           const batch = db.batch();
-          cards.forEach((c2, i) => { c2.order = i; batch.update(db.collection('program_cards').doc(c2.docId), { order: i }); });
-          try { await batch.commit(); } catch (err) { toast('Could not save new order: ' + err.message, 'error'); }
+          reordered.forEach((c2, i) => batch.update(db.collection('program_cards').doc(c2.docId), { order: i }));
+          try {
+            await batch.commit();
+          } catch (err) {
+            toast('Could not save the new order — this usually means the Firestore security rules ' +
+              'haven’t been published yet. (' + err.message + ')', 'error');
+            return;   // don't touch local state — leave the grid showing what's actually saved
+          }
+          reordered.forEach((c2, i) => { c2.order = i; });
           allCardDocs = allCardDocs.map(orig => {
-            const updated = cards.find(c2 => c2.docId === orig.docId);
+            const updated = reordered.find(c2 => c2.docId === orig.docId);
             return updated ? Object.assign({}, orig, { order: updated.order }) : orig;
           });
           renderCardOrder();

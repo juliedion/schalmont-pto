@@ -410,7 +410,7 @@ function toast(msg, kind) {
   t.textContent = msg;
   t.className = 'show' + (kind === 'error' ? ' error' : '');
   clearTimeout(toast._t);
-  toast._t = setTimeout(() => t.className = '', 3200);
+  toast._t = setTimeout(() => t.className = '', kind === 'error' ? 7000 : 3200);
 }
 
 /* Guard: can the current person manage this school? */
