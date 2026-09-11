@@ -9,9 +9,9 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:image" content="https://schalmontpto.com/images/Schalmont-PTO-logo.png">
   <title>Schalmont PTO</title>
-  <link rel="stylesheet" href="css/styles.css?v=6">
-  <link rel="stylesheet" href="admin/admin.css">
-  <link rel="icon" href="images/favicon.svg">
+  <link rel="stylesheet" href="/css/styles.css?v=6">
+  <link rel="stylesheet" href="/admin/admin.css">
+  <link rel="icon" href="/images/favicon.svg">
   <style>
     .pg-preview-banner { background:#8a6d1a; color:#fff; text-align:center; font-weight:700;
       font-size:13px; padding:8px 14px; }
@@ -53,9 +53,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
-  <script src="js/site-chrome.js"></script>
-  <script src="admin/render-blocks.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/site-chrome.js"></script>
+  <script src="/admin/render-blocks.js"></script>
   <script>
     renderSiteChrome();
 
@@ -94,7 +94,7 @@
       if (isPreview) {
         firebase.auth().onAuthStateChanged(async (user) => {
           clearStuck();
-          if (!user) { fail('Please <a href="login.html">sign in</a> as a PTO administrator, then reopen the preview.'); return; }
+          if (!user) { fail('Please <a href="/login.html">sign in</a> as a PTO administrator, then reopen the preview.'); return; }
           if (!await canPreview(user)) { fail('Your account can\'t preview this page.'); return; }
           render(true);
         });
@@ -148,7 +148,7 @@
     function notFound() {
       hero.textContent = 'Page not found';
       body.innerHTML = '<p>This page may have been unpublished, or the link is mistyped. ' +
-        '<a href="index.html">Go to the Schalmont PTO home page</a>.</p>';
+        '<a href="/index.html">Go to the Schalmont PTO home page</a>.</p>';
     }
     function escapeHtml(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
   </script>
