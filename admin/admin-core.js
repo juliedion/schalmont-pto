@@ -273,7 +273,7 @@ const NWP_TYPES = [
   { cat: 'spiritwear', label: 'Spiritwear' },
   { cat: 'fundraising', label: 'Fundraiser' },
   { cat: 'facilities', label: 'Building & Facilities' },
-  { cat: 'ideas',    label: 'Extra idea' }
+  { cat: 'ideas',    label: 'Other' }
 ];
 
 function newWebPage(cat, presetSchool) {
@@ -286,9 +286,10 @@ function newWebPage(cat, presetSchool) {
   const checks = opts.map(s =>
     `<label><input type="checkbox" class="nwp-school" value="${s}" ${preset.has(s) ? 'checked' : ''}> ${esc(SCHOOLS[s])}</label>`
   ).join('');
-  const typeOpts = NWP_TYPES.map(t =>
-    `<option value="${t.cat}" ${t.cat === cat ? 'selected' : ''}>${esc(t.label)}</option>`
-  ).join('');
+  // Deliberately never pre-selects a type (even when a section like Fundraising passed
+  // one in) -- the admin has to actively choose Event/Program/Club/etc. every time.
+  const typeOpts = '<option value="" disabled selected>Select a type…</option>' +
+    NWP_TYPES.map(t => `<option value="${t.cat}">${esc(t.label)}</option>`).join('');
 
   const back = document.createElement('div');
   back.className = 'bo-modal-back';
@@ -323,7 +324,7 @@ function newWebPage(cat, presetSchool) {
         <label><input type="checkbox" id="nwp-leftmenu" checked> Show in the left (Browse) menu</label>
       </div>
       <p id="nwp-hint" style="font-size:12px;color:var(--text-light);margin:8px 0 0">
-        Tick at least one school and enter a title to continue.
+        Tick at least one school, choose a type, and enter a title to continue.
       </p>
       <div class="bo-modal-actions">
         <button class="bo-btn ghost sm" id="nwp-cancel">Cancel</button>
@@ -336,16 +337,18 @@ function newWebPage(cat, presetSchool) {
   back.querySelector('#nwp-cancel').onclick = close;
   back.querySelector('#nwp-title').focus();
 
-  // Gate the "Create" button on: at least one school ticked AND a title entered.
+  // Gate the "Create" button on: at least one school ticked, a type chosen, AND a title entered.
   const goBtn = back.querySelector('#nwp-go');
   const hint  = back.querySelector('#nwp-hint');
   const revalidate = () => {
     const hasSchool = back.querySelectorAll('.nwp-school:checked').length > 0;
+    const hasType   = back.querySelector('#nwp-type').value !== '';
     const hasTitle  = back.querySelector('#nwp-title').value.trim().length > 0;
-    goBtn.disabled = !(hasSchool && hasTitle);
+    goBtn.disabled = !(hasSchool && hasType && hasTitle);
     hint.style.display = goBtn.disabled ? '' : 'none';
   };
   back.querySelectorAll('.nwp-school').forEach(c => c.addEventListener('change', revalidate));
+  back.querySelector('#nwp-type').addEventListener('change', revalidate);
   back.querySelector('#nwp-title').addEventListener('input', revalidate);
   revalidate();
 
