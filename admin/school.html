@@ -550,26 +550,6 @@
         archiveGrid.replaceWith(p);
       }
 
-      past.forEach(c => {
-        const row = document.createElement('div');
-        row.className = 'pg-card';
-        row.innerHTML = `
-          <div class="pg-card-top"><h4>${esc(c.title || 'Untitled card')}</h4></div>
-          <div class="bo-meta">${esc(c.eventDate ? prettyDate(c.eventDate) : 'No date')}</div>
-          <div class="pg-card-actions"><button class="bo-btn sm" data-restore>Move to Present</button></div>`;
-        row.querySelector('[data-restore]').onclick = async (ev) => {
-          ev.target.disabled = true;
-          try {
-            const patch = { archived: false };
-            if (c.badgeType === 'past') patch.badgeType = 'active';
-            await db.collection('program_cards').doc(c.docId).update(patch);
-            Object.assign(c, patch);
-            renderCardOrder();
-          } catch (err) { toast('Could not move it: ' + err.message, 'error'); ev.target.disabled = false; }
-        };
-        archiveGrid.appendChild(row);
-      });
-
       trackerOnly.forEach(ev => {
         const row = document.createElement('div');
         row.className = 'pg-card';
@@ -590,6 +570,26 @@
               badgeType: 'active', badgeText: '', eventDate: ev.date, archived: false });
             renderCardOrder();
           } catch (err) { toast('Could not add it: ' + err.message, 'error'); btn.target.disabled = false; }
+        };
+        archiveGrid.appendChild(row);
+      });
+
+      past.forEach(c => {
+        const row = document.createElement('div');
+        row.className = 'pg-card';
+        row.innerHTML = `
+          <div class="pg-card-top"><h4>${esc(c.title || 'Untitled card')}</h4></div>
+          <div class="bo-meta">${esc(c.eventDate ? prettyDate(c.eventDate) : 'No date')}</div>
+          <div class="pg-card-actions"><button class="bo-btn sm" data-restore>Move to Present</button></div>`;
+        row.querySelector('[data-restore]').onclick = async (ev) => {
+          ev.target.disabled = true;
+          try {
+            const patch = { archived: false };
+            if (c.badgeType === 'past') patch.badgeType = 'active';
+            await db.collection('program_cards').doc(c.docId).update(patch);
+            Object.assign(c, patch);
+            renderCardOrder();
+          } catch (err) { toast('Could not move it: ' + err.message, 'error'); ev.target.disabled = false; }
         };
         archiveGrid.appendChild(row);
       });
