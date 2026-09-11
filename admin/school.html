@@ -661,7 +661,7 @@
             <div class="pg-card-top"><h4>${esc(ev.title)}</h4><span class="bo-pill draft">From tracker</span></div>
             <div class="bo-meta">${esc(prettyDate(ev.date))}</div>
             <div class="pg-card-actions">
-              <button class="bo-btn sm" data-add>Create Card</button>
+              <button class="bo-btn sm" data-add>Edit Card</button>
               <button class="bo-btn danger ghost sm" data-del>Delete</button>
             </div>`;
           row.querySelector('[data-add]').onclick = async (btn) => {
@@ -675,8 +675,8 @@
               });
               allCardDocs.push({ docId: ref.id, school, order: 999, icon: '📌', title: ev.title,
                 badgeType: 'active', badgeText: '', eventDate: ev.date, archived: true });
-              renderCardOrder();
-            } catch (err) { toast('Could not add it: ' + err.message, 'error'); btn.target.disabled = false; }
+              editCard(ref.id, btn.target);
+            } catch (err) { toast('Could not create it: ' + err.message, 'error'); btn.target.disabled = false; }
           };
           row.querySelector('[data-del]').onclick = async (btn) => {
             if (!confirm('Delete "' + ev.title + '" from the PTO calendar? This removes it everywhere, not just here. This cannot be undone.')) return;
