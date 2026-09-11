@@ -660,7 +660,10 @@
           row.innerHTML = `
             <div class="pg-card-top"><h4>${esc(ev.title)}</h4><span class="bo-pill draft">From tracker</span></div>
             <div class="bo-meta">${esc(prettyDate(ev.date))}</div>
-            <div class="pg-card-actions"><button class="bo-btn sm" data-add>Create Card</button></div>`;
+            <div class="pg-card-actions">
+              <button class="bo-btn sm" data-add>Create Card</button>
+              <button class="bo-btn danger ghost sm" data-del>Delete</button>
+            </div>`;
           row.querySelector('[data-add]').onclick = async (btn) => {
             btn.target.disabled = true;
             try {
@@ -674,6 +677,15 @@
                 badgeType: 'active', badgeText: '', eventDate: ev.date, archived: true });
               renderCardOrder();
             } catch (err) { toast('Could not add it: ' + err.message, 'error'); btn.target.disabled = false; }
+          };
+          row.querySelector('[data-del]').onclick = async (btn) => {
+            if (!confirm('Delete "' + ev.title + '" from the PTO calendar? This removes it everywhere, not just here. This cannot be undone.')) return;
+            btn.target.disabled = true;
+            try {
+              await db.collection('pto_events').doc(ev.eventId).delete();
+              trackerOnly = trackerOnly.filter(t => t.eventId !== ev.eventId);
+              renderCardOrder();
+            } catch (err) { toast('Could not delete it: ' + err.message, 'error'); btn.target.disabled = false; }
           };
           mGrid.appendChild(row);
         });
