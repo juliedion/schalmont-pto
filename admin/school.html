@@ -268,6 +268,7 @@
         allPageDocs = [...seen.values()];
         await loadProgramCards();
         await backfillCards();
+        await syncCardDates();
         renderPages();
       } catch (e) {
         box.innerHTML = '<p style="color:var(--error)">Could not load pages: ' + esc(e.message) + '</p>';
@@ -327,6 +328,32 @@
         await batch.commit();
         await loadProgramCards();
       } catch (e) { /* rules may not be published yet — pages still show */ }
+    }
+
+    // Keep a linked card's date/badge matched to its page's Event date. Needed for cards
+    // created before eventDate was tracked on cards, and for any page whose date changed
+    // after the card was made -- otherwise "sort by the tracker" silently uses a stale date.
+    async function syncCardDates() {
+      const pagesById = new Map(allPageDocs.map(doc => [doc.id, doc.data()]));
+      const today = toYMD(new Date());
+      const stale = allCardDocs.filter(c => {
+        if (!c.pageId || !pagesById.has(c.pageId)) return false;
+        const p = pagesById.get(c.pageId);
+        const wantBadge = (p.eventDate && p.eventDate < today) ? 'past' : (c.badgeType === 'past' ? 'active' : c.badgeType);
+        return (p.eventDate || '') !== (c.eventDate || '') || wantBadge !== c.badgeType;
+      });
+      if (!stale.length) return;
+      try {
+        const batch = db.batch();
+        stale.forEach(c => {
+          const p = pagesById.get(c.pageId);
+          const eventDate = p.eventDate || '';
+          const badgeType = (eventDate && eventDate < today) ? 'past' : (c.badgeType === 'past' ? 'active' : c.badgeType);
+          batch.update(db.collection('program_cards').doc(c.docId), { eventDate, badgeType });
+          c.eventDate = eventDate; c.badgeType = badgeType;
+        });
+        await batch.commit();
+      } catch (e) { /* rules may not be published yet */ }
     }
 
     // Group key + label for each sort mode. Sorting only ever reorders/groups —
