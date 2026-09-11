@@ -407,34 +407,83 @@
         : { key: 'b', label: 'Past events & everything else' };
     }
 
-    // Drag-and-drop reordering of the homepage card grid. Only shows cards that are
-    // actually eligible to appear on the public page (not past, not hidden) in their
-    // current order — dragging updates each card's `order` field so the public grid
-    // (sorted the same way, see js/program-cards.js) picks up the new order.
-    function renderCardOrder() {
+    // One-time-per-school cleanup: every card that existed before "archived" was tracked
+    // gets archived (moved to the gray box below), except the Fall Book Fair card, which
+    // is a real current page and should lead the homepage. Guarded so it only ever runs
+    // once — after that, archived is just whatever admins set with Move to Present/Past.
+    async function migrateLegacyCards() {
+      if (!allCardDocs.length) return;
+      const untouched = allCardDocs.filter(c => c.archived === undefined);
+      if (!untouched.length) return;
+      try {
+        const batch = db.batch();
+        untouched.forEach(c => {
+          const archived = !/fall book fair/i.test(c.title || '');
+          batch.update(db.collection('program_cards').doc(c.docId), { archived });
+          c.archived = archived;
+        });
+        await batch.commit();
+      } catch (e) { /* rules may not be published yet */ }
+    }
+
+    // Tracker events (pto_events) for this school that don't have a matching card yet —
+    // shown as "unpublished" suggestions in the gray box so an admin can turn them into a
+    // real homepage card with one click, instead of hunting through the calendar.
+    let trackerOnly = [];
+    async function loadTrackerOnly() {
+      trackerOnly = [];
+      try {
+        const today = toYMD(new Date());
+        const snap = await db.collection('pto_events').where('school', '==', school).get();
+        const cardTitles = new Set(allCardDocs.map(c => (c.title || '').trim().toLowerCase()));
+        trackerOnly = snap.docs
+          .map(d => ({ eventId: d.id, ...d.data() }))
+          .filter(ev => ev.date && ev.date >= today && ev.title && !cardTitles.has(ev.title.trim().toLowerCase()));
+      } catch (e) { trackerOnly = []; /* rules may not be published yet */ }
+    }
+
+    // Drag-and-drop reordering of the homepage card grid, split into what's actually
+    // showing on the public page (Present) and a gray archive box below (Past/legacy) —
+    // plus tracker events with no card yet, offered as one-click "Move to Present".
+    async function renderCardOrder() {
       const box = document.getElementById('pages-list');
       document.getElementById('pg-filter-cat').disabled = true;
       document.getElementById('pg-filter-status').disabled = true;
       document.getElementById('pg-sort-hint').textContent =
-        'Drag a card to change where it appears on the homepage. Past and unpublished pages never show here — they never appear on the public page either.';
+        'Drag a card to change where it appears on the homepage. Cards in the gray box below never show on the public page — use Move to Present to bring one back.';
+
+      await migrateLegacyCards();
+      await loadTrackerOnly();
+
       const today = toYMD(new Date());
-      const cards = allCardDocs
-        .filter(c => c.badgeType !== 'past' && !(c.eventDate && c.eventDate < today))
+      const present = allCardDocs
+        .filter(c => !c.archived && c.badgeType !== 'past' && !(c.eventDate && c.eventDate < today))
         .sort((a, b) => {
           if (a.eventDate && b.eventDate) return a.eventDate < b.eventDate ? -1 : a.eventDate > b.eventDate ? 1 : 0;
           if (a.eventDate !== b.eventDate) return a.eventDate ? -1 : 1;
           return (a.order || 0) - (b.order || 0);
         });
-      document.getElementById('pg-count').textContent = cards.length + ' card' + (cards.length === 1 ? '' : 's') + ' shown on the homepage';
-      if (!cards.length) { box.innerHTML = '<p style="color:var(--text-light)">No current or upcoming cards to reorder.</p>'; return; }
+      const past = allCardDocs
+        .filter(c => c.archived || c.badgeType === 'past' || (c.eventDate && c.eventDate < today))
+        .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+
+      document.getElementById('pg-count').textContent =
+        present.length + ' shown on the homepage, ' + (past.length + trackerOnly.length) + ' in the archive';
+
+      box.innerHTML = '';
 
       const grid = document.createElement('div');
       grid.className = 'pg-cards-grid';
-      box.innerHTML = '';
       box.appendChild(grid);
+      if (!present.length) {
+        const p = document.createElement('p');
+        p.style.cssText = 'color:var(--text-light)';
+        p.textContent = 'Nothing current — move a card up from the archive below, or publish a page.';
+        box.appendChild(p);
+      }
 
       let dragId = null;
-      cards.forEach(c => {
+      present.forEach(c => {
         const row = document.createElement('div');
         row.className = 'pg-card';
         row.draggable = true;
@@ -444,16 +493,18 @@
           <div class="pg-card-top">
             <h4>⠿ ${esc(c.title || 'Untitled card')}</h4>
           </div>
-          <div class="bo-meta">${esc(c.eventDate ? prettyDate(c.eventDate) : 'No date')}</div>`;
+          <div class="bo-meta">${esc(c.eventDate ? prettyDate(c.eventDate) : 'No date')}</div>
+          <div class="pg-card-actions"><button class="bo-btn ghost sm" data-archive>Move to Past</button></div>`;
         row.addEventListener('dragstart', () => { dragId = c.docId; row.style.opacity = '0.4'; });
         row.addEventListener('dragend', () => { row.style.opacity = ''; });
         row.addEventListener('dragover', (e) => e.preventDefault());
         row.addEventListener('drop', async (e) => {
           e.preventDefault();
           if (!dragId || dragId === c.docId) return;
-          const fromIdx = cards.findIndex(x => x.docId === dragId);
-          const toIdx = cards.findIndex(x => x.docId === c.docId);
-          const reordered = cards.slice();
+          const fromIdx = present.findIndex(x => x.docId === dragId);
+          const toIdx = present.findIndex(x => x.docId === c.docId);
+          if (fromIdx < 0) return;
+          const reordered = present.slice();
           const [moved] = reordered.splice(fromIdx, 1);
           reordered.splice(toIdx, 0, moved);
           const batch = db.batch();
@@ -472,7 +523,75 @@
           });
           renderCardOrder();
         });
+        row.querySelector('[data-archive]').onclick = async (ev) => {
+          ev.target.disabled = true;
+          try {
+            await db.collection('program_cards').doc(c.docId).update({ archived: true });
+            c.archived = true;
+            renderCardOrder();
+          } catch (err) { toast('Could not move it: ' + err.message, 'error'); ev.target.disabled = false; }
+        };
         grid.appendChild(row);
+      });
+
+      // Gray archive box — previously-created cards, plus tracker events with no card yet.
+      const archiveWrap = document.createElement('div');
+      archiveWrap.style.cssText = 'margin-top:26px;padding:16px;background:#f1f1ef;border:1px solid var(--border);border-radius:12px';
+      archiveWrap.innerHTML = '<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin-bottom:10px">Previously Created Cards &amp; Tracker Events (not shown on the homepage)</div>';
+      const archiveGrid = document.createElement('div');
+      archiveGrid.className = 'pg-cards-grid';
+      archiveWrap.appendChild(archiveGrid);
+      box.appendChild(archiveWrap);
+
+      if (!past.length && !trackerOnly.length) {
+        const p = document.createElement('p');
+        p.style.cssText = 'color:var(--text-light);margin:0';
+        p.textContent = 'Nothing archived.';
+        archiveGrid.replaceWith(p);
+      }
+
+      past.forEach(c => {
+        const row = document.createElement('div');
+        row.className = 'pg-card';
+        row.innerHTML = `
+          <div class="pg-card-top"><h4>${esc(c.title || 'Untitled card')}</h4></div>
+          <div class="bo-meta">${esc(c.eventDate ? prettyDate(c.eventDate) : 'No date')}</div>
+          <div class="pg-card-actions"><button class="bo-btn sm" data-restore>Move to Present</button></div>`;
+        row.querySelector('[data-restore]').onclick = async (ev) => {
+          ev.target.disabled = true;
+          try {
+            const patch = { archived: false };
+            if (c.badgeType === 'past') patch.badgeType = 'active';
+            await db.collection('program_cards').doc(c.docId).update(patch);
+            Object.assign(c, patch);
+            renderCardOrder();
+          } catch (err) { toast('Could not move it: ' + err.message, 'error'); ev.target.disabled = false; }
+        };
+        archiveGrid.appendChild(row);
+      });
+
+      trackerOnly.forEach(ev => {
+        const row = document.createElement('div');
+        row.className = 'pg-card';
+        row.innerHTML = `
+          <div class="pg-card-top"><h4>${esc(ev.title)}</h4><span class="bo-pill draft">From tracker</span></div>
+          <div class="bo-meta">${esc(prettyDate(ev.date))}</div>
+          <div class="pg-card-actions"><button class="bo-btn sm" data-add>Move to Present</button></div>`;
+        row.querySelector('[data-add]').onclick = async (btn) => {
+          btn.target.disabled = true;
+          try {
+            const ref = await db.collection('program_cards').add({
+              school, order: 999, icon: '📌', title: ev.title,
+              badgeType: 'active', badgeText: '', eventDate: ev.date, archived: false,
+              id: slugify(ev.title), desc: ev.location || '', actions: [],
+              createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            allCardDocs.push({ docId: ref.id, school, order: 999, icon: '📌', title: ev.title,
+              badgeType: 'active', badgeText: '', eventDate: ev.date, archived: false });
+            renderCardOrder();
+          } catch (err) { toast('Could not add it: ' + err.message, 'error'); btn.target.disabled = false; }
+        };
+        archiveGrid.appendChild(row);
       });
     }
 

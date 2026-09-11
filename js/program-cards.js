@@ -876,7 +876,7 @@ const PROGRAM_CARDS_DEFAULTS = {
   function sortAndFilter(cards) {
     var today = new Date().toISOString().slice(0, 10);
     return cards
-      .filter(function (c) { return c.badgeType !== 'past' && !(c.eventDate && c.eventDate < today); })
+      .filter(function (c) { return !c.archived && c.badgeType !== 'past' && !(c.eventDate && c.eventDate < today); })
       .sort(function (a, b) {
         if (a.eventDate && b.eventDate) return a.eventDate < b.eventDate ? -1 : a.eventDate > b.eventDate ? 1 : 0;
         if (a.eventDate !== b.eventDate) return a.eventDate ? -1 : 1;
