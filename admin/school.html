@@ -388,6 +388,38 @@
       }
     }
 
+    async function deleteCard(docId, title, btn) {
+      if (!confirm('Delete "' + (title || 'this card') + '"? This cannot be undone.')) return;
+      if (btn) btn.disabled = true;
+      try {
+        await db.collection('program_cards').doc(docId).delete();
+        allCardDocs = allCardDocs.filter(c => c.docId !== docId);
+        renderPages();
+      } catch (e) { toast('Could not delete: ' + e.message, 'error'); if (btn) btn.disabled = false; }
+    }
+
+    // Duplicates just the card itself (title + " (Copy)") -- deliberately not the linked
+    // page, so the copy starts independent and someone can Edit it into its own real page.
+    async function duplicateCard(docId, btn) {
+      const c = allCardDocs.find(x => x.docId === docId);
+      if (!c) return;
+      if (btn) { btn.disabled = true; btn.textContent = 'Duplicating…'; }
+      try {
+        const ref = await db.collection('program_cards').add({
+          school, order: 999, icon: c.icon || '📌', title: (c.title || 'Untitled card') + ' (Copy)',
+          badgeType: c.badgeType || 'active', badgeText: c.badgeText || '', eventDate: c.eventDate || '',
+          archived: true, id: '', desc: c.desc || '', actions: c.actions || [],
+          createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        allCardDocs.push({ docId: ref.id, school, order: 999, icon: c.icon || '📌',
+          title: (c.title || 'Untitled card') + ' (Copy)', badgeType: c.badgeType || 'active',
+          badgeText: c.badgeText || '', eventDate: c.eventDate || '', archived: true,
+          desc: c.desc || '', actions: c.actions || [] });
+        toast('Duplicated — it landed in the archive box below');
+        renderPages();
+      } catch (e) { toast('Could not duplicate: ' + e.message, 'error'); if (btn) { btn.disabled = false; btn.textContent = 'Duplicate'; } }
+    }
+
     function sortGroup(item, mode, today) {
       const p = item.p;
       if (mode === 'type') {
@@ -494,7 +526,12 @@
             <h4>⠿ ${esc(c.title || 'Untitled card')}</h4>
           </div>
           <div class="bo-meta">${esc(c.eventDate ? prettyDate(c.eventDate) : 'No date')}</div>
-          <div class="pg-card-actions"><button class="bo-btn ghost sm" data-archive>Move to Past</button></div>`;
+          <div class="pg-card-actions">
+            <button class="bo-btn sm" data-edit>Edit</button>
+            <button class="bo-btn ghost sm" data-dup>Duplicate</button>
+            <button class="bo-btn ghost sm" data-archive>Move to Past</button>
+            <button class="bo-btn danger ghost sm" data-del>Delete</button>
+          </div>`;
         row.addEventListener('dragstart', () => { dragId = c.docId; row.style.opacity = '0.4'; });
         row.addEventListener('dragend', () => { row.style.opacity = ''; });
         row.addEventListener('dragover', (e) => e.preventDefault());
@@ -531,6 +568,9 @@
             renderCardOrder();
           } catch (err) { toast('Could not move it: ' + err.message, 'error'); ev.target.disabled = false; }
         };
+        row.querySelector('[data-edit]').onclick = (ev) => editCard(c.docId, ev.target);
+        row.querySelector('[data-dup]').onclick = (ev) => duplicateCard(c.docId, ev.target);
+        row.querySelector('[data-del]').onclick = (ev) => deleteCard(c.docId, c.title, ev.target);
         grid.appendChild(row);
       });
 
@@ -580,7 +620,15 @@
         row.innerHTML = `
           <div class="pg-card-top"><h4>${esc(c.title || 'Untitled card')}</h4></div>
           <div class="bo-meta">${esc(c.eventDate ? prettyDate(c.eventDate) : 'No date')}</div>
-          <div class="pg-card-actions"><button class="bo-btn sm" data-restore>Move to Present</button></div>`;
+          <div class="pg-card-actions">
+            <button class="bo-btn sm" data-restore>Move to Present</button>
+            <button class="bo-btn ghost sm" data-edit>Edit</button>
+            <button class="bo-btn ghost sm" data-dup>Duplicate</button>
+            <button class="bo-btn danger ghost sm" data-del>Delete</button>
+          </div>`;
+        row.querySelector('[data-edit]').onclick = (ev) => editCard(c.docId, ev.target);
+        row.querySelector('[data-dup]').onclick = (ev) => duplicateCard(c.docId, ev.target);
+        row.querySelector('[data-del]').onclick = (ev) => deleteCard(c.docId, c.title, ev.target);
         row.querySelector('[data-restore]').onclick = async (ev) => {
           ev.target.disabled = true;
           try {
@@ -683,19 +731,13 @@
             <div class="pg-card-actions">
               ${viewHref ? `<a class="bo-btn ghost sm" href="${esc(viewHref)}" target="_blank">View on site</a>` : ''}
               <button class="bo-btn sm" data-edit>Edit</button>
+              <button class="bo-btn ghost sm" data-dup>Duplicate</button>
               <button class="bo-btn danger ghost sm" data-del>Delete</button>
             </div>`;
           grid.appendChild(row);
           row.querySelector('[data-edit]').onclick = (ev) => editCard(doc.id, ev.target);
-          row.querySelector('[data-del]').onclick = async (ev) => {
-            if (!confirm('Delete "' + (p.title || 'this card') + '"? This cannot be undone.')) return;
-            ev.target.disabled = true;
-            try {
-              await db.collection('program_cards').doc(doc.id).delete();
-              allCardDocs = allCardDocs.filter(c => c.docId !== doc.id);
-              renderPages();
-            } catch (e) { toast('Could not delete: ' + e.message, 'error'); ev.target.disabled = false; }
-          };
+          row.querySelector('[data-dup]').onclick = (ev) => duplicateCard(doc.id, ev.target);
+          row.querySelector('[data-del]').onclick = (ev) => deleteCard(doc.id, p.title, ev.target);
           return;
         }
 
