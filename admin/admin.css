@@ -237,8 +237,14 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 /* ---------- Generic modal (new-page notice, etc.) ---------- */
 .bo-modal-back { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex;
   align-items: flex-start; justify-content: center; padding: 44px 16px; z-index: 95; overflow-y: auto; }
-.bo-modal { background: #fff; border-radius: 14px; width: 100%; max-width: 460px; padding: 24px; }
-.bo-modal h2 { margin: 0 0 12px; font-size: 19px; color: var(--primary-dark); }
+.bo-modal { background: #fff; border-radius: 14px; width: 100%; max-width: 460px; padding: 24px; position: relative; }
+.bo-modal h2 { margin: 0 0 12px; font-size: 19px; color: var(--primary-dark); padding-right: 28px; }
+.bo-modal-x {
+  position: absolute; top: 14px; right: 14px; width: 30px; height: 30px; border-radius: 50%;
+  border: none; background: var(--light-bg); color: var(--text-light); font-size: 18px; line-height: 1;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.bo-modal-x:hover { background: var(--border); color: var(--text); }
 .bo-modal-lbl { display: block; font-weight: 700; font-size: 12.5px; margin: 12px 0 4px; }
 .bo-modal select,
 .bo-modal input:not([type=checkbox]):not([type=radio]) {

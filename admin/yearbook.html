@@ -34,16 +34,18 @@
   <div id="bo-shell"></div>
 
   <main id="bo-main" style="display:none">
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-      <a class="bo-btn ghost sm" href="index.html">← Back Office Home</a>
-      <a class="bo-btn ghost sm" id="back-school" href="#">← <span id="back-school-name">School</span> Workspace</a>
+    <div id="yb-page-head">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+        <a class="bo-btn ghost sm" href="index.html">← Back Office Home</a>
+        <a class="bo-btn ghost sm" id="back-school" href="#">← <span id="back-school-name">School</span> Workspace</a>
+      </div>
+      <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo;
+        <a id="crumb-school" href="#">School</a> &rsaquo; Yearbook Photos</div>
+      <h1 class="bo-h1" id="title">Yearbook Photos</h1>
+      <p class="bo-lead">Parents submit event photos through a public form. You set up the
+         <strong>event folders</strong> they can choose from, then <strong>review</strong> each
+         submission before it counts toward the yearbook.</p>
     </div>
-    <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo;
-      <a id="crumb-school" href="#">School</a> &rsaquo; Yearbook Photos</div>
-    <h1 class="bo-h1" id="title">Yearbook Photos</h1>
-    <p class="bo-lead">Parents submit event photos through a public form. You set up the
-       <strong>event folders</strong> they can choose from, then <strong>review</strong> each
-       submission before it counts toward the yearbook.</p>
 
     <div class="bo-tip">
       <strong>Share this link with families</strong> so they can send in photos:<br>
@@ -105,6 +107,10 @@
       document.getElementById('back-school').href = 'school.html?s=' + school;
       document.getElementById('back-school-name').textContent = SCHOOLS[school];
       document.getElementById('title').textContent = SCHOOLS[school] + ' — Yearbook Photos';
+      if (getParam('embed') === '1') {
+        document.getElementById('yb-page-head').style.display = 'none';
+        document.getElementById('bo-main').style.padding = '4px 4px 24px';
+      }
 
       const link = 'schalmontpto.com/yearbook-upload';
       document.getElementById('public-link').textContent = link;

@@ -78,10 +78,10 @@
       <a class="bo-tab" id="tab-link-events" href="#">🎪 Events</a>
       <a class="bo-tab" id="tab-link-programs" href="#">🎓 Programs</a>
       <a class="bo-tab" id="tab-link-clubs" href="#">🤝 Clubs</a>
-      <button class="bo-tab" data-tab="pages">📄 Pages</button>
-      <button class="bo-tab" data-tab="files">🖼️ Files &amp; Photos</button>
+      <button class="bo-tab" data-tab="pages">📄 All Pages</button>
+      <button class="bo-tab" data-tab="files">📁 Files</button>
+      <button class="bo-tab" data-tab="photos">🖼️ Photos</button>
       <button class="bo-tab" data-tab="ideas">💡 Ideas</button>
-      <button class="bo-tab" data-tab="todo">✅ To-Do</button>
     </div>
 
     <!-- ============ CALENDAR ============ -->
@@ -179,22 +179,16 @@
     <!-- ============ FILES ============ -->
     <section class="bo-panel" id="panel-files">
       <div class="bo-tip">
-        This is your school's <strong>link library</strong> &mdash; a saved list of photos and
-        documents you can reuse on pages, in emails, and in Facebook posts. You add things by
+        This is your school's <strong>document link library</strong> &mdash; a saved list of PDFs
+        and flyers you can reuse on pages, in emails, and in Facebook posts. You add things by
         <strong>pasting a link</strong> to them.
         <br><br>
         <strong>Where do I get a link?</strong><br>
-        • <em>A photo already on the web</em> (our site, a news article, a vendor's site):
-          right-click it &rarr; <strong>Copy Image Address</strong>.<br>
-        • <em>A PDF or flyer</em> (permission slip, menu, order form): put it in Google Drive,
-          click <strong>Share</strong> &rarr; <strong>Anyone with the link</strong> &rarr;
-          <strong>Copy link</strong>.<br>
-        • <em>A photo from your computer</em>: upload it to a free host like
-          <a href="https://postimages.org" target="_blank">postimages.org</a> and copy the
-          "Direct link", or ask the site owner to add it to schalmontpto.com/images.
+        A PDF or flyer (permission slip, menu, order form): put it in Google Drive, click
+        <strong>Share</strong> &rarr; <strong>Anyone with the link</strong> &rarr;
+        <strong>Copy link</strong>.
         <br><br>
-        Tick <strong>"This is a photo"</strong> for images so they appear in the
-        page builder's <strong>Photo</strong> block.
+        Looking for photos instead? That's the <strong>Photos</strong> tab.
       </div>
       <form id="asset-form" style="max-width:560px;margin-bottom:8px">
         <div class="bo-field" style="margin-bottom:10px">
@@ -205,21 +199,44 @@
           <label>Link (web address) <span class="bo-hint">Must start with https://</span></label>
           <input type="url" id="asset-url" placeholder="https://..." required>
         </div>
-        <label style="display:flex;gap:7px;align-items:center;font-size:14px;font-weight:600;margin-bottom:12px">
-          <input type="checkbox" id="asset-isimg"> This is a photo
-        </label>
         <button class="bo-btn" type="submit">Add to library</button>
       </form>
       <div id="upload-status" style="margin:12px 0;font-size:13px;color:var(--text-light)"></div>
-      <div class="bo-media-grid" id="media-grid" style="margin-top:16px"></div>
+      <div class="bo-media-grid" id="files-grid" style="margin-top:16px"></div>
+    </section>
+
+    <!-- ============ PHOTOS ============ -->
+    <section class="bo-panel" id="panel-photos">
+      <div class="bo-tip">
+        <strong>Yearbook folders</strong> below are the event folders families choose from when
+        submitting yearbook photos, and where you review what they've sent in. Below that is your
+        school's <strong>photo link library</strong> &mdash; paste a link to a photo already
+        online (right-click it &rarr; <strong>Copy Image Address</strong>, or upload it to
+        <a href="https://postimages.org" target="_blank">postimages.org</a> and copy the "Direct
+        link") so it appears in the page builder's <strong>Photo</strong> block.
+      </div>
+      <iframe id="yearbook-iframe" style="border:0;width:100%;min-height:700px;display:block" loading="lazy"></iframe>
+
+      <h3 style="margin:26px 0 10px;font-size:16px;color:var(--primary-dark)">Photo Link Library</h3>
+      <form id="photo-form" style="max-width:560px;margin-bottom:8px">
+        <div class="bo-field" style="margin-bottom:10px">
+          <label>Name <span class="bo-hint">So you can find it later, e.g. "Fall Fun Run group photo"</span></label>
+          <input type="text" id="photo-name" required>
+        </div>
+        <div class="bo-field" style="margin-bottom:10px">
+          <label>Link (web address) <span class="bo-hint">Must start with https://</span></label>
+          <input type="url" id="photo-url" placeholder="https://..." required>
+        </div>
+        <button class="bo-btn" type="submit">Add to library</button>
+      </form>
+      <div class="bo-media-grid" id="photos-grid" style="margin-top:16px"></div>
     </section>
 
     <!-- ============ IDEAS ============ -->
     <section class="bo-panel" id="panel-ideas">
       <div class="bo-tip">
         A shared place to jot down anything this school's PTO might want to do. Everyone with
-        access to the school sees the same list. Push a good one to the <strong>To-Do</strong>
-        tab with <strong>Move to To-Do</strong>.
+        access to the school sees the same list.
       </div>
       <form id="idea-form" style="display:flex;gap:8px;max-width:600px;margin-bottom:12px">
         <input type="text" id="idea-input" placeholder="e.g. Family game night in the spring"
@@ -227,28 +244,6 @@
         <button class="bo-btn" type="submit">Add idea</button>
       </form>
       <div class="bo-list" id="idea-list"></div>
-    </section>
-
-    <!-- ============ TO-DO ============ -->
-    <section class="bo-panel" id="panel-todo">
-      <div class="bo-tip">
-        The shared task list for this school. Each task can be <strong>assigned to a person</strong>
-        and given a <strong>due date</strong> (overdue shows in red).
-      </div>
-      <form id="task-form" style="display:flex;gap:8px;max-width:640px;margin-bottom:6px;flex-wrap:wrap">
-        <input type="text" id="task-input" placeholder="Task, e.g. Book the DJ for the dance"
-               style="flex:2;min-width:200px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit">
-        <select id="task-assignee" style="flex:1;min-width:130px;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:inherit">
-          <option value="">Unassigned</option>
-        </select>
-        <input type="date" id="task-due" title="Due date (optional)"
-               style="padding:9px 10px;border:1px solid var(--border);border-radius:8px;font-family:inherit">
-        <button class="bo-btn" type="submit">Add task</button>
-      </form>
-      <label style="font-size:12.5px;color:var(--text-light);display:flex;gap:6px;align-items:center;margin-bottom:14px">
-        <input type="checkbox" id="mine-only"> Show only tasks assigned to me
-      </label>
-      <div class="bo-list" id="task-list"></div>
     </section>
   </main>
 
@@ -294,12 +289,10 @@
       loadPages();
       loadMedia();
       initAssetForm();
-      loadPeople().then(loadTasks);
       initIdeas();
       loadIdeas();
-      initTasks();
-      document.getElementById('mine-only').onchange = loadTasks;
       initCalendarTab();
+      document.getElementById('yearbook-iframe').src = 'yearbook.html?s=' + school + '&embed=1';
     });
 
     /* ---------------- CALENDAR ---------------- */
@@ -994,13 +987,15 @@
       }
     }
 
-    /* ---------------- FILES (link library) ---------------- */
+    /* ---------------- FILES / PHOTOS (link library) ---------------- */
+    // Same `assets` collection as before, just split into two forms/grids by isImage so
+    // Files and Photos can be separate tabs instead of one mixed list.
     function initAssetForm() {
-      document.getElementById('asset-form').onsubmit = async (e) => {
+      const addAsset = async (e, isImage) => {
         e.preventDefault();
-        const name = document.getElementById('asset-name').value.trim();
-        const url = document.getElementById('asset-url').value.trim();
-        const isImage = document.getElementById('asset-isimg').checked;
+        const nameEl = document.getElementById(isImage ? 'photo-name' : 'asset-name');
+        const urlEl = document.getElementById(isImage ? 'photo-url' : 'asset-url');
+        const name = nameEl.value.trim(), url = urlEl.value.trim();
         if (!/^https:\/\//i.test(url)) { toast('The link must start with https://', 'error'); return; }
         try {
           await db.collection('assets').add({
@@ -1012,70 +1007,52 @@
           loadMedia();
         } catch (err) { toast('Could not save: ' + err.message, 'error'); }
       };
+      document.getElementById('asset-form').onsubmit = (e) => addAsset(e, false);
+      document.getElementById('photo-form').onsubmit = (e) => addAsset(e, true);
+    }
+
+    function renderMediaGrid(grid, docs, emptyMsg) {
+      if (!docs.length) { grid.innerHTML = '<p style="color:var(--text-light)">' + emptyMsg + '</p>'; return; }
+      grid.innerHTML = '';
+      docs.forEach(doc => {
+        const a = doc.data();
+        const el = document.createElement('div');
+        el.className = 'bo-media';
+        el.innerHTML = `
+          <div class="bo-media-thumb" ${a.isImage ? `style="background-image:url('${a.url}')"` : ''}>
+            ${a.isImage ? '' : '📄'}
+          </div>
+          <div class="bo-media-body">
+            <div class="bo-media-name">${esc(a.name)}</div>
+            <button class="bo-btn ghost sm" data-url="${esc(a.url)}">Copy link</button>
+            <button class="bo-btn danger sm" data-del="${doc.id}">Remove</button>
+          </div>`;
+        el.querySelector('[data-url]').onclick = (ev) => {
+          navigator.clipboard.writeText(ev.target.dataset.url); toast('Link copied');
+        };
+        el.querySelector('[data-del]').onclick = async (ev) => {
+          if (!confirm('Remove "' + a.name + '" from the library? (The original file/photo is not deleted — this just takes it off your list. Any page using it keeps working.)')) return;
+          try {
+            await db.collection('assets').doc(ev.target.dataset.del).delete();
+            toast('Removed'); loadMedia();
+          } catch (e) { toast('Could not remove: ' + e.message, 'error'); }
+        };
+        grid.appendChild(el);
+      });
     }
 
     async function loadMedia() {
-      const grid = document.getElementById('media-grid');
+      const filesGrid = document.getElementById('files-grid');
+      const photosGrid = document.getElementById('photos-grid');
       try {
         const snap = await db.collection('assets').where('school', '==', school).get();
-        if (snap.empty) { grid.innerHTML = '<p style="color:var(--text-light)">Your library is empty — add a photo or document link above.</p>'; return; }
-        grid.innerHTML = '';
-        snap.docs.slice()
-          .sort((a, b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0))
-          .forEach(doc => {
-          const a = doc.data();
-          const el = document.createElement('div');
-          el.className = 'bo-media';
-          el.innerHTML = `
-            <div class="bo-media-thumb" ${a.isImage ? `style="background-image:url('${a.url}')"` : ''}>
-              ${a.isImage ? '' : '📄'}
-            </div>
-            <div class="bo-media-body">
-              <div class="bo-media-name">${esc(a.name)}</div>
-              <button class="bo-btn ghost sm" data-url="${esc(a.url)}">Copy link</button>
-              <button class="bo-btn danger sm" data-del="${doc.id}">Remove</button>
-            </div>`;
-          el.querySelector('[data-url]').onclick = (ev) => {
-            navigator.clipboard.writeText(ev.target.dataset.url); toast('Link copied');
-          };
-          el.querySelector('[data-del]').onclick = async (ev) => {
-            if (!confirm('Remove "' + a.name + '" from the library? (The original file/photo is not deleted — this just takes it off your list. Any page using it keeps working.)')) return;
-            try {
-              await db.collection('assets').doc(ev.target.dataset.del).delete();
-              toast('Removed'); loadMedia();
-            } catch (e) { toast('Could not remove: ' + e.message, 'error'); }
-          };
-          grid.appendChild(el);
-        });
+        const docs = snap.docs.slice()
+          .sort((a, b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
+        renderMediaGrid(filesGrid, docs.filter(d => !d.data().isImage), 'Your file library is empty — add a document link above.');
+        renderMediaGrid(photosGrid, docs.filter(d => d.data().isImage), 'Your photo library is empty — add a photo link above.');
       } catch (e) {
-        grid.innerHTML = '<p style="color:var(--error)">Could not load files: ' + esc(e.message) + '</p>';
+        filesGrid.innerHTML = photosGrid.innerHTML = '<p style="color:var(--error)">Could not load: ' + esc(e.message) + '</p>';
       }
-    }
-
-    /* ---------------- PLANNING: people for the "assign to" list ------------ */
-    let people = [];
-    async function loadPeople() {
-      const names = new Map();
-      names.set(ME.email, ME.name + ' (me)');
-      try {
-        const [a, s] = await Promise.all([
-          db.collection('users').where('adminSchools', 'array-contains', school).get(),
-          db.collection('users').where('role', '==', 'superadmin').get()
-        ]);
-        [...a.docs, ...s.docs].forEach(d => {
-          const u = d.data();
-          if (u.email) names.set(u.email, u.displayName || u.email);
-        });
-      } catch (_) {}
-      people = [...names.entries()];
-      const sel = document.getElementById('task-assignee');
-      sel.innerHTML = '<option value="">Unassigned</option>' +
-        people.map(([em, nm]) => `<option value="${esc(em)}">${esc(nm)}</option>`).join('');
-    }
-    function personName(email) {
-      if (!email) return '';
-      const hit = people.find(p => p[0] === email);
-      return hit ? hit[1] : email.split('@')[0];
     }
 
     /* ---------------- PLANNING: ideas ------------------------------------- */
@@ -1108,16 +1085,7 @@
             el.innerHTML = `
               <div class="bo-row-main"><h4 style="font-weight:500">${esc(i.text)}</h4>
                 <span class="bo-meta">from ${esc((i.by || '').split('@')[0])}</span></div>
-              <button class="bo-btn ghost sm" data-promote>Move to To-Do</button>
               <button class="bo-btn ghost sm" data-del>Remove</button>`;
-            el.querySelector('[data-promote]').onclick = async () => {
-              await db.collection('planning').add({
-                school, text: i.text, done: false, assignedTo: '', dueDate: '',
-                createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-              });
-              await db.collection('ideas').doc(doc.id).delete();
-              toast('Moved to To-Do list'); loadIdeas(); loadTasks();
-            };
             el.querySelector('[data-del]').onclick = () =>
               db.collection('ideas').doc(doc.id).delete().then(loadIdeas);
             box.appendChild(el);
@@ -1127,73 +1095,6 @@
       }
     }
 
-    /* ---------------- PLANNING: assignable to-dos ------------------------- */
-    function initTasks() {
-      document.getElementById('task-form').onsubmit = async (e) => {
-        e.preventDefault();
-        const input = document.getElementById('task-input');
-        const text = input.value.trim();
-        if (!text) return;
-        input.value = '';
-        const assignedTo = document.getElementById('task-assignee').value;
-        const dueDate = document.getElementById('task-due').value;
-        document.getElementById('task-due').value = '';
-        await db.collection('planning').add({
-          school, text, done: false, assignedTo, dueDate,
-          createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        loadTasks();
-      };
-    }
-
-    async function loadTasks() {
-      const box = document.getElementById('task-list');
-      const mineOnly = document.getElementById('mine-only').checked;
-      try {
-        const snap = await db.collection('planning').where('school', '==', school).get();
-        let docs = snap.docs.slice();
-        if (mineOnly) docs = docs.filter(d => d.data().assignedTo === ME.email);
-        if (!docs.length) { box.innerHTML = '<p style="color:var(--text-light)">' +
-          (mineOnly ? 'No tasks assigned to you.' : 'No tasks yet.') + '</p>'; return; }
-        docs.sort((a, b) => {
-          const A = a.data(), B = b.data();
-          if (!!A.done !== !!B.done) return A.done ? 1 : -1;          // open first
-          return (A.dueDate || '9999') < (B.dueDate || '9999') ? -1 : 1; // then by due date
-        });
-        box.innerHTML = '';
-        docs.forEach(doc => {
-          const t = doc.data();
-          const overdue = t.dueDate && !t.done && t.dueDate < new Date().toISOString().slice(0, 10);
-          const el = document.createElement('div');
-          el.className = 'bo-checkitem' + (t.done ? ' done' : '');
-          el.innerHTML = `
-            <input type="checkbox" id="t-${doc.id}" ${t.done ? 'checked' : ''}>
-            <label for="t-${doc.id}" style="flex:1">${esc(t.text)}
-              <span class="bo-meta" style="display:block">
-                ${t.assignedTo ? '👤 ' + esc(personName(t.assignedTo)) : 'Unassigned'}
-                ${t.dueDate ? ' · <span style="color:' + (overdue ? 'var(--error)' : 'var(--text-light)') + '">due ' + esc(t.dueDate) + '</span>' : ''}
-              </span>
-            </label>
-            <button class="bo-btn ghost sm" data-assign>Assign</button>
-            <button class="bo-btn ghost sm" data-del>Remove</button>`;
-          el.querySelector('input').onchange = (ev) =>
-            db.collection('planning').doc(doc.id).update({ done: ev.target.checked }).then(loadTasks);
-          el.querySelector('[data-assign]').onclick = () => {
-            const opts = ['(unassign)', ...people.map(p => p[1])];
-            const pick = prompt('Assign to:\n' + opts.map((o, n) => n + ' = ' + o).join('\n'), '0');
-            if (pick === null) return;
-            const n = parseInt(pick, 10);
-            const email = n === 0 ? '' : (people[n - 1] ? people[n - 1][0] : t.assignedTo);
-            db.collection('planning').doc(doc.id).update({ assignedTo: email }).then(loadTasks);
-          };
-          el.querySelector('[data-del]').onclick = () =>
-            db.collection('planning').doc(doc.id).delete().then(loadTasks);
-          box.appendChild(el);
-        });
-      } catch (e) {
-        box.innerHTML = '<p style="color:var(--error)">Could not load tasks: ' + esc(e.message) + '</p>';
-      }
-    }
   </script>
 </body>
 </html>

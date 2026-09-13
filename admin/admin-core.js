@@ -299,6 +299,7 @@ function newWebPage(cat, presetSchool, presetDate) {
   back.className = 'bo-modal-back';
   back.innerHTML = `
     <div class="bo-modal">
+      <button type="button" class="bo-modal-x" id="nwp-x" aria-label="Cancel">✕</button>
       <h2>Add a new ${esc(singular)} web page</h2>
       ${presetDate ? `<p style="font-size:12.5px;color:var(--text-light);margin:-4px 0 12px">
         Event date set to <strong>${esc(new Date(presetDate + 'T00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }))}</strong>
@@ -342,6 +343,7 @@ function newWebPage(cat, presetSchool, presetDate) {
   const close = () => back.remove();
   back.addEventListener('click', e => { if (e.target === back) close(); });
   back.querySelector('#nwp-cancel').onclick = close;
+  back.querySelector('#nwp-x').onclick = close;
   back.querySelector('#nwp-title').focus();
 
   // Gate the "Create" button on: at least one school ticked, a type chosen, AND a title entered.
