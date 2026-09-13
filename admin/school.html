@@ -13,6 +13,7 @@
     .bo-tab { padding:10px 16px; border:none; background:none; font-family:inherit; font-size:14px; font-weight:700;
               color:var(--text-light); cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; }
     .bo-tab.active { color:var(--primary-dark); border-bottom-color:var(--primary); }
+    a.bo-tab { text-decoration:none; display:inline-block; }
     .bo-panel { display:none; }
     .bo-panel.active { display:block; }
     .bo-checkitem { display:flex; align-items:flex-start; gap:10px; background:#fff; border:1px solid var(--border);
@@ -67,12 +68,16 @@
     </div>
     <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo; <span id="crumb-school"></span></div>
     <h1 class="bo-h1" id="school-title"></h1>
-    <p class="bo-lead">Everything for this school in one place. Use the tabs below for pages,
-       files, ideas and the to-do list &mdash; and the <strong>&ldquo;sections&rdquo;</strong> group
-       in the left sidebar for Events, Clubs, Fundraising, and everything else.</p>
+    <p class="bo-lead">Everything for this school in one place. Use the tabs below for the
+       calendar, events, programs, clubs, pages, files, ideas and the to-do list &mdash; and the
+       <strong>&ldquo;sections&rdquo;</strong> group in the left sidebar for Fundraising and
+       everything else.</p>
 
     <div class="bo-tabs" id="bo-tabs">
       <button class="bo-tab active" data-tab="calendar">📅 Calendar</button>
+      <a class="bo-tab" id="tab-link-events" href="#">🎪 Events</a>
+      <a class="bo-tab" id="tab-link-programs" href="#">🎓 Programs</a>
+      <a class="bo-tab" id="tab-link-clubs" href="#">🤝 Clubs</a>
       <button class="bo-tab" data-tab="pages">📄 Pages</button>
       <button class="bo-tab" data-tab="files">🖼️ Files &amp; Photos</button>
       <button class="bo-tab" data-tab="ideas">💡 Ideas</button>
@@ -272,9 +277,9 @@
         document.getElementById(id).onchange = renderPages);
       document.getElementById('tip-example').textContent =
         'schalmontpto.com/' + SCHOOL_PREFIX[school] + '/fun-run';
-      // Events / Clubs / Programs / Fundraising / etc. already live in the left
-      // sidebar under "<School> — sections" — no need to duplicate them as tabs
-      // here too, so this row stays a single line: Pages / Files / Ideas / To-Do.
+      document.getElementById('tab-link-events').href = 'section.html?cat=events&s=' + school;
+      document.getElementById('tab-link-programs').href = 'section.html?cat=programs&s=' + school;
+      document.getElementById('tab-link-clubs').href = 'section.html?cat=clubs&s=' + school;
 
       // Tabs
       document.querySelectorAll('button.bo-tab').forEach(btn => {
@@ -330,22 +335,34 @@
     async function loadCalendarAlerts() {
       const alertsBox = document.getElementById('cal-alerts');
       try {
-        const [mine, districtWide] = await Promise.all([
+        const [mine, districtWide, byField, byArray] = await Promise.all([
           db.collection('pto_events').where('school', '==', school).get(),
-          db.collection('pto_events').where('school', '==', 'pto').get()
+          db.collection('pto_events').where('school', '==', 'pto').get(),
+          db.collection('pages').where('school', '==', school).get(),
+          db.collection('pages').where('schools', 'array-contains', school).get()
         ]);
         const today = toYMD(new Date());
         const soonCutoff = toYMD(new Date(Date.now() + 14 * 86400000));
-        const soon = [...mine.docs, ...districtWide.docs]
-          .map(d => d.data())
+
+        const fromEvents = [...mine.docs, ...districtWide.docs].map(d => d.data());
+        const seenPages = new Map();
+        [...byField.docs, ...byArray.docs].forEach(d => seenPages.set(d.id, d));
+        const fromPages = [...seenPages.entries()].map(([id, d]) => {
+          const p = d.data();
+          return { title: p.title, date: p.eventDate, school, pageId: id };
+        });
+
+        const soon = [...fromEvents, ...fromPages]
           .filter(e => e.date && e.date >= today && e.date <= soonCutoff)
           .sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
 
+        // Clicking a page-backed event goes straight to its editor; a legacy quick
+        // calendar-only entry (no linked page) opens the full calendar tool instead.
         alertsBox.innerHTML = soon.length ? soon.map(e => `
-          <div class="cal-alert">
+          <a class="cal-alert" href="${e.pageId ? 'page-editor.html?id=' + e.pageId : 'calendar.html?s=' + school}" style="text-decoration:none;color:inherit;cursor:pointer">
             <span class="n">⏰ ${esc(prettyDate(e.date))}</span>
             <span>${esc(e.title)}${e.school === 'pto' ? ' <span style="color:#8a6d1a">(District)</span>' : ''}</span>
-          </div>`).join('')
+          </a>`).join('')
           : '<p style="color:var(--text-light)">Nothing coming up in the next two weeks.</p>';
       } catch (e) {
         alertsBox.innerHTML = '<p style="color:var(--error)">Could not load alerts: ' + esc(e.message) + '</p>';

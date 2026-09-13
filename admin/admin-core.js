@@ -280,7 +280,7 @@ const NWP_TYPES = [
   { cat: 'ideas',    label: 'Other' }
 ];
 
-function newWebPage(cat, presetSchool) {
+function newWebPage(cat, presetSchool, presetDate) {
   const sec = sectionByCat(cat);
   const singular = (sec && sec.singular) || 'Web';
   const opts = manageableSchools();
@@ -300,6 +300,9 @@ function newWebPage(cat, presetSchool) {
   back.innerHTML = `
     <div class="bo-modal">
       <h2>Add a new ${esc(singular)} web page</h2>
+      ${presetDate ? `<p style="font-size:12.5px;color:var(--text-light);margin:-4px 0 12px">
+        Event date set to <strong>${esc(new Date(presetDate + 'T00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }))}</strong>
+        from the calendar — change it later in the page editor if needed.</p>` : ''}
       ${sec && sec.sheet ? `
       <div class="bo-notice">
         <strong>Heads up:</strong> a web page lives on the website, but it does <em>not</em>
@@ -371,6 +374,7 @@ function newWebPage(cat, presetSchool) {
         category: chosenCat, schools, school: routingSchool(schools),
         title, slug: slugify(title),
         showInTopMenu, showInLeftMenu,
+        eventDate: presetDate || '',
         status: 'draft', blocks: [],
         createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
