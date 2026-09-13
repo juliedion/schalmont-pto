@@ -37,6 +37,20 @@
     .pg-card h4 { margin:0; font-size:15px; color:var(--primary-dark); line-height:1.3; }
     .pg-card .bo-meta { font-size:12px; line-height:1.5; }
     .pg-card-actions { display:flex; gap:6px; flex-wrap:wrap; margin-top:auto; padding-top:10px; }
+    .cal-toggle { display:flex; align-items:center; gap:6px; margin:14px 0 18px; }
+    .cal-toggle-btn { padding:8px 16px; border:1px solid var(--border); background:#fff; border-radius:8px;
+                      font-family:inherit; font-size:13.5px; font-weight:700; color:var(--text-light); cursor:pointer; }
+    .cal-toggle-btn.active { background:var(--primary-dark); border-color:var(--primary-dark); color:#fff; }
+    .cal-alert { display:flex; gap:10px; align-items:flex-start; background:#fff8e6; border:1px solid #f0dca0;
+                 border-radius:10px; padding:12px 14px; margin-bottom:8px; }
+    .cal-alert .n { font-weight:800; color:#8a6d1a; font-size:13px; white-space:nowrap; }
+    .cal-month-head { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.06em;
+                      color:var(--text-light); margin:20px 0 10px; }
+    .cal-event-row { display:flex; gap:12px; align-items:baseline; background:#fff; border:1px solid var(--border);
+                     border-radius:8px; padding:10px 14px; margin-bottom:8px; }
+    .cal-event-row .d { font-weight:800; color:var(--primary-dark); font-size:13px; min-width:72px; }
+    .cal-event-row .t { font-weight:600; }
+    .cal-event-row .m { font-size:12px; color:var(--text-light); }
   </style>
 </head>
 <body>
@@ -54,14 +68,40 @@
        in the left sidebar for Events, Clubs, Fundraising, and everything else.</p>
 
     <div class="bo-tabs" id="bo-tabs">
-      <button class="bo-tab active" data-tab="pages">📄 Pages</button>
+      <button class="bo-tab active" data-tab="calendar">📅 Calendar</button>
+      <button class="bo-tab" data-tab="pages">📄 Pages</button>
       <button class="bo-tab" data-tab="files">🖼️ Files &amp; Photos</button>
       <button class="bo-tab" data-tab="ideas">💡 Ideas</button>
       <button class="bo-tab" data-tab="todo">✅ To-Do</button>
     </div>
 
+    <!-- ============ CALENDAR ============ -->
+    <section class="bo-panel active" id="panel-calendar">
+      <div class="bo-tip">
+        What's on the calendar for this school, with a heads-up on anything coming up soon.
+        <strong>Back Office</strong> shows the editable event list (open the full calendar editor to
+        add or change something); <strong>Public View</strong> shows exactly what families see on
+        the website.
+      </div>
+      <div class="cal-toggle">
+        <button class="cal-toggle-btn active" id="cal-view-office">Back Office</button>
+        <button class="cal-toggle-btn" id="cal-view-public">Public View</button>
+        <a class="bo-btn ghost sm" href="#" id="cal-edit-link" style="margin-left:auto">Open full calendar editor →</a>
+      </div>
+
+      <div id="cal-office-view">
+        <div id="cal-alerts"></div>
+        <div id="cal-upcoming"></div>
+      </div>
+      <div id="cal-public-view" style="display:none">
+        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
+          <iframe id="cal-public-iframe" style="border:0;width:100%;height:640px;display:block" frameborder="0" scrolling="no" loading="lazy"></iframe>
+        </div>
+      </div>
+    </section>
+
     <!-- ============ PAGES ============ -->
-    <section class="bo-panel active" id="panel-pages">
+    <section class="bo-panel" id="panel-pages">
       <div class="bo-tip">
         A <strong>page</strong> is a web page on the PTO site &mdash; like a flyer that lives online.
         You build it by stacking simple blocks (a heading, a paragraph, a photo, a button&hellip;).
@@ -246,7 +286,87 @@
       loadIdeas();
       initTasks();
       document.getElementById('mine-only').onchange = loadTasks;
+      initCalendarTab();
     });
+
+    /* ---------------- CALENDAR ---------------- */
+    // Public Google Calendar embed per school — the exact same calendars/IDs shown on the
+    // public events.html page, so "Public View" here matches what families actually see.
+    const SCHOOL_PUBLIC_CAL = {
+      jefferson: 'https://calendar.google.com/calendar/embed?src=b8ps3245btumu5q6psc3cmvs8c%40group.calendar.google.com&ctz=America%2FNew_York',
+      middle: 'https://calendar.google.com/calendar/embed?src=eumk9qp2llrljnfkp64k1dgk5g%40group.calendar.google.com&ctz=America%2FNew_York',
+      high: 'https://calendar.google.com/calendar/embed?src=8b7ohsc70vgab6398itc7e73q0%40group.calendar.google.com&ctz=America%2FNew_York',
+      // Woestina has no calendar of its own on the public site -- it's folded into the
+      // combined "All Events" calendar, so that's what Public View shows for it too.
+      woestina: 'https://calendar.google.com/calendar/embed?src=c_2ccf0495db5e7ffcf4129ac6965b5cbe82ec743a13050f3aeecc9a18c84a53f5%40group.calendar.google.com&color=%230B8043&src=b8ps3245btumu5q6psc3cmvs8c%40group.calendar.google.com&color=%236bb044&src=eumk9qp2llrljnfkp64k1dgk5g%40group.calendar.google.com&color=%23087d40&src=8b7ohsc70vgab6398itc7e73q0%40group.calendar.google.com&color=%23044d2a&ctz=America%2FNew_York'
+    };
+
+    function initCalendarTab() {
+      document.getElementById('cal-edit-link').href = 'calendar.html?s=' + school;
+
+      const officeBtn = document.getElementById('cal-view-office');
+      const publicBtn = document.getElementById('cal-view-public');
+      const officeView = document.getElementById('cal-office-view');
+      const publicView = document.getElementById('cal-public-view');
+      officeBtn.onclick = () => {
+        officeBtn.classList.add('active'); publicBtn.classList.remove('active');
+        officeView.style.display = ''; publicView.style.display = 'none';
+      };
+      publicBtn.onclick = () => {
+        publicBtn.classList.add('active'); officeBtn.classList.remove('active');
+        publicView.style.display = ''; officeView.style.display = 'none';
+        const iframe = document.getElementById('cal-public-iframe');
+        if (!iframe.src) iframe.src = SCHOOL_PUBLIC_CAL[school] || SCHOOL_PUBLIC_CAL.woestina;
+      };
+
+      loadCalendarTab();
+    }
+
+    async function loadCalendarTab() {
+      const alertsBox = document.getElementById('cal-alerts');
+      const listBox = document.getElementById('cal-upcoming');
+      try {
+        const today = toYMD(new Date());
+        const [mine, districtWide] = await Promise.all([
+          db.collection('pto_events').where('school', '==', school).get(),
+          db.collection('pto_events').where('school', '==', 'pto').get()
+        ]);
+        const events = [...mine.docs, ...districtWide.docs]
+          .map(d => d.data())
+          .filter(e => e.date && e.date >= today)
+          .sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+
+        const soonCutoff = toYMD(new Date(Date.now() + 14 * 86400000));
+        const soon = events.filter(e => e.date <= soonCutoff);
+
+        alertsBox.innerHTML = soon.length ? soon.map(e => `
+          <div class="cal-alert">
+            <span class="n">⏰ ${esc(prettyDate(e.date))}</span>
+            <span>${esc(e.title)}${e.school === 'pto' ? ' <span style="color:#8a6d1a">(District)</span>' : ''}</span>
+          </div>`).join('')
+          : '<p style="color:var(--text-light)">Nothing coming up in the next two weeks.</p>';
+
+        if (!events.length) {
+          listBox.innerHTML = '<p style="color:var(--text-light)">No upcoming events on the calendar. <a href="calendar.html?s=' + school + '">Add one →</a></p>';
+          return;
+        }
+        let lastMonth = '', html = '';
+        events.forEach(e => {
+          const mk = e.date.slice(0, 7);
+          if (mk !== lastMonth) { html += `<div class="cal-month-head">${esc(monthLabel(mk + '-01'))}</div>`; lastMonth = mk; }
+          const meta = [e.time, e.location, e.school === 'pto' ? 'District' : ''].filter(Boolean).join(' · ');
+          html += `<div class="cal-event-row">
+            <span class="d">${esc(prettyDate(e.date).replace(/, \d{4}$/, ''))}</span>
+            <span class="t">${esc(e.title)}</span>
+            ${meta ? `<span class="m">${esc(meta)}</span>` : ''}
+          </div>`;
+        });
+        listBox.innerHTML = html;
+      } catch (e) {
+        alertsBox.innerHTML = '';
+        listBox.innerHTML = '<p style="color:var(--error)">Could not load the calendar: ' + esc(e.message) + '</p>';
+      }
+    }
 
     /* ---------------- PAGES ---------------- */
     let allPageDocs = [];   // every page for this school, any category — loaded once
