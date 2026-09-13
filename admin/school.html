@@ -44,31 +44,6 @@
     .cal-alert { display:flex; gap:10px; align-items:flex-start; background:#fff8e6; border:1px solid #f0dca0;
                  border-radius:10px; padding:12px 14px; margin-bottom:8px; }
     .cal-alert .n { font-weight:800; color:#8a6d1a; font-size:13px; white-space:nowrap; }
-    .cal-month-head { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.06em;
-                      color:var(--text-light); margin:20px 0 10px; }
-    .cal-event-row { display:flex; gap:12px; align-items:baseline; background:#fff; border:1px solid var(--border);
-                     border-radius:8px; padding:10px 14px; margin-bottom:8px; }
-    .cal-event-row .d { font-weight:800; color:var(--primary-dark); font-size:13px; min-width:72px; }
-    .cal-event-row .t { font-weight:600; }
-    .cal-event-row .m { font-size:12px; color:var(--text-light); }
-    .cal-month-nav { display:flex; align-items:center; gap:12px; margin:18px 0 10px; }
-    .cal-month-nav h3 { margin:0; font-size:16px; color:var(--primary-dark); min-width:170px; text-align:center; }
-    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:var(--border);
-                border:1px solid var(--border); border-radius:10px; overflow:hidden; }
-    .cal-dow { background:var(--light-bg); text-align:center; font-size:11px; font-weight:800;
-               text-transform:uppercase; letter-spacing:.04em; color:var(--text-light); padding:6px 0; }
-    .cal-day { background:#fff; min-height:88px; padding:6px; display:flex; flex-direction:column; gap:3px; }
-    .cal-day.other-month { background:#fafafa; }
-    .cal-day.today { background:#f0f9f2; }
-    .cal-day .num { font-size:12px; font-weight:700; color:var(--text-light); }
-    .cal-day.today .num { color:var(--primary-dark); }
-    .cal-chip { font-size:10.5px; line-height:1.3; padding:2px 5px; border-radius:4px; background:var(--primary-light);
-                color:#fff; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; cursor:default; }
-    .cal-chip.district { background:#039BE5; }
-    @media (max-width:700px) {
-      .cal-day { min-height:60px; }
-      .cal-chip { font-size:9.5px; }
-    }
     .cal-office-layout { display:flex; gap:22px; align-items:flex-start; }
     .cal-main { flex:1; min-width:0; }
     .cal-alerts-panel { width:270px; flex-shrink:0; background:#fff; border:1px solid var(--border);
@@ -76,10 +51,6 @@
     .cal-alerts-panel h4 { margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:.04em;
                             color:var(--text-light); }
     .cal-alerts-panel .cal-alert { flex-direction:column; gap:2px; }
-    .cal-day-agenda { display:flex; flex-direction:column; gap:8px; }
-    .cal-week-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:var(--border);
-                      border:1px solid var(--border); border-radius:10px; overflow:hidden; }
-    .cal-week-grid .cal-day { min-height:160px; }
     @media (max-width:900px) {
       .cal-office-layout { flex-direction:column; }
       .cal-alerts-panel { width:100%; }
@@ -111,32 +82,19 @@
     <!-- ============ CALENDAR ============ -->
     <section class="bo-panel active" id="panel-calendar">
       <div class="bo-tip">
-        What's on the calendar for this school, with a heads-up on anything coming up soon.
-        <strong>Back Office</strong> shows the editable event list (open the full calendar editor to
-        add or change something); <strong>Public View</strong> shows exactly what families see on
-        the website.
+        <strong>Back Office</strong> is the real calendar editor — click a day to add something,
+        click an event to edit it. <strong>Public View</strong> is exactly the calendar page
+        families see at schalmontpto.com/events.
       </div>
       <div class="cal-toggle">
         <button class="cal-toggle-btn active" id="cal-view-office">Back Office</button>
         <button class="cal-toggle-btn" id="cal-view-public">Public View</button>
-        <a class="bo-btn ghost sm" href="#" id="cal-edit-link" style="margin-left:auto">Open full calendar editor →</a>
+        <a class="bo-btn ghost sm" href="#" id="cal-edit-link" target="_blank" style="margin-left:auto">Open in its own tab ↗</a>
       </div>
 
       <div id="cal-office-view" class="cal-office-layout">
         <div class="cal-main">
-          <div class="cal-toggle" style="margin:0 0 12px">
-            <button class="cal-toggle-btn active" data-view="month">Month</button>
-            <button class="cal-toggle-btn" data-view="week">Week</button>
-            <button class="cal-toggle-btn" data-view="day">Day</button>
-            <button class="cal-toggle-btn" data-view="list">List</button>
-          </div>
-          <div class="cal-month-nav" id="cal-nav-bar">
-            <button class="bo-btn ghost sm" id="cal-month-prev">← Prev</button>
-            <h3 id="cal-month-title"></h3>
-            <button class="bo-btn ghost sm" id="cal-month-today">Today</button>
-            <button class="bo-btn ghost sm" id="cal-month-next">Next →</button>
-          </div>
-          <div id="cal-view-body"></div>
+          <iframe id="cal-office-iframe" style="border:0;width:100%;min-height:900px;display:block" loading="lazy"></iframe>
         </div>
         <aside class="cal-alerts-panel">
           <h4>Coming Up</h4>
@@ -145,7 +103,7 @@
       </div>
       <div id="cal-public-view" style="display:none">
         <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
-          <iframe id="cal-public-iframe" style="border:0;width:100%;height:640px;display:block" frameborder="0" scrolling="no" loading="lazy"></iframe>
+          <iframe id="cal-public-iframe" style="border:0;width:100%;min-height:900px;display:block" loading="lazy"></iframe>
         </div>
       </div>
     </section>
@@ -340,19 +298,14 @@
     });
 
     /* ---------------- CALENDAR ---------------- */
-    // Public Google Calendar embed per school — the exact same calendars/IDs shown on the
-    // public events.html page, so "Public View" here matches what families actually see.
-    const SCHOOL_PUBLIC_CAL = {
-      jefferson: 'https://calendar.google.com/calendar/embed?src=b8ps3245btumu5q6psc3cmvs8c%40group.calendar.google.com&ctz=America%2FNew_York',
-      middle: 'https://calendar.google.com/calendar/embed?src=eumk9qp2llrljnfkp64k1dgk5g%40group.calendar.google.com&ctz=America%2FNew_York',
-      high: 'https://calendar.google.com/calendar/embed?src=8b7ohsc70vgab6398itc7e73q0%40group.calendar.google.com&ctz=America%2FNew_York',
-      // Woestina has no calendar of its own on the public site -- it's folded into the
-      // combined "All Events" calendar, so that's what Public View shows for it too.
-      woestina: 'https://calendar.google.com/calendar/embed?src=c_2ccf0495db5e7ffcf4129ac6965b5cbe82ec743a13050f3aeecc9a18c84a53f5%40group.calendar.google.com&color=%230B8043&src=b8ps3245btumu5q6psc3cmvs8c%40group.calendar.google.com&color=%236bb044&src=eumk9qp2llrljnfkp64k1dgk5g%40group.calendar.google.com&color=%23087d40&src=8b7ohsc70vgab6398itc7e73q0%40group.calendar.google.com&color=%23044d2a&ctz=America%2FNew_York'
-    };
-
+    // Back Office = the real calendar tool (admin/calendar.html, FullCalendar-powered,
+    // with its own Month/Week/Day/List toggle) embedded in "chrome-less" mode (?embed=1
+    // skips its sidebar/header — see admin-core.js's requireAdmin). Public View = the
+    // actual live events.html page, so what's shown here is never a hand-built copy that
+    // can drift out of sync with the real site.
     function initCalendarTab() {
       document.getElementById('cal-edit-link').href = 'calendar.html?s=' + school;
+      document.getElementById('cal-office-iframe').src = 'calendar.html?s=' + school + '&embed=1';
 
       const officeBtn = document.getElementById('cal-view-office');
       const publicBtn = document.getElementById('cal-view-public');
@@ -366,50 +319,27 @@
         publicBtn.classList.add('active'); officeBtn.classList.remove('active');
         publicView.style.display = ''; officeView.style.display = 'none';
         const iframe = document.getElementById('cal-public-iframe');
-        if (!iframe.src) iframe.src = SCHOOL_PUBLIC_CAL[school] || SCHOOL_PUBLIC_CAL.woestina;
+        if (!iframe.src) iframe.src = '../events.html';
       };
 
-      document.querySelectorAll('[data-view]').forEach(btn => {
-        btn.onclick = () => {
-          document.querySelectorAll('[data-view]').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          calViewMode = btn.dataset.view;
-          renderCalMain();
-        };
-      });
-      document.getElementById('cal-month-prev').onclick = () => { calStep(-1); renderCalMain(); };
-      document.getElementById('cal-month-next').onclick = () => { calStep(1); renderCalMain(); };
-      document.getElementById('cal-month-today').onclick = () => { calCursor = new Date(); renderCalMain(); };
-
-      loadCalendarTab();
+      loadCalendarAlerts();
     }
 
-    let calAllEvents = [];       // every event for this school + district, any date
-    let calCursor = new Date();  // the month/week/day currently shown
-    let calViewMode = 'month';   // 'month' | 'week' | 'day' | 'list'
-
-    function calStep(dir) {
-      if (calViewMode === 'month') calCursor.setMonth(calCursor.getMonth() + dir);
-      else if (calViewMode === 'week') calCursor.setDate(calCursor.getDate() + dir * 7);
-      else if (calViewMode === 'day') calCursor.setDate(calCursor.getDate() + dir);
-      else calCursor.setMonth(calCursor.getMonth() + dir);   // list: paging has no real effect on content, keeps nav consistent
-    }
-
-    async function loadCalendarTab() {
+    // Alerts panel still reads Firestore directly (fast, no iframe round-trip) --
+    // everything else defers to the real tools above.
+    async function loadCalendarAlerts() {
       const alertsBox = document.getElementById('cal-alerts');
       try {
         const [mine, districtWide] = await Promise.all([
           db.collection('pto_events').where('school', '==', school).get(),
           db.collection('pto_events').where('school', '==', 'pto').get()
         ]);
-        calAllEvents = [...mine.docs, ...districtWide.docs]
-          .map(d => d.data())
-          .filter(e => e.date)
-          .sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
-
         const today = toYMD(new Date());
         const soonCutoff = toYMD(new Date(Date.now() + 14 * 86400000));
-        const soon = calAllEvents.filter(e => e.date >= today && e.date <= soonCutoff);
+        const soon = [...mine.docs, ...districtWide.docs]
+          .map(d => d.data())
+          .filter(e => e.date && e.date >= today && e.date <= soonCutoff)
+          .sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
 
         alertsBox.innerHTML = soon.length ? soon.map(e => `
           <div class="cal-alert">
@@ -417,101 +347,8 @@
             <span>${esc(e.title)}${e.school === 'pto' ? ' <span style="color:#8a6d1a">(District)</span>' : ''}</span>
           </div>`).join('')
           : '<p style="color:var(--text-light)">Nothing coming up in the next two weeks.</p>';
-
-        renderCalMain();
       } catch (e) {
-        alertsBox.innerHTML = '';
-        document.getElementById('cal-view-body').innerHTML = '<p style="color:var(--error);padding:12px">Could not load the calendar: ' + esc(e.message) + '</p>';
-      }
-    }
-
-    const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-    function eventsByDateMap() {
-      const map = new Map();
-      calAllEvents.forEach(e => {
-        if (!map.has(e.date)) map.set(e.date, []);
-        map.get(e.date).push(e);
-      });
-      return map;
-    }
-
-    function dayCellHTML(cellDate, eventsByDate, todayYMD, otherMonth) {
-      const ymd = toYMD(cellDate);
-      const isToday = ymd === todayYMD;
-      const dayEvents = eventsByDate.get(ymd) || [];
-      return `<div class="cal-day${otherMonth ? ' other-month' : ''}${isToday ? ' today' : ''}">
-        <span class="num">${cellDate.getDate()}</span>
-        ${dayEvents.map(e => `<span class="cal-chip${e.school === 'pto' ? ' district' : ''}" title="${esc(e.title)}${e.time ? ' · ' + esc(e.time) : ''}">${esc(e.title)}</span>`).join('')}
-      </div>`;
-    }
-
-    function renderCalMain() {
-      const body = document.getElementById('cal-view-body');
-      const title = document.getElementById('cal-month-title');
-      const eventsByDate = eventsByDateMap();
-      const todayYMD = toYMD(new Date());
-      document.getElementById('cal-nav-bar').style.display = calViewMode === 'list' ? 'none' : '';
-
-      if (calViewMode === 'month') {
-        const y = calCursor.getFullYear(), m = calCursor.getMonth();
-        title.textContent = calCursor.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-        const startDow = new Date(y, m, 1).getDay();
-        const daysInMonth = new Date(y, m + 1, 0).getDate();
-        const daysInPrevMonth = new Date(y, m, 0).getDate();
-        let html = '<div class="cal-grid">' + DOW.map(d => `<div class="cal-dow">${d}</div>`).join('');
-        const totalCells = Math.ceil((startDow + daysInMonth) / 7) * 7;
-        for (let i = 0; i < totalCells; i++) {
-          const dayNum = i - startDow + 1;
-          let cellDate, otherMonth = false;
-          if (dayNum < 1) { cellDate = new Date(y, m - 1, daysInPrevMonth + dayNum); otherMonth = true; }
-          else if (dayNum > daysInMonth) { cellDate = new Date(y, m + 1, dayNum - daysInMonth); otherMonth = true; }
-          else cellDate = new Date(y, m, dayNum);
-          html += dayCellHTML(cellDate, eventsByDate, todayYMD, otherMonth);
-        }
-        body.innerHTML = html + '</div>';
-
-      } else if (calViewMode === 'week') {
-        const startOfWeek = new Date(calCursor);
-        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
-        const endOfWeek = new Date(startOfWeek); endOfWeek.setDate(endOfWeek.getDate() + 6);
-        title.textContent = startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
-          ' – ' + endOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        let html = '<div class="cal-week-grid">' + DOW.map(d => `<div class="cal-dow">${d}</div>`).join('');
-        for (let i = 0; i < 7; i++) {
-          const d = new Date(startOfWeek); d.setDate(d.getDate() + i);
-          html += dayCellHTML(d, eventsByDate, todayYMD, d.getMonth() !== calCursor.getMonth());
-        }
-        body.innerHTML = html + '</div>';
-
-      } else if (calViewMode === 'day') {
-        title.textContent = calCursor.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-        const ymd = toYMD(calCursor);
-        const dayEvents = (eventsByDate.get(ymd) || []).slice().sort((a, b) => (a.time || '').localeCompare(b.time || ''));
-        body.innerHTML = '<div class="cal-day-agenda">' + (dayEvents.length ? dayEvents.map(e => {
-          const meta = [e.time, e.location, e.school === 'pto' ? 'District' : ''].filter(Boolean).join(' · ');
-          return `<div class="cal-event-row"><span class="t">${esc(e.title)}</span>${meta ? `<span class="m">${esc(meta)}</span>` : ''}</div>`;
-        }).join('') : '<p style="color:var(--text-light)">Nothing on the calendar this day.</p>') + '</div>';
-
-      } else {   // list
-        title.textContent = 'Upcoming';
-        const upcoming = calAllEvents.filter(e => e.date >= todayYMD);
-        if (!upcoming.length) {
-          body.innerHTML = '<p style="color:var(--text-light)">No upcoming events on the calendar. <a href="calendar.html?s=' + school + '">Add one →</a></p>';
-          return;
-        }
-        let lastMonth = '', html = '';
-        upcoming.forEach(e => {
-          const mk = e.date.slice(0, 7);
-          if (mk !== lastMonth) { html += `<div class="cal-month-head">${esc(monthLabel(mk + '-01'))}</div>`; lastMonth = mk; }
-          const meta = [e.time, e.location, e.school === 'pto' ? 'District' : ''].filter(Boolean).join(' · ');
-          html += `<div class="cal-event-row">
-            <span class="d">${esc(prettyDate(e.date).replace(/, \d{4}$/, ''))}</span>
-            <span class="t">${esc(e.title)}</span>
-            ${meta ? `<span class="m">${esc(meta)}</span>` : ''}
-          </div>`;
-        });
-        body.innerHTML = html;
+        alertsBox.innerHTML = '<p style="color:var(--error)">Could not load alerts: ' + esc(e.message) + '</p>';
       }
     }
 

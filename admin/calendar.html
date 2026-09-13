@@ -67,15 +67,17 @@
   <div id="bo-shell"></div>
 
   <main id="bo-main" style="display:none">
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-      <a class="bo-btn ghost sm" href="index.html">← Back Office Home</a>
-      <a class="bo-btn ghost sm" id="back-school" href="#" style="display:none">← <span id="back-school-name"></span> Workspace</a>
+    <div id="cal-page-head">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+        <a class="bo-btn ghost sm" href="index.html">← Back Office Home</a>
+        <a class="bo-btn ghost sm" id="back-school" href="#" style="display:none">← <span id="back-school-name"></span> Workspace</a>
+      </div>
+      <h1 class="bo-h1">PTO Back Office Calendar</h1>
+      <p class="bo-lead">Every event, program, and fundraiser in one place. Click a day to add
+         something; click an event to edit it. Each event automatically gets its
+         <strong>flyer</strong> and <strong>social media</strong> dates worked backward from the
+         event date &mdash; turn them on with the checkbox below.</p>
     </div>
-    <h1 class="bo-h1">PTO Back Office Calendar</h1>
-    <p class="bo-lead">Every event, program, and fundraiser in one place. Click a day to add
-       something; click an event to edit it. Each event automatically gets its
-       <strong>flyer</strong> and <strong>social media</strong> dates worked backward from the
-       event date &mdash; turn them on with the checkbox below.</p>
 
     <div class="cal-bar">
       <span style="font-weight:700;font-size:13px">Show:</span>
@@ -259,6 +261,10 @@
 
     requireAdmin((me) => {
       const s = getParam('s');
+      if (getParam('embed') === '1') {
+        document.getElementById('cal-page-head').style.display = 'none';
+        document.getElementById('bo-main').style.padding = '4px 4px 24px';
+      }
       // Opened from a school workspace → start with just that calendar (plus District);
       // opened from the top level → show every calendar.
       const preselect = s && SCHOOLS[s] && s !== 'pto' ? [s, 'pto'] : Object.keys(SCHOOL_LABEL);

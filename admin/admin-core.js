@@ -121,7 +121,10 @@ function requireAdmin(onReady) {
       schools
     };
 
-    renderShell();
+    // A page opened with ?embed=1 (e.g. the calendar tool inside a school workspace's
+    // own Calendar tab) skips the sidebar/header entirely -- it's already inside a page
+    // that has its own back-office chrome.
+    if (getParam('embed') !== '1') renderShell();
     const gate = document.getElementById('bo-loading');
     if (gate) gate.remove();
     const main = document.getElementById('bo-main');
