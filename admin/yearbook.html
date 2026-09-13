@@ -148,7 +148,10 @@
       const inp = document.getElementById('folder-name');
       const name = inp.value.trim();
       if (!name) return;
-      const slug = slugify(name);
+      // Every folder's slug is namespaced under this school's URL prefix (matching how
+      // every other page on the site is addressed), e.g. schalmontpto.com/jes/yearbook/
+      // backtoschool -- so folders never collide across schools even if reused elsewhere.
+      const slug = (SCHOOL_PREFIX[school] || school) + '/yearbook/' + slugify(name);
       if (folders.some(f => f.slug === slug)) { toast('A folder with a similar name already exists', 'error'); return; }
       inp.value = '';
       await db.collection('yearbook_folders').add({

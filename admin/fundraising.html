@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PTO Back Office Fundraising</title>
+  <title>PTO Back Office Fundraisers</title>
   <meta name="robots" content="noindex">
   <link rel="stylesheet" href="../css/styles.css?v=6">
   <link rel="stylesheet" href="admin.css">
@@ -42,8 +42,8 @@
       <button class="bo-btn sm" id="newpage-btn">＋ Add New Fundraiser Web Page</button>
     </div>
     <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo;
-      <a id="crumb-school" href="#">School</a> &rsaquo; Fundraising</div>
-    <h1 class="bo-h1" id="title">Fundraising</h1>
+      <a id="crumb-school" href="#">School</a> &rsaquo; Fundraisers</div>
+    <h1 class="bo-h1" id="title">Fundraisers</h1>
     <p class="bo-lead">Track this school's fundraisers, their goals, and (for raffles and prize
        drives) the sponsor / prize tracker. Attach a Google Sheet and its live status shows
        right here.</p>
@@ -104,7 +104,7 @@
       document.getElementById('crumb-school').href = 'school.html?s=' + school;
       document.getElementById('back-school').href = 'school.html?s=' + school;
       document.getElementById('back-school-name').textContent = SCHOOLS[school];
-      document.getElementById('title').textContent = SCHOOLS[school] + ' — Fundraising';
+      document.getElementById('title').textContent = SCHOOLS[school] + ' — Fundraisers';
       document.getElementById('fr-form').onsubmit = addFundraiser;
       document.getElementById('newpage-btn').onclick = () => newWebPage('fundraising');
       load();
@@ -114,7 +114,7 @@
       const opts = (ME.schools || []).filter(s => s !== 'pto');
       document.getElementById('bo-main').innerHTML =
         '<div style="margin-bottom:14px"><a class="bo-btn ghost sm" href="index.html">← Back Office Home</a></div>' +
-        '<h1 class="bo-h1">💰 Fundraising</h1>' +
+        '<h1 class="bo-h1">💰 Fundraisers</h1>' +
         '<p class="bo-lead">Pick a school to see and add its fundraisers.</p>' +
         '<div class="bo-grid">' + opts.map(s =>
           `<a class="bo-card" href="fundraising.html?s=${s}"><span class="bo-cardicon">🏫</span><h3>${SCHOOLS[s]}</h3></a>`
