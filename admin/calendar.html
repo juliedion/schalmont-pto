@@ -86,7 +86,7 @@
       <button type="button" class="cal-toggle-all" id="toggle-all">all</button>
       <span class="spacer" style="flex:1"></span>
       <label style="font-weight:700;font-size:13px;display:flex;align-items:center;gap:6px">
-        <input type="checkbox" id="show-promo"> Show flyer &amp; social dates
+        <input type="checkbox" id="show-promo" checked> Show flyer &amp; social dates
       </label>
     </div>
     <div class="cal-bar" style="margin-bottom:10px">
@@ -268,7 +268,8 @@
       }
       // Opened from a school workspace → start with just that calendar (plus District);
       // opened from the top level → show every calendar.
-      const preselect = s && SCHOOLS[s] && s !== 'pto' ? [s, 'pto'] : Object.keys(SCHOOL_LABEL);
+      // District is off by default -- turn it on with the toggle if you want it layered in.
+      const preselect = s && SCHOOLS[s] && s !== 'pto' ? [s] : Object.keys(SCHOOL_LABEL).filter(k => k !== 'pto');
       if (s && SCHOOLS[s]) {
         const b = document.getElementById('back-school');
         b.style.display = ''; b.href = 'school.html?s=' + s;
