@@ -101,7 +101,7 @@
       <button class="bo-btn ghost sm" id="newpage-btn">＋ Add New Event Web Page</button>
       <button class="bo-btn ghost sm" id="sheet-btn">⬆ Update from the planning spreadsheet</button>
       <button class="bo-btn ghost sm" id="district-btn">↻ Sync District calendar</button>
-      <button class="bo-btn ghost sm" id="tracker-pages-btn">📝 Create draft pages from tracker</button>
+      <button class="bo-btn ghost sm" id="tracker-pages-btn">↻ Sync with tracker</button>
     </div>
 
     <div id="cal-count" style="font-size:12px;color:var(--text-light);margin:0 0 12px"></div>
@@ -342,14 +342,16 @@
     const BOOKKEEPING = new Set(['meta_deleted', 'meta_gcal']);
     let districtAutoDone = false;
 
-    // One-click bulk conversion: every tracker (pto_events) entry that doesn't already
-    // have a matching page gets a real draft page -- Program category becomes a program
-    // page, everything else (Event, Fundraiser, Meeting, etc.) becomes an event page.
-    // "Club" isn't a tracker category, so club pages aren't created by this button; add
-    // those individually via "+ Add New Event Web Page" or a day-click.
+    // Sync, never override: every tracker (pto_events) entry that doesn't already have a
+    // matching page (by title) gets a new draft page -- Program category becomes a
+    // program page, everything else (Event, Fundraiser, Meeting, etc.) becomes an event
+    // page. Runs immediately, no confirmation -- it only ever adds missing pages, it
+    // never touches or replaces a page that already exists. "Club" isn't a tracker
+    // category, so club pages still get added individually via "+ Add New Event Web
+    // Page" or a day-click.
     async function createDraftPagesFromTracker() {
       const btn = document.getElementById('tracker-pages-btn');
-      btn.disabled = true; btn.textContent = 'Creating…';
+      btn.disabled = true; btn.textContent = 'Syncing…';
       try {
         const [eventsSnap, pagesSnap] = await Promise.all([
           db.collection('pto_events').get(),
@@ -363,9 +365,7 @@
         );
 
         const toCreate = trackerRows.filter(e => !existingTitles.has(e.title.trim().toLowerCase()));
-        if (!toCreate.length) { toast('Every tracker event already has a matching page'); return; }
-        if (!confirm('Create ' + toCreate.length + ' draft page' + (toCreate.length === 1 ? '' : 's') +
-          ' from the tracker — one per event/program that doesn\'t already have a page? You can review and publish each one from its Pages tab.')) return;
+        if (!toCreate.length) { toast('Already in sync — every tracker event has a matching page'); return; }
 
         const seenTitles = new Set(existingTitles);
         const batch = db.batch();
@@ -391,7 +391,7 @@
       } catch (e) {
         toast('Could not create pages: ' + e.message, 'error');
       } finally {
-        btn.disabled = false; btn.textContent = '📝 Create draft pages from tracker';
+        btn.disabled = false; btn.textContent = '↻ Sync with tracker';
       }
     }
 
