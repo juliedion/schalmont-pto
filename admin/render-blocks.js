@@ -121,11 +121,13 @@
     }
     const date = prettyDate(page.eventDate);
     const time = prettyTime(page.eventTime);
+    const endTime = prettyTime(page.eventEndTime);
+    const timeRange = time && endTime ? `${time} – ${endTime}` : time;
     const loc  = page.eventLocation;
-    if (date || time || loc) {
+    if (date || timeRange || loc) {
       html += '<div class="pg-eventbox">';
-      if (date || time) {
-        html += `<div class="pg-eventrow"><span class="pg-eventicon">📅</span><span>${e(date)}${date && time ? ' · ' : ''}${e(time)}</span></div>`;
+      if (date || timeRange) {
+        html += `<div class="pg-eventrow"><span class="pg-eventicon">📅</span><span>${e(date)}${date && timeRange ? ' · ' : ''}${e(timeRange)}</span></div>`;
       }
       if (loc) {
         const maps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(loc);

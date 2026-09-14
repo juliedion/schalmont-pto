@@ -78,6 +78,8 @@
             <input type="date" id="event-date"></div>
           <div class="bo-blockfield"><label>Start time</label>
             <input type="time" id="event-time"></div>
+          <div class="bo-blockfield"><label>End time <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
+            <input type="time" id="event-endtime"></div>
         </div>
         <div class="bo-blockfield"><label>Location <span style="font-weight:400;color:var(--text-light)">— name and/or address; becomes a Google Maps link</span></label>
           <input type="text" id="event-location" placeholder="Jefferson Elementary gym, 2 Sabre Lane, Schenectady NY"></div>
@@ -209,6 +211,7 @@
       document.getElementById('page-slug').value = page.slug || '';
       document.getElementById('event-date').value = page.eventDate || '';
       document.getElementById('event-time').value = page.eventTime || '';
+      document.getElementById('event-endtime').value = page.eventEndTime || '';
       document.getElementById('event-location').value = page.eventLocation || '';
       showFlyer();
       if (page.slug) slugTouched = true;
@@ -371,9 +374,10 @@
       slug.oninput = () => { slugTouched = true; slug.value = pageSlug(slug.value); page.slug = slug.value; };
 
       const ed = document.getElementById('event-date'), et = document.getElementById('event-time'),
-            el = document.getElementById('event-location');
+            eet = document.getElementById('event-endtime'), el = document.getElementById('event-location');
       ed.oninput = () => { page.eventDate = ed.value; refreshPreview(); };
       et.oninput = () => { page.eventTime = et.value; refreshPreview(); };
+      eet.oninput = () => { page.eventEndTime = eet.value; refreshPreview(); };
       el.oninput = () => { page.eventLocation = el.value.trim(); refreshPreview(); };
 
       const fpick = document.getElementById('flyer-pick'), finput = document.getElementById('flyer-input'),
@@ -720,6 +724,7 @@
         schools: page.schools, school,
         blocks: page.blocks,
         eventDate: page.eventDate || '', eventTime: page.eventTime || '',
+        eventEndTime: page.eventEndTime || '',
         eventLocation: page.eventLocation || '', flyerUrl: page.flyerUrl || '',
         hideCard: page.hideCard,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
