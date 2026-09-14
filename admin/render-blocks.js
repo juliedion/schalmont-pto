@@ -24,15 +24,21 @@
     } catch (_) { return ''; }
   }
 
+  // Alignment applies to heading, paragraph and button blocks. Left is the default and
+  // needs no inline style; center/right are set explicitly on the block's own element.
+  function alignStyle(b) {
+    return (b.align === 'center' || b.align === 'right') ? ` style="text-align:${b.align}"` : '';
+  }
+
   function renderBlock(b) {
     switch (b.type) {
       case 'heading': {
         const lvl = b.level === 3 ? 'h3' : b.level === 1 ? 'h1' : 'h2';
-        return `<${lvl}>${e(b.text)}</${lvl}>`;
+        return `<${lvl}${alignStyle(b)}>${e(b.text)}</${lvl}>`;
       }
       case 'paragraph':
         return e(b.text).split(/\n{2,}/).map(p =>
-          `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+          `<p${alignStyle(b)}>${p.replace(/\n/g, '<br>')}</p>`).join('');
       case 'list':
         return '<ul>' + (b.items || []).filter(Boolean)
           .map(i => `<li>${e(i)}</li>`).join('') + '</ul>';
@@ -44,7 +50,7 @@
       case 'button': {
         const cls = b.style === 'outline' ? 'pg-btn outline' : 'pg-btn';
         const href = /^https?:|^mailto:|^\//.test(b.href || '') ? b.href : '#';
-        return `<p><a class="${cls}" href="${e(href)}" ${/^https?:/.test(href) ? 'target="_blank" rel="noopener"' : ''}>${e(b.label || 'Button')}</a></p>`;
+        return `<p${alignStyle(b)}><a class="${cls}" href="${e(href)}" ${/^https?:/.test(href) ? 'target="_blank" rel="noopener"' : ''}>${e(b.label || 'Button')}</a></p>`;
       }
       case 'divider':
         return '<hr>';

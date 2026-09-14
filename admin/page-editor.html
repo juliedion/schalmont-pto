@@ -504,6 +504,16 @@
       return d;
     }
 
+    // Shared by heading/paragraph/button blocks -- left is the default and needs no
+    // stored value, so b.align stays unset until someone picks center or right.
+    function alignField(b, upd) {
+      const sel = document.createElement('select');
+      sel.innerHTML = '<option value="">Left</option><option value="center">Center</option><option value="right">Right</option>';
+      sel.value = b.align || '';
+      sel.onchange = () => { b.align = sel.value; upd(); };
+      return field('Alignment', '', sel);
+    }
+
     function fieldsFor(b, i) {
       const out = [];
       const upd = () => refreshPreview();
@@ -515,13 +525,13 @@
         const inp = document.createElement('input');
         inp.type = 'text'; inp.value = b.text || ''; inp.placeholder = 'Heading text';
         inp.oninput = () => { b.text = inp.value; upd(); };
-        out.push(field('Size','', sel), field('Text','', inp));
+        out.push(field('Size','', sel), field('Text','', inp), alignField(b, upd));
       }
       else if (b.type === 'paragraph') {
         const ta = document.createElement('textarea');
         ta.value = b.text || ''; ta.placeholder = 'Type your text here. Leave a blank line to start a new paragraph.';
         ta.oninput = () => { b.text = ta.value; upd(); };
-        out.push(field('Text','', ta));
+        out.push(field('Text','', ta), alignField(b, upd));
       }
       else if (b.type === 'list') {
         const ta = document.createElement('textarea');
@@ -583,7 +593,7 @@
         st.innerHTML = '<option value="solid">Filled (green)</option><option value="outline">Outline</option>';
         st.value = b.style || 'solid';
         st.onchange = () => { b.style = st.value; upd(); };
-        out.push(field('Button text','', lab), field('Where it goes','full web address', href), field('Style','', st));
+        out.push(field('Button text','', lab), field('Where it goes','full web address', href), field('Style','', st), alignField(b, upd));
       }
       else if (b.type === 'columns') {
         if (!Array.isArray(b.cells)) b.cells = [{}, {}];
