@@ -131,7 +131,7 @@ service cloud.firestore {
 
     /* ---- Back office: feature roadmap / build tracker (owner-only) ---- */
     match /roadmap_items/{id} {
-      allow read, write: if isOwner();
+      allow read, write: if isAnyAdmin();
     }
 
     /* ---- Chocolate Bar Fundraiser: seller pickup requests (public form) ---- */

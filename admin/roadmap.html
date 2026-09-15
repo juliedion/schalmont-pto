@@ -82,7 +82,6 @@
     let items = [];
 
     requireAdmin((me) => {
-      if (!me.isSuper) { location.href = 'index.html'; return; }
       load();
       document.getElementById('sync-btn').onclick = syncFromSheet;
       ['rm-filter-status', 'rm-sort'].forEach(id =>
