@@ -75,10 +75,10 @@
       <label for="msg-body">Message</label>
       <textarea id="msg-body" placeholder="Type your message here…"></textarea>
       <p style="font-size:12px;color:var(--text-light);margin:8px 0 0">
-        This sends a real email to their address — they can just hit Reply to write back to you.
+        This opens your email app with the message ready to go — just hit Send there.
       </p>
       <div class="bo-modal-actions" style="justify-content:flex-start;margin-top:14px">
-        <button class="bo-btn" id="msg-send-btn">Send Message</button>
+        <button class="bo-btn" id="msg-send-btn">Open in Email App</button>
       </div>
     </div>
   </main>
@@ -278,39 +278,25 @@
           return;
         }
         sel.innerHTML = '<option value="" disabled selected>Choose an officer…</option>' +
-          officers.map(u => `<option value="${esc(u.id)}">${esc(u.displayName || u.email)} — ${esc(u.email)}</option>`).join('');
+          officers.map(u => `<option value="${esc(u.id)}" data-email="${esc(u.email)}">${esc(u.displayName || u.email)} — ${esc(u.email)}</option>`).join('');
       } catch (e) {
         sel.innerHTML = '<option value="">Could not load officers</option>';
         toast('Could not load the officer list: ' + e.message, 'error');
       }
     }
 
-    async function sendMessage() {
-      const btn = document.getElementById('msg-send-btn');
-      const toUid = document.getElementById('msg-to').value;
+    function sendMessage() {
+      const sel = document.getElementById('msg-to');
+      const toEmail = sel.selectedOptions[0] && sel.selectedOptions[0].dataset.email;
       const subject = document.getElementById('msg-subject').value.trim();
       const body = document.getElementById('msg-body').value.trim();
-      if (!toUid) { toast('Choose who to send this to', 'error'); return; }
+      if (!toEmail) { toast('Choose who to send this to', 'error'); return; }
       if (!subject || !body) { toast('Add a subject and a message', 'error'); return; }
 
-      btn.disabled = true; btn.textContent = 'Sending…';
-      try {
-        const idToken = await auth.currentUser.getIdToken();
-        const res = await fetch('../api/send-message.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idToken, toUid, subject, body })
-        });
-        const data = await res.json();
-        if (!res.ok || !data.ok) throw new Error(data.error || 'Could not send the message');
-        toast('✓ Message sent');
-        document.getElementById('msg-subject').value = '';
-        document.getElementById('msg-body').value = '';
-      } catch (e) {
-        toast('Could not send: ' + e.message, 'error');
-      } finally {
-        btn.disabled = false; btn.textContent = 'Send Message';
-      }
+      const mailto = 'mailto:' + encodeURIComponent(toEmail) +
+        '?subject=' + encodeURIComponent(subject) +
+        '&body=' + encodeURIComponent(body);
+      window.location.href = mailto;
     }
   </script>
 </body>
