@@ -335,11 +335,66 @@
         eventClick: (info) => {
           const p = info.event.extendedProps;
           if (p.kind === 'page') { location.href = 'page-editor.html?id=' + p.pageId; return; }
+          if (p.kind === 'promo' && p.promoKey === 'flyer') { offerFlyerChoice(p.parentId); return; }
+          if (p.kind === 'promo' && p.promoKey === 'social') { openSocialForEvent(p.parentId); return; }
           openModal(p.kind === 'promo' ? p.parentId : p.docId);
         },
         events: []
       });
       cal.render();
+    }
+
+    // No dedicated Facebook page for these schools yet -- for now, clicking "Create
+    // social post" for one of them opens the nearest existing group instead.
+    const SCHOOL_FB = {
+      woestina:  'https://www.facebook.com/groups/jeffersonelementarypto',   // Woestina -> Jefferson for now
+      jefferson: 'https://www.facebook.com/groups/jeffersonelementarypto',
+      middle:    'https://www.facebook.com/groups/schalmontpto/',
+      high:      'https://www.facebook.com/groups/schalmontpto/',
+      pto:       'https://www.facebook.com/groups/schalmontpto/'
+    };
+    function openSocialForEvent(parentId) {
+      const ev = allEvents.find(e => e.id === parentId);
+      const sch = ev ? (ev.school || 'pto') : 'pto';
+      window.open(SCHOOL_FB[sch] || SCHOOL_FB.pto, '_blank', 'noopener');
+    }
+
+    // Clicking the "Flyer / Take-Home" dot on a calendar day offers the handful of
+    // things someone's actually likely to want, instead of always opening the raw
+    // calendar-entry editor.
+    function offerFlyerChoice(parentId) {
+      const ev = allEvents.find(e => e.id === parentId);
+      const sch = ev ? (ev.school || 'pto') : (getParam('s') && SCHOOLS[getParam('s')] ? getParam('s') : 'pto');
+      const back = document.createElement('div');
+      back.className = 'bo-modal-back';
+      back.innerHTML = `
+        <div class="bo-modal">
+          <button type="button" class="bo-modal-x" id="fc-x" aria-label="Cancel">✕</button>
+          <h2>Flyer / Take-Home</h2>
+          <p style="font-size:14px;color:var(--text-light);margin-bottom:18px">What would you like to do?</p>
+          <div class="bo-modal-actions" style="justify-content:flex-start;flex-wrap:wrap;gap:10px">
+            <button class="bo-btn sm" id="fc-new">➕ Create a New Event</button>
+            <button class="bo-btn ghost sm" id="fc-edit">✏️ Edit a Draft</button>
+            <button class="bo-btn ghost sm" id="fc-view">📋 View All Events</button>
+          </div>
+        </div>`;
+      document.body.appendChild(back);
+      const close = () => back.remove();
+      back.addEventListener('click', e => { if (e.target === back) close(); });
+      back.querySelector('#fc-x').onclick = close;
+      back.querySelector('#fc-new').onclick = () => { close(); openModal(null, toYMD(new Date())); };
+      back.querySelector('#fc-view').onclick = () => { close(); location.href = 'section.html?cat=events&s=' + sch; };
+      back.querySelector('#fc-edit').onclick = async () => {
+        close();
+        if (!ev || !ev.title) { newWebPage('events', sch); return; }
+        try {
+          const key = ev.title.trim().toLowerCase();
+          const pagesSnap = await db.collection('pages').get();
+          const hit = pagesSnap.docs.find(d => (d.data().title || '').trim().toLowerCase() === key);
+          if (hit) { location.href = 'page-editor.html?id=' + hit.id; return; }
+          newWebPage('events', sch, ev.date);
+        } catch (e2) { toast('Could not find a matching draft: ' + e2.message, 'error'); }
+      };
     }
 
     const BOOKKEEPING = new Set(['meta_deleted', 'meta_gcal']);
