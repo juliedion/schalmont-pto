@@ -1,6 +1,16 @@
 Options -MultiViews
 RewriteEngine On
 
+# Force browsers to always re-check with the server before using a cached
+# copy of a page or script. Without this, browsers can keep showing an old
+# version of a page (or the back office) for a long time after we deploy an
+# update, even though the new version is already live on the server.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|js)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
 # Redirect old casino-night URL to casinoroyale
 RewriteRule ^casino-night$ /casinoroyale [R=301,L]
 
