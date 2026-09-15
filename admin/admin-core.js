@@ -187,6 +187,10 @@ function renderShell() {
     `<a href="${href}" class="bo-navlink${active ? ' active' : ''}">
        <span class="bo-navicon">${icon}</span>${label}</a>`;
 
+  // Each school's own brand color (matches the public site) tints its "sections" group
+  // in the sidebar, so it's obviously distinct from the schools list above it.
+  const SCHOOL_TINT = { woestina: '#8bc341', jefferson: '#6bb044', middle: '#087d40', high: '#044d2a', pto: '#295c38' };
+
   // Section links only make sense inside a school — scope each one with ?s=<school>.
   const sectionLinks = inSchool ? SECTIONS.map(s => {
     const base = s.href.split('?')[0];
@@ -196,6 +200,11 @@ function renderShell() {
     const active = s.href.includes('?cat=') ? (path === 'section.html' && cat === s.cat) : (path === base);
     return link(scoped, s.label, s.icon, active);
   }).join('') : '';
+  const sectionsBlock = inSchool ? `
+    <div style="background:${SCHOOL_TINT[ctxSchool] || 'transparent'};border-radius:10px;padding:6px 4px 8px;margin:10px 6px">
+      <div class="bo-navgroup-label" style="color:rgba(255,255,255,.85);padding:8px 6px 4px">${esc(SCHOOLS[ctxSchool])} — sections</div>
+      ${sectionLinks}
+    </div>` : '';
 
   const mySchools = (ME.isSuper ? Object.keys(SCHOOLS) : (ME.schools || []));
   const schoolLinks = mySchools.map(s =>
@@ -211,7 +220,7 @@ function renderShell() {
         ${link('index.html', 'Home', '🏠', path === 'index.html')}
         <div class="bo-navgroup-label">Schools</div>
         ${schoolLinks}
-        ${inSchool ? `<div class="bo-navgroup-label">${esc(SCHOOLS[ctxSchool])} — sections</div>${sectionLinks}` : ''}
+        ${sectionsBlock}
         <div class="bo-navgroup-label">More</div>
         ${link('meetings.html', 'Meetings', '🗓️', path === 'meetings.html')}
         ${link('help.html', 'Help &amp; How-To', '📖', path === 'help.html')}
