@@ -42,4 +42,16 @@ return [
   // PTO administrators can use the assistant. Do not change unless
   // your Firebase project changes.
   'firebase_project_id' => 'schalmont-pto',
+
+  // ---- Back office "Message a PTO Officer" (admin/meetings.html) ----
+  // Email addresses that always count as an admin, even before they have a
+  // role set in the database. Also used by the AI assistant's admin check.
+  'admin_emails' => ['julie@schalmontpto.com'],
+  // The "From" address on emails sent through "Message a PTO Officer" — the
+  // real sender's address is set as Reply-To, so replies still go to them.
+  // Should be an address at your own domain (schalmontpto.com) so it doesn't
+  // get flagged as spam.
+  'message_from_email' => 'noreply@schalmontpto.com',
+  // Safety cap: stop sending after this many messages in a calendar day.
+  'max_messages_per_day' => 100,
 ];

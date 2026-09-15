@@ -134,6 +134,11 @@ service cloud.firestore {
       allow read, write: if isAnyAdmin();
     }
 
+    /* ---- Back office: Meetings (schedule + minutes) ---- */
+    match /pto_meetings/{id} {
+      allow read, write: if isAnyAdmin();
+    }
+
     /* ---- Chocolate Bar Fundraiser: seller pickup requests (public form) ---- */
     match /chocolate_seller_requests/{id} {
       allow read, update, delete: if isAnyAdmin();

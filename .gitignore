@@ -1,6 +1,7 @@
 # AI assistant secret config — lives only on the Bluehost server
 api/config.php
 api/.ai-usage.json
+api/.message-usage.json
 api/.google-certs.json
 
 # OS junk

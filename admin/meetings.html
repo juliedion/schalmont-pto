@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PTO Back Office — Meetings</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" href="../images/favicon.svg">
+  <style>
+    .mt-toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:18px; }
+    .mt-toolbar .spacer { flex:1; }
+    .mt-toolbar select { padding:9px 10px; border:1px solid var(--border); border-radius:8px; font-family:inherit; font-size:13.5px; }
+    .mt-item { background:#fff; border:1px solid var(--border); border-radius:12px; padding:16px 18px; margin-bottom:12px; }
+    .mt-item.past { opacity:.65; }
+    .mt-top { display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; justify-content:space-between; }
+    .mt-title { font-size:16px; font-weight:800; color:var(--primary-dark); }
+    .mt-when { font-size:13px; color:var(--text-light); margin-top:2px; }
+    .mt-pill { font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; padding:2px 9px; border-radius:20px;
+               display:inline-block; background:#e2e8f0; color:#4a5568; }
+    .mt-agenda { font-size:13.5px; color:var(--text); margin:10px 0 0; white-space:pre-wrap; }
+    .mt-minutes-label { font-size:10.5px; font-weight:700; color:var(--text-light); text-transform:uppercase; letter-spacing:.03em; margin:14px 0 4px; }
+    .mt-minutes-label span { text-transform:none; font-weight:400; }
+    .mt-item textarea { width:100%; min-height:70px; padding:9px 10px; border:1px solid var(--border); border-radius:8px; font-family:inherit; font-size:13.5px; }
+    .mt-empty { color:var(--text-light); }
+    .mt-del { background:none; border:0; color:var(--text-light); cursor:pointer; font-size:16px; line-height:1; padding:2px 4px; }
+    .mt-del:hover { color:var(--error); }
+
+    .msg-box { background:#fff; border:1px solid var(--border); border-radius:12px; padding:18px 20px; max-width:560px; }
+    .msg-box label { display:block; font-size:12.5px; font-weight:700; color:var(--text-light); text-transform:uppercase;
+                      letter-spacing:.03em; margin:14px 0 5px; }
+    .msg-box label:first-of-type { margin-top:0; }
+    .msg-box select, .msg-box input[type=text], .msg-box textarea {
+      width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-family:inherit; font-size:14px;
+    }
+    .msg-box textarea { min-height:120px; }
+
+    .mt-section-heading { font-size:19px; margin:34px 0 14px; }
+    .mt-section-heading:first-of-type { margin-top:0; }
+  </style>
+</head>
+<body>
+  <div id="bo-loading">Loading…</div>
+  <div id="bo-shell"></div>
+
+  <main id="bo-main" style="display:none">
+    <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo; Meetings</div>
+    <h1 class="bo-h1">Meetings</h1>
+    <p class="bo-lead">
+      Schedule PTO meetings, keep the minutes from past ones, and message any officer directly —
+      all in one place.
+    </p>
+
+    <h2 class="mt-section-heading">📅 Meetings &amp; Minutes</h2>
+    <div class="mt-toolbar">
+      <button class="bo-btn" id="new-meeting-btn">+ Schedule a Meeting</button>
+      <span class="spacer"></span>
+      <label>Show:
+        <select id="mt-filter">
+          <option value="upcoming" selected>Upcoming</option>
+          <option value="past">Past</option>
+          <option value="all">All</option>
+        </select>
+      </label>
+    </div>
+    <div id="mt-list"></div>
+
+    <h2 class="mt-section-heading">✉️ Message a PTO Officer</h2>
+    <div class="msg-box">
+      <label for="msg-to">To</label>
+      <select id="msg-to"><option value="">Loading officers…</option></select>
+      <label for="msg-subject">Subject</label>
+      <input type="text" id="msg-subject" placeholder="What's this about?">
+      <label for="msg-body">Message</label>
+      <textarea id="msg-body" placeholder="Type your message here…"></textarea>
+      <p style="font-size:12px;color:var(--text-light);margin:8px 0 0">
+        This sends a real email to their address — they can just hit Reply to write back to you.
+      </p>
+      <div class="bo-modal-actions" style="justify-content:flex-start;margin-top:14px">
+        <button class="bo-btn" id="msg-send-btn">Send Message</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="admin-core.js"></script>
+  <script>
+    let meetings = [];
+    let ownUid = null;
+
+    requireAdmin((me) => {
+      ownUid = me.uid;
+      loadMeetings();
+      loadOfficers();
+      document.getElementById('new-meeting-btn').onclick = openNewMeetingModal;
+      document.getElementById('mt-filter').addEventListener('change', renderMeetings);
+      document.getElementById('msg-send-btn').onclick = sendMessage;
+    });
+
+    /* ---------------- Meetings ---------------- */
+
+    async function loadMeetings() {
+      try {
+        const snap = await db.collection('pto_meetings').orderBy('date').get();
+        meetings = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+      } catch (e) {
+        meetings = [];
+        toast('Could not load meetings: ' + e.message, 'error');
+      }
+      renderMeetings();
+    }
+
+    function renderMeetings() {
+      const box = document.getElementById('mt-list');
+      const filter = document.getElementById('mt-filter').value;
+      const todayStr = new Date().toISOString().slice(0, 10);
+
+      let list = meetings.slice();
+      if (filter === 'upcoming') list = list.filter(m => (m.date || '') >= todayStr);
+      if (filter === 'past') list = list.filter(m => (m.date || '') < todayStr).reverse();
+
+      if (!list.length) {
+        box.innerHTML = '<p class="mt-empty">' +
+          (meetings.length ? 'Nothing matches this filter.' : 'No meetings yet — press "+ Schedule a Meeting" to add one.') +
+          '</p>';
+        return;
+      }
+
+      box.innerHTML = '';
+      list.forEach(m => {
+        const isPast = (m.date || '') < todayStr;
+        const row = document.createElement('div');
+        row.className = 'mt-item' + (isPast ? ' past' : '');
+        const when = formatMeetingWhen(m.date, m.time);
+        const schoolLabel = m.school && SCHOOLS[m.school] ? SCHOOLS[m.school] : 'PTO-wide';
+        row.innerHTML = `
+          <div class="mt-top">
+            <div>
+              <div class="mt-title">${esc(m.title || 'Untitled meeting')}</div>
+              <div class="mt-when">${esc(when)}${m.location ? ' · ' + esc(m.location) : ''}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="mt-pill">${esc(schoolLabel)}</span>
+              <button type="button" class="mt-del" title="Delete this meeting" aria-label="Delete">✕</button>
+            </div>
+          </div>
+          ${m.agenda ? `<p class="mt-agenda">${esc(m.agenda)}</p>` : ''}
+          <p class="mt-minutes-label">Meeting Minutes <span>— autosaves as you type</span></p>
+          <textarea class="mt-minutes" placeholder="Type or paste the minutes from this meeting…">${esc(m.minutes || '')}</textarea>
+        `;
+        row.querySelector('.mt-del').onclick = () => deleteMeeting(m.docId, row);
+        let noteTimer;
+        row.querySelector('.mt-minutes').oninput = (ev) => {
+          clearTimeout(noteTimer);
+          noteTimer = setTimeout(() => saveMeetingField(m.docId, 'minutes', ev.target.value), 600);
+        };
+        box.appendChild(row);
+      });
+    }
+
+    function formatMeetingWhen(dateStr, timeStr) {
+      if (!dateStr) return 'Date not set';
+      const d = new Date(dateStr + 'T00:00');
+      let out = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+      if (timeStr) {
+        const [h, m] = timeStr.split(':').map(Number);
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const h12 = ((h + 11) % 12) + 1;
+        out += ' · ' + h12 + ':' + String(m).padStart(2, '0') + ' ' + ampm;
+      }
+      return out;
+    }
+
+    async function saveMeetingField(docId, field, value) {
+      try {
+        await db.collection('pto_meetings').doc(docId).update({ [field]: value });
+        const m = meetings.find(x => x.docId === docId);
+        if (m) m[field] = value;
+      } catch (e) { toast('Could not save: ' + e.message, 'error'); }
+    }
+
+    async function deleteMeeting(docId, rowEl) {
+      if (!confirm('Delete this meeting and its minutes? This cannot be undone.')) return;
+      try {
+        await db.collection('pto_meetings').doc(docId).delete();
+        meetings = meetings.filter(m => m.docId !== docId);
+        rowEl.remove();
+        toast('Meeting deleted');
+      } catch (e) { toast('Could not delete: ' + e.message, 'error'); }
+    }
+
+    function openNewMeetingModal() {
+      const schoolOpts = ['<option value="pto">PTO-wide (all schools)</option>'].concat(
+        manageableSchools().filter(s => s !== 'pto').map(s => `<option value="${s}">${esc(SCHOOLS[s])}</option>`)
+      ).join('');
+
+      const back = document.createElement('div');
+      back.className = 'bo-modal-back';
+      back.innerHTML = `
+        <div class="bo-modal">
+          <button type="button" class="bo-modal-x" id="nm-x" aria-label="Cancel">✕</button>
+          <h2>Schedule a Meeting</h2>
+          <label class="bo-modal-lbl">Title</label>
+          <input type="text" id="nm-title" placeholder="e.g. October PTO Meeting">
+          <label class="bo-modal-lbl">Date</label>
+          <input type="date" id="nm-date">
+          <label class="bo-modal-lbl">Time <span style="font-weight:400;color:var(--text-light)">— optional</span></label>
+          <input type="time" id="nm-time">
+          <label class="bo-modal-lbl">Location <span style="font-weight:400;color:var(--text-light)">— optional</span></label>
+          <input type="text" id="nm-location" placeholder="e.g. Schalmont Middle School Library">
+          <label class="bo-modal-lbl">Which school is this for?</label>
+          <select id="nm-school">${schoolOpts}</select>
+          <label class="bo-modal-lbl">Agenda <span style="font-weight:400;color:var(--text-light)">— optional</span></label>
+          <textarea id="nm-agenda" placeholder="What's on the agenda?" style="width:100%;min-height:70px;padding:9px 10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:14px"></textarea>
+          <p id="nm-hint" style="font-size:12px;color:var(--text-light);margin:8px 0 0">Give it a title and a date to continue.</p>
+          <div class="bo-modal-actions">
+            <button class="bo-btn ghost sm" id="nm-cancel">Cancel</button>
+            <button class="bo-btn sm" id="nm-go" disabled>Schedule Meeting</button>
+          </div>
+        </div>`;
+      document.body.appendChild(back);
+      const close = () => back.remove();
+      back.addEventListener('click', e => { if (e.target === back) close(); });
+      back.querySelector('#nm-cancel').onclick = close;
+      back.querySelector('#nm-x').onclick = close;
+      back.querySelector('#nm-title').focus();
+
+      const goBtn = back.querySelector('#nm-go');
+      const hint = back.querySelector('#nm-hint');
+      const revalidate = () => {
+        const ok = back.querySelector('#nm-title').value.trim().length > 0 &&
+                   back.querySelector('#nm-date').value.length > 0;
+        goBtn.disabled = !ok;
+        hint.style.display = ok ? 'none' : '';
+      };
+      back.querySelector('#nm-title').addEventListener('input', revalidate);
+      back.querySelector('#nm-date').addEventListener('input', revalidate);
+
+      goBtn.onclick = async () => {
+        const title = back.querySelector('#nm-title').value.trim();
+        const date = back.querySelector('#nm-date').value;
+        const time = back.querySelector('#nm-time').value;
+        const location = back.querySelector('#nm-location').value.trim();
+        const school = back.querySelector('#nm-school').value;
+        const agenda = back.querySelector('#nm-agenda').value.trim();
+        if (!title || !date) { toast('Give it a title and a date', 'error'); return; }
+        goBtn.disabled = true;
+        try {
+          await db.collection('pto_meetings').add({
+            title, date, time, location, school, agenda, minutes: '',
+            createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          toast('✓ Meeting scheduled');
+          close();
+          loadMeetings();
+        } catch (e) {
+          toast('Could not schedule the meeting: ' + e.message, 'error');
+          goBtn.disabled = false;
+        }
+      };
+    }
+
+    /* ---------------- Message an Officer ---------------- */
+
+    async function loadOfficers() {
+      const sel = document.getElementById('msg-to');
+      try {
+        const snap = await db.collection('users').orderBy('displayName').get();
+        const officers = snap.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .filter(u => (u.role === 'admin' || u.role === 'superadmin') && u.id !== ownUid && u.email);
+        if (!officers.length) {
+          sel.innerHTML = '<option value="">No other officers found</option>';
+          return;
+        }
+        sel.innerHTML = '<option value="" disabled selected>Choose an officer…</option>' +
+          officers.map(u => `<option value="${esc(u.id)}">${esc(u.displayName || u.email)} — ${esc(u.email)}</option>`).join('');
+      } catch (e) {
+        sel.innerHTML = '<option value="">Could not load officers</option>';
+        toast('Could not load the officer list: ' + e.message, 'error');
+      }
+    }
+
+    async function sendMessage() {
+      const btn = document.getElementById('msg-send-btn');
+      const toUid = document.getElementById('msg-to').value;
+      const subject = document.getElementById('msg-subject').value.trim();
+      const body = document.getElementById('msg-body').value.trim();
+      if (!toUid) { toast('Choose who to send this to', 'error'); return; }
+      if (!subject || !body) { toast('Add a subject and a message', 'error'); return; }
+
+      btn.disabled = true; btn.textContent = 'Sending…';
+      try {
+        const idToken = await auth.currentUser.getIdToken();
+        const res = await fetch('../api/send-message.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken, toUid, subject, body })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) throw new Error(data.error || 'Could not send the message');
+        toast('✓ Message sent');
+        document.getElementById('msg-subject').value = '';
+        document.getElementById('msg-body').value = '';
+      } catch (e) {
+        toast('Could not send: ' + e.message, 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Send Message';
+      }
+    }
+  </script>
+</body>
+</html>
