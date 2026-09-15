@@ -755,6 +755,7 @@
         }
         if (statusChange) page.status = statusChange;
         await syncCard();
+        await syncTrackerFromPage();
         reflectStatus();
         toast(statusChange === 'published' ? '✓ Published! Share your link.' :
               statusChange === 'draft' ? 'Page unpublished (now a draft)' : 'Draft saved');
@@ -763,6 +764,25 @@
       } finally {
         btns.forEach(b => b.disabled = false);
       }
+    }
+
+    // The other half of the tracker <-> back-office link: an Events & Programs page with a
+    // date on it also gets its own calendar (tracker) entry, so it shows up on the monthly
+    // calendar and Coming Up without a manual sheet import. Never touches an existing entry.
+    async function syncTrackerFromPage() {
+      if (page.category !== 'events' || !page.eventDate) return;
+      try {
+        const key = page.title.trim().toLowerCase();
+        const evSnap = await db.collection('pto_events').get();
+        const exists = evSnap.docs.some(d => (d.data().title || '').trim().toLowerCase() === key);
+        if (exists) return;
+        await db.collection('pto_events').add({
+          title: page.title.trim(), date: page.eventDate, endDate: '',
+          time: page.eventTime || '', location: page.eventLocation || '',
+          school, category: '', status: 'confirmed', source: 'page', pageId,
+          createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      } catch (e) { /* non-fatal -- the page itself still saved fine */ }
     }
   </script>
 </body>

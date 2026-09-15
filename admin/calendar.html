@@ -290,13 +290,16 @@
       document.getElementById('show-promo').onchange = refresh;
       document.getElementById('add-btn').onclick = () => openModal(null, toYMD(new Date()));
       setupSheetModal(s && SCHOOLS[s] ? s : 'all');
+      // Only the owner can bulk-overwrite the calendar from the spreadsheet -- everyone else
+      // still gets the safer, additive "Sync with tracker" below.
+      document.getElementById('sheet-btn').style.display = me.isSuper ? '' : 'none';
       document.getElementById('cancel-btn').onclick = closeModal;
       document.getElementById('modal-x').onclick = closeModal;
       document.getElementById('save-ev-btn').onclick = saveEvent;
       document.getElementById('del-btn').onclick = deleteEvent;
       document.getElementById('f-date').onchange = syncPromoFromDate;
       document.getElementById('district-btn').onclick = () => syncDistrict(false);
-      document.getElementById('tracker-pages-btn').onclick = createDraftPagesFromTracker;
+      document.getElementById('tracker-pages-btn').onclick = offerSyncChoice;
       document.getElementById('newpage-btn').onclick = () => newWebPage('events');
 
       loadEvents();
@@ -341,6 +344,35 @@
 
     const BOOKKEEPING = new Set(['meta_deleted', 'meta_gcal']);
     let districtAutoDone = false;
+
+    // "Sync with tracker" first asks whether the person wants to add/edit rows in the
+    // spreadsheet itself, or just pull in what's already there.
+    function offerSyncChoice() {
+      const back = document.createElement('div');
+      back.className = 'bo-modal-back';
+      back.innerHTML = `
+        <div class="bo-modal">
+          <button type="button" class="bo-modal-x" id="sc-x" aria-label="Cancel">✕</button>
+          <h2>Sync with the Tracker</h2>
+          <p style="font-size:14px;color:var(--text-light);margin-bottom:18px">
+            Would you like to open the planning spreadsheet to add or edit rows first, or just
+            sync the calendar with what's already there?
+          </p>
+          <div class="bo-modal-actions" style="justify-content:flex-start;gap:10px">
+            <button class="bo-btn ghost sm" id="sc-edit">📝 Edit the Tracker</button>
+            <button class="bo-btn sm" id="sc-sync">↻ Just Sync It</button>
+          </div>
+        </div>`;
+      document.body.appendChild(back);
+      const close = () => back.remove();
+      back.addEventListener('click', e => { if (e.target === back) close(); });
+      back.querySelector('#sc-x').onclick = close;
+      back.querySelector('#sc-edit').onclick = () => {
+        window.open(PLANNING_SHEET_URL, '_blank', 'noopener');
+        close();
+      };
+      back.querySelector('#sc-sync').onclick = () => { close(); createDraftPagesFromTracker(); };
+    }
 
     // Sync, never override: every tracker (pto_events) entry that doesn't already have a
     // matching page (by title) gets a new draft Events & Programs page, whatever its
@@ -583,9 +615,30 @@
           data.createdBy = ME.email;
           data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
           await db.collection('pto_events').add(data);
+          await createPageFromTrackerRow(data);
         }
         toast('Saved'); closeModal(); loadEvents();
       } catch (e) { toast('Could not save: ' + e.message, 'error'); }
+    }
+
+    // The other half of the tracker <-> back-office link: a brand-new calendar event
+    // also gets its own draft Events & Programs page right away, instead of waiting for
+    // someone to press "Sync with tracker" later. Never touches an existing page.
+    async function createPageFromTrackerRow(ev) {
+      try {
+        const key = ev.title.trim().toLowerCase();
+        const pagesSnap = await db.collection('pages').get();
+        const exists = pagesSnap.docs.some(d => (d.data().title || '').trim().toLowerCase() === key);
+        if (exists) return;
+        const sch = SCHOOLS[ev.school] ? ev.school : 'pto';
+        await db.collection('pages').add({
+          category: 'events', schools: [sch], school: sch,
+          title: ev.title, slug: slugify(ev.title),
+          eventDate: ev.date, eventTime: ev.time || '', eventLocation: ev.location || '',
+          status: 'draft', blocks: [],
+          createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      } catch (e) { /* non-fatal -- the calendar entry itself still saved fine */ }
     }
 
     async function deleteEvent() {
