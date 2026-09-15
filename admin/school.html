@@ -716,7 +716,7 @@
       } else {
         live.forEach(c => {
           const row = cardRow(c, live,
-            '<button class="bo-btn ghost sm" data-archive>Move to Past</button>', moveToPast);
+            '<button class="bo-btn ghost sm" data-archive>🙈 Hide (Move to Past)</button>', moveToPast);
           liveGrid.appendChild(row);
         });
       }
@@ -756,7 +756,7 @@
         box.appendChild(mGrid);
         cards.forEach(c => {
           const row = cardRow(c, cards,
-            '<button class="bo-btn sm" data-restore>Move to Present</button>', moveToPresent);
+            '<button class="bo-btn sm" data-restore>👁 Show (Move to Present)</button>', moveToPresent);
           mGrid.appendChild(row);
         });
         tracker.forEach(ev => {
@@ -812,7 +812,7 @@
       } else {
         past.forEach(c => {
           const row = cardRow(c, past,
-            '<button class="bo-btn sm" data-restore>Move to Present</button>', moveToPresent);
+            '<button class="bo-btn sm" data-restore>👁 Show (Move to Present)</button>', moveToPresent);
           pastGrid.appendChild(row);
         });
       }
