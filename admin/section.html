@@ -53,13 +53,18 @@
   <script src="admin-core.js"></script>
   <script>
     const LEAD = {
-      events:     'Every event that gets its own web page — fun runs, dances, nights out, family events.',
-      clubs:      'Student clubs and their web pages — sign-ups, meeting info, contacts.',
-      programs:   'Ongoing programs — reading nights, enrichment, mentoring, spirit initiatives.',
+      events:     'Every event and ongoing program that gets its own web page — fun runs, dances, nights out, clubs, reading nights, spirit initiatives, and more.',
       spiritwear: 'Spiritwear stores and order pages.',
       facilities: 'Building and facilities info — room requests, maps, hours, contacts.',
       ideas:      'A place to park ideas as draft pages before they are real events.'
     };
+    // Old pages created back when Clubs and Programs were their own sections still carry
+    // those category values -- keep showing them here instead of hiding them.
+    const LEGACY_CATS = { events: ['events', 'clubs', 'programs'] };
+    function matchesCat(docCat, cat) {
+      const set = LEGACY_CATS[cat];
+      return set ? set.includes(docCat || '') : (docCat || '') === cat;
+    }
     let pages = [];
 
     const scopeSchool = getParam('s');   // when set, this section is scoped to one school
@@ -113,7 +118,14 @@
           ]);
           const seen = new Map();
           [...a.docs, ...b.docs].forEach(d => seen.set(d.id, d));
-          docs = [...seen.values()].filter(d => (d.data().category || '') === cat);
+          docs = [...seen.values()].filter(d => matchesCat(d.data().category, cat));
+        } else if (LEGACY_CATS[cat]) {
+          const snaps = await Promise.all(
+            LEGACY_CATS[cat].map(c => db.collection('pages').where('category', '==', c).get())
+          );
+          const seen = new Map();
+          snaps.forEach(s => s.docs.forEach(d => seen.set(d.id, d)));
+          docs = [...seen.values()];
         } else {
           docs = (await db.collection('pages').where('category', '==', cat).get()).docs;
         }

@@ -96,7 +96,7 @@ $system =
   "BUILDING A PAGE: If (and ONLY if) the user clearly asks you to create, build, draft, or make a web " .
   "page, first give a one-line reply, then output a single fenced code block that starts with " .
   "```pto-page and contains JSON only, shaped like:\n" .
-  "{\"title\":\"...\",\"category\":\"events|clubs|programs|spiritwear|facilities|ideas\"," .
+  "{\"title\":\"...\",\"category\":\"events|spiritwear|facilities|ideas\"," .
   "\"schools\":[\"woestina|jefferson|middle|high|pto\"],\"eventDate\":\"YYYY-MM-DD or empty\"," .
   "\"eventTime\":\"HH:MM 24h or empty\",\"eventLocation\":\"... or empty\"," .
   "\"blocks\":[ {\"type\":\"heading\",\"level\":2,\"text\":\"...\"}, {\"type\":\"paragraph\",\"text\":\"...\"}, " .

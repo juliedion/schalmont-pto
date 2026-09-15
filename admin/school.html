@@ -69,15 +69,13 @@
     <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo; <span id="crumb-school"></span></div>
     <h1 class="bo-h1" id="school-title"></h1>
     <p class="bo-lead">Everything for this school in one place. Use the tabs below for the
-       calendar, events, programs, clubs, pages, files, ideas and the to-do list &mdash; and the
+       calendar, events &amp; programs, pages, files, ideas and the to-do list &mdash; and the
        <strong>&ldquo;sections&rdquo;</strong> group in the left sidebar for Fundraising and
        everything else.</p>
 
     <div class="bo-tabs" id="bo-tabs">
       <button class="bo-tab active" data-tab="calendar">📅 Calendar</button>
-      <a class="bo-tab" id="tab-link-events" href="#">🎪 Events</a>
-      <a class="bo-tab" id="tab-link-programs" href="#">🎓 Programs</a>
-      <a class="bo-tab" id="tab-link-clubs" href="#">🤝 Clubs</a>
+      <a class="bo-tab" id="tab-link-events" href="#">🎪 Events &amp; Programs</a>
       <a class="bo-tab" id="tab-link-facilities" href="#">🏫 Building &amp; Facilities</a>
       <button class="bo-tab" data-tab="pages">📄 All Pages</button>
       <button class="bo-tab" data-tab="files">📁 Files</button>
@@ -124,9 +122,7 @@
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
         <select id="new-page-cat" style="padding:9px 10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13.5px">
-          <option value="events">Event</option>
-          <option value="clubs">Club</option>
-          <option value="programs">Program</option>
+          <option value="events">Event / Program</option>
           <option value="spiritwear">Spiritwear page</option>
           <option value="fundraising">Fundraiser</option>
           <option value="facilities">Facilities page</option>
@@ -139,9 +135,7 @@
         <label>Type:
           <select id="pg-filter-cat">
             <option value="all">All types</option>
-            <option value="events">Events</option>
-            <option value="clubs">Clubs</option>
-            <option value="programs">Programs</option>
+            <option value="events">Events &amp; Programs</option>
             <option value="spiritwear">Spiritwear</option>
             <option value="fundraising">Fundraising</option>
             <option value="facilities">Building &amp; Facilities</option>
@@ -274,8 +268,6 @@
       document.getElementById('tip-example').textContent =
         'schalmontpto.com/' + SCHOOL_PREFIX[school] + '/fun-run';
       document.getElementById('tab-link-events').href = 'section.html?cat=events&s=' + school;
-      document.getElementById('tab-link-programs').href = 'section.html?cat=programs&s=' + school;
-      document.getElementById('tab-link-clubs').href = 'section.html?cat=clubs&s=' + school;
       document.getElementById('tab-link-facilities').href = 'section.html?cat=facilities&s=' + school;
 
       // Tabs

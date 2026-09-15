@@ -38,9 +38,7 @@ function pagePath(school, slug) { return SCHOOL_PREFIX[school] + '/' + slug; }
    button; `sheet:true` adds the "also add this to the planning spreadsheet" notice. */
 const SECTIONS = [
   { cat: 'calendar',   label: 'Calendar',              icon: '📅', href: 'calendar.html' },
-  { cat: 'events',     label: 'Events',                icon: '🎪', href: 'section.html?cat=events',     singular: 'Event',       sheet: true },
-  { cat: 'clubs',      label: 'Clubs',                 icon: '🤝', href: 'section.html?cat=clubs',      singular: 'Club',        sheet: true },
-  { cat: 'programs',   label: 'Programs',              icon: '🎓', href: 'section.html?cat=programs',   singular: 'Program',     sheet: true },
+  { cat: 'events',     label: 'Events &amp; Programs', icon: '🎪', href: 'section.html?cat=events',     singular: 'Event',       sheet: true },
   { cat: 'facilities', label: 'Building &amp; Facilities', icon: '🏫', href: 'section.html?cat=facilities', singular: 'Facilities page' },
   { cat: 'spiritwear', label: 'Spiritwear',            icon: '👕', href: 'section.html?cat=spiritwear', singular: 'Spiritwear page' },
   { cat: 'fundraising',label: 'Fundraisers',           icon: '💰', href: 'fundraising.html',            singular: 'Fundraiser',  sheet: true },
@@ -268,13 +266,11 @@ function renderHelpWidget() {
 /* The master planning spreadsheet (also used by the calendar importer). */
 const PLANNING_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1vIPpzz79LgBSm2lWDkFgjwKjb-h7JrSLFzdbtTf4JyM/edit';
 
-/* Start a brand-new web page for a section (Events, Clubs, Programs, …).
+/* Start a brand-new web page for a section (Events & Programs, Facilities, …).
    Shows the "you'll also need the spreadsheet" notice, collects a school + working
    title, creates the draft, then opens the guided page editor. */
 const NWP_TYPES = [
-  { cat: 'events',   label: 'Event' },
-  { cat: 'programs', label: 'Program' },
-  { cat: 'clubs',    label: 'Club' },
+  { cat: 'events',   label: 'Event / Program' },
   { cat: 'spiritwear', label: 'Spiritwear' },
   { cat: 'fundraising', label: 'Fundraiser' },
   { cat: 'facilities', label: 'Building & Facilities' },

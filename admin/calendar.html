@@ -343,12 +343,11 @@
     let districtAutoDone = false;
 
     // Sync, never override: every tracker (pto_events) entry that doesn't already have a
-    // matching page (by title) gets a new draft page -- Program category becomes a
-    // program page, everything else (Event, Fundraiser, Meeting, etc.) becomes an event
-    // page. Runs immediately, no confirmation -- it only ever adds missing pages, it
-    // never touches or replaces a page that already exists. "Club" isn't a tracker
-    // category, so club pages still get added individually via "+ Add New Event Web
-    // Page" or a day-click.
+    // matching page (by title) gets a new draft Events & Programs page, whatever its
+    // tracker Event Type (Event, Program, Fundraiser, Meeting, Club, etc.) -- Events and
+    // Programs share one section in the back office now. Runs immediately, no
+    // confirmation -- it only ever adds missing pages, it never touches or replaces a
+    // page that already exists.
     async function createDraftPagesFromTracker() {
       const btn = document.getElementById('tracker-pages-btn');
       btn.disabled = true; btn.textContent = 'Syncing…';
@@ -374,10 +373,9 @@
           const key = e.title.trim().toLowerCase();
           if (seenTitles.has(key)) return;   // skip duplicate tracker rows with the same title
           seenTitles.add(key);
-          const cat = (e.category || '').toLowerCase() === 'program' ? 'programs' : 'events';
           const sch = SCHOOLS[e.school] ? e.school : 'pto';
           batch.set(db.collection('pages').doc(), {
-            category: cat, schools: [sch], school: sch,
+            category: 'events', schools: [sch], school: sch,
             title: e.title, slug: slugify(e.title),
             eventDate: e.date, eventTime: e.time || '', eventLocation: e.location || '',
             status: 'draft', blocks: [],
