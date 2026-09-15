@@ -1643,28 +1643,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 12000);
   })();
 
-  // Calendar photo slider (lazy-loads from data-img)
-  (function() {
-    var slides = document.querySelectorAll('.cal-photo-slide');
-    if (!slides.length) return;
-    function loadSlide(s) {
-      if (s && s.dataset.img && !s.style.backgroundImage) {
-        s.style.backgroundImage = "url('" + s.dataset.img + "')";
-      }
-    }
-    // Preload first two slides immediately
-    loadSlide(slides[0]);
-    if (slides[1]) loadSlide(slides[1]);
-    var idx = 0;
-    setInterval(function() {
-      slides[idx].classList.remove('active');
-      idx = (idx + 1) % slides.length;
-      loadSlide(slides[idx]);
-      loadSlide(slides[(idx + 1) % slides.length]);
-      slides[idx].classList.add('active');
-    }, 4000);
-  })();
-
   // Sidebar collapsible submenu toggles
   document.querySelectorAll('.sidenav-toggle').forEach(function(btn) {
     btn.addEventListener('click', function() {
