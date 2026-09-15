@@ -279,12 +279,10 @@
           <div class="cal-tab-select-wrap">
             <select class="cal-tab-select" id="cal-tab-select" onchange="window.showCalTabFromSelect(this.value)">
               <option value="all">All Events</option>
-              <option value="pto">Schalmont PTO</option>
-              <option value="jefferson">Jefferson PTO</option>
               <option value="woestina">Woestina PTO</option>
-              <option value="middle">Middle School</option>
-              <option value="high">High School</option>
-              <option value="district">District</option>
+              <option value="jefferson">Jefferson PTO</option>
+              <option value="pto">Schalmont PTO</option>
+              <option value="district">All Schools</option>
             </select>
           </div>
 
@@ -293,22 +291,21 @@
             <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-light);margin-bottom:6px;text-align:center">Sort by</div>
             <div style="display:flex;gap:5px;flex-wrap:nowrap;justify-content:center;overflow-x:auto">
               <button class="cal-tab-btn active" style="--tab-color:#295c38" onclick="window.showCalTab('all',this)">All Events</button>
-              <button class="cal-tab-btn" style="--tab-color:#295c38" onclick="window.showCalTab('pto',this)">Schalmont PTO</button>
-              <button class="cal-tab-btn" style="--tab-color:#6bb044" onclick="window.showCalTab('jefferson',this)">Jefferson PTO</button>
               <button class="cal-tab-btn" style="--tab-color:#8bc341" onclick="window.showCalTab('woestina',this)">Woestina PTO</button>
-              <button class="cal-tab-btn" style="--tab-color:#087d40" onclick="window.showCalTab('middle',this)">Middle School</button>
-              <button class="cal-tab-btn" style="--tab-color:#044d2a" onclick="window.showCalTab('high',this)">High School</button>
-              <button class="cal-tab-btn" style="--tab-color:#039BE5" onclick="window.showCalTab('district',this)">District</button>
+              <button class="cal-tab-btn" style="--tab-color:#6bb044" onclick="window.showCalTab('jefferson',this)">Jefferson PTO</button>
+              <button class="cal-tab-btn" style="--tab-color:#295c38" onclick="window.showCalTab('pto',this)">Schalmont PTO</button>
+              <button class="cal-tab-btn" style="--tab-color:#039BE5" onclick="window.showCalTab('district',this)">All Schools</button>
             </div>
           </div>
 
           <!-- Calendar panels -->
           <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:32px">
             <div class="cal-panel" id="cal-panel-all">
-              <iframe src="https://calendar.google.com/calendar/embed?src=c_2ccf0495db5e7ffcf4129ac6965b5cbe82ec743a13050f3aeecc9a18c84a53f5%40group.calendar.google.com&color=%230B8043&src=b8ps3245btumu5q6psc3cmvs8c%40group.calendar.google.com&color=%236bb044&src=eumk9qp2llrljnfkp64k1dgk5g%40group.calendar.google.com&color=%23087d40&src=8b7ohsc70vgab6398itc7e73q0%40group.calendar.google.com&color=%23044d2a&ctz=America%2FNew_York" style="border:0;width:100%;height:640px;display:block" frameborder="0" scrolling="no" loading="lazy"></iframe>
+              <iframe src="https://calendar.google.com/calendar/embed?src=c_2ccf0495db5e7ffcf4129ac6965b5cbe82ec743a13050f3aeecc9a18c84a53f5%40group.calendar.google.com&color=%230B8043&src=b8ps3245btumu5q6psc3cmvs8c%40group.calendar.google.com&color=%236bb044&src=eumk9qp2llrljnfkp64k1dgk5g%40group.calendar.google.com&color=%23087d40&src=8b7ohsc70vgab6398itc7e73q0%40group.calendar.google.com&color=%23044d2a&ctz=America%2FNew_York" style="border:0;width:100%;height:820px;display:block" frameborder="0" scrolling="no" loading="lazy"></iframe>
             </div>
             <div class="cal-panel" id="cal-panel-pto" style="display:none">
-              <iframe src="https://calendar.google.com/calendar/embed?src=c_2ccf0495db5e7ffcf4129ac6965b5cbe82ec743a13050f3aeecc9a18c84a53f5%40group.calendar.google.com&ctz=America%2FNew_York" style="border:0;width:100%;height:640px;display:block" frameborder="0" scrolling="no" loading="lazy"></iframe>
+              <iframe src="https://calendar.google.com/calendar/embed?src=c_2ccf0495db5e7ffcf4129ac6965b5cbe82ec743a13050f3aeecc9a18c84a53f5%40group.calendar.google.com&color=%230B8043&src=eumk9qp2llrljnfkp64k1dgk5g%40group.calendar.google.com&color=%23087d40&src=8b7ohsc70vgab6398itc7e73q0%40group.calendar.google.com&color=%23044d2a&ctz=America%2FNew_York" style="border:0;width:100%;height:820px;display:block" frameborder="0" scrolling="no" loading="lazy"></iframe>
+              <p style="text-align:center;font-size:12px;color:var(--text-light);padding:10px 16px 16px">Schalmont PTO covers Middle School and High School events &mdash; there's one shared PTO for both.</p>
             </div>
             <div class="cal-panel" id="cal-panel-woestina" style="display:none">
               <div style="padding:60px 40px;text-align:center">
@@ -321,19 +318,13 @@
             <div class="cal-panel" id="cal-panel-district" style="display:none">
               <div style="padding:60px 40px;text-align:center">
                 <div style="font-size:52px;margin-bottom:18px">🏫</div>
-                <h3 style="font-size:20px;margin-bottom:10px">Schalmont District Calendar</h3>
-                <p style="color:var(--text-light);max-width:440px;margin:0 auto 28px;font-size:14px;line-height:1.6">The Schalmont Central Schools district calendar is hosted on the district website.</p>
+                <h3 style="font-size:20px;margin-bottom:10px">All Schools — District Calendar</h3>
+                <p style="color:var(--text-light);max-width:440px;margin:0 auto 28px;font-size:14px;line-height:1.6">The Schalmont Central Schools district calendar (school closures, half days, district-wide dates) is hosted on the district website.</p>
                 <a href="https://www.schalmont.org/district-office-services/about-us/calendar/" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:15px;padding:12px 28px">View District Calendar →</a>
               </div>
             </div>
             <div class="cal-panel" id="cal-panel-jefferson" style="display:none">
-              <iframe src="https://calendar.google.com/calendar/embed?src=b8ps3245btumu5q6psc3cmvs8c%40group.calendar.google.com&ctz=America%2FNew_York" style="border:0;width:100%;height:640px;display:block" frameborder="0" scrolling="no" loading="lazy"></iframe>
-            </div>
-            <div class="cal-panel" id="cal-panel-middle" style="display:none">
-              <iframe src="https://calendar.google.com/calendar/embed?src=eumk9qp2llrljnfkp64k1dgk5g%40group.calendar.google.com&ctz=America%2FNew_York" style="border:0;width:100%;height:640px;display:block" frameborder="0" scrolling="no" loading="lazy"></iframe>
-            </div>
-            <div class="cal-panel" id="cal-panel-high" style="display:none">
-              <iframe src="https://calendar.google.com/calendar/embed?src=8b7ohsc70vgab6398itc7e73q0%40group.calendar.google.com&ctz=America%2FNew_York" style="border:0;width:100%;height:640px;display:block" frameborder="0" scrolling="no" loading="lazy"></iframe>
+              <iframe src="https://calendar.google.com/calendar/embed?src=b8ps3245btumu5q6psc3cmvs8c%40group.calendar.google.com&ctz=America%2FNew_York" style="border:0;width:100%;height:820px;display:block" frameborder="0" scrolling="no" loading="lazy"></iframe>
             </div>
           </div>
 
@@ -460,23 +451,12 @@
         </div><!-- end left col -->
 
         <!-- RIGHT: upcoming events sidebar -->
-        <div class="upcoming-sidebar">
+        <div class="upcoming-sidebar" style="max-height:820px;overflow-y:auto">
           <h3 style="font-size:15px;font-weight:800;margin-bottom:4px;color:var(--primary)">Upcoming Events</h3>
-          <p style="font-size:12px;color:var(--text-light);margin-bottom:16px">Dates &amp; deadlines to know</p>
-          <ul style="list-style:none;display:flex;flex-direction:column;gap:0">
-            <li style="padding:12px 4px;border-bottom:1px solid var(--border);font-size:13px"><strong>Sep 17, 2026</strong> — Fall PTO Meeting <span style="color:var(--text-light)">(hybrid)</span></li>
-            <li style="padding:12px 4px;border-bottom:1px solid var(--border);font-size:13px"><strong>Oct 30, 2026</strong> — Trail of Treats · 6–8 PM <span style="color:var(--text-light)">(tentative)</span></li>
-            <li style="padding:12px 4px;border-bottom:1px solid var(--border);font-size:13px"><strong>Dec 19, 2026</strong> — Light Up Schalmont with Santa · 6–8 PM <span style="color:var(--text-light)">(tentative)</span></li>
-            <li style="padding:12px 4px;border-bottom:1px solid var(--border);font-size:13px"><strong>Jan 14, 2027</strong> — Winter PTO Meeting <span style="color:var(--text-light)">(hybrid)</span></li>
-            <li style="padding:12px 4px;border-bottom:1px solid var(--border);font-size:13px"><strong>Jan 30, 2027</strong> — Brawl for the Ball · 6 PM · HS Gym <span style="color:var(--text-light)">(tentative)</span></li>
-            <li style="padding:12px 4px;border-bottom:1px solid var(--border);font-size:13px"><strong>Mar 20, 2027</strong> — Grades 6/7 Dance <span style="color:var(--text-light)">(tentative)</span></li>
-            <li style="padding:12px 4px;border-bottom:1px solid var(--border);font-size:13px"><strong>Apr 9, 2027</strong> — Spring Talent Show &amp; Silent Auction <span style="color:var(--text-light)">(tentative)</span></li>
-            <li style="padding:12px 4px;border-bottom:1px solid var(--border);font-size:13px"><strong>Apr 15, 2027</strong> — Spring PTO Meeting <span style="color:var(--text-light)">(hybrid)</span></li>
-            <li style="padding:12px 4px;border-bottom:1px solid var(--border);font-size:13px"><strong>May 3–7, 2027</strong> — Teacher Appreciation Week</li>
-            <li style="padding:12px 4px;border-bottom:1px solid var(--border);font-size:13px"><strong>May 15, 2027</strong> — Spring Color Run <span style="color:var(--text-light)">(tentative)</span></li>
-            <li style="padding:12px 4px;font-size:13px"><strong>Jun 11, 2027</strong> — 8th Grade Dance <span style="color:var(--text-light)">(tentative)</span></li>
-          </ul>
-          <p style="font-size:11px;color:var(--text-light);margin-top:12px">School events (open houses, Homecoming, concerts) are on the calendars above.</p>
+          <p style="font-size:12px;color:var(--text-light);margin-bottom:12px">Pulled live from every school &amp; PTO calendar</p>
+          <div id="upc-list">
+            <div style="font-size:13px;color:var(--text-light);padding:10px 4px">Loading upcoming events&hellip;</div>
+          </div>
         </div>
 
       </div><!-- end cal-layout -->
@@ -799,6 +779,93 @@
       return events;
     }
 
+    // Parse iCal text for every single (non-recurring) event between `fromStr` and `toStr`
+    // (YYYY-MM-DD, inclusive). Recurring series (RRULE) only contribute their first date —
+    // Google's public basic.ics doesn't expand them, so a weekly meeting shows once here.
+    function parseICSForRange(raw, fromStr, toStr) {
+      var text = raw.replace(/\r\n/g,'\n').replace(/\r/g,'\n').replace(/\n[ \t]/g,'');
+      var events = [], re = /BEGIN:VEVENT([\s\S]*?)END:VEVENT/g, m;
+      while ((m = re.exec(text)) !== null) {
+        var block = m[1];
+        var getVal = function(prop) {
+          var r = new RegExp('(?:^|\n)'+prop+'(?:;[^\n:]*)?:([^\n]*)','i');
+          var v = block.match(r); return v ? v[1].trim() : '';
+        };
+        var summary = getVal('SUMMARY'), dtstart = getVal('DTSTART');
+        if (!summary || !dtstart) continue;
+        var isAllDay = /^\d{8}$/.test(dtstart), eventDate = '';
+        if (isAllDay) {
+          eventDate = dtstart.substr(0,4)+'-'+dtstart.substr(4,2)+'-'+dtstart.substr(6,2);
+        } else if (/^\d{8}T\d{6}Z$/.test(dtstart)) {
+          eventDate = new Date(dtstart.substr(0,4)+'-'+dtstart.substr(4,2)+'-'+dtstart.substr(6,2)+'T'+dtstart.substr(9,2)+':'+dtstart.substr(11,2)+':'+dtstart.substr(13,2)+'Z').toLocaleDateString('en-CA',{timeZone:'America/New_York'});
+        } else if (/^\d{8}T\d{6}$/.test(dtstart)) {
+          eventDate = dtstart.substr(0,4)+'-'+dtstart.substr(4,2)+'-'+dtstart.substr(6,2);
+        }
+        if (!eventDate || eventDate < fromStr || eventDate > toStr) continue;
+        events.push({
+          date: eventDate,
+          summary: summary.replace(/\\n/g,' ').replace(/\\,/g,',').replace(/\\;/g,';').replace(/\\\\/g,'\\')
+        });
+      }
+      return events;
+    }
+
+    // "Upcoming Events" sidebar — every event from every school/PTO calendar, next ~180 days
+    function loadUpcomingSidebar() {
+      var box = document.getElementById('upc-list');
+      if (!box) return;
+      var from = etTodayStr;
+      var toDate = new Date(etTodayStr+'T12:00:00'); toDate.setDate(toDate.getDate()+180);
+      var to = toDate.toLocaleDateString('en-CA');
+      var keys = Object.keys(CAL_IDS), all = [], pending = keys.length;
+      keys.forEach(function(key) {
+        var icsUrl = 'https://calendar.google.com/calendar/ical/'+encodeURIComponent(CAL_IDS[key])+'/public/basic.ics';
+        fetch('/ical-proxy.php?url='+encodeURIComponent(icsUrl), {cache:'no-store'})
+          .then(function(r){ return r.text(); })
+          .then(function(text){
+            if (text && text.indexOf('BEGIN:VCALENDAR') !== -1) {
+              parseICSForRange(text, from, to).forEach(function(ev){ all.push({ev:ev,key:key}); });
+            }
+            if (--pending === 0) renderUpcomingSidebar(all);
+          })
+          .catch(function(){ if (--pending === 0) renderUpcomingSidebar(all); });
+      });
+    }
+
+    function renderUpcomingSidebar(items) {
+      var box = document.getElementById('upc-list');
+      if (!box) return;
+      if (!items.length) {
+        box.innerHTML = '<div style="font-size:13px;color:var(--text-light);padding:10px 4px">No upcoming events found right now — check the calendars above.</div>';
+        return;
+      }
+      // De-dupe same title+date shared across calendars, sort chronologically, cap the list
+      var seen = {}, list = [];
+      items.forEach(function(item) {
+        var k = item.ev.date + '||' + item.ev.summary.toLowerCase();
+        if (seen[k]) return;
+        seen[k] = true;
+        list.push(item);
+      });
+      list.sort(function(a,b){ return a.ev.date < b.ev.date ? -1 : a.ev.date > b.ev.date ? 1 : 0; });
+      list = list.slice(0, 40);
+      var html = '';
+      list.forEach(function(item) {
+        var d = new Date(item.ev.date+'T12:00:00');
+        var pretty = d.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+        var color = CAL_COLORS[item.key], label = CAL_LABELS[item.key];
+        var safeTitle = item.ev.summary.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        html += '<div class="upc-item">'
+          + '<span class="upc-dot" style="background:'+color+'"></span>'
+          + '<div>'
+          + '<span class="upc-date">'+pretty+'</span>'
+          + '<span class="upc-name">'+safeTitle+'</span>'
+          + '<span class="upc-school" style="color:'+color+'">'+label+'</span>'
+          + '</div></div>';
+      });
+      box.innerHTML = html;
+    }
+
     // Render color-coded event list from iCal data
     function renderCustomEvents(allEvents) {
       var listEl = document.getElementById('today-events-list');
@@ -872,6 +939,7 @@
     } else {
       loadICSEvents();
     }
+    loadUpcomingSidebar();
 
     // Weather — Open-Meteo
     fetch('https://api.open-meteo.com/v1/forecast?latitude=42.7765&longitude=-73.9278&current=temperature_2m,precipitation,wind_speed_10m,weather_code&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FNew_York&forecast_days=1')
