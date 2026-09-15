@@ -9,11 +9,6 @@
   <link rel="stylesheet" href="admin.css">
   <link rel="icon" href="../images/favicon.svg">
   <style>
-    .bo-tabs { display:flex; gap:4px; border-bottom:2px solid var(--border); margin-bottom:24px; flex-wrap:wrap; }
-    .bo-tab { padding:10px 16px; border:none; background:none; font-family:inherit; font-size:14px; font-weight:700;
-              color:var(--text-light); cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; }
-    .bo-tab.active { color:var(--primary-dark); border-bottom-color:var(--primary); }
-    a.bo-tab { text-decoration:none; display:inline-block; }
     .bo-panel { display:none; }
     .bo-panel.active { display:block; }
     .bo-checkitem { display:flex; align-items:flex-start; gap:10px; background:#fff; border:1px solid var(--border);
@@ -68,17 +63,9 @@
     </div>
     <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo; <span id="crumb-school"></span> &rsaquo; <span id="crumb-tab">Calendar</span></div>
     <h1 class="bo-h1" id="school-title"></h1>
-    <p class="bo-lead">Everything for this school in one place. Use the tabs below for the
-       calendar, pages, files, photos and ideas &mdash; and the left sidebar for
-       Events &amp; Programs, Building &amp; Facilities, Fundraising and everything else.</p>
-
-    <div class="bo-tabs" id="bo-tabs">
-      <button class="bo-tab active" data-tab="calendar">📅 Calendar</button>
-      <button class="bo-tab" data-tab="pages">📄 All Pages</button>
-      <button class="bo-tab" data-tab="files">📁 Files</button>
-      <button class="bo-tab" data-tab="photos">🖼️ Photos</button>
-      <button class="bo-tab" data-tab="ideas">💡 Ideas</button>
-    </div>
+    <p class="bo-lead">Everything for this school in one place &mdash; use the left sidebar to move
+       between Calendar, All Pages, Files, Photos, Idea Board, Events &amp; Programs, Building &amp;
+       Facilities, Fundraising and everything else.</p>
 
     <!-- ============ CALENDAR ============ -->
     <section class="bo-panel active" id="panel-calendar">
@@ -265,17 +252,14 @@
       document.getElementById('tip-example').textContent =
         'schalmontpto.com/' + SCHOOL_PREFIX[school] + '/fun-run';
 
-      // Tabs
-      const TAB_LABEL = { calendar: 'Calendar', pages: 'All Pages', files: 'Files', photos: 'Photos', ideas: 'Ideas' };
-      document.querySelectorAll('button.bo-tab').forEach(btn => {
-        btn.onclick = () => {
-          document.querySelectorAll('.bo-tab').forEach(b => b.classList.remove('active'));
-          document.querySelectorAll('.bo-panel').forEach(p => p.classList.remove('active'));
-          btn.classList.add('active');
-          document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
-          document.getElementById('crumb-tab').textContent = TAB_LABEL[btn.dataset.tab] || '';
-        };
-      });
+      // Which sub-tab to show comes from the left sidebar link that brought you here
+      // (?tab=…), not from a tab bar on the page itself.
+      const TAB_LABEL = { calendar: 'Calendar', pages: 'All Pages', files: 'Files', photos: 'Photos', ideas: 'Idea Board' };
+      const tab = TAB_LABEL[getParam('tab')] ? getParam('tab') : 'calendar';
+      document.querySelectorAll('.bo-panel').forEach(p => p.classList.remove('active'));
+      const panel = document.getElementById('panel-' + tab);
+      if (panel) panel.classList.add('active');
+      document.getElementById('crumb-tab').textContent = TAB_LABEL[tab];
 
       loadPages();
       loadMedia();

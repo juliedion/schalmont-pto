@@ -37,12 +37,16 @@ function pagePath(school, slug) { return SCHOOL_PREFIX[school] + '/' + slug; }
    stored on `pages` docs. `singular` (when set) turns on an "Add New ___ Web Page"
    button; `sheet:true` adds the "also add this to the planning spreadsheet" notice. */
 const SECTIONS = [
-  { cat: 'calendar',   label: 'Calendar',              icon: '📅', href: 'calendar.html' },
+  { cat: 'calendar',   label: 'Calendar',              icon: '📅', href: 'school.html?tab=calendar', tab: 'calendar' },
   { cat: 'events',     label: 'Events &amp; Programs', icon: '🎪', href: 'section.html?cat=events',     singular: 'Event',       sheet: true },
+  { cat: 'pages',      label: 'All Pages',             icon: '📄', href: 'school.html?tab=pages', tab: 'pages' },
+  { cat: 'files',      label: 'Files',                 icon: '📁', href: 'school.html?tab=files', tab: 'files' },
+  { cat: 'photos',     label: 'Photos',                icon: '🖼️', href: 'school.html?tab=photos', tab: 'photos' },
   { cat: 'facilities', label: 'Building &amp; Facilities', icon: '🏫', href: 'section.html?cat=facilities', singular: 'Facilities page' },
   { cat: 'spiritwear', label: 'Spiritwear',            icon: '👕', href: 'section.html?cat=spiritwear', singular: 'Spiritwear page' },
   { cat: 'fundraising',label: 'Fundraisers',           icon: '💰', href: 'fundraising.html',            singular: 'Fundraiser',  sheet: true },
   { cat: 'yearbook',   label: 'Yearbook Photos',       icon: '📸', href: 'yearbook.html' },
+  { cat: 'ideaboard',  label: 'Idea Board',            icon: '📝', href: 'school.html?tab=ideas', tab: 'ideas' },
   { cat: 'ideas',      label: 'Extra Ideas',           icon: '💡', href: 'section.html?cat=ideas',      singular: 'Idea page' }
 ];
 function sectionByCat(cat) { return SECTIONS.find(s => s.cat === cat) || null; }
@@ -192,12 +196,22 @@ function renderShell() {
   const SCHOOL_TINT = { woestina: '#8bc341', jefferson: '#6bb044', middle: '#087d40', high: '#044d2a', pto: '#295c38' };
 
   // Section links only make sense inside a school — scope each one with ?s=<school>.
+  // Three link shapes: a school-workspace sub-tab (?tab=), a page-category listing
+  // (?cat=), or a standalone tool page (fundraising.html, yearbook.html) with no query.
+  const currentTab = getParam('tab') || 'calendar';
   const sectionLinks = inSchool ? SECTIONS.map(s => {
     const base = s.href.split('?')[0];
-    const scoped = s.href.includes('?cat=')
-      ? s.href + '&s=' + ctxSchool
-      : base + '?s=' + ctxSchool;
-    const active = s.href.includes('?cat=') ? (path === 'section.html' && cat === s.cat) : (path === base);
+    let scoped, active;
+    if (s.tab) {
+      scoped = base + '?s=' + ctxSchool + '&tab=' + s.tab;
+      active = path === base && currentTab === s.tab;
+    } else if (s.href.includes('?cat=')) {
+      scoped = s.href + '&s=' + ctxSchool;
+      active = path === 'section.html' && cat === s.cat;
+    } else {
+      scoped = base + '?s=' + ctxSchool;
+      active = path === base;
+    }
     return link(scoped, s.label, s.icon, active);
   }).join('') : '';
   const sectionsBlock = inSchool ? `
