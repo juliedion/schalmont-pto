@@ -197,72 +197,24 @@
     </div>
   </section>
 
-  <!-- TODAY AT SCHALMONT -->
-  <section class="today-widget-section">
-    <div class="container">
-      <div class="today-widget-header">
-        <div>
-          <h2 class="today-widget-title">Today at Schalmont</h2>
-          <span id="today-widget-date" class="today-widget-date"></span>
-        </div>
-        <button class="add-cal-btn" id="add-to-cal-btn">&#128197; Add to My Calendar</button>
-      </div>
-      <div class="today-widget-grid" id="today-widget-grid">
-
-        <!-- Weather Panel -->
-        <div class="today-weather-panel">
-          <div class="today-panel-label">Today&#39;s Weather &mdash; Schenectady, NY</div>
-          <div id="weather-loading" style="color:rgba(255,255,255,0.6);font-size:13px">Loading weather...</div>
-          <div id="weather-content" style="display:none">
-            <div class="weather-primary">
-              <div id="weather-icon" class="weather-big-icon"></div>
-              <div>
-                <div id="weather-temp" class="weather-current-temp"></div>
-                <div id="weather-desc" class="weather-desc"></div>
-              </div>
-            </div>
-            <div class="weather-pills">
-              <span class="weather-pill"><span class="pill-label">High</span><span id="weather-high"></span></span>
-              <span class="weather-pill"><span class="pill-label">Low</span><span id="weather-low"></span></span>
-              <span class="weather-pill"><span class="pill-label">Wind</span><span id="weather-wind"></span></span>
-              <span class="weather-pill"><span class="pill-label">Precip</span><span id="weather-precip"></span></span>
-            </div>
-            <div class="weather-hourly-label">Today&#39;s Outlook</div>
-            <div id="weather-hourly" class="weather-hourly-row"></div>
-            <div id="weather-alert" class="weather-alert" style="display:none"></div>
-          </div>
-          <div id="weather-error" style="display:none;color:rgba(255,255,255,0.5);font-size:13px">Weather unavailable</div>
-        </div>
-
-        <!-- Events Panel -->
-        <div class="today-events-panel">
-          <div class="today-events-header" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-            <div class="today-panel-label dark">
-              <span id="today-panel-heading">Today's Events &amp; School Schedule</span>
-              <span class="today-cal-legend">
-                <span style="color:#295c38">&#9679; PTO</span>
-                <span style="color:#8bc341">&#9679; Woestina</span>
-                <span style="color:#6bb044">&#9679; Jefferson</span>
-                <span style="color:#087d40">&#9679; Middle</span>
-                <span style="color:#044d2a">&#9679; High</span>
-              </span>
-            </div>
-            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
-              <button id="today-prev-btn" class="today-nav-btn" aria-label="Previous day" onclick="navigateTodayWidget(-1)" disabled>&#8592; Prev</button>
-              <button id="today-next-btn" class="today-nav-btn active" aria-label="Next day" onclick="navigateTodayWidget(1)">Next &#8594;</button>
-            </div>
-          </div>
-          <iframe id="today-events-iframe" class="today-events-iframe" frameborder="0" scrolling="no" title="Today&#39;s Events"></iframe>
-          <div id="today-events-list" class="today-events-list" style="display:none"></div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
   <!-- CALENDARS -->
   <section class="section">
     <div class="container">
+
+      <!-- Section heading — centered, same style as Find Your School -->
+      <div class="section-heading" style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;text-align:left;flex-wrap:wrap">
+        <div>
+          <h2 style="margin:0">Upcoming Events</h2>
+          <p style="margin:4px 0 0">Pulled live from every school &amp; PTO calendar — a rolling list, always current.</p>
+        </div>
+        <button class="add-cal-btn" id="add-to-cal-btn" style="flex-shrink:0">&#128197; Add to My Calendar</button>
+      </div>
+
+      <div class="upcoming-sidebar upcoming-rolling" style="margin-bottom:40px">
+        <div id="upc-list">
+          <div style="font-size:13px;color:var(--text-light);padding:10px 4px">Loading upcoming events&hellip;</div>
+        </div>
+      </div>
 
       <!-- Section heading — centered, same style as Find Your School -->
       <div class="section-heading">
@@ -273,7 +225,7 @@
 
       <div class="cal-layout">
 
-        <!-- LEFT: calendar -->
+        <!-- Calendar -->
         <div>
           <!-- Mobile calendar picker (shown on mobile only via CSS) -->
           <div class="cal-tab-select-wrap">
@@ -448,16 +400,7 @@
         </div>
       </div>
 
-        </div><!-- end left col -->
-
-        <!-- RIGHT: upcoming events sidebar -->
-        <div class="upcoming-sidebar" style="max-height:820px;overflow-y:auto">
-          <h3 style="font-size:15px;font-weight:800;margin-bottom:4px;color:var(--primary)">Upcoming Events</h3>
-          <p style="font-size:12px;color:var(--text-light);margin-bottom:12px">Pulled live from every school &amp; PTO calendar</p>
-          <div id="upc-list">
-            <div style="font-size:13px;color:var(--text-light);padding:10px 4px">Loading upcoming events&hellip;</div>
-          </div>
-        </div>
+        </div><!-- end calendar col -->
 
       </div><!-- end cal-layout -->
     </div>
@@ -599,17 +542,8 @@
     }
   </style>
   <script>
-  // ── Today at Schalmont (Events Page) ──────────────────────────────────────
+  // ── Upcoming Events + calendar tabs (Events Page) ─────────────────────────
   (function() {
-    // ── CONFIGURATION ───────────────────────────────────────────────────────
-    // To label today's events by school (e.g. "D Day - Jefferson"), add a
-    // Google Calendar API key below. Get one free:
-    //   1. Go to console.cloud.google.com
-    //   2. Enable the "Google Calendar API"
-    //   3. Credentials → Create API Key
-    //   4. Restrict it to "Google Calendar API" + your website's HTTP referrer
-    var GCAL_API_KEY = '';  // ← paste your API key here
-
     var CAL_IDS = {
       pto:      'c_2ccf0495db5e7ffcf4129ac6965b5cbe82ec743a13050f3aeecc9a18c84a53f5@group.calendar.google.com',
       jefferson:'b8ps3245btumu5q6psc3cmvs8c@group.calendar.google.com',
@@ -618,152 +552,9 @@
     };
     var CAL_LABELS = { pto:'Schalmont PTO', jefferson:'Jefferson Elementary', middle:'Middle School', high:'High School' };
     var CAL_COLORS = { pto:'#295c38', jefferson:'#6bb044', middle:'#087d40', high:'#044d2a' };
-    var WMO_ICONS = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',77:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',85:'🌨️',86:'❄️',95:'⛈️',96:'⛈️',99:'⛈️'};
-    var WMO_DESCS = {0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',48:'Freezing fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',77:'Snow grains',80:'Showers',81:'Rain showers',82:'Violent showers',85:'Snow showers',86:'Heavy snow showers',95:'Thunderstorm',96:'Thunderstorm with hail',99:'Thunderstorm with hail'};
 
-    // Date setup — Eastern time with day navigation
-    var now = new Date();
-    var etTodayStr = now.toLocaleDateString('en-CA',{timeZone:'America/New_York'});
-    var dayOffset  = 0;
-
-    function getNextDayStr(s) {
-      var d = new Date(s+'T12:00:00'); d.setDate(d.getDate()+1);
-      return d.toLocaleDateString('en-CA');
-    }
-    function getViewDateStr(offset) {
-      var d = new Date(etTodayStr+'T12:00:00'); d.setDate(d.getDate()+offset);
-      return d.toLocaleDateString('en-CA');
-    }
-    var etStr  = etTodayStr;
-    var etStr2 = getNextDayStr(etStr);
-
-    function updateWidgetHeader(offset) {
-      var ds = getViewDateStr(offset);
-      var d  = new Date(ds+'T12:00:00');
-      var long = d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
-      var titleEl = document.querySelector('.today-widget-title');
-      var dateEl  = document.getElementById('today-widget-date');
-      var label   = offset===0?'Today':d.toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'});
-      if (titleEl) titleEl.textContent = label+' at Schalmont';
-      if (dateEl)  dateEl.textContent  = long;
-      var panelHeading = document.getElementById('today-panel-heading');
-      if (panelHeading) panelHeading.textContent = (offset===0 ? "Today's" : d.toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'}))+' Events & School Schedule';
-      var prevBtn = document.getElementById('today-prev-btn');
-      var nextBtn = document.getElementById('today-next-btn');
-      if (prevBtn) {
-        prevBtn.disabled = (offset<=0);
-        prevBtn.disabled = (offset<=0);
-      }
-      if (nextBtn) { nextBtn.disabled = (offset>=7); }
-    }
-    window.navigateTodayWidget = function(delta) {
-      dayOffset = Math.max(0, Math.min(7, dayOffset+delta));
-      etStr  = getViewDateStr(dayOffset);
-      etStr2 = getNextDayStr(etStr);
-      updateWidgetHeader(dayOffset);
-      if (GCAL_API_KEY) { loadCalendarAPI(); } else { loadICSEvents(); }
-    };
-    updateWidgetHeader(0);
-
-    // Detect EST vs EDT offset
-    function getETOffset() {
-      var y=now.getFullYear();
-      var ds=new Date(y,2,8); while(ds.getDay()!==0)ds.setDate(ds.getDate()+1);
-      var de=new Date(y,10,1); while(de.getDay()!==0)de.setDate(de.getDate()+1);
-      return (now>=ds&&now<de)?'-04:00':'-05:00';
-    }
-
-    // Format event start time
-    function formatTime(ev) {
-      if (ev.start.date) return 'All day';
-      return new Date(ev.start.dateTime).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true,timeZone:'America/New_York'});
-    }
-
-    // Render the custom labeled event list (API key path)
-    function renderEventList(allEvents) {
-      var listEl = document.getElementById('today-events-list');
-      if (!listEl) return;
-      if (!allEvents.length) {
-        listEl.innerHTML = '<div class="today-events-empty">No events scheduled for today.</div>';
-        return;
-      }
-      allEvents.sort(function(a,b) {
-        var ad=!!a.ev.start.date, bd=!!b.ev.start.date;
-        if (ad&&!bd) return -1; if (!ad&&bd) return 1; if (ad&&bd) return 0;
-        return new Date(a.ev.start.dateTime)-new Date(b.ev.start.dateTime);
-      });
-      var html = '';
-      allEvents.forEach(function(item) {
-        if (item.key === 'middle' && /pto meeting/i.test(item.ev.summary)) return;
-        var ev=item.ev, k=item.key, color=CAL_COLORS[k], label=CAL_LABELS[k];
-        var title = (ev.summary||'(No title)').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        html += '<div class="today-event-item">';
-        html += '<span class="today-event-dot" style="background:'+color+'"></span>';
-        html += '<div class="today-event-body">';
-        html += '<div class="today-event-title">'+title+'</div>';
-        html += '<div class="today-event-meta"><span class="today-event-time">'+formatTime(ev)+'</span>&nbsp;&middot;&nbsp;<span class="today-event-school-badge" style="background:'+color+'22;color:'+color+';border:1px solid '+color+'44;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;letter-spacing:.03em">'+label+'</span></div>';
-        html += '</div></div>';
-      });
-      listEl.innerHTML = html;
-    }
-
-    // Fetch events from Google Calendar API
-    function loadCalendarAPI() {
-      var listEl = document.getElementById('today-events-list');
-      if (!listEl) return;
-      listEl.innerHTML = '<div class="today-events-loading">Loading events...</div>';
-      var offset = getETOffset();
-      var timeMin = etStr+'T00:00:00'+offset;
-      var timeMax = etStr2+'T00:00:00'+offset;
-      var keys = Object.keys(CAL_IDS), allEvents = [], pending = keys.length;
-      keys.forEach(function(key) {
-        var cid = encodeURIComponent(CAL_IDS[key]);
-        var url = 'https://www.googleapis.com/calendar/v3/calendars/'+cid+'/events'
-          +'?key='+GCAL_API_KEY
-          +'&timeMin='+encodeURIComponent(timeMin)
-          +'&timeMax='+encodeURIComponent(timeMax)
-          +'&singleEvents=true&orderBy=startTime&maxResults=20';
-        fetch(url).then(function(r){return r.json();}).then(function(data){
-          if (data.items) data.items.forEach(function(ev){allEvents.push({ev:ev,key:key});});
-          if (--pending===0) renderEventList(allEvents);
-        }).catch(function(){ if (--pending===0) renderEventList(allEvents); });
-      });
-    }
-
-    // Parse iCal text for today's events
-    function parseICSForToday(raw) {
-      var text = raw.replace(/\r\n/g,'\n').replace(/\r/g,'\n').replace(/\n[ \t]/g,'');
-      var events = [], re = /BEGIN:VEVENT([\s\S]*?)END:VEVENT/g, m;
-      while ((m = re.exec(text)) !== null) {
-        var block = m[1];
-        var getVal = function(prop) {
-          var r = new RegExp('(?:^|\n)'+prop+'(?:;[^\n:]*)?:([^\n]*)','i');
-          var v = block.match(r); return v ? v[1].trim() : '';
-        };
-        var summary = getVal('SUMMARY'), dtstart = getVal('DTSTART');
-        if (!summary || !dtstart) continue;
-        var isAllDay = /^\d{8}$/.test(dtstart), eventDate = '';
-        if (isAllDay) {
-          eventDate = dtstart.substr(0,4)+'-'+dtstart.substr(4,2)+'-'+dtstart.substr(6,2);
-        } else if (/^\d{8}T\d{6}Z$/.test(dtstart)) {
-          eventDate = new Date(dtstart.substr(0,4)+'-'+dtstart.substr(4,2)+'-'+dtstart.substr(6,2)+'T'+dtstart.substr(9,2)+':'+dtstart.substr(11,2)+':'+dtstart.substr(13,2)+'Z').toLocaleDateString('en-CA',{timeZone:'America/New_York'});
-        } else if (/^\d{8}T\d{6}$/.test(dtstart)) {
-          eventDate = dtstart.substr(0,4)+'-'+dtstart.substr(4,2)+'-'+dtstart.substr(6,2);
-        }
-        if (eventDate !== etStr) continue;
-        var startMs = 0;
-        if (!isAllDay) {
-          try {
-            startMs = /Z$/.test(dtstart)
-              ? new Date(dtstart.substr(0,4)+'-'+dtstart.substr(4,2)+'-'+dtstart.substr(6,2)+'T'+dtstart.substr(9,2)+':'+dtstart.substr(11,2)+':'+dtstart.substr(13,2)+'Z').getTime()
-              : new Date(dtstart.substr(0,4)+'-'+dtstart.substr(4,2)+'-'+dtstart.substr(6,2)+'T'+dtstart.substr(9,2)+':'+dtstart.substr(11,2)+':'+dtstart.substr(13,2)).getTime();
-          } catch(e) {}
-        }
-        var timeStr = isAllDay ? 'All day' : (startMs ? new Date(startMs).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true,timeZone:'America/New_York'}) : 'All day');
-        events.push({ summary: summary.replace(/\\n/g,' ').replace(/\\,/g,',').replace(/\\;/g,';').replace(/\\\\/g,'\\'), isAllDay: isAllDay, startMs: startMs, timeStr: timeStr });
-      }
-      return events;
-    }
+    // Today, Eastern time — used to anchor the "Upcoming Events" date range
+    var etTodayStr = new Date().toLocaleDateString('en-CA',{timeZone:'America/New_York'});
 
     // Parse iCal text for every single (non-recurring) event between `fromStr` and `toStr`
     // (YYYY-MM-DD, inclusive). Recurring series (RRULE) only contribute their first date —
@@ -852,129 +643,7 @@
       box.innerHTML = html;
     }
 
-    // Render color-coded event list from iCal data
-    function renderCustomEvents(allEvents) {
-      var listEl = document.getElementById('today-events-list');
-      if (!listEl) return;
-      if (!allEvents.length) {
-        listEl.innerHTML = '<div class="today-events-empty">No events scheduled for today.<br><a href="events.html" style="color:var(--primary);font-weight:600">View full calendar &rarr;</a></div>';
-        return;
-      }
-      allEvents.sort(function(a,b) {
-        if (a.ev.isAllDay && !b.ev.isAllDay) return -1;
-        if (!a.ev.isAllDay && b.ev.isAllDay) return 1;
-        return a.ev.startMs - b.ev.startMs;
-      });
-      var html = '';
-      allEvents.forEach(function(item) {
-        if (item.key === 'middle' && /pto meeting/i.test(item.ev.summary)) return;
-        var color = CAL_COLORS[item.key], label = CAL_LABELS[item.key];
-        var safeTitle = item.ev.summary.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        var titleHtml = /casino night/i.test(item.ev.summary) ? '<a href="casinoroyale.html" style="color:inherit;text-decoration:none;font-weight:700">'+safeTitle+'</a>' : safeTitle;
-        html += '<div class="today-event-item">'
-          +'<span class="today-event-dot" style="background:'+color+'"></span>'
-          +'<div class="today-event-body">'
-          +'<div class="today-event-title">'+titleHtml+'</div>'
-          +'<div class="today-event-meta">';
-        if (item.ev.timeStr !== 'All day') html += '<span class="today-event-time">'+item.ev.timeStr+'</span> &middot; ';
-        html += '<span class="today-event-school-badge" style="background:'+color+'22;color:'+color+';border:1px solid '+color+'44;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;letter-spacing:.03em">'+label+'</span>'
-          +'</div></div></div>';
-      });
-      listEl.innerHTML = html;
-    }
-
-    // Fetch iCal feeds via proxy, render color-coded; fallback to iframe if all fail
-    function loadICSEvents() {
-      var listEl   = document.getElementById('today-events-list');
-      var iframeEl = document.getElementById('today-events-iframe');
-      if (listEl) { listEl.style.display = 'block'; listEl.innerHTML = '<div class="today-events-loading">Loading today\'s schedule&hellip;</div>'; }
-      if (iframeEl) iframeEl.style.display = 'none';
-      var keys = Object.keys(CAL_IDS), allEvents = [], pending = keys.length, failed = 0;
-      keys.forEach(function(key) {
-        var icsUrl = 'https://calendar.google.com/calendar/ical/'+encodeURIComponent(CAL_IDS[key])+'/public/basic.ics';
-        fetch('/ical-proxy.php?url='+encodeURIComponent(icsUrl), {cache:'no-store'})
-          .then(function(r){ return r.text(); })
-          .then(function(text){
-            if (text && text.indexOf('BEGIN:VCALENDAR') !== -1)
-              parseICSForToday(text).forEach(function(ev){ allEvents.push({ev:ev,key:key}); });
-            if (--pending === 0) renderCustomEvents(allEvents);
-          })
-          .catch(function(){
-            failed++;
-            if (--pending === 0) {
-              if (failed === keys.length) {
-                if (listEl) listEl.style.display = 'none';
-                if (iframeEl) {
-                  var _tp=etStr.replace(/-/g,''),_tp2=etStr2.replace(/-/g,''); var src = 'https://calendar.google.com/calendar/embed?mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York&dates='+_tp+'%2F'+_tp2;
-                  Object.values(CAL_IDS).forEach(function(id){ src += '&src='+encodeURIComponent(id); });
-                  iframeEl.src = src;
-                  iframeEl.style.display = 'block';
-                }
-              } else { renderCustomEvents(allEvents); }
-            }
-          });
-      });
-    }
-
-    // Show events: if API key set → Google Calendar API; else → iCal proxy (fallback: iframe)
-    var iframeEl = document.getElementById('today-events-iframe');
-    var listEl   = document.getElementById('today-events-list');
-    if (GCAL_API_KEY) {
-      if (iframeEl) iframeEl.style.display = 'none';
-      if (listEl)   { listEl.style.display = 'block'; loadCalendarAPI(); }
-    } else {
-      loadICSEvents();
-    }
     loadUpcomingSidebar();
-
-    // Weather — Open-Meteo
-    fetch('https://api.open-meteo.com/v1/forecast?latitude=42.7765&longitude=-73.9278&current=temperature_2m,precipitation,wind_speed_10m,weather_code&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FNew_York&forecast_days=1')
-      .then(function(r){return r.json();})
-      .then(function(data){
-        var cur=data.current, day=data.daily, hourly=data.hourly;
-        var code=cur.weather_code;
-        document.getElementById('weather-icon').textContent = WMO_ICONS[code]||'🌡️';
-        document.getElementById('weather-temp').textContent = Math.round(cur.temperature_2m)+'°F';
-        document.getElementById('weather-desc').textContent = WMO_DESCS[code]||'Current conditions';
-        document.getElementById('weather-high').textContent = Math.round(day.temperature_2m_max[0])+'°F';
-        document.getElementById('weather-low').textContent  = Math.round(day.temperature_2m_min[0])+'°F';
-        document.getElementById('weather-wind').textContent = Math.round(cur.wind_speed_10m)+' mph';
-        document.getElementById('weather-precip').textContent = cur.precipitation.toFixed(2)+'"';
-        var hourlyEl = document.getElementById('weather-hourly');
-        if (hourlyEl && hourly) {
-          var nowHr = new Date().getHours(), html = '';
-          for (var i=nowHr; i<Math.min(nowHr+8,24); i++) {
-            var t=hourly.temperature_2m[i], c=hourly.weather_code[i];
-            var hr = i===0?'12am':i<12?i+'am':i===12?'12pm':(i-12)+'pm';
-            html += '<div class="hourly-slot"><div class="hourly-time">'+hr+'</div><div class="hourly-icon">'+(WMO_ICONS[c]||'🌡️')+'</div><div class="hourly-temp">'+Math.round(t)+'°</div></div>';
-          }
-          hourlyEl.innerHTML = html;
-        }
-        document.getElementById('weather-loading').style.display='none';
-        document.getElementById('weather-content').style.display='block';
-      })
-      .catch(function(){
-        document.getElementById('weather-loading').style.display='none';
-        document.getElementById('weather-error').style.display='block';
-      });
-
-    // NWS Alerts
-    fetch('https://api.weather.gov/alerts/active?point=42.7765,-73.9278',{headers:{'User-Agent':'SchalmontPTO/1.0'}})
-      .then(function(r){return r.json();})
-      .then(function(data){
-        var alertEl=document.getElementById('weather-alert');
-        if (alertEl && data.features && data.features.length>0) {
-          var a=data.features[0].properties;
-          alertEl.innerHTML='⚠️ <strong>'+a.event+'</strong>: '+a.headline;
-          alertEl.style.display='block';
-        }
-      }).catch(function(){});
-
-    // Responsive grid
-    var grid = document.getElementById('today-widget-grid');
-    function resizeGrid(){ if(grid) grid.style.gridTemplateColumns = window.innerWidth<720?'1fr':'260px 1fr'; }
-    resizeGrid();
-    window.addEventListener('resize', resizeGrid);
 
     // Add to Calendar modal
     var btn = document.getElementById('add-to-cal-btn');
