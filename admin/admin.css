@@ -48,7 +48,7 @@ body.bo-has-shell {
   font-size: 14px; font-weight: 600;
 }
 .bo-navlink:hover { background: rgba(255,255,255,.1); color: #fff; }
-.bo-navlink.active { background: var(--primary-light); color: #fff; }
+.bo-navlink.active { background: var(--secondary); color: var(--primary-dark); font-weight: 700; }
 .bo-navsub { padding-left: 14px; font-weight: 500; font-size: 13.5px; }
 .bo-navicon { width: 18px; text-align: center; }
 .bo-sidebar-foot {

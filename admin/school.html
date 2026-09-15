@@ -66,17 +66,14 @@
     <div style="margin-bottom:14px">
       <a class="bo-btn ghost sm" href="index.html">← Back Office Home</a>
     </div>
-    <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo; <span id="crumb-school"></span></div>
+    <div class="bo-crumb"><a href="index.html">Back Office</a> &rsaquo; <span id="crumb-school"></span> &rsaquo; <span id="crumb-tab">Calendar</span></div>
     <h1 class="bo-h1" id="school-title"></h1>
     <p class="bo-lead">Everything for this school in one place. Use the tabs below for the
-       calendar, events &amp; programs, pages, files, ideas and the to-do list &mdash; and the
-       <strong>&ldquo;sections&rdquo;</strong> group in the left sidebar for Fundraising and
-       everything else.</p>
+       calendar, pages, files, photos and ideas &mdash; and the left sidebar for
+       Events &amp; Programs, Building &amp; Facilities, Fundraising and everything else.</p>
 
     <div class="bo-tabs" id="bo-tabs">
       <button class="bo-tab active" data-tab="calendar">📅 Calendar</button>
-      <a class="bo-tab" id="tab-link-events" href="#">🎪 Events &amp; Programs</a>
-      <a class="bo-tab" id="tab-link-facilities" href="#">🏫 Building &amp; Facilities</a>
       <button class="bo-tab" data-tab="pages">📄 All Pages</button>
       <button class="bo-tab" data-tab="files">📁 Files</button>
       <button class="bo-tab" data-tab="photos">🖼️ Photos</button>
@@ -267,16 +264,16 @@
         document.getElementById(id).onchange = renderPages);
       document.getElementById('tip-example').textContent =
         'schalmontpto.com/' + SCHOOL_PREFIX[school] + '/fun-run';
-      document.getElementById('tab-link-events').href = 'section.html?cat=events&s=' + school;
-      document.getElementById('tab-link-facilities').href = 'section.html?cat=facilities&s=' + school;
 
       // Tabs
+      const TAB_LABEL = { calendar: 'Calendar', pages: 'All Pages', files: 'Files', photos: 'Photos', ideas: 'Ideas' };
       document.querySelectorAll('button.bo-tab').forEach(btn => {
         btn.onclick = () => {
           document.querySelectorAll('.bo-tab').forEach(b => b.classList.remove('active'));
           document.querySelectorAll('.bo-panel').forEach(p => p.classList.remove('active'));
           btn.classList.add('active');
           document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+          document.getElementById('crumb-tab').textContent = TAB_LABEL[btn.dataset.tab] || '';
         };
       });
 
