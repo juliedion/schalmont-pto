@@ -607,7 +607,10 @@
         const o = new Option(cat, cat); o.dataset.extra = '1'; catSel.add(o, 0);
       }
       catSel.value = cat;
-      document.getElementById('f-school').value = ev?.school || 'pto';
+      // A new event defaults to the school workspace you're currently in (if any),
+      // not always District -- otherwise it silently lands on the wrong calendar.
+      const ctxSchool = getParam('s');
+      document.getElementById('f-school').value = ev?.school || (ctxSchool && SCHOOLS[ctxSchool] ? ctxSchool : 'pto');
       document.getElementById('f-date').value = ev?.date || presetDate || '';
       document.getElementById('f-enddate').value = ev?.endDate || '';
       document.getElementById('f-time').value = ev?.time || '';
