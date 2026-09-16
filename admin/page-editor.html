@@ -73,6 +73,13 @@
           The date, time and location show in a highlighted box near the top of the page, and the
           flyer appears as a big image above it.
         </div>
+        <div id="tracker-sync-row" style="display:none;margin-bottom:12px">
+          <button type="button" class="bo-btn ghost sm" id="tracker-sync-btn">↻ Update from tracker</button>
+          <span style="font-size:12px;color:var(--text-light);margin-left:6px">
+            Pulls the date, time and location from this event's row in the planning spreadsheet.
+            Won't touch anything else on this page.
+          </span>
+        </div>
         <div style="display:flex;gap:14px;flex-wrap:wrap">
           <div class="bo-blockfield"><label>Date</label>
             <input type="date" id="event-date"></div>
@@ -224,7 +231,38 @@
       loadImages();
       loadSignupSheets();
       loadCard();
+      findTrackerRow();
     });
+
+    // Look for a tracker (pto_events) row with the same title, so the admin can pull its
+    // date/time/location on demand -- pages are never auto-overwritten by tracker edits,
+    // this is an explicit, opt-in one-way pull.
+    let trackerRow = null;
+    async function findTrackerRow() {
+      if (page.category !== 'events' || !page.title.trim()) return;
+      try {
+        const key = page.title.trim().toLowerCase();
+        const snap = await db.collection('pto_events').get();
+        const hit = snap.docs.find(d =>
+          !d.id.startsWith('__') && d.id !== 'meta_deleted' && d.id !== 'meta_gcal' &&
+          (d.data().title || '').trim().toLowerCase() === key);
+        trackerRow = hit ? hit.data() : null;
+        document.getElementById('tracker-sync-row').style.display = trackerRow ? '' : 'none';
+      } catch (_) { /* tracker lookup is a nice-to-have, never blocks the editor */ }
+    }
+    document.getElementById('tracker-sync-btn').onclick = () => {
+      if (!trackerRow) return;
+      if (!confirm('Replace this page\'s date, time and location with the tracker\'s values?\n\n' +
+        `Date: ${trackerRow.date || '(none)'}\nTime: ${trackerRow.time || '(none)'}\nLocation: ${trackerRow.location || '(none)'}`)) return;
+      page.eventDate = trackerRow.date || '';
+      page.eventTime = trackerRow.time || '';
+      page.eventLocation = trackerRow.location || '';
+      document.getElementById('event-date').value = page.eventDate;
+      document.getElementById('event-time').value = page.eventTime;
+      document.getElementById('event-location').value = page.eventLocation;
+      refreshPreview();
+      toast('Pulled from tracker — press Save or Publish to keep it');
+    };
 
     // Landing-page card fields live on this page's linked program_cards doc(s), not on
     // the page itself -- one card per school this page belongs to. All cards for a page

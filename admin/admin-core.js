@@ -392,6 +392,22 @@ function newWebPage(cat, presetSchool, presetDate) {
     if (!canManageAll(schools)) { toast('You can only create pages for your own school(s)', 'error'); return; }
     back.querySelector('#nwp-go').disabled = true;
     try {
+      const key = title.toLowerCase();
+      const [pagesSnap, eventsSnap] = await Promise.all([
+        db.collection('pages').get(),
+        db.collection('pto_events').get()
+      ]);
+      const pageHit = pagesSnap.docs.find(d => (d.data().title || '').trim().toLowerCase() === key);
+      const eventHit = !pageHit && eventsSnap.docs.find(d =>
+        !d.id.startsWith('__') && d.id !== 'meta_deleted' && d.id !== 'meta_gcal' &&
+        (d.data().title || '').trim().toLowerCase() === key);
+      if (pageHit || eventHit) {
+        const where = pageHit ? 'already has a web page' : 'is already on the calendar (from the tracker)';
+        const proceed = confirm(`"${title}" ${where}. Create a duplicate anyway?\n\n` +
+          (pageHit ? 'Edit the existing page instead from its section list.' :
+                     'Use "↻ Sync with tracker" to make a page for the existing tracker row instead.'));
+        if (!proceed) { back.querySelector('#nwp-go').disabled = false; return; }
+      }
       const ref = await db.collection('pages').add({
         category: chosenCat, schools, school: routingSchool(schools),
         title, slug: slugify(title),
