@@ -753,17 +753,28 @@
           pageId = ref.id;
           history.replaceState(null, '', 'page-editor.html?id=' + pageId);
         }
-        if (statusChange) page.status = statusChange;
+      } catch (e) {
+        // The actual page save failed -- nothing went live. This is the only case
+        // that should tell the admin "it didn't work."
+        toast('Could not save: ' + e.message, 'error');
+        btns.forEach(b => b.disabled = false);
+        return;
+      }
+
+      // The page itself is saved/published at this point, no matter what happens
+      // below -- a homepage-card or tracker-sync hiccup must never make it look
+      // like Publish failed.
+      if (statusChange) page.status = statusChange;
+      reflectStatus();
+      toast(statusChange === 'published' ? '✓ Published! Share your link.' :
+            statusChange === 'draft' ? 'Page unpublished (now a draft)' : 'Draft saved');
+      try {
         await syncCard();
         await syncTrackerFromPage();
-        reflectStatus();
-        toast(statusChange === 'published' ? '✓ Published! Share your link.' :
-              statusChange === 'draft' ? 'Page unpublished (now a draft)' : 'Draft saved');
       } catch (e) {
-        toast('Could not save: ' + e.message, 'error');
-      } finally {
-        btns.forEach(b => b.disabled = false);
+        toast('Published, but the homepage card could not update: ' + e.message, 'error');
       }
+      btns.forEach(b => b.disabled = false);
     }
 
     // The other half of the tracker <-> back-office link: an Events & Programs page with a
