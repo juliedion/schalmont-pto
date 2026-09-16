@@ -127,7 +127,13 @@
           if (doc.exists && (preview || doc.data().status === 'published')) p = doc.data();
         } else {
           if (!slug) { notFound(); return; }
-          const snap = await db.collection('pages').where('slug', '==', slug).get();
+          // Firestore denies an entire query (not just the non-matching docs) if any
+          // document it could return would fail the security rule for this reader --
+          // so an anonymous visitor's query must filter on status itself, matching
+          // the rule, or a draft sharing the same slug makes the whole lookup fail.
+          let query = db.collection('pages').where('slug', '==', slug);
+          if (!preview) query = query.where('status', '==', 'published');
+          const snap = await query.get();
           p = snap.docs.map(d => d.data())
             .find(d => (preview || d.status === 'published') && (!wantSchool || routeOf(d) === wantSchool)) || null;
         }
