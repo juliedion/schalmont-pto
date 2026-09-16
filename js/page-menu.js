@@ -17,24 +17,32 @@
   function addLinks(school, submenu) {
     if (!window.firebase || !firebase.apps || !firebase.apps.length) return;
     try {
-      firebase.firestore().collection('pages')
-        .where('school', '==', school)
-        .where('showInLeftMenu', '==', true)
-        .where('status', '==', 'published')
-        .get()
-        .then(function (snap) {
+      var col = firebase.firestore().collection('pages');
+      // A page's routing `school` is only set when it belongs to exactly one school --
+      // a page shared by several schools (routed under /pto/...) only has `schools`,
+      // an array, so it needs its own query to show up in each of those schools' menus.
+      Promise.all([
+        col.where('school', '==', school).where('showInLeftMenu', '==', true).where('status', '==', 'published').get(),
+        col.where('schools', 'array-contains', school).where('showInLeftMenu', '==', true).where('status', '==', 'published').get()
+      ]).then(function (results) {
+        var seen = {};
+        var prefix = SCHOOL_PREFIX[school] || school;
+        results.forEach(function (snap) {
           snap.docs.forEach(function (d) {
+            if (seen[d.id]) return;
+            seen[d.id] = true;
             var p = d.data();
             if (!p.slug) return;
-            var prefix = SCHOOL_PREFIX[school] || school;
+            // A shared page is routed under /pto/..., not this school's own prefix.
+            var pagePrefix = (Array.isArray(p.schools) && p.schools.length > 1) ? 'pto' : prefix;
             var a = document.createElement('a');
-            a.href = '/' + prefix + '/' + p.slug;
+            a.href = '/' + pagePrefix + '/' + p.slug;
             a.className = 'sidenav-item sub';
             a.textContent = p.title || 'Untitled';
             submenu.appendChild(a);
           });
-        })
-        .catch(function () { /* rules not published yet, or offline — leave menu as-is */ });
+        });
+      }).catch(function () { /* rules not published yet, or offline — leave menu as-is */ });
     } catch (e) { /* firestore not loaded on this page — leave menu as-is */ }
   }
 

@@ -405,12 +405,15 @@
         const batch = db.batch();
         missing.forEach(doc => {
           const p = doc.data();
+          // Link to the page's ACTUAL public address -- a page shared by more than one
+          // school is routed under /pto/..., not under this workspace's own prefix.
+          const linkHref = '/' + pagePath(routingSchool(pageSchools(p)), p.slug);
           batch.set(db.collection('program_cards').doc(), {
             school, pageId: doc.id, order: 999,
             icon: '📌', title: p.title || 'Untitled',
             badgeType: (p.eventDate && p.eventDate < today) ? 'past' : 'active', badgeText: '',
             eventDate: p.eventDate || '', id: p.slug || '', desc: '', archived: false,
-            actions: [{ label: 'Learn More →', href: '/' + pagePath(school, p.slug), cls: 'btn btn-primary' }],
+            actions: [{ label: 'Learn More →', href: linkHref, cls: 'btn btn-primary' }],
             createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
         });

@@ -262,6 +262,10 @@
       const bySchool = new Map(cardDocs.map(c => [c.school, c]));
       const keep = new Set();
 
+      // The card's link always points at the page's ACTUAL public address -- a page
+      // shared by more than one school is routed under /pto/..., not under any one
+      // school's own prefix, even though a card for it appears on each school's page.
+      const linkHref = '/' + pagePath(routingSchool(page.schools), page.slug);
       for (const s of wantSchools) {
         const existing = bySchool.get(s);
         const fields = {
@@ -269,7 +273,7 @@
           icon: icon || '📌', title: page.title,
           badgeType, badgeText, eventDate: page.eventDate || '',
           id: page.slug, desc,
-          actions: [{ label: 'Learn More →', href: '/' + pagePath(s, page.slug), cls: 'btn btn-primary' }]
+          actions: [{ label: 'Learn More →', href: linkHref, cls: 'btn btn-primary' }]
         };
         // Explicit false -- a freshly-published page's card is never "untouched legacy",
         // so the one-time archive migration (admin/school.html) must never sweep it up.
