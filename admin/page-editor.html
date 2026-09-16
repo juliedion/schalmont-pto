@@ -769,6 +769,13 @@
         if (clash) { toast('That link is already used by another ' + (SCHOOLS[school] || 'PTO') + ' page — change the Page link', 'error'); return; }
       }
 
+      // First time an event page goes live, ask whether it should also show as a link in
+      // its school's left (Browse) sidebar -- the sidebar shouldn't fill up automatically.
+      if (statusChange === 'published' && page.category === 'events' && page.status !== 'published') {
+        const names = page.schools.map(s => SCHOOLS[s] || s).join(' + ');
+        page.showInLeftMenu = confirm(`Add "${page.title.trim()}" to the left sidebar menu for ${names}?`);
+      }
+
       btns.forEach(b => b.disabled = true);
       page.hideCard = document.getElementById('card-hide').checked;
       const data = {
@@ -783,6 +790,7 @@
         updatedBy: ME.email
       };
       if (statusChange) data.status = statusChange;
+      if (page.category === 'events') data.showInLeftMenu = page.showInLeftMenu === true;
 
       try {
         if (pageId) {

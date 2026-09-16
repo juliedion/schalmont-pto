@@ -58,6 +58,13 @@
         <p>Add administrators and choose which school(s) each person can manage.
            (President / owner only.)</p>
       </a>
+      <a class="bo-card" href="#" id="sidebar-cleanup-card" style="display:none">
+        <span class="bo-cardicon">🧹</span>
+        <h3>Clear event links from sidebars</h3>
+        <p>One-time cleanup: removes every Event/Program page from the schools' left sidebar
+           menus. New events only get added there if you say yes when publishing.
+           (President / owner only.)</p>
+      </a>
     </div>
   </main>
 
@@ -73,6 +80,20 @@
       if (me.isSuper) {
         document.getElementById('people-card').style.display = '';
         document.getElementById('directory-card').style.display = '';
+        document.getElementById('sidebar-cleanup-card').style.display = '';
+        document.getElementById('sidebar-cleanup-card').onclick = async (e) => {
+          e.preventDefault();
+          try {
+            const snap = await db.collection('pages')
+              .where('category', '==', 'events').where('showInLeftMenu', '==', true).get();
+            if (!snap.docs.length) { toast('Already clean — no event pages are in a sidebar'); return; }
+            if (!confirm(`Remove ${snap.docs.length} event page(s) from the school sidebars?`)) return;
+            const batch = db.batch();
+            snap.docs.forEach(d => batch.update(d.ref, { showInLeftMenu: false }));
+            await batch.commit();
+            toast(`✓ Removed ${snap.docs.length} event page(s) from the sidebars`);
+          } catch (err) { toast('Could not clean up: ' + err.message, 'error'); }
+        };
       }
 
       document.getElementById('school-cards').innerHTML = Object.keys(SCHOOLS)
