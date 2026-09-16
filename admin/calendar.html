@@ -302,7 +302,7 @@
       document.getElementById('tracker-pages-btn').onclick = offerSyncChoice;
       document.getElementById('newpage-btn').onclick = () => newWebPage('events');
 
-      loadEvents();
+      loadEvents().then(autoSyncFromSheet);
     });
 
     function buildCalendar() {
@@ -426,7 +426,11 @@
         window.open(PLANNING_SHEET_URL, '_blank', 'noopener');
         close();
       };
-      back.querySelector('#sc-sync').onclick = () => { close(); createDraftPagesFromTracker(); };
+      back.querySelector('#sc-sync').onclick = async () => {
+        close();
+        await autoSyncFromSheet(true);
+        createDraftPagesFromTracker();
+      };
     }
 
     // Sync, never override: every tracker (pto_events) entry that doesn't already have a
@@ -1023,6 +1027,68 @@
         rep.innerHTML = '<span style="color:var(--error)">Import failed: ' + e.message + '</span>';
         btn.disabled = false;
       }
+    }
+
+    // Automatic, additive-only pull from the Master Tracker tab -- runs quietly every time
+    // the calendar loads, so a new row typed into the spreadsheet shows up here without
+    // anyone having to click a button. Never deletes or overwrites a hand-edited (pinned)
+    // event, and is throttled per browser so it doesn't re-fetch the sheet on every click
+    // around the calendar. The manual "Update from the planning spreadsheet" button still
+    // exists for a full reset/wipe re-import, which stays owner-only.
+    async function autoSyncFromSheet(force) {
+      const THROTTLE_MS = 15 * 60000;
+      const KEY = 'ptoAutoSyncAt';
+      try {
+        const last = +(sessionStorage.getItem(KEY) || 0);
+        if (!force && Date.now() - last < THROTTLE_MS) return;
+        sessionStorage.setItem(KEY, String(Date.now()));
+      } catch (_) { /* sessionStorage blocked (private mode etc.) -- just run every time */ }
+
+      try {
+        const now = new Date();
+        const startYear = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1;
+        const tab = SHEET_TABS[0];   // Master Tracker -- every school, filed by its own column
+        const csv = await fetchSheetCsv(tab.gid);
+        const events = sheetToEvents(csv, startYear);
+        const src = SHEET_ID + '#' + tab.gid;
+        const col = db.collection('pto_events');
+
+        const pinned = new Set(allEvents.filter(e => e.pinned).map(e => e.id));
+        let skip = new Set();
+        try {
+          const dd = await col.doc('meta_deleted').get();
+          if (dd.exists) skip = new Set(dd.data().ids || []);
+        } catch (_) {}
+        const known = new Set(allEvents.map(e => e.id));
+
+        const ops = [];
+        let added = 0;
+        events.forEach(ev => {
+          const evSchool = ev.rowSchool || 'pto';
+          const id = ('sheet_' + evSchool + '_' + ev.date + '_' + ev.title).toLowerCase()
+            .replace(/[^a-z0-9_]+/g, '_').replace(/_+/g, '_').slice(0, 120);
+          if (skip.has(id) || pinned.has(id)) return;
+          const fields = {
+            title: ev.title, date: ev.date, endDate: ev.endDate || '',
+            time: ev.time || '', category: ev.category, audience: ev.audience,
+            owner: ev.owner, notes: ev.notes, status: 'planned', school: evSchool,
+            promo: computePromo(ev.date, ev.promoSeed),
+            source: 'sheet', sheetSrc: src, sheetKey: ev.title + '||' + ev.date,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: ME.email
+          };
+          if (!known.has(id)) {
+            fields.promoDone = {};
+            fields.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            fields.createdBy = ME.email;
+            added++;
+          }
+          ops.push(b => b.set(col.doc(id), fields, { merge: true }));
+        });
+        if (!ops.length) return;
+        await commitOps(ops);
+        await loadEvents();
+        if (added) toast('📥 ' + added + ' new event' + (added === 1 ? '' : 's') + ' pulled in from the tracker spreadsheet');
+      } catch (e) { /* runs silently in the background -- the manual button still works if this fails */ }
     }
 
     /* ================= Sync District events from the Google Calendar feed ================= */
