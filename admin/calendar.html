@@ -1084,11 +1084,19 @@
           }
           ops.push(b => b.set(col.doc(id), fields, { merge: true }));
         });
-        if (!ops.length) return;
+        if (!ops.length) {
+          if (force) toast('Already up to date with the tracker spreadsheet');
+          return;
+        }
         await commitOps(ops);
         await loadEvents();
         if (added) toast('📥 ' + added + ' new event' + (added === 1 ? '' : 's') + ' pulled in from the tracker spreadsheet');
-      } catch (e) { /* runs silently in the background -- the manual button still works if this fails */ }
+        else if (force) toast('✓ Synced — no new events, but existing ones are up to date');
+      } catch (e) {
+        // The automatic background run stays silent so it never nags on every page load;
+        // a manual "Just Sync It" click always tells you what happened.
+        if (force) toast('Could not sync from the spreadsheet: ' + e.message, 'error');
+      }
     }
 
     /* ================= Sync District events from the Google Calendar feed ================= */
