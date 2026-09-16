@@ -46,4 +46,59 @@ return [
   // Email addresses that always count as an admin, even before they have a
   // role set in the database. Used by the AI assistant's admin check.
   'admin_emails' => ['julie@schalmontpto.com'],
+
+  /* ============================================================
+     GOOGLE CALENDAR WRITE-SYNC  —  optional, ~10 minute one-time setup
+     ------------------------------------------------------------
+     Without this, the back office's own calendar and the tracker
+     spreadsheet stay in sync with each other, but NOT with the real
+     Google Calendars embedded on the public school pages — those
+     still have to be edited by hand at calendar.google.com. Doing
+     this setup lets the back office create/update/delete events on
+     the real calendars directly, so everything finally flows through
+     automatically end to end.
+
+     HOW TO SET IT UP:
+     1. Go to https://console.cloud.google.com and create a new
+        project (or pick an existing one) — name doesn't matter,
+        e.g. "Schalmont PTO Calendar Sync".
+     2. In the search bar, find and open "Google Calendar API", then
+        press "Enable".
+     3. Left menu → "Credentials" → "+ Create Credentials" →
+        "Service account". Give it any name, click through, "Done".
+     4. Click into the new service account → "Keys" tab → "Add Key"
+        → "Create new key" → type JSON → "Create". A .json file
+        downloads to your computer.
+     5. Open that downloaded .json file in a text editor, select ALL
+        of its contents, and paste them as a single-quoted PHP string
+        on the 'google_service_account_json' line below, in your own
+        config.php only (never in this example file).
+     6. Copy the "client_email" value out of that same JSON file
+        (looks like something@your-project.iam.gserviceaccount.com).
+     7. For EACH school's Google Calendar: open calendar.google.com,
+        find that calendar in the left sidebar → the "⋮" menu →
+        "Settings and sharing" → "Share with specific people" →
+        "+ Add people" → paste the client_email from step 6 → set
+        permission to "Make changes to events" → "Send".
+     8. Save config.php. New events created in the back office (or
+        pulled in from the tracker spreadsheet) will now also be
+        created on the real calendar automatically.
+     ============================================================ */
+
+  // Paste the ENTIRE contents of the downloaded service-account JSON key
+  // file here as a string. Leave blank to keep write-sync turned off.
+  'google_service_account_json' => '',
+
+  // Which real Google Calendar each school's events get written to.
+  // These already match the calendars embedded on the public pages —
+  // only change them if a school gets a different calendar later.
+  // Woestina has no calendar of its own yet, so it shares the main
+  // Schalmont PTO calendar, same as the public Woestina page does.
+  'google_calendars' => [
+    'pto'       => 'c_2ccf0495db5e7ffcf4129ac6965b5cbe82ec743a13050f3aeecc9a18c84a53f5@group.calendar.google.com',
+    'woestina'  => 'c_2ccf0495db5e7ffcf4129ac6965b5cbe82ec743a13050f3aeecc9a18c84a53f5@group.calendar.google.com',
+    'jefferson' => 'b8ps3245btumu5q6psc3cmvs8c@group.calendar.google.com',
+    'middle'    => 'eumk9qp2llrljnfkp64k1dgk5g@group.calendar.google.com',
+    'high'      => '8b7ohsc70vgab6398itc7e73q0@group.calendar.google.com',
+  ],
 ];

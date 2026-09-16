@@ -644,6 +644,34 @@
       renderPromo(computePromo(d), done);
     }
 
+    // Pushes a pto_events change onto the REAL Google Calendar shown on the public school
+    // page (a separate system from Firestore). Best-effort: if Google Calendar sync hasn't
+    // been set up yet (see api/config.example.php), this quietly does nothing rather than
+    // blocking the save that already succeeded in the back office.
+    async function pushToGoogleCalendar(action, docId, fields) {
+      try {
+        const idToken = await auth.currentUser.getIdToken();
+        const res = await fetch('../api/calendar-sync.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            idToken, action, school: fields.school || 'pto',
+            title: fields.title, date: fields.date, endDate: fields.endDate,
+            time: fields.time, location: fields.location, notes: fields.notes,
+            googleEventId: fields.googleEventId
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          if (res.status !== 503) toast('Saved here, but the real calendar was not updated: ' + (data.error || 'unknown error'), 'error');
+          return;
+        }
+        if (docId && data.googleEventId && data.googleEventId !== fields.googleEventId) {
+          await db.collection('pto_events').doc(docId).update({ googleEventId: data.googleEventId });
+        }
+      } catch (e) { /* network hiccup -- the Firestore save already succeeded, so stay quiet */ }
+    }
+
     async function saveEvent() {
       const title = document.getElementById('f-title').value.trim();
       const date = document.getElementById('f-date').value;
@@ -672,12 +700,15 @@
         if (editingId) {
           data.pinned = true;   // a human edited this — future sheet re-syncs leave it alone
           await db.collection('pto_events').doc(editingId).update(data);
+          const existing = allEvents.find(e => e.id === editingId);
+          pushToGoogleCalendar('update', editingId, { ...data, googleEventId: existing?.googleEventId });
         } else {
           data.source = 'manual';
           data.createdBy = ME.email;
           data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-          await db.collection('pto_events').add(data);
+          const ref = await db.collection('pto_events').add(data);
           await createPageFromTrackerRow(data);
+          pushToGoogleCalendar('create', ref.id, data);
         }
         toast('Saved'); closeModal(); loadEvents();
       } catch (e) { toast('Could not save: ' + e.message, 'error'); }
@@ -714,6 +745,9 @@
             { ids: firebase.firestore.FieldValue.arrayUnion(editingId) }, { merge: true });
         }
         await db.collection('pto_events').doc(editingId).delete();
+        if (ev && ev.googleEventId) {
+          pushToGoogleCalendar('delete', null, { school: ev.school, googleEventId: ev.googleEventId });
+        }
         toast('Deleted'); closeModal(); loadEvents();
       } catch (e) { toast('Could not delete: ' + e.message, 'error'); }
     }
@@ -1062,6 +1096,7 @@
         const known = new Set(allEvents.map(e => e.id));
 
         const ops = [];
+        const newIds = [];
         let added = 0;
         events.forEach(ev => {
           const evSchool = ev.rowSchool || 'pto';
@@ -1081,6 +1116,7 @@
             fields.createdAt = firebase.firestore.FieldValue.serverTimestamp();
             fields.createdBy = ME.email;
             added++;
+            newIds.push({ id, fields });
           }
           ops.push(b => b.set(col.doc(id), fields, { merge: true }));
         });
@@ -1089,6 +1125,7 @@
           return;
         }
         await commitOps(ops);
+        newIds.forEach(({ id, fields }) => pushToGoogleCalendar('create', id, fields));
         await loadEvents();
         if (added) toast('📥 ' + added + ' new event' + (added === 1 ? '' : 's') + ' pulled in from the tracker spreadsheet');
         else if (force) toast('✓ Synced — no new events, but existing ones are up to date');
