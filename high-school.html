@@ -338,8 +338,6 @@
         <select class="cal-tab-select" id="cal-tab-select" onchange="window.showCalTabFromSelect(this.value)">
           <option value="schalmont" selected>Schalmont PTO (MS &amp; HS)</option>
           <option value="all">All Events</option>
-          <option value="woestina">Woestina PTO</option>
-          <option value="jefferson">Jefferson PTO</option>
           <option value="district">District</option>
         </select>
       </div>
@@ -347,8 +345,6 @@
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-light);margin-bottom:6px;text-align:center">View</div>
         <div style="display:flex;gap:5px;flex-wrap:nowrap;justify-content:center;overflow-x:auto">
           <button class="cal-tab-btn" style="--tab-color:var(--primary)" onclick="window.showCalTab('all',this)">All Events</button>
-          <button class="cal-tab-btn" style="--tab-color:#8bc341" onclick="window.showCalTab('woestina',this)">Woestina PTO</button>
-          <button class="cal-tab-btn" style="--tab-color:#6bb044" onclick="window.showCalTab('jefferson',this)">Jefferson PTO</button>
           <button class="cal-tab-btn active" style="--tab-color:#087d40" onclick="window.showCalTab('schalmont',this)">Schalmont PTO (MS &amp; HS)</button>
           <button class="cal-tab-btn" style="--tab-color:#039BE5" onclick="window.showCalTab('district',this)">District</button>
         </div>
@@ -356,12 +352,6 @@
       <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:8px">
         <div class="cal-panel" id="cal-panel-all" style="display:none">
           <div class="pcal-cal" data-school="all"></div>
-        </div>
-        <div class="cal-panel" id="cal-panel-woestina" style="display:none">
-          <div class="pcal-cal" data-school="woestina"></div>
-        </div>
-        <div class="cal-panel" id="cal-panel-jefferson" style="display:none">
-          <div class="pcal-cal" data-school="jefferson"></div>
         </div>
         <div class="cal-panel" id="cal-panel-schalmont">
           <div class="pcal-cal" data-school="schalmont"></div>

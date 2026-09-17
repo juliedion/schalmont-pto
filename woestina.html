@@ -241,8 +241,6 @@
         <select class="cal-tab-select" id="cal-tab-select" onchange="window.showCalTabFromSelect(this.value)">
           <option value="woestina" selected>Woestina PTO</option>
           <option value="all">All Events</option>
-          <option value="jefferson">Jefferson PTO</option>
-          <option value="schalmont">Schalmont PTO (MS &amp; HS)</option>
           <option value="district">District</option>
         </select>
       </div>
@@ -251,8 +249,6 @@
         <div style="display:flex;gap:5px;flex-wrap:nowrap;justify-content:center;overflow-x:auto">
           <button class="cal-tab-btn" style="--tab-color:var(--primary)" onclick="window.showCalTab('all',this)">All Events</button>
           <button class="cal-tab-btn active" style="--tab-color:#8bc341" onclick="window.showCalTab('woestina',this)">Woestina PTO</button>
-          <button class="cal-tab-btn" style="--tab-color:#6bb044" onclick="window.showCalTab('jefferson',this)">Jefferson PTO</button>
-          <button class="cal-tab-btn" style="--tab-color:#087d40" onclick="window.showCalTab('schalmont',this)">Schalmont PTO (MS &amp; HS)</button>
           <button class="cal-tab-btn" style="--tab-color:#039BE5" onclick="window.showCalTab('district',this)">District</button>
         </div>
       </div>
@@ -262,12 +258,6 @@
         </div>
         <div class="cal-panel" id="cal-panel-woestina">
           <div class="pcal-cal" data-school="woestina"></div>
-        </div>
-        <div class="cal-panel" id="cal-panel-jefferson" style="display:none">
-          <div class="pcal-cal" data-school="jefferson"></div>
-        </div>
-        <div class="cal-panel" id="cal-panel-schalmont" style="display:none">
-          <div class="pcal-cal" data-school="schalmont"></div>
         </div>
         <div class="cal-panel" id="cal-panel-district" style="display:none">
           <div style="padding:40px 40px 20px;text-align:center">
