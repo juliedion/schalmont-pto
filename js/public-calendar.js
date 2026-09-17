@@ -33,7 +33,16 @@
     return (Array.isArray(schools) && schools.length === 1) ? schools[0] : 'pto';
   }
 
+  // Every visit to the homepage or any school page calls this -- cache the result in
+  // sessionStorage for a few minutes so browsing several pages in one visit doesn't
+  // re-read both collections from Firestore each time.
+  var CACHE_KEY = 'pcalEvents', CACHE_MS = 10 * 60000;
   function loadEvents() {
+    try {
+      var cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
+      if (cached && Date.now() - cached.at < CACHE_MS) return Promise.resolve(cached.events);
+    } catch (_) { /* sessionStorage blocked or corrupt -- fetch fresh below */ }
+
     var db = firebase.firestore();
     var BOOKKEEPING = { meta_deleted: true, meta_gcal: true };
 
@@ -79,7 +88,9 @@
         }
       });
 
-      return Object.keys(byKey).map(function (k) { return byKey[k]; });
+      var events = Object.keys(byKey).map(function (k) { return byKey[k]; });
+      try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), events: events })); } catch (_) {}
+      return events;
     });
   }
 
