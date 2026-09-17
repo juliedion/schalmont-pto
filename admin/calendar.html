@@ -494,10 +494,14 @@
         const fromEvents = snap.docs.map(d => ({ id: d.id, ...d.data() }))
           .filter(e => !e.id.startsWith('__') && !BOOKKEEPING.has(e.id));
         // Pages with an Event date show on the calendar too, so day-click-created pages
-        // (see dateClick below) actually show up here, not just quick pto_events entries.
+        // (see dateClick below) actually show up here, not just quick pto_events entries --
+        // but skip any page that already has a matching tracker row (same title+date), or
+        // every synced event shows twice: once from the tracker, once as "(idea)" from its
+        // own draft page.
+        const trackerKeys = new Set(fromEvents.map(e => (e.title || '').trim().toLowerCase() + '|' + e.date));
         const fromPages = pagesSnap.docs
           .map(d => ({ id: d.id, p: d.data() }))
-          .filter(({ p }) => p.eventDate)
+          .filter(({ p }) => p.eventDate && !trackerKeys.has((p.title || '').trim().toLowerCase() + '|' + p.eventDate))
           .map(({ id, p }) => ({
             id: 'page-' + id, kind: 'page', pageId: id,
             title: p.title, date: p.eventDate, time: p.eventTime || '', endDate: '',
