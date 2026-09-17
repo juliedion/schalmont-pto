@@ -602,6 +602,16 @@ select   { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xm
   border-color: var(--tab-color, var(--primary));
 }
 
+/* === Public agenda calendar (pulled live from the back office) === */
+.pcal-list { max-height: 600px; overflow-y: auto; }
+.pcal-row { display: flex; gap: 16px; padding: 14px 24px; border-bottom: 1px solid var(--border); }
+.pcal-row:last-child { border-bottom: none; }
+.pcal-date { flex: 0 0 72px; font-weight: 700; font-size: 13px; color: var(--primary); padding-top: 1px; }
+.pcal-body { flex: 1; min-width: 0; }
+.pcal-title { font-weight: 700; font-size: 14.5px; color: var(--text); text-decoration: none; }
+a.pcal-title:hover { color: var(--primary); text-decoration: underline; }
+.pcal-meta { font-size: 12.5px; color: var(--text-light); margin-top: 2px; }
+
 /* === School Program Cards === */
 .program-grid {
   display: grid;

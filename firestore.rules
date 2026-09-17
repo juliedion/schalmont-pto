@@ -93,9 +93,15 @@ service cloud.firestore {
       allow update, delete: if signedIn() && canManage(resource.data.school);
     }
 
-    /* ---- Shared PTO calendar ---- */
+    /* ---- Shared PTO calendar ----
+       Public visitors may read confirmed/planned/done events (the site's own
+       events pages/calendar), but never an 'idea' still being kicked around --
+       those stay admin-only. A public query must filter on status itself so
+       Firestore can verify it without an extra read (see p.html's slug lookup
+       for the same pattern). */
     match /pto_events/{id} {
-      allow read, write: if isAnyAdmin();
+      allow read: if resource.data.status in ['planned', 'confirmed', 'done'] || isAnyAdmin();
+      allow write: if isAnyAdmin();
     }
 
     /* ---- Fundraising ---- */
