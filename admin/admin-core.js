@@ -80,14 +80,35 @@ function requireAdmin(onReady) {
       return;
     }
 
-    // Look up this person's record for their role + assigned schools
+    // Look up this person's record for their role + assigned schools. Every back-office
+    // page (and the calendar tool's own iframe embed) re-runs this from scratch on load,
+    // so a cold Firestore round-trip here delays every single click into a new page --
+    // cache it in sessionStorage for a few minutes to skip that read on repeat navigations
+    // within the same visit. A role change mid-session takes up to CACHE_MS to take effect.
+    const CACHE_MS = 5 * 60000;
+    const CACHE_KEY = 'boMe_' + user.uid;
     let data = {};
     let docExists = false;
+    let usedCache = false;
     try {
-      const snap = await db.collection('users').doc(user.uid).get();
-      docExists = snap.exists;
-      data = snap.exists ? snap.data() : {};
-    } catch (e) { /* rules may block; fall through to owner check */ }
+      const cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
+      if (cached && Date.now() - cached.at < CACHE_MS) {
+        docExists = cached.docExists;
+        data = cached.data;
+        usedCache = true;
+      }
+    } catch (_) { /* sessionStorage blocked or corrupt -- fetch fresh below */ }
+
+    if (!usedCache) {
+      try {
+        const snap = await db.collection('users').doc(user.uid).get();
+        docExists = snap.exists;
+        data = snap.exists ? snap.data() : {};
+        try {
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), docExists, data }));
+        } catch (_) { /* private mode etc. -- just skip caching */ }
+      } catch (e) { /* rules may block; fall through to owner check */ }
+    }
 
     const isOwner = user.email === OWNER_EMAIL ||
                     (typeof adminEmails !== 'undefined' && adminEmails.includes(user.email));
@@ -105,6 +126,7 @@ function requireAdmin(onReady) {
           selfProvisioned: true
         }, { merge: true });
         data = { role: 'superadmin', status: 'approved' };
+        try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), docExists: true, data })); } catch (_) {}
       } catch (_) { /* not fatal — access still granted below via the trusted list */ }
     }
     const isSuper = isOwner || data.role === 'superadmin';
