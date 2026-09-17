@@ -129,7 +129,6 @@
       <button class="bo-btn ghost sm" id="sheet-btn">⬆ Update from the planning spreadsheet</button>
       <button class="bo-btn ghost sm" id="district-btn">↻ Sync District calendar</button>
       <button class="bo-btn ghost sm" id="tracker-pages-btn">↻ Sync with tracker</button>
-      <button class="bo-btn ghost sm" id="cleanup-old-sync-btn" style="display:none">🧹 Remove old duplicate tracker events</button>
     </div>
 
     <div id="cal-count" style="font-size:12px;color:var(--text-light);margin:0 0 12px"></div>
@@ -322,7 +321,6 @@
       // still gets the safer, additive "Sync with tracker" below.
       document.getElementById('sheet-btn').style.display = me.isSuper ? '' : 'none';
       document.getElementById('district-btn').style.display = me.isSuper ? '' : 'none';
-      document.getElementById('cleanup-old-sync-btn').style.display = me.isSuper ? '' : 'none';
       document.getElementById('cancel-btn').onclick = closeModal;
       document.getElementById('modal-x').onclick = closeModal;
       document.getElementById('save-ev-btn').onclick = saveEvent;
@@ -330,7 +328,6 @@
       document.getElementById('f-date').onchange = syncPromoFromDate;
       document.getElementById('district-btn').onclick = () => syncDistrict(false);
       document.getElementById('tracker-pages-btn').onclick = offerSyncChoice;
-      document.getElementById('cleanup-old-sync-btn').onclick = cleanupOldSyncFormat;
 
       loadEvents().then(autoSyncFromSheet);
     });
@@ -970,10 +967,12 @@
       s === 'mixed' ? 'every school' : s === 'pto' ? 'the District' : (SCHOOLS[s] || s);
 
     // Which existing events a "reset" import would delete before loading the tab:
-    // the Master Tracker ('mixed') — every non-district, non-pinned event;
-    // a single-school tab — only that school's non-district, non-pinned events.
+    // the Master Tracker ('mixed') — every non-district event; a single-school tab —
+    // only that school's non-district events. "Single source of truth" means exactly
+    // that, so this deliberately does NOT spare pinned (hand-edited) events -- that
+    // protection is only for the gentler, additive prune below.
     const wipeTargets = (scope) => allEvents.filter(e =>
-      !isDistrictCal(e) && !e.pinned &&
+      !isDistrictCal(e) &&
       (scope === 'mixed' || (e.school || 'pto') === scope));
 
     // Firestore batches cap at 500 writes — commit in chunks.
@@ -982,32 +981,6 @@
         const b = db.batch();
         ops.slice(i, i + 450).forEach(op => op(b));
         await b.commit();
-      }
-    }
-
-    // One-time migration cleanup: the tracker sync used to key each event by its own
-    // title+date, so editing either in the spreadsheet silently left a stale copy behind
-    // under the old id instead of updating it (fixed to key by sheet row position instead).
-    // The normal "remove past imports" prune skips these on purpose if they were ever
-    // hand-edited (pinned) -- but a pinned OLD-format doc is exactly the orphaned leftover
-    // this button exists to clear, not a hand edit worth protecting, since the sheet's
-    // current data already lives in its sheet2_-prefixed replacement.
-    async function cleanupOldSyncFormat() {
-      const btn = document.getElementById('cleanup-old-sync-btn');
-      const stale = allEvents.filter(e => e.id.startsWith('sheet_'));
-      if (!stale.length) { toast('No old-format tracker events found — already clean'); return; }
-      if (!confirm(`Remove ${stale.length} old-format tracker event(s) left over from the sync fix?\n\n` +
-        `These are stale duplicates of events that already exist in their current form — ` +
-        `this only removes the old copies, never a page or a currently-synced event.`)) return;
-      btn.disabled = true;
-      try {
-        await commitOps(stale.map(e => (b => b.delete(db.collection('pto_events').doc(e.id)))));
-        toast(`✓ Removed ${stale.length} old-format event(s)`);
-        loadEvents();
-      } catch (e) {
-        toast('Could not clean up: ' + e.message, 'error');
-      } finally {
-        btn.disabled = false;
       }
     }
 
@@ -1035,7 +1008,7 @@
           const del = wipeTargets(scope);
           html += `<p style="margin:10px 0 0;color:var(--error);font-weight:700">` +
             `⚠ Will first DELETE ${del.length} existing ${schoolLabel(scope)} event` +
-            `${del.length === 1 ? '' : 's'} (District Calendar entries and your hand edits are kept).</p>`;
+            `${del.length === 1 ? '' : 's'} — including any you've hand-edited (District Calendar entries are kept).</p>`;
         }
         rep.innerHTML = html;
         document.getElementById('sh-import').disabled = false;
@@ -1060,8 +1033,8 @@
         if (wipe) {
           const del = wipeTargets(scope);
           if (!confirm(`This will permanently delete ${del.length} existing ${schoolLabel(scope)} ` +
-            `event(s) (District Calendar entries and hand edits are kept), then load ${events.length} ` +
-            `event(s) from the sheet.\n\nContinue?`)) { btn.disabled = false; rep.innerHTML = ''; return; }
+            `event(s) — including any you've hand-edited (District Calendar entries are kept) — ` +
+            `then load ${events.length} event(s) fresh from the sheet.\n\nContinue?`)) { btn.disabled = false; rep.innerHTML = ''; return; }
           const ops = del.map(e => (b => b.delete(col.doc(e.id))));
           // clear the "don't re-add" list so the sheet is a clean slate
           ops.push(b => b.set(col.doc('meta_deleted'), { ids: [] }));
