@@ -602,15 +602,27 @@ select   { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xm
   border-color: var(--tab-color, var(--primary));
 }
 
-/* === Public agenda calendar (pulled live from the back office) === */
-.pcal-list { max-height: 600px; overflow-y: auto; }
-.pcal-row { display: flex; gap: 16px; padding: 14px 24px; border-bottom: 1px solid var(--border); }
-.pcal-row:last-child { border-bottom: none; }
-.pcal-date { flex: 0 0 72px; font-weight: 700; font-size: 13px; color: var(--primary); padding-top: 1px; }
-.pcal-body { flex: 1; min-width: 0; }
-.pcal-title { font-weight: 700; font-size: 14.5px; color: var(--text); text-decoration: none; }
-a.pcal-title:hover { color: var(--primary); text-decoration: underline; }
-.pcal-meta { font-size: 12.5px; color: var(--text-light); margin-top: 2px; }
+/* === Public month calendar (pulled live from the back office) === */
+.pcal-head { display: flex; align-items: center; justify-content: center; gap: 18px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+.pcal-month-label { font-weight: 800; font-size: 15px; min-width: 150px; text-align: center; }
+.pcal-nav { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); width: 30px; height: 30px; font-size: 16px; line-height: 1; cursor: pointer; color: var(--text); }
+.pcal-nav:hover { background: var(--bg-light, #f4f6f4); }
+.pcal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: .04em; text-align: center; padding: 8px 4px 4px; }
+.pcal-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+.pcal-cell { min-height: 90px; border-top: 1px solid var(--border); border-left: 1px solid var(--border); padding: 4px 5px; overflow: hidden; }
+.pcal-grid .pcal-cell:nth-child(7n) { border-right: 1px solid var(--border); }
+.pcal-cell-empty { background: #fafbfa; }
+.pcal-cell-today { background: #eef7f0; }
+.pcal-daynum { font-size: 11.5px; font-weight: 700; color: var(--text-light); margin-bottom: 3px; }
+.pcal-cell-today .pcal-daynum { color: var(--primary); }
+.pcal-pill { display: block; font-size: 10.5px; line-height: 1.3; padding: 1.5px 4px; margin-bottom: 2px; border-left: 3px solid var(--primary); background: #f4f6f4; color: var(--text); text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+a.pcal-pill:hover { background: #e8ece8; }
+.pcal-more { font-size: 10px; color: var(--text-light); padding-left: 4px; }
+@media (max-width: 640px) {
+  .pcal-cell { min-height: 56px; }
+  .pcal-daynum { font-size: 10px; }
+  .pcal-pill { font-size: 9px; }
+}
 
 /* === School Program Cards === */
 .program-grid {
