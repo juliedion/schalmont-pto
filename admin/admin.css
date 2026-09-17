@@ -51,6 +51,21 @@ body.bo-has-shell {
 .bo-navlink.active { background: var(--secondary); color: var(--primary-dark); font-weight: 700; }
 .bo-navsub { padding-left: 14px; font-weight: 500; font-size: 13.5px; }
 .bo-navicon { width: 18px; text-align: center; }
+
+/* Each school in the sidebar is an accordion: the link navigates to its workspace as
+   normal, and whichever school's page you're currently on renders with its own section
+   list open right underneath -- see admin-core.js renderShell(). */
+.bo-school-group { margin-bottom: 2px; }
+.bo-school-toggle { justify-content: space-between; }
+.bo-navarrow { font-size: 9px; opacity: .6; transition: transform .15s; }
+.bo-school-toggle.open .bo-navarrow { transform: rotate(180deg); }
+.bo-school-sections {
+  display: none; border-radius: 8px; padding: 4px 4px 6px; margin: 2px 6px 6px;
+}
+.bo-school-sections.open { display: block; }
+.bo-school-sections .bo-navlink { font-size: 13px; padding: 7px 10px; color: rgba(255,255,255,.85); }
+.bo-school-sections .bo-navlink:hover { background: rgba(255,255,255,.15); color: #fff; }
+.bo-school-sections .bo-navlink.active { background: rgba(255,255,255,.92); }
 .bo-sidebar-foot {
   padding: 14px 18px; font-size: 12px; flex-shrink: 0;
   color: rgba(255,255,255,.6); border-top: 1px solid rgba(255,255,255,.12);

@@ -221,31 +221,41 @@ function renderShell() {
   // Three link shapes: a school-workspace sub-tab (?tab=), a page-category listing
   // (?cat=), or a standalone tool page (fundraising.html, yearbook.html) with no query.
   const currentTab = getParam('tab') || 'calendar';
-  const sectionLinks = inSchool ? SECTIONS.map(s => {
+  const sectionLinksFor = (school) => SECTIONS.map(s => {
     const base = s.href.split('?')[0];
     let scoped, active;
     if (s.tab) {
-      scoped = base + '?s=' + ctxSchool + '&tab=' + s.tab;
-      active = path === base && currentTab === s.tab;
+      scoped = base + '?s=' + school + '&tab=' + s.tab;
+      active = path === base && ctxSchool === school && currentTab === s.tab;
     } else if (s.href.includes('?cat=')) {
-      scoped = s.href + '&s=' + ctxSchool;
-      active = path === 'section.html' && cat === s.cat;
+      scoped = s.href + '&s=' + school;
+      active = path === 'section.html' && ctxSchool === school && cat === s.cat;
     } else {
-      scoped = base + '?s=' + ctxSchool;
-      active = path === base;
+      scoped = base + '?s=' + school;
+      active = path === base && ctxSchool === school;
     }
     return link(scoped, s.label, s.icon, active);
-  }).join('') : '';
-  const sectionsBlock = inSchool ? `
-    <div style="background:${SCHOOL_TINT[ctxSchool] || 'transparent'};border-radius:10px;padding:6px 4px 8px;margin:10px 6px">
-      <div class="bo-navgroup-label" style="color:rgba(255,255,255,.85);padding:8px 6px 4px">${esc(SCHOOLS[ctxSchool])} — sections</div>
-      ${sectionLinks}
-    </div>` : '';
+  }).join('');
 
+  // Every school in the sidebar is its own accordion: the school button opens its
+  // workspace overview (like every other nav link) AND toggles its sections open right
+  // underneath it, so you can jump straight to e.g. Calendar without landing on the
+  // overview first. Whichever school you're currently inside starts pre-opened.
   const mySchools = (ME.isSuper ? Object.keys(SCHOOLS) : (ME.schools || []));
-  const schoolLinks = mySchools.map(s =>
-    link('school.html?s=' + s, SCHOOLS[s], '🏫', path === 'school.html' && ctxSchool === s)
-  ).join('');
+  const schoolGroups = mySchools.map(s => {
+    const isOpen = ctxSchool === s;
+    return `
+    <div class="bo-school-group">
+      <a href="school.html?s=${s}" class="bo-navlink bo-school-toggle${isOpen ? ' open' : ''}" data-school-target="bosec-${s}">
+        <span class="bo-navicon">🏫</span>${esc(SCHOOLS[s])}
+        <span class="bo-navarrow">&#9660;</span>
+      </a>
+      <div class="bo-school-sections${isOpen ? ' open' : ''}" id="bosec-${s}"
+           style="background:${SCHOOL_TINT[s] || 'transparent'}">
+        ${sectionLinksFor(s)}
+      </div>
+    </div>`;
+  }).join('');
 
   shell.innerHTML = `
     <aside class="bo-sidebar">
@@ -255,8 +265,7 @@ function renderShell() {
       <nav class="bo-nav">
         ${link('index.html', 'Home', '🏠', path === 'index.html')}
         <div class="bo-navgroup-label">Schools</div>
-        ${schoolLinks}
-        ${sectionsBlock}
+        ${schoolGroups}
         <div class="bo-navgroup-label">More</div>
         ${link('meetings.html', 'Meetings', '🗓️', path === 'meetings.html')}
         ${link('help.html', 'Help &amp; How-To', '📖', path === 'help.html')}
