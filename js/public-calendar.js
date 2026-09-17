@@ -48,6 +48,10 @@
         if (BOOKKEEPING[d.id] || d.id.indexOf('__') === 0) return;
         var e = d.data();
         if (!e.title || !e.date) return;
+        // The district's own school-closing/early-release entries already have their own
+        // District tab (the embedded Google Calendar) -- keep them out of the back-office
+        // tabs so they don't show twice, once here and once under School PTO (MS & HS).
+        if (e.category === 'District Calendar' || e.source === 'gcal') return;
         var key = e.title.trim().toLowerCase() + '|' + e.date;
         byKey[key] = {
           title: e.title, date: e.date, time: e.time || '',
