@@ -251,8 +251,8 @@
       <div class="cal-actions">
         <span class="spacer"></span>
         <button class="bo-btn ghost sm" id="sh-cancel">Cancel</button>
-        <button class="bo-btn ghost sm" id="sh-preview">Preview</button>
-        <button class="bo-btn sm" id="sh-import" disabled>Import</button>
+        <button class="bo-btn ghost sm" id="sh-preview">Preview first</button>
+        <button class="bo-btn sm" id="sh-import">Import</button>
       </div>
     </div>
   </div>
@@ -300,7 +300,7 @@
       const s = getParam('s');
       if (getParam('embed') === '1') {
         document.getElementById('cal-page-head').style.display = 'none';
-        document.getElementById('bo-main').style.padding = '4px 4px 24px';
+        document.getElementById('bo-main').style.padding = '0 4px 24px';
         // The school workspace's own Calendar tab (school.html) renders a matching
         // toolbar itself, outside this iframe, and proxies clicks into these same
         // buttons -- so this copy inside the embed would just be a confusing duplicate.
@@ -847,7 +847,6 @@
 
       document.getElementById('sheet-btn').onclick = () => {
         document.getElementById('sh-report').style.display = 'none';
-        document.getElementById('sh-import').disabled = true;
         shParsed = null;
         document.getElementById('sheet-modal').classList.add('open');
       };
@@ -990,18 +989,26 @@
       }
     }
 
+    // Shared by both the optional "Preview first" button and Import itself, which no
+    // longer requires a preview step -- it just parses the sheet on the spot if you
+    // haven't already.
+    async function parseSheetNow() {
+      const startYear = +document.getElementById('sh-year').value;
+      const tab = SHEET_TABS[+document.getElementById('sh-tab').value];
+      const csv = await fetchSheetCsv(tab.gid);
+      const events = sheetToEvents(csv, startYear);
+      const scope = tab.school;                       // a school key, or 'mixed'
+      shParsed = { events, scope, sheetId: SHEET_ID, gid: tab.gid, startYear };
+      return shParsed;
+    }
+
     async function sheetPreview() {
       const rep = document.getElementById('sh-report');
       rep.style.display = 'block';
       rep.innerHTML = 'Reading the sheet…';
-      document.getElementById('sh-import').disabled = true;
       try {
-        const startYear = +document.getElementById('sh-year').value;
-        const tab = SHEET_TABS[+document.getElementById('sh-tab').value];
-        const csv = await fetchSheetCsv(tab.gid);
-        const events = sheetToEvents(csv, startYear);
-        const scope = tab.school;                       // a school key, or 'mixed'
-        shParsed = { events, scope, sheetId: SHEET_ID, gid: tab.gid, startYear };
+        await parseSheetNow();
+        const { events, scope } = shParsed;
         const list = events.slice(0, 12).map(e => {
           const es = scope === 'mixed' ? (e.rowSchool || 'pto') : scope;
           return `<li>${prettyYMD(e.date)} &mdash; ${e.title} <span style="color:var(--text-light)">(${SCHOOL_LABEL[es] || es})</span></li>`;
@@ -1017,7 +1024,6 @@
             `${del.length === 1 ? '' : 's'} — including any you've hand-edited (District Calendar entries are kept).</p>`;
         }
         rep.innerHTML = html;
-        document.getElementById('sh-import').disabled = false;
       } catch (e) {
         shParsed = null;
         rep.innerHTML = '<span style="color:var(--error)">Could not read the sheet: ' + e.message + '</span>';
@@ -1025,12 +1031,14 @@
     }
 
     async function sheetImport() {
-      if (!shParsed) { toast('Press Preview first', 'error'); return; }
       const btn = document.getElementById('sh-import');
       btn.disabled = true;
       const rep = document.getElementById('sh-report');
-      rep.innerHTML = 'Importing…';
+      rep.style.display = 'block';
+      rep.innerHTML = 'Reading the sheet…';
       try {
+        if (!shParsed) await parseSheetNow();
+        rep.innerHTML = 'Importing…';
         const { events, scope, sheetId, gid } = shParsed;
         const src = sheetId + '#' + gid;
         const wipe = document.getElementById('sh-wipe').checked;

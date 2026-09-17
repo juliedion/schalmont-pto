@@ -57,14 +57,7 @@
 
     <!-- ============ CALENDAR ============ -->
     <section class="bo-panel active" id="panel-calendar">
-      <div class="bo-tip">
-        Click a day to add something, click an event to edit it.
-      </div>
-      <div class="cal-toggle">
-        <a class="bo-btn ghost sm" href="#" id="cal-edit-link" target="_blank" style="margin-left:auto">Open in its own tab ↗</a>
-      </div>
-
-      <div class="cal-bar" style="margin-bottom:10px">
+      <div class="cal-bar" style="margin-bottom:8px">
         <button class="bo-btn sm" id="pcal-add-btn">＋ New event</button>
         <button class="bo-btn ghost sm" id="pcal-sheet-btn" style="display:none">⬆ Update from the planning spreadsheet</button>
         <button class="bo-btn ghost sm" id="pcal-district-btn" style="display:none">↻ Sync District calendar</button>
@@ -260,7 +253,6 @@
     // calendar's own white box, and just proxy their click into the real button inside
     // the (same-origin) iframe, so there's only one implementation of each action.
     function initCalendarTab() {
-      document.getElementById('cal-edit-link').href = 'calendar.html?s=' + school;
       const iframe = document.getElementById('cal-office-iframe');
       iframe.src = 'calendar.html?s=' + school + '&embed=1';
 
