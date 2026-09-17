@@ -25,10 +25,39 @@
       font-size:12px; padding:5px 10px; border:1px solid var(--border); border-radius:20px;
       background:var(--white); cursor:pointer; color:var(--text-light); font-weight:600;
     }
-    #calendar { background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px; }
-    .fc .fc-toolbar-title { font-size:1.15rem; }
-    .fc-event { cursor:pointer; }
+    /* Restyled to match the public month-calendar look (js/public-calendar.js /
+       .pcal-* on the school pages) -- same borders, weekday caps, today highlight
+       and left-border event pills, just with FullCalendar's own class names. */
+    #calendar { background:var(--white); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+    #calendar .fc-toolbar.fc-header-toolbar { padding:14px 16px; margin:0; border-bottom:1px solid var(--border); }
+    .fc .fc-toolbar-title { font-size:15px; font-weight:800; }
+    .fc .fc-button {
+      background:var(--white); border:1px solid var(--border); color:var(--text);
+      box-shadow:none; text-transform:capitalize; font-weight:700; font-size:12.5px;
+      border-radius:var(--radius); padding:6px 12px;
+    }
+    .fc .fc-button:hover { background:var(--light-bg, #f4f6f4); }
+    .fc .fc-button-primary:not(:disabled).fc-button-active,
+    .fc .fc-button-primary:not(:disabled):active { background:var(--primary); border-color:var(--primary); color:#fff; }
+    .fc .fc-button:focus { box-shadow:none; }
+    .fc-col-header-cell {
+      background:var(--white); border-color:var(--border) !important;
+      font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+      color:var(--text-light); padding:8px 4px;
+    }
+    .fc-col-header-cell a { color:inherit; text-decoration:none; }
+    .fc-daygrid-day { border-color:var(--border) !important; }
+    .fc-daygrid-day-number { font-size:11.5px; font-weight:700; color:var(--text-light); padding:4px 6px; }
+    .fc-day-today { background:#eef7f0 !important; }
+    .fc-day-today .fc-daygrid-day-number { color:var(--primary); }
+    /* Shape only -- color stays whatever FullCalendar set inline per school (schoolColor()),
+       matching the public calendar's colored-left-border pill without losing that coding. */
+    .fc-event { cursor:pointer; border-width:0 0 0 3px !important; border-style:solid !important;
+                border-radius:3px !important; }
+    .fc-event .fc-event-main { padding:0 3px; }
     .fc-event.promo { opacity:.9; }
+    .fc-daygrid-day.fc-day-other { background:#fafbfa; }
+    .fc-scrollgrid { border-color:var(--border) !important; }
 
     /* Let event text wrap instead of being clipped */
     .fc-daygrid-event, .fc-daygrid-event .fc-event-main { white-space:normal !important; }
@@ -568,7 +597,7 @@
               start: timed ? `${ev.date}T${ev.time}` : ev.date,
               end: isYMD(ev.endDate) ? addDays(ev.endDate, 1) : undefined,
               allDay: !timed,
-              backgroundColor: color, borderColor: color,
+              backgroundColor: '#f4f6f4', borderColor: color, textColor: '#333',
               classNames: ev.status === 'done' ? ['done'] : [],
               extendedProps: ev.kind === 'page'
                 ? { kind: 'page', pageId: ev.pageId }

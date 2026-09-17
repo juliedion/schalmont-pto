@@ -37,20 +37,8 @@
     .cal-toggle-btn { padding:8px 16px; border:1px solid var(--border); background:#fff; border-radius:8px;
                       font-family:inherit; font-size:13.5px; font-weight:700; color:var(--text-light); cursor:pointer; }
     .cal-toggle-btn.active { background:var(--primary-dark); border-color:var(--primary-dark); color:#fff; }
-    .cal-alert { display:flex; gap:10px; align-items:flex-start; background:#fff8e6; border:1px solid #f0dca0;
-                 border-radius:10px; padding:12px 14px; margin-bottom:8px; }
-    .cal-alert .n { font-weight:800; color:#8a6d1a; font-size:13px; white-space:nowrap; }
     .cal-office-layout { display:flex; gap:22px; align-items:flex-start; }
     .cal-main { flex:1; min-width:0; }
-    .cal-alerts-panel { width:270px; flex-shrink:0; background:#fff; border:1px solid var(--border);
-                         border-radius:12px; padding:14px; }
-    .cal-alerts-panel h4 { margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:.04em;
-                            color:var(--text-light); }
-    .cal-alerts-panel .cal-alert { flex-direction:column; gap:2px; }
-    @media (max-width:900px) {
-      .cal-office-layout { flex-direction:column; }
-      .cal-alerts-panel { width:100%; }
-    }
   </style>
 </head>
 <body>
@@ -84,10 +72,6 @@
         <div class="cal-main">
           <iframe id="cal-office-iframe" style="border:0;width:100%;min-height:900px;display:block" loading="lazy"></iframe>
         </div>
-        <aside class="cal-alerts-panel">
-          <h4>Coming Up</h4>
-          <div id="cal-alerts"></div>
-        </aside>
       </div>
       <div id="cal-public-view" style="display:none">
         <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
@@ -294,47 +278,6 @@
         const iframe = document.getElementById('cal-public-iframe');
         if (!iframe.src) iframe.src = '../events.html';
       };
-
-      loadCalendarAlerts();
-    }
-
-    // Alerts panel still reads Firestore directly (fast, no iframe round-trip) --
-    // everything else defers to the real tools above.
-    async function loadCalendarAlerts() {
-      const alertsBox = document.getElementById('cal-alerts');
-      try {
-        const [mine, districtWide, byField, byArray] = await Promise.all([
-          db.collection('pto_events').where('school', '==', school).get(),
-          db.collection('pto_events').where('school', '==', 'pto').get(),
-          db.collection('pages').where('school', '==', school).get(),
-          db.collection('pages').where('schools', 'array-contains', school).get()
-        ]);
-        const today = toYMD(new Date());
-        const soonCutoff = toYMD(new Date(Date.now() + 14 * 86400000));
-
-        const fromEvents = [...mine.docs, ...districtWide.docs].map(d => d.data());
-        const seenPages = new Map();
-        [...byField.docs, ...byArray.docs].forEach(d => seenPages.set(d.id, d));
-        const fromPages = [...seenPages.entries()].map(([id, d]) => {
-          const p = d.data();
-          return { title: p.title, date: p.eventDate, school, pageId: id };
-        });
-
-        const soon = [...fromEvents, ...fromPages]
-          .filter(e => e.date && e.date >= today && e.date <= soonCutoff)
-          .sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
-
-        // Clicking a page-backed event goes straight to its editor; a legacy quick
-        // calendar-only entry (no linked page) opens the full calendar tool instead.
-        alertsBox.innerHTML = soon.length ? soon.map(e => `
-          <a class="cal-alert" href="${e.pageId ? 'page-editor.html?id=' + e.pageId : 'calendar.html?s=' + school}" style="text-decoration:none;color:inherit;cursor:pointer">
-            <span class="n">⏰ ${esc(prettyDate(e.date))}</span>
-            <span>${esc(e.title)}${e.school === 'pto' ? ' <span style="color:#8a6d1a">(District)</span>' : ''}</span>
-          </a>`).join('')
-          : '<p style="color:var(--text-light)">Nothing coming up in the next two weeks.</p>';
-      } catch (e) {
-        alertsBox.innerHTML = '<p style="color:var(--error)">Could not load alerts: ' + esc(e.message) + '</p>';
-      }
     }
 
     /* ---------------- PAGES ---------------- */
