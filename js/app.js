@@ -1652,11 +1652,13 @@ document.addEventListener('DOMContentLoaded', () => {
     'snav-woestina': 'woestina.html', 'snav-jefferson': 'jefferson.html',
     'snav-middle': 'middle-school.html', 'snav-high': 'high-school.html'
   };
-  var currentPage = location.pathname.split('/').pop() || 'index.html';
+  // The live site's .htaccess strips ".html" from every URL (jefferson.html -> /jefferson),
+  // so compare extensionless -- comparing against the raw filename never matched live.
+  var currentPage = (location.pathname.split('/').pop() || 'index').replace(/\.html$/, '');
   document.querySelectorAll('.sidenav-toggle').forEach(function(btn) {
     var target = btn.getAttribute('data-target');
     var sub = document.getElementById(target);
-    if (SIDENAV_SCHOOL_PAGE[target] === currentPage && sub) {
+    if ((SIDENAV_SCHOOL_PAGE[target] || '').replace(/\.html$/, '') === currentPage && sub) {
       btn.classList.add('open'); sub.classList.add('open');
     }
     btn.addEventListener('click', function() {

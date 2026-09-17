@@ -194,11 +194,12 @@
       'snav-woestina': '/woestina.html', 'snav-jefferson': '/jefferson.html',
       'snav-middle': '/middle-school.html', 'snav-high': '/high-school.html'
     };
-    const currentPath = location.pathname.replace(/\/$/, '') || '/index.html';
+    // The live site's .htaccess strips ".html" from every URL, so compare extensionless.
+    const currentPath = (location.pathname.replace(/\/$/, '').replace(/\.html$/, '')) || '/index';
     document.querySelectorAll('.sidenav-toggle').forEach(btn => {
       const target = btn.getAttribute('data-target');
       const sub = document.getElementById(target);
-      if (SIDENAV_SCHOOL_PAGE[target] === currentPath && sub) {
+      if ((SIDENAV_SCHOOL_PAGE[target] || '').replace(/\.html$/, '') === currentPath && sub) {
         btn.classList.add('open'); sub.classList.add('open');
       }
       btn.addEventListener('click', () => {
