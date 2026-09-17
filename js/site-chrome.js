@@ -187,11 +187,18 @@
       const open = nl.classList.toggle('open');
       nt.setAttribute('aria-expanded', open);
     });
-    // sidebar collapsible submenus
+    // sidebar collapsible submenus — clicking a school also opens its page
+    const SIDENAV_SCHOOL_PAGE = {
+      'snav-woestina': '/woestina.html', 'snav-jefferson': '/jefferson.html',
+      'snav-middle': '/middle-school.html', 'snav-high': '/high-school.html'
+    };
     document.querySelectorAll('.sidenav-toggle').forEach(btn => {
       btn.addEventListener('click', () => {
-        const sub = document.getElementById(btn.getAttribute('data-target'));
+        const target = btn.getAttribute('data-target');
+        const sub = document.getElementById(target);
         if (sub) { btn.classList.toggle('open'); sub.classList.toggle('open'); }
+        const page = SIDENAV_SCHOOL_PAGE[target];
+        if (page) location.href = page;
       });
     });
   };

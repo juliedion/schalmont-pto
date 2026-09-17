@@ -1643,11 +1643,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 12000);
   })();
 
-  // Sidebar collapsible submenu toggles
+  // Sidebar collapsible submenu toggles — clicking a school also opens its page,
+  // not just the submenu, since the school name itself isn't a separate link.
+  var SIDENAV_SCHOOL_PAGE = {
+    'snav-woestina': 'woestina.html', 'snav-jefferson': 'jefferson.html',
+    'snav-middle': 'middle-school.html', 'snav-high': 'high-school.html'
+  };
   document.querySelectorAll('.sidenav-toggle').forEach(function(btn) {
     btn.addEventListener('click', function() {
-      var sub = document.getElementById(btn.getAttribute('data-target'));
+      var target = btn.getAttribute('data-target');
+      var sub = document.getElementById(target);
       if (sub) { btn.classList.toggle('open'); sub.classList.toggle('open'); }
+      var page = SIDENAV_SCHOOL_PAGE[target];
+      if (page) location.href = page;
     });
   });
 
