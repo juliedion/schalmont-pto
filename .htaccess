@@ -11,6 +11,9 @@ RewriteEngine On
   </FilesMatch>
 </IfModule>
 
+# Chocolate Bar Fundraiser now runs through Zeffy, not its own page
+RewriteRule ^chocolate(\.html)?/?$ https://www.zeffy.com/en-US/ticketing/gertrude-hawk-chocolate-bar-fundraiser-schalmont-pto [R=301,L]
+
 # Redirect old casino-night URL to casinoroyale
 RewriteRule ^casino-night$ /casinoroyale [R=301,L]
 
