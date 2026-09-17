@@ -524,8 +524,19 @@
           db.collection('pages').get()
         ]);
         const lastGcal = snap.docs.find(d => d.id === 'meta_gcal');
+        // Match tracker rows to their page by title -- keyed loosely (title only, not
+        // +date) since a page's own date can drift from the tracker's until someone
+        // presses "Update from tracker" on it. Good enough to send a click to the right
+        // editor; the merge-by-title+date below still needs the tighter key.
+        const pageIdByTitle = new Map(
+          pagesSnap.docs.map(d => [(d.data().title || '').trim().toLowerCase(), d.id])
+        );
         const fromEvents = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-          .filter(e => !e.id.startsWith('__') && !BOOKKEEPING.has(e.id));
+          .filter(e => !e.id.startsWith('__') && !BOOKKEEPING.has(e.id))
+          .map(e => {
+            const pageId = pageIdByTitle.get((e.title || '').trim().toLowerCase());
+            return pageId ? { ...e, pageId } : e;
+          });
         // Pages with an Event date show on the calendar too, so day-click-created pages
         // (see dateClick below) actually show up here, not just quick pto_events entries --
         // but skip any page that already has a matching tracker row (same title+date), or
@@ -603,8 +614,8 @@
               allDay: !timed,
               backgroundColor: '#f4f6f4', borderColor: color, textColor: '#333',
               classNames: ev.status === 'done' ? ['done'] : [],
-              extendedProps: ev.kind === 'page'
-                ? { kind: 'page', pageId: ev.pageId }
+              extendedProps: ev.kind === 'page' || ev.pageId
+                ? { kind: 'page', pageId: ev.pageId, docId: ev.id }
                 : { docId: ev.id, kind: 'event' }
             });
             if (showPromo && ev.promo) {
@@ -625,7 +636,7 @@
       cal.removeAllEvents();
       fcEvents.forEach(e => { try { cal.addEvent(e); } catch (err) { console.warn('addEvent failed', e, err); } });
 
-      const nEv = fcEvents.filter(e => e.extendedProps.kind === 'event').length;
+      const nEv = fcEvents.filter(e => e.extendedProps.kind !== 'promo').length;
       const total = allEvents.filter(e => isYMD(e.date)).length;
       const nCal = shown.size, allCal = Object.keys(SCHOOL_LABEL).length;
       const cnt = document.getElementById('cal-count');
