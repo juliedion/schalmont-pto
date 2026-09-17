@@ -726,7 +726,7 @@
     function refreshPreview() {
       const titleHtml = page.title ? `<h1>${esc(page.title)}</h1>` : '';
       document.getElementById('preview').innerHTML =
-        titleHtml + renderPageHeader(page) + renderBlocks(page.blocks);
+        titleHtml + renderPageHeader(page, true) + renderBlocks(page.blocks);
     }
 
     async function openPreview() {

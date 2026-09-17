@@ -1645,14 +1645,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Sidebar collapsible submenu toggles — clicking a school also opens its page,
   // not just the submenu, since the school name itself isn't a separate link.
+  // Clicking navigates away immediately, so the toggle-open animation would never
+  // be seen there -- instead, whichever school's page you're already on has its
+  // own submenu pre-opened, so arriving on e.g. jefferson.html shows it expanded.
   var SIDENAV_SCHOOL_PAGE = {
     'snav-woestina': 'woestina.html', 'snav-jefferson': 'jefferson.html',
     'snav-middle': 'middle-school.html', 'snav-high': 'high-school.html'
   };
+  var currentPage = location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.sidenav-toggle').forEach(function(btn) {
+    var target = btn.getAttribute('data-target');
+    var sub = document.getElementById(target);
+    if (SIDENAV_SCHOOL_PAGE[target] === currentPage && sub) {
+      btn.classList.add('open'); sub.classList.add('open');
+    }
     btn.addEventListener('click', function() {
-      var target = btn.getAttribute('data-target');
-      var sub = document.getElementById(target);
       if (sub) { btn.classList.toggle('open'); sub.classList.toggle('open'); }
       var page = SIDENAV_SCHOOL_PAGE[target];
       if (page) location.href = page;

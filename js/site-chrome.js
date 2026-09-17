@@ -187,15 +187,21 @@
       const open = nl.classList.toggle('open');
       nt.setAttribute('aria-expanded', open);
     });
-    // sidebar collapsible submenus — clicking a school also opens its page
+    // sidebar collapsible submenus — clicking a school also opens its page. Clicking
+    // navigates away immediately, so whichever school's page you're already on has its
+    // own submenu pre-opened instead, since the click-to-open animation is never seen there.
     const SIDENAV_SCHOOL_PAGE = {
       'snav-woestina': '/woestina.html', 'snav-jefferson': '/jefferson.html',
       'snav-middle': '/middle-school.html', 'snav-high': '/high-school.html'
     };
+    const currentPath = location.pathname.replace(/\/$/, '') || '/index.html';
     document.querySelectorAll('.sidenav-toggle').forEach(btn => {
+      const target = btn.getAttribute('data-target');
+      const sub = document.getElementById(target);
+      if (SIDENAV_SCHOOL_PAGE[target] === currentPath && sub) {
+        btn.classList.add('open'); sub.classList.add('open');
+      }
       btn.addEventListener('click', () => {
-        const target = btn.getAttribute('data-target');
-        const sub = document.getElementById(target);
         if (sub) { btn.classList.toggle('open'); sub.classList.toggle('open'); }
         const page = SIDENAV_SCHOOL_PAGE[target];
         if (page) location.href = page;
