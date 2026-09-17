@@ -58,24 +58,15 @@
     <!-- ============ CALENDAR ============ -->
     <section class="bo-panel active" id="panel-calendar">
       <div class="bo-tip">
-        <strong>Back Office</strong> is the real calendar editor — click a day to add something,
-        click an event to edit it. <strong>Public View</strong> is exactly the calendar page
-        families see at schalmontpto.com/events.
+        Click a day to add something, click an event to edit it.
       </div>
       <div class="cal-toggle">
-        <button class="cal-toggle-btn active" id="cal-view-office">Back Office</button>
-        <button class="cal-toggle-btn" id="cal-view-public">Public View</button>
         <a class="bo-btn ghost sm" href="#" id="cal-edit-link" target="_blank" style="margin-left:auto">Open in its own tab ↗</a>
       </div>
 
       <div id="cal-office-view" class="cal-office-layout">
         <div class="cal-main">
           <iframe id="cal-office-iframe" style="border:0;width:100%;min-height:900px;display:block" loading="lazy"></iframe>
-        </div>
-      </div>
-      <div id="cal-public-view" style="display:none">
-        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
-          <iframe id="cal-public-iframe" style="border:0;width:100%;min-height:900px;display:block" loading="lazy"></iframe>
         </div>
       </div>
     </section>
@@ -255,29 +246,12 @@
     });
 
     /* ---------------- CALENDAR ---------------- */
-    // Back Office = the real calendar tool (admin/calendar.html, FullCalendar-powered,
-    // with its own Month/Week/Day/List toggle) embedded in "chrome-less" mode (?embed=1
-    // skips its sidebar/header — see admin-core.js's requireAdmin). Public View = the
-    // actual live events.html page, so what's shown here is never a hand-built copy that
-    // can drift out of sync with the real site.
+    // The real calendar tool (admin/calendar.html, FullCalendar-powered, with its own
+    // Month/Week/Day/List toggle) embedded in "chrome-less" mode (?embed=1 skips its
+    // sidebar/header — see admin-core.js's requireAdmin).
     function initCalendarTab() {
       document.getElementById('cal-edit-link').href = 'calendar.html?s=' + school;
       document.getElementById('cal-office-iframe').src = 'calendar.html?s=' + school + '&embed=1';
-
-      const officeBtn = document.getElementById('cal-view-office');
-      const publicBtn = document.getElementById('cal-view-public');
-      const officeView = document.getElementById('cal-office-view');
-      const publicView = document.getElementById('cal-public-view');
-      officeBtn.onclick = () => {
-        officeBtn.classList.add('active'); publicBtn.classList.remove('active');
-        officeView.style.display = ''; publicView.style.display = 'none';
-      };
-      publicBtn.onclick = () => {
-        publicBtn.classList.add('active'); officeBtn.classList.remove('active');
-        publicView.style.display = ''; officeView.style.display = 'none';
-        const iframe = document.getElementById('cal-public-iframe');
-        if (!iframe.src) iframe.src = '../events.html';
-      };
     }
 
     /* ---------------- PAGES ---------------- */

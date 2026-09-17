@@ -918,16 +918,20 @@
         return 'Event';
       };
       const out = [];
-      for (const r of rows) {
+      // rowIndex is the row's position in the sheet (header excluded), kept stable even
+      // for skipped rows, so a row's Firestore identity survives editing its own date or
+      // title -- it's still "row 12", just with new content, instead of becoming a
+      // different event and leaving the old one behind. See sync functions below.
+      rows.forEach((r, rowIndex) => {
         const title = get(r, ci.title);
         const date = flexDate(get(r, ci.date), startYear);
-        if (!title || !date) continue;
+        if (!title || !date) return;
         const p = {};
         const f = flexDate(get(r, ci.flyer), startYear);   if (f) p.flyer = f;
         const s = flexDate(get(r, ci.social), startYear);   if (s) p.firstSocial = s;
         const u = flexDate(get(r, ci.signup), startYear);   if (u) p.planningStart = u;
         out.push({
-          title, date,
+          title, date, rowIndex,
           rowSchool: ci.school >= 0 ? schoolKey(get(r, ci.school)) : '',
           endDate: flexDate(get(r, ci.end), startYear),
           time: timeFromText(get(r, ci.time)) || timeFromText(get(r, ci.notes)),
@@ -937,7 +941,7 @@
           notes: get(r, ci.notes),
           promoSeed: p
         });
-      }
+      });
       if (!out.length) throw new Error('no rows had both an event name and a valid date');
       return out;
     }
@@ -1052,8 +1056,9 @@
         const seen = new Set();
         for (const ev of events) {
           const evSchool = scope === 'mixed' ? (ev.rowSchool || 'pto') : scope;
-          const id = ('sheet_' + evSchool + '_' + ev.date + '_' + ev.title).toLowerCase()
-            .replace(/[^a-z0-9_]+/g, '_').replace(/_+/g, '_').slice(0, 120);
+          // Keyed by the row's position in the sheet, not its content -- editing a row's
+          // date or title updates this same doc instead of leaving a stale one behind.
+          const id = ('sheet2_' + gid + '_' + ev.rowIndex);
           seen.add(id);
           if (skip.has(id)) continue;
           if (pinned.has(id)) { kept++; continue; }
@@ -1133,8 +1138,8 @@
         let added = 0;
         events.forEach(ev => {
           const evSchool = ev.rowSchool || 'pto';
-          const id = ('sheet_' + evSchool + '_' + ev.date + '_' + ev.title).toLowerCase()
-            .replace(/[^a-z0-9_]+/g, '_').replace(/_+/g, '_').slice(0, 120);
+          // Keyed by the row's position in the sheet, not its content -- see sheetToEvents.
+          const id = ('sheet2_' + tab.gid + '_' + ev.rowIndex);
           if (skip.has(id) || pinned.has(id)) return;
           const fields = {
             title: ev.title, date: ev.date, endDate: ev.endDate || '',
