@@ -247,7 +247,7 @@ function renderShell() {
     return `
     <div class="bo-school-group">
       <a href="school.html?s=${s}" class="bo-navlink bo-school-toggle${isOpen ? ' open' : ''}" data-school-target="bosec-${s}">
-        <span class="bo-navicon">🏫</span>${esc(SCHOOLS[s])}
+        <span class="bo-school-toggle-label"><span class="bo-navicon">🏫</span>${esc(SCHOOLS[s])}</span>
         <span class="bo-navarrow">&#9660;</span>
       </a>
       <div class="bo-school-sections${isOpen ? ' open' : ''}" id="bosec-${s}"

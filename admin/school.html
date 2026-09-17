@@ -64,6 +64,13 @@
         <a class="bo-btn ghost sm" href="#" id="cal-edit-link" target="_blank" style="margin-left:auto">Open in its own tab ↗</a>
       </div>
 
+      <div class="cal-bar" style="margin-bottom:10px">
+        <button class="bo-btn sm" id="pcal-add-btn">＋ New event</button>
+        <button class="bo-btn ghost sm" id="pcal-sheet-btn" style="display:none">⬆ Update from the planning spreadsheet</button>
+        <button class="bo-btn ghost sm" id="pcal-district-btn" style="display:none">↻ Sync District calendar</button>
+        <button class="bo-btn ghost sm" id="pcal-tracker-btn">↻ Sync with tracker</button>
+      </div>
+
       <div id="cal-office-view" class="cal-office-layout">
         <div class="cal-main">
           <iframe id="cal-office-iframe" style="border:0;width:100%;min-height:900px;display:block" loading="lazy"></iframe>
@@ -248,10 +255,30 @@
     /* ---------------- CALENDAR ---------------- */
     // The real calendar tool (admin/calendar.html, FullCalendar-powered, with its own
     // Month/Week/Day/List toggle) embedded in "chrome-less" mode (?embed=1 skips its
-    // sidebar/header — see admin-core.js's requireAdmin).
+    // sidebar/header AND its own copy of this same toolbar — see admin-core.js's
+    // requireAdmin). This page's toolbar buttons sit outside the iframe, outside the
+    // calendar's own white box, and just proxy their click into the real button inside
+    // the (same-origin) iframe, so there's only one implementation of each action.
     function initCalendarTab() {
       document.getElementById('cal-edit-link').href = 'calendar.html?s=' + school;
-      document.getElementById('cal-office-iframe').src = 'calendar.html?s=' + school + '&embed=1';
+      const iframe = document.getElementById('cal-office-iframe');
+      iframe.src = 'calendar.html?s=' + school + '&embed=1';
+
+      document.getElementById('pcal-sheet-btn').style.display = ME.isSuper ? '' : 'none';
+      document.getElementById('pcal-district-btn').style.display = ME.isSuper ? '' : 'none';
+
+      const proxyClick = (innerId) => {
+        try {
+          const doc = iframe.contentWindow && iframe.contentWindow.document;
+          const btn = doc && doc.getElementById(innerId);
+          if (btn) { btn.click(); return; }
+        } catch (_) { /* not loaded yet -- fall through */ }
+        toast('Still loading the calendar — try again in a moment', 'error');
+      };
+      document.getElementById('pcal-add-btn').onclick = () => proxyClick('add-btn');
+      document.getElementById('pcal-sheet-btn').onclick = () => proxyClick('sheet-btn');
+      document.getElementById('pcal-district-btn').onclick = () => proxyClick('district-btn');
+      document.getElementById('pcal-tracker-btn').onclick = () => proxyClick('tracker-pages-btn');
     }
 
     /* ---------------- PAGES ---------------- */

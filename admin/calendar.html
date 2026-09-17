@@ -124,7 +124,7 @@
         <input type="checkbox" id="show-promo" checked> Show flyer &amp; social dates
       </label>
     </div>
-    <div class="cal-bar" style="margin-bottom:10px">
+    <div class="cal-bar" style="margin-bottom:10px" id="cal-toolbar">
       <button class="bo-btn sm" id="add-btn">＋ New event</button>
       <button class="bo-btn ghost sm" id="sheet-btn">⬆ Update from the planning spreadsheet</button>
       <button class="bo-btn ghost sm" id="district-btn">↻ Sync District calendar</button>
@@ -301,18 +301,24 @@
       if (getParam('embed') === '1') {
         document.getElementById('cal-page-head').style.display = 'none';
         document.getElementById('bo-main').style.padding = '4px 4px 24px';
+        // The school workspace's own Calendar tab (school.html) renders a matching
+        // toolbar itself, outside this iframe, and proxies clicks into these same
+        // buttons -- so this copy inside the embed would just be a confusing duplicate.
+        document.getElementById('cal-toolbar').style.display = 'none';
       }
-      // Opened from a school workspace → start with just that calendar (plus District);
-      // opened from the top level → show every calendar.
-      // District is off by default -- turn it on with the toggle if you want it layered in.
-      const preselect = s && SCHOOLS[s] && s !== 'pto' ? [s] : Object.keys(SCHOOL_LABEL).filter(k => k !== 'pto');
+      // Opened from a school workspace → only offer that school's own calendar (plus
+      // District, off by default -- turn it on with the toggle if you want it layered in);
+      // opened from the top level → every school is a real option, so show them all.
+      const scoped = s && SCHOOLS[s] && s !== 'pto';
+      const preselect = scoped ? [s] : Object.keys(SCHOOL_LABEL).filter(k => k !== 'pto');
+      const renderKeys = scoped ? [s, 'pto'] : null;
       if (s && SCHOOLS[s]) {
         const b = document.getElementById('back-school');
         b.style.display = ''; b.href = 'school.html?s=' + s;
         document.getElementById('back-school-name').textContent = SCHOOLS[s];
       }
 
-      buildSchoolToggles(preselect);
+      buildSchoolToggles(preselect, renderKeys);
       buildCalendar();
       document.getElementById('show-promo').onchange = refresh;
       document.getElementById('add-btn').onclick = () => openModal(null, toYMD(new Date()));
@@ -551,10 +557,10 @@
     const isYMD = v => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
 
     // ---- which calendars are ticked ----
-    function buildSchoolToggles(preselect) {
+    function buildSchoolToggles(preselect, renderKeys) {
       const on = new Set(preselect);
       const wrap = document.getElementById('school-toggles');
-      wrap.innerHTML = Object.keys(SCHOOL_LABEL).map(k => `
+      wrap.innerHTML = (renderKeys || Object.keys(SCHOOL_LABEL)).map(k => `
         <label data-k="${k}" style="color:${SCHOOL_COLOR[k]}">
           <input type="checkbox" value="${k}" ${on.has(k) ? 'checked' : ''}>
           <i class="cal-dot" style="background:${SCHOOL_COLOR[k]}"></i>${SCHOOL_LABEL[k]}

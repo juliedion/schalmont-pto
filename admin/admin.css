@@ -57,6 +57,7 @@ body.bo-has-shell {
    list open right underneath -- see admin-core.js renderShell(). */
 .bo-school-group { margin-bottom: 2px; }
 .bo-school-toggle { justify-content: space-between; }
+.bo-school-toggle-label { display: flex; align-items: center; gap: 9px; }
 .bo-navarrow { font-size: 9px; opacity: .6; transition: transform .15s; }
 .bo-school-toggle.open .bo-navarrow { transform: rotate(180deg); }
 .bo-school-sections {
