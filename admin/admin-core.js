@@ -147,8 +147,14 @@ function requireAdmin(onReady) {
 
     // A page opened with ?embed=1 (e.g. the calendar tool inside a school workspace's
     // own Calendar tab) skips the sidebar/header entirely -- it's already inside a page
-    // that has its own back-office chrome.
-    if (getParam('embed') !== '1') renderShell();
+    // that has its own back-office chrome. A page can also opt out of just the sidebar
+    // (keeping the help widget) by setting window.BO_NO_SIDEBAR before calling
+    // requireAdmin -- the page editor does this so building a page isn't squeezed
+    // next to the full Schools/sections nav.
+    if (getParam('embed') !== '1') {
+      if (window.BO_NO_SIDEBAR) renderHelpWidget();
+      else renderShell();
+    }
     const gate = document.getElementById('bo-loading');
     if (gate) gate.remove();
     const main = document.getElementById('bo-main');
