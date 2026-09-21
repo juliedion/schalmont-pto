@@ -64,6 +64,12 @@
         <p>One-time: creates the sign-up sheet (Mon 9/28 &ndash; Fri 10/2, 9&ndash;11am and 12&ndash;2pm)
            and a draft page with it embedded. You review and publish.</p>
       </a>
+      <a class="bo-card" href="#" id="fallpages-card" style="display:none">
+        <span class="bo-cardicon">🍂</span>
+        <h3>Create fall event pages</h3>
+        <p>One-time: makes draft pages for Brawl for the Ball, Tat the Teacher, Homecoming and
+           Light Up Schalmont with Santa, with dates from the tracker. Skips any that already have a page.</p>
+      </a>
       <a class="bo-card" href="#" id="sidebar-cleanup-card" style="display:none">
         <span class="bo-cardicon">🧹</span>
         <h3>Clear event links from sidebars</h3>
@@ -142,6 +148,39 @@
         };
       }
       if (me.isSuper) {
+        const fpCard = document.getElementById('fallpages-card');
+        fpCard.style.display = '';
+        fpCard.onclick = async (e) => {
+          e.preventDefault();
+          // Dates and times come from the planning tracker; Homecoming is the 10/16
+          // finale day of Homecoming / Tat the Teacher week -- check it before publishing.
+          const SPECS = [
+            { title: 'Brawl for the Ball', date: '2026-11-13', end: '', time: '18:00' },
+            { title: 'Tat the Teacher', date: '2026-10-12', end: '2026-10-16', time: '' },
+            { title: 'Homecoming', date: '2026-10-16', end: '', time: '' },
+            { title: 'Light Up Schalmont with Santa', date: '2026-12-11', end: '', time: '18:00' }
+          ];
+          try {
+            const have = new Set((await db.collection('pages').get()).docs
+              .map(d => (d.data().title || '').trim().toLowerCase()));
+            const todo = SPECS.filter(x => !have.has(x.title.toLowerCase()));
+            if (!todo.length) { toast('All four already have pages'); return; }
+            if (!confirm('Create draft pages for: ' + todo.map(x => x.title).join(', ') + '?')) return;
+            const schools = ['middle', 'high'];
+            for (const x of todo) {
+              await db.collection('pages').add({
+                category: 'events', schools, school: routingSchool(schools),
+                title: x.title, slug: slugify(x.title),
+                showInTopMenu: false, showInLeftMenu: false,
+                eventDate: x.date, eventEndDate: x.end, eventTime: x.time, eventLocation: '',
+                status: 'draft', blocks: [],
+                createdBy: me.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+              });
+            }
+            toast('✓ Created ' + todo.length + ' draft page' + (todo.length === 1 ? '' : 's'));
+            location.href = 'section.html?cat=events&s=middle';
+          } catch (err) { toast('Could not create pages: ' + err.message, 'error'); }
+        };
         document.getElementById('people-card').style.display = '';
         document.getElementById('directory-card').style.display = '';
         document.getElementById('sidebar-cleanup-card').style.display = '';
