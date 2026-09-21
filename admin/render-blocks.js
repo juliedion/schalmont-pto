@@ -129,7 +129,9 @@
     if (page.flyerUrl) {
       html += `<img src="${e(page.flyerUrl)}" alt="Event flyer" class="pg-flyer">`;
     }
-    const date = prettyDate(page.eventDate);
+    // A multi-day event shows as a range; an end date on or before the start is ignored.
+    const endDate = page.eventDate && page.eventEndDate && page.eventEndDate > page.eventDate ? prettyDate(page.eventEndDate) : '';
+    const date = prettyDate(page.eventDate) + (endDate ? ' – ' + endDate : '');
     const time = prettyTime(page.eventTime);
     const endTime = prettyTime(page.eventEndTime);
     const timeRange = time && endTime ? `${time} – ${endTime}` : time;

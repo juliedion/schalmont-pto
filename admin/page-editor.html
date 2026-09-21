@@ -76,13 +76,15 @@
         <div id="tracker-sync-row" style="display:none;margin-bottom:12px">
           <button type="button" class="bo-btn ghost sm" id="tracker-sync-btn">↻ Update from tracker</button>
           <span style="font-size:12px;color:var(--text-light);margin-left:6px">
-            Pulls the date, time and location from this event's row in the planning spreadsheet.
+            Pulls the date, end date, time and location from this event's row in the planning spreadsheet.
             Won't touch anything else on this page.
           </span>
         </div>
         <div style="display:flex;gap:14px;flex-wrap:wrap">
           <div class="bo-blockfield"><label>Date</label>
             <input type="date" id="event-date"></div>
+          <div class="bo-blockfield"><label>End date <span style="font-weight:400;color:var(--text-light)">(for multi-day events)</span></label>
+            <input type="date" id="event-enddate"></div>
           <div class="bo-blockfield"><label>Start time</label>
             <input type="time" id="event-time"></div>
           <div class="bo-blockfield"><label>End time <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
@@ -218,6 +220,7 @@
       document.getElementById('page-title').value = page.title || '';
       document.getElementById('page-slug').value = page.slug || '';
       document.getElementById('event-date').value = page.eventDate || '';
+      document.getElementById('event-enddate').value = page.eventEndDate || '';
       document.getElementById('event-time').value = page.eventTime || '';
       document.getElementById('event-endtime').value = page.eventEndTime || '';
       document.getElementById('event-location').value = page.eventLocation || '';
@@ -256,9 +259,11 @@
       if (!confirm('Replace this page\'s date, time and location with the tracker\'s values?\n\n' +
         `Date: ${trackerRow.date || '(none)'}\nTime: ${trackerRow.time || '(none)'}\nLocation: ${trackerRow.location || '(none)'}`)) return;
       page.eventDate = trackerRow.date || '';
+      page.eventEndDate = trackerRow.endDate || '';
       page.eventTime = trackerRow.time || '';
       page.eventLocation = trackerRow.location || '';
       document.getElementById('event-date').value = page.eventDate;
+      document.getElementById('event-enddate').value = page.eventEndDate;
       document.getElementById('event-time').value = page.eventTime;
       document.getElementById('event-location').value = page.eventLocation;
       refreshPreview();
@@ -419,6 +424,8 @@
       const ed = document.getElementById('event-date'), et = document.getElementById('event-time'),
             eet = document.getElementById('event-endtime'), el = document.getElementById('event-location');
       ed.oninput = () => { page.eventDate = ed.value; refreshPreview(); };
+      const eed = document.getElementById('event-enddate');
+      eed.oninput = () => { page.eventEndDate = eed.value; refreshPreview(); };
       et.oninput = () => { page.eventTime = et.value; refreshPreview(); };
       eet.oninput = () => { page.eventEndTime = eet.value; refreshPreview(); };
       el.oninput = () => { page.eventLocation = el.value.trim(); refreshPreview(); };
@@ -784,7 +791,7 @@
         schools: page.schools, school,
         blocks: page.blocks,
         eventDate: page.eventDate || '', eventTime: page.eventTime || '',
-        eventEndTime: page.eventEndTime || '',
+        eventEndTime: page.eventEndTime || '', eventEndDate: page.eventEndDate || '',
         eventLocation: page.eventLocation || '', flyerUrl: page.flyerUrl || '',
         hideCard: page.hideCard,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -839,7 +846,7 @@
         const exists = evSnap.docs.some(d => (d.data().title || '').trim().toLowerCase() === key);
         if (exists) return;
         await db.collection('pto_events').add({
-          title: page.title.trim(), date: page.eventDate, endDate: '',
+          title: page.title.trim(), date: page.eventDate, endDate: page.eventEndDate || '',
           time: page.eventTime || '', location: page.eventLocation || '',
           school, category: '', status: 'confirmed', source: 'page', pageId,
           createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()

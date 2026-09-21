@@ -501,7 +501,7 @@
           batch.set(db.collection('pages').doc(), {
             category: 'events', schools: [sch], school: sch,
             title: e.title, slug: slugify(e.title),
-            eventDate: e.date, eventTime: e.time || '', eventLocation: e.location || '',
+            eventDate: e.date, eventEndDate: e.endDate || '', eventTime: e.time || '', eventLocation: e.location || '',
             status: 'draft', blocks: [],
             createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
@@ -548,7 +548,7 @@
           .filter(({ p }) => p.eventDate && !trackerKeys.has((p.title || '').trim().toLowerCase() + '|' + p.eventDate))
           .map(({ id, p }) => ({
             id: 'page-' + id, kind: 'page', pageId: id,
-            title: p.title, date: p.eventDate, time: p.eventTime || '', endDate: '',
+            title: p.title, date: p.eventDate, time: p.eventTime || '', endDate: p.eventEndDate || '',
             school: routingSchool(pageSchools(p)),
             status: p.status === 'published' ? 'confirmed' : 'idea'
           }));
@@ -775,7 +775,7 @@
         await db.collection('pages').add({
           category: 'events', schools: [sch], school: sch,
           title: ev.title, slug: slugify(ev.title),
-          eventDate: ev.date, eventTime: ev.time || '', eventLocation: ev.location || '',
+          eventDate: ev.date, eventEndDate: ev.endDate || '', eventTime: ev.time || '', eventLocation: ev.location || '',
           status: 'draft', blocks: [],
           createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
