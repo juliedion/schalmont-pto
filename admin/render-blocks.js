@@ -126,12 +126,22 @@
     return `${h}:${m} ${ap}`;
   }
 
-  /* Flyer image + event date/time/location card, shown above the blocks.
-     `forAdmin` shows the internal facility-request reminder -- only the page
-     editor's own live preview (admin-only, signed in) passes true; the public
-     page viewer (p.html) never does, even in its own admin preview mode,
-     since that reminder is for whoever is building the page, not visitors. */
-  global.renderPageHeader = function (page, forAdmin) {
+  /* The internal reminder to file the district's official facility-use PDF -- not a
+     website form, since that process legally requires a wet signature and a submitted
+     Certificate of Liability reviewed by the district itself. Shown only in the page
+     editor's own live preview (never on the real public page -- it's a note for
+     whoever is building the page, not visitors), and shown ABOVE the page title so it
+     can't be missed. Kept separate from renderPageHeader() so the caller controls
+     where it lands relative to the title. */
+  global.renderFacilityNotice = function (page) {
+    if (page.category !== 'events') return '';
+    return `<div class="pg-facility-request">
+      <a href="https://www.schalmont.org/wp-content/uploads/2023/03/Schalmont_Facilities_Use_Request_Form.pdf" target="_blank" rel="noopener" class="pg-btn outline">📋 Request Facility Use (District Form) →</a>
+    </div>`;
+  };
+
+  /* Flyer image + event date/time/location card, shown above the blocks. */
+  global.renderPageHeader = function (page) {
     let html = '';
     if (page.flyerUrl) {
       html += `<img src="${e(page.flyerUrl)}" alt="Event flyer" class="pg-flyer">`;
@@ -153,14 +163,6 @@
         html += `<div class="pg-eventrow"><span class="pg-eventicon">📍</span><a href="${e(maps)}" target="_blank" rel="noopener">${e(loc)}</a></div>`;
       }
       html += '</div>';
-    }
-    // Every event page links to the district's official facility-use request PDF --
-    // not a website form, since that process legally requires a wet signature and a
-    // submitted Certificate of Liability reviewed by the district itself.
-    if (forAdmin && page.category === 'events') {
-      html += `<div class="pg-facility-request">
-        <a href="https://www.schalmont.org/wp-content/uploads/2023/03/Schalmont_Facilities_Use_Request_Form.pdf" target="_blank" rel="noopener" class="pg-btn outline">📋 Request Facility Use (District Form) →</a>
-      </div>`;
     }
     return html;
   };

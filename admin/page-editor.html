@@ -986,7 +986,7 @@
     function refreshPreview() {
       const titleHtml = page.title ? `<h1>${esc(page.title)}</h1>` : '';
       document.getElementById('preview').innerHTML =
-        titleHtml + renderPageHeader(page, true) + renderBlocks(page.blocks);
+        renderFacilityNotice(page) + titleHtml + renderPageHeader(page) + renderBlocks(page.blocks);
       // Debounced so typing elsewhere on the page doesn't re-fetch every sign-up
       // sheet on every keystroke -- only once things settle down for a moment.
       clearTimeout(signupMountTimer);
