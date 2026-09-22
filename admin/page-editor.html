@@ -606,7 +606,7 @@
           <div class="bo-block-head">
             <span class="bo-block-drag" title="Drag to reorder" aria-hidden="true">⠿</span>
             <span class="bo-block-type">${labelFor(b.type)}</span>
-            ${b.type !== 'columns' ? '<button data-split title="Turn this into a row of columns, keeping this block as the first column">⊞ Split into Columns</button>' : ''}
+            ${b.type !== 'columns' ? '<button data-split title="Turn this into a row of columns, keeping this block as the first column">⊞ Split into Columns</button>' : '<button data-ungroup title="Undo the columns -- puts every block from every column back as normal, one after another">↩ Ungroup Columns</button>'}
             <button data-mv="-1" title="Move up">▲</button>
             <button data-mv="1" title="Move down">▼</button>
             <button data-rm title="Delete this block">✕</button>
@@ -615,6 +615,23 @@
         if (b.type !== 'columns') {
           box.querySelector('[data-split]').onclick = () => {
             page.blocks.splice(i, 1, { type: 'columns', count: 2, cells: [{ blocks: [b] }, { blocks: [] }] });
+            renderBlockEditors(); refreshPreview();
+          };
+        } else {
+          box.querySelector('[data-ungroup]').onclick = () => {
+            // Flatten every column's blocks back into the page, in column order, right
+            // where this row was. A cell using the old fixed-field shape (never opened
+            // in the editor since being created) converts to blocks the same way the
+            // column editor itself does.
+            const flattened = [];
+            (b.cells || []).forEach(c => {
+              if (Array.isArray(c.blocks)) { flattened.push(...c.blocks); return; }
+              if (c.imageUrl) flattened.push({ type: 'image', url: c.imageUrl, alt: c.imageAlt || '' });
+              if (c.heading) flattened.push({ type: 'heading', level: 3, text: c.heading });
+              if (c.body) flattened.push({ type: 'paragraph', text: c.body });
+              if (c.buttonLabel) flattened.push({ type: 'button', label: c.buttonLabel, href: c.buttonHref || '', style: 'solid' });
+            });
+            page.blocks.splice(i, 1, ...flattened);
             renderBlockEditors(); refreshPreview();
           };
         }
