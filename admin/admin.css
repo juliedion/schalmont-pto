@@ -239,6 +239,12 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 .pg-su-names span { display: inline-block; background: var(--light-bg); border: 1px solid var(--border); border-radius: 20px; padding: 2px 10px; margin: 2px 3px 0 0; }
 .pg-su-open { display: inline-block; padding: 7px 16px; font-size: 13px; font-weight: 700; font-family: inherit; background: #fff; color: var(--primary); border: 2px solid var(--primary); border-radius: var(--radius); cursor: pointer; }
 .pg-su-open:hover { background: var(--primary); color: #fff; }
+.pg-su-mine { font-size: 13px; color: var(--text); background: var(--light-bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-bottom: 4px; }
+.pg-su-cancel, .pg-su-edit { font-family: inherit; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; cursor: pointer; margin-left: 4px; }
+.pg-su-edit { background: #fff; color: var(--primary); border: 1.5px solid var(--primary); }
+.pg-su-edit:hover { background: var(--primary); color: #fff; }
+.pg-su-cancel { background: #fff; color: #8b1a14; border: 1.5px solid #d98a83; }
+.pg-su-cancel:hover { background: #8b1a14; color: #fff; border-color: #8b1a14; }
 .pg-su-submit { display: inline-block; padding: 11px 24px; font-size: 14px; font-weight: 700; font-family: inherit; background: var(--secondary); color: var(--primary-dark); border: 2px solid var(--secondary); border-radius: var(--radius); cursor: pointer; }
 .pg-su-submit:hover { background: var(--secondary-dark); border-color: var(--secondary-dark); }
 .pg-su-submit:disabled { opacity: 0.6; cursor: default; }

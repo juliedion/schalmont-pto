@@ -34,6 +34,12 @@
     .su-names span { display:inline-block; background:var(--light-bg); border:1px solid var(--border); border-radius:20px; padding:2px 10px; margin:2px 3px 0 0; }
     .su-open { display:inline-block; padding:7px 16px; font-size:13px; font-weight:700; font-family:inherit; background:#fff; color:var(--primary); border:2px solid var(--primary); border-radius:var(--radius); cursor:pointer; }
     .su-open:hover { background:var(--primary); color:#fff; }
+    .su-mine { font-size:13px; color:var(--text); background:var(--light-bg); border:1px solid var(--border); border-radius:8px; padding:8px 10px; margin-bottom:4px; }
+    .su-cancel, .su-edit { font-family:inherit; font-size:12px; font-weight:700; padding:4px 10px; border-radius:20px; cursor:pointer; margin-left:4px; }
+    .su-edit { background:#fff; color:var(--primary); border:1.5px solid var(--primary); }
+    .su-edit:hover { background:var(--primary); color:#fff; }
+    .su-cancel { background:#fff; color:#8b1a14; border:1.5px solid #d98a83; }
+    .su-cancel:hover { background:#8b1a14; color:#fff; border-color:#8b1a14; }
     .su-submit { display:inline-block; padding:11px 24px; font-size:14px; font-weight:700; font-family:inherit; background:var(--secondary); color:var(--primary-dark); border:2px solid var(--secondary); border-radius:var(--radius); cursor:pointer; }
     .su-submit:hover { background:var(--secondary-dark); border-color:var(--secondary-dark); }
     .su-submit:disabled { opacity:.6; cursor:default; }
@@ -104,6 +110,23 @@
       return h + ':' + p[1] + ' ' + ap;
     }
 
+    // ---- "my signups" (per-browser, per-sheet) ----
+    function mineKey(id) { return 'pto_su_mine_' + id; }
+    function getMine(id) {
+      try { return JSON.parse(localStorage.getItem(mineKey(id)) || '[]'); } catch (e) { return []; }
+    }
+    function setMine(id, list) {
+      try { localStorage.setItem(mineKey(id), JSON.stringify(list)); } catch (e) { /* ignore */ }
+    }
+    function rememberMine(id, entry) {
+      var list = getMine(id).filter(function (m) { return m.entryId !== entry.entryId; });
+      list.push(entry);
+      setMine(id, list);
+    }
+    function forgetMine(id, entryId) {
+      setMine(id, getMine(id).filter(function (m) { return m.entryId !== entryId; }));
+    }
+
     if (!ID) { app.innerHTML = '<p class="su-err">Missing sign-up link.</p>'; }
     else load();
 
@@ -120,12 +143,34 @@
       }).catch(function (e) { app.innerHTML = '<p class="su-err">Could not load this sheet. ' + esc(e.message) + '</p>'; });
     }
 
-    function render(sheet, slotDocs, entryDocs) {
+    function loadWithPrefill(slotId, priorFields) {
+      db.collection('signups').doc(ID).get().then(function (snap) {
+        var sheet = snap.data();
+        Promise.all([
+          db.collection('signups').doc(ID).collection('slots').orderBy('order').get(),
+          db.collection('signups').doc(ID).collection('entries').get()
+        ]).then(function (res) {
+          render(sheet, res[0].docs, res[1].docs, {
+            slotId: slotId, open: true,
+            name: priorFields.name, email: priorFields.email, phone: priorFields.phone, comment: priorFields.comment
+          });
+        });
+      });
+    }
+
+    function render(sheet, slotDocs, entryDocs, prefill) {
       var byName = {};
+      var liveIds = {};
       entryDocs.forEach(function (d) {
         var e = d.data();
+        liveIds[d.id] = !e.cancelled;
+        if (e.cancelled) return;
         (byName[e.slotId] = byName[e.slotId] || []).push({ name: e.name, count: e.count || 1 });
       });
+      var mine = getMine(ID).filter(function (m) { return liveIds[m.entryId]; });
+      setMine(ID, mine);
+      var mineBySlot = {};
+      mine.forEach(function (m) { mineBySlot[m.slotId] = m; });
       var closed = sheet.status === 'closed';
       document.title = (sheet.title || 'Sign Up') + ' — Schalmont PTO';
       titleEl.textContent = sheet.title || 'Sign Up';
@@ -151,27 +196,22 @@
         var names = (byName[d.id] || []).map(function (n) {
           return '<span>' + esc(n.name) + (n.count > 1 ? ' (' + n.count + ')' : '') + '</span>';
         }).join('');
+        var myEntry = mineBySlot[d.id];
         html += '<div class="su-slot" data-slot="' + d.id + '">';
         html += '<h3>' + esc(s.label || 'Slot') + '</h3>';
         if (when) html += '<div class="su-when">' + esc(when) + '</div>';
         html += '<div class="su-spots ' + (full ? 'full' : 'ok') + '">' +
           (cap ? (full ? 'Full' : left + ' of ' + cap + ' spot' + (cap === 1 ? '' : 's') + ' left') : (taken ? taken + ' signed up' : 'Open — sign up below')) + '</div>';
         if (names) html += '<div class="su-names">' + names + '</div>';
-        if (!closed && !full) {
+        if (myEntry) {
+          html += '<div class="su-mine">You\'re signed up as <strong>' + esc(myEntry.name) + '</strong> ' +
+            '<button type="button" class="su-edit" data-entry="' + esc(myEntry.entryId) + '">Edit</button> ' +
+            '<button type="button" class="su-cancel" data-entry="' + esc(myEntry.entryId) + '">Cancel</button></div>';
+        } else if (!closed && !full) {
           html += '<button class="su-open">Sign up</button>';
-          html += '<form class="su-form">' +
-            '<label>Your name</label><input name="name" required maxlength="80" placeholder="First and last name">' +
-            '<div class="su-row2">' +
-              '<div><label>How many people / spots?</label><input name="count" type="number" min="1" max="20" value="1"></div>' +
-              '<div><label>Email <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="email" type="email"></div>' +
-            '</div>' +
-            '<div class="su-row2">' +
-              '<div><label>Phone <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="phone"></div>' +
-              '<div><label>Note to organizer <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="comment" maxlength="200"></div>' +
-            '</div>' +
-            '<div style="margin-top:12px"><button type="submit" class="su-submit">Sign me up</button></div>' +
-            '<div class="su-msg"></div>' +
-          '</form>';
+        }
+        if (!myEntry && !closed && (!full || (prefill && prefill.slotId === d.id))) {
+          html += formHtml(prefill && prefill.slotId === d.id ? prefill : null);
         }
         html += '</div>';
       });
@@ -183,7 +223,31 @@
       });
       app.querySelectorAll('.su-form').forEach(function (form) {
         form.onsubmit = function (ev) { ev.preventDefault(); submit(form); };
+        if (form.classList.contains('open')) form.name.focus();
       });
+      app.querySelectorAll('.su-cancel').forEach(function (b) {
+        b.onclick = function () { cancelClicked(b.closest('.su-slot').dataset.slot, b.dataset.entry, false); };
+      });
+      app.querySelectorAll('.su-edit').forEach(function (b) {
+        b.onclick = function () { cancelClicked(b.closest('.su-slot').dataset.slot, b.dataset.entry, true); };
+      });
+    }
+
+    function formHtml(prefill) {
+      prefill = prefill || {};
+      return '<form class="su-form' + (prefill.open ? ' open' : '') + '">' +
+        '<label>Your name</label><input name="name" required maxlength="80" placeholder="First and last name" value="' + esc(prefill.name || '') + '">' +
+        '<div class="su-row2">' +
+          '<div><label>How many people / spots?</label><input name="count" type="number" min="1" max="20" value="' + esc(prefill.count || 1) + '"></div>' +
+          '<div><label>Email</label><input name="email" type="email" required value="' + esc(prefill.email || '') + '"></div>' +
+        '</div>' +
+        '<div class="su-row2">' +
+          '<div><label>Phone</label><input name="phone" required value="' + esc(prefill.phone || '') + '"></div>' +
+          '<div><label>Note to organizer <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="comment" maxlength="200" value="' + esc(prefill.comment || '') + '"></div>' +
+        '</div>' +
+        '<div style="margin-top:12px"><button type="submit" class="su-submit">Sign me up</button></div>' +
+        '<div class="su-msg"></div>' +
+      '</form>';
     }
 
     function submit(form) {
@@ -193,11 +257,14 @@
       var count = Math.max(1, Math.min(20, parseInt(form.count.value, 10) || 1));
       var email = form.email.value.trim(), phone = form.phone.value.trim(), comment = form.comment.value.trim();
       var msg = form.querySelector('.su-msg');
-      if (!name) { msg.className = 'su-msg su-err'; msg.textContent = 'Please enter your name.'; return; }
+      if (!name || !email || !phone) {
+        msg.className = 'su-msg su-err'; msg.textContent = 'Name, email and phone are all required.'; return;
+      }
       var btn = form.querySelector('button[type=submit]'); btn.disabled = true;
       msg.className = 'su-msg'; msg.textContent = 'Saving…';
 
       var slotRef = db.collection('signups').doc(ID).collection('slots').doc(slotId);
+      var newEntryId = null;
       db.runTransaction(function (tx) {
         return tx.get(slotRef).then(function (s) {
           if (!s.exists) throw new Error('That slot is no longer available.');
@@ -205,18 +272,49 @@
           if (d.capacity && taken + count > d.capacity) throw new Error('Sorry — not enough spots left.');
           tx.update(slotRef, { taken: taken + count });
           var eref = db.collection('signups').doc(ID).collection('entries').doc();
+          newEntryId = eref.id;
           tx.set(eref, { slotId: slotId, name: name, count: count, at: firebase.firestore.FieldValue.serverTimestamp() });
-          if (email || phone || comment) {
-            tx.set(db.collection('signups').doc(ID).collection('contacts').doc(eref.id),
-              { email: email, phone: phone, comment: comment });
-          }
+          tx.set(db.collection('signups').doc(ID).collection('contacts').doc(eref.id),
+            { email: email, phone: phone, comment: comment });
         });
       }).then(function () {
+        rememberMine(ID, { entryId: newEntryId, slotId: slotId, name: name, email: email, phone: phone, comment: comment });
         msg.className = 'su-msg su-done'; msg.textContent = '✓ You\'re signed up. Thank you!';
         setTimeout(load, 900);
       }).catch(function (e) {
         btn.disabled = false;
         msg.className = 'su-msg su-err'; msg.textContent = e.message || 'Something went wrong — please try again.';
+      });
+    }
+
+    function cancelClicked(slotId, entryId, asEdit) {
+      var email = window.prompt('To ' + (asEdit ? 'edit' : 'cancel') + ' this sign-up, please re-enter the email you used:');
+      if (email == null) return;
+      email = email.trim();
+      if (!email) return;
+      var entryRef = db.collection('signups').doc(ID).collection('entries').doc(entryId);
+      var slotRef = db.collection('signups').doc(ID).collection('slots').doc(slotId);
+      var priorCount = 1, priorFields = null;
+      entryRef.get().then(function (snap) {
+        if (!snap.exists) throw new Error('That sign-up was already removed.');
+        priorCount = snap.data().count || 1;
+        var mine = getMine(ID).filter(function (m) { return m.entryId === entryId; })[0];
+        priorFields = mine || {};
+        return entryRef.update({ cancelled: true, checkEmail: email });
+      }).then(function () {
+        return slotRef.get();
+      }).then(function (slotSnap) {
+        var taken = (slotSnap.data() || {}).taken || 0;
+        return slotRef.update({ taken: Math.max(0, taken - priorCount), lastCancelEid: entryId });
+      }).then(function () {
+        return entryRef.update({ takenReverted: true });
+      }).then(function () {
+        forgetMine(ID, entryId);
+        if (asEdit) { loadWithPrefill(slotId, priorFields); } else { load(); }
+      }).catch(function (e) {
+        window.alert(e.code === 'permission-denied'
+          ? 'That email doesn\'t match what you signed up with.'
+          : (e.message || 'Something went wrong — please try again.'));
       });
     }
   </script>

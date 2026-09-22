@@ -165,13 +165,25 @@ service cloud.firestore {
       match /slots/{slotId} {
         allow read: if true;
         allow create, delete: if isAnyAdmin();
-        // A public sign-up bumps ONLY the "taken" counter, never past capacity.
         allow update: if isAnyAdmin() || (
+          // A public sign-up bumps ONLY the "taken" counter, never past capacity.
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['taken'])
           && request.resource.data.taken is int
           && request.resource.data.taken > resource.data.taken
           && request.resource.data.taken <= resource.data.taken + 20
           && (resource.data.capacity == 0 || request.resource.data.taken <= resource.data.capacity)
+        ) || (
+          // A cancelled sign-up rolls its slot's taken count back down by exactly its
+          // own count, tied to one specific entry that's already been marked cancelled
+          // and not yet reverted -- so this can't be replayed to grief someone else's
+          // still-valid sign-up by repeatedly zeroing the counter.
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['taken', 'lastCancelEid'])
+          && request.resource.data.taken is int
+          && request.resource.data.taken >= 0
+          && get(/databases/$(database)/documents/signups/$(sid)/entries/$(request.resource.data.lastCancelEid)).data.slotId == slotId
+          && get(/databases/$(database)/documents/signups/$(sid)/entries/$(request.resource.data.lastCancelEid)).data.cancelled == true
+          && get(/databases/$(database)/documents/signups/$(sid)/entries/$(request.resource.data.lastCancelEid)).data.takenReverted != true
+          && resource.data.taken - request.resource.data.taken == get(/databases/$(database)/documents/signups/$(sid)/entries/$(request.resource.data.lastCancelEid)).data.count
         );
       }
       // Who signed up — name + count only, publicly visible on the sheet.
@@ -182,12 +194,31 @@ service cloud.firestore {
           && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 80
           && request.resource.data.count is int
           && request.resource.data.count > 0 && request.resource.data.count <= 20;
-        allow update, delete: if isAnyAdmin();
+        allow update: if isAnyAdmin() || (
+          // A signer can cancel their own entry by re-typing the email they signed up
+          // with -- the only "identity" an anonymous visitor has, checked against the
+          // private contacts doc for this same entry. Cancelled entries are kept (not
+          // deleted) so the matching slot rollback below can verify against them.
+          resource.data.cancelled != true
+          && request.resource.data.cancelled == true
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['cancelled', 'checkEmail'])
+          && request.resource.data.checkEmail is string
+          && get(/databases/$(database)/documents/signups/$(sid)/contacts/$(eid)).data.email == request.resource.data.checkEmail
+        ) || (
+          // Marks the slot's taken-count rollback as done, so it can't be replayed.
+          resource.data.cancelled == true
+          && request.resource.data.takenReverted == true
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['takenReverted'])
+        );
+        allow delete: if isAnyAdmin();
       }
-      // Contact details for the organiser only.
+      // Contact details for the organiser only (also the private record an anonymous
+      // signer's cancel/edit request is checked against — see entries above).
       match /contacts/{eid} {
         allow read: if isAnyAdmin();
-        allow create: if request.resource.data.keys().hasOnly(['email','phone','comment']);
+        allow create: if request.resource.data.keys().hasOnly(['email','phone','comment'])
+          && request.resource.data.email is string && request.resource.data.email.size() > 0
+          && request.resource.data.phone is string && request.resource.data.phone.size() > 0;
         allow update, delete: if isAnyAdmin();
       }
     }

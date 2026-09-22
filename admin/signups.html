@@ -94,7 +94,12 @@
         <div class="su-slots" id="slots">
           <div class="su-slotrow su-slothead"><span>Label</span><span>Date</span><span>Start</span><span>End</span><span>Limit</span><span></span></div>
         </div>
-        <button class="bo-btn ghost sm" id="add-slot">＋ Add slot</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <button class="bo-btn ghost sm" id="add-slot">＋ Add slot</button>
+          <span style="font-size:12.5px;color:var(--text-light);margin-left:10px">Set limit on every slot to</span>
+          <input type="number" min="0" id="bulk-cap" style="width:60px;padding:6px 7px;border:1px solid var(--border);border-radius:6px" value="3">
+          <button class="bo-btn ghost sm" id="bulk-cap-btn">Apply to all slots</button>
+        </div>
 
         <div style="margin-top:22px;display:flex;gap:8px;flex-wrap:wrap">
           <button class="bo-btn" id="save-btn">Save</button>
@@ -145,6 +150,11 @@
 
       document.getElementById('new-btn').onclick = createSheet;
       document.getElementById('add-slot').onclick = () => addSlotRow({});
+      document.getElementById('bulk-cap-btn').onclick = () => {
+        const v = parseInt(document.getElementById('bulk-cap').value, 10) || 0;
+        document.querySelectorAll('#slots .su-slotrow:not(.su-slothead) [data-f="capacity"]').forEach(inp => { inp.value = v; });
+        toast('Limit set on every slot — click Save to apply');
+      };
       document.getElementById('save-btn').onclick = saveSheet;
       document.getElementById('del-btn').onclick = deleteSheet;
       document.getElementById('csv-btn').onclick = downloadCSV;
@@ -306,18 +316,34 @@
       slots.docs.forEach(d => { const s = d.data(); slotName[d.id] = [s.label, s.date, s.start].filter(Boolean).join(' · ') || '(slot)'; });
       const contact = {};
       contacts.docs.forEach(d => contact[d.id] = d.data());
-      respRows = entries.docs.map(d => {
+      respRows = entries.docs.filter(d => !d.data().cancelled).map(d => {
         const e = d.data(), c = contact[d.id] || {};
-        return { slot: slotName[e.slotId] || e.slotId, name: e.name, count: e.count || 1,
+        return { id: d.id, slotId: e.slotId, slot: slotName[e.slotId] || e.slotId, name: e.name, count: e.count || 1,
                  email: c.email || '', phone: c.phone || '', comment: c.comment || '',
                  at: e.at?.toDate ? e.at.toDate() : null };
       }).sort((a, b) => (a.slot > b.slot ? 1 : -1) || (b.at - a.at));
       document.getElementById('resp-count').textContent = respRows.length;
       const box = document.getElementById('resp-body');
       if (!respRows.length) { box.innerHTML = '<p style="color:var(--text-light)">No sign-ups yet.</p>'; return; }
-      box.innerHTML = '<table class="su-resp"><thead><tr><th>Slot</th><th>Name</th><th>#</th><th>Email</th><th>Phone</th><th>Comment</th><th>When</th></tr></thead><tbody>' +
-        respRows.map(r => `<tr><td>${esc(r.slot)}</td><td>${esc(r.name)}</td><td>${r.count}</td><td>${esc(r.email)}</td><td>${esc(r.phone)}</td><td>${esc(r.comment)}</td><td>${r.at ? r.at.toLocaleString() : ''}</td></tr>`).join('') +
+      box.innerHTML = '<table class="su-resp"><thead><tr><th>Slot</th><th>Name</th><th>#</th><th>Email</th><th>Phone</th><th>Comment</th><th>When</th><th></th></tr></thead><tbody>' +
+        respRows.map(r => `<tr><td>${esc(r.slot)}</td><td>${esc(r.name)}</td><td>${r.count}</td><td>${esc(r.email)}</td><td>${esc(r.phone)}</td><td>${esc(r.comment)}</td><td>${r.at ? r.at.toLocaleString() : ''}</td><td><button class="bo-btn danger ghost sm" data-remove="${r.id}" data-slot="${r.slotId}">Remove</button></td></tr>`).join('') +
         '</tbody></table>';
+      box.querySelectorAll('[data-remove]').forEach(b => { b.onclick = () => adminRemoveEntry(b.dataset.remove, b.dataset.slot); });
+    }
+
+    async function adminRemoveEntry(entryId, slotId) {
+      if (!confirm('Remove this sign-up? This frees up their spot for someone else.')) return;
+      const id = curSheet.id;
+      const eref = db.collection('signups').doc(id).collection('entries').doc(entryId);
+      const esnap = await eref.get();
+      const count = (esnap.data() || {}).count || 1;
+      await eref.update({ cancelled: true });
+      const sref = db.collection('signups').doc(id).collection('slots').doc(slotId);
+      const ssnap = await sref.get();
+      const taken = (ssnap.data() || {}).taken || 0;
+      await sref.update({ taken: Math.max(0, taken - count) });
+      toast('Removed');
+      loadResponses();
     }
     function downloadCSV() {
       const head = ['Slot', 'Name', 'Count', 'Email', 'Phone', 'Comment', 'When'];
