@@ -606,11 +606,18 @@
           <div class="bo-block-head">
             <span class="bo-block-drag" title="Drag to reorder" aria-hidden="true">⠿</span>
             <span class="bo-block-type">${labelFor(b.type)}</span>
+            ${b.type !== 'columns' ? '<button data-split title="Turn this into a row of columns, keeping this block as the first column">⊞ Split into Columns</button>' : ''}
             <button data-mv="-1" title="Move up">▲</button>
             <button data-mv="1" title="Move down">▼</button>
             <button data-rm title="Delete this block">✕</button>
           </div>
           <div class="bo-block-body"></div>`;
+        if (b.type !== 'columns') {
+          box.querySelector('[data-split]').onclick = () => {
+            page.blocks.splice(i, 1, { type: 'columns', count: 2, cells: [{ blocks: [b] }, { blocks: [] }] });
+            renderBlockEditors(); refreshPreview();
+          };
+        }
         box.querySelector('[data-mv="-1"]').onclick = () => move(i, -1);
         box.querySelector('[data-mv="1"]').onclick = () => move(i, 1);
         box.querySelector('[data-rm]').onclick = () => {
@@ -677,6 +684,24 @@
       return field('Alignment', '', sel);
     }
 
+    // A button's color defaults to the site's green -- this lets it be any color.
+    function colorField(b, upd) {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'display:flex;align-items:center;gap:8px';
+      const swatch = document.createElement('input');
+      swatch.type = 'color';
+      swatch.value = /^#[0-9a-fA-F]{6}$/.test(b.color || '') ? b.color : '#295c38';
+      swatch.style.cssText = 'width:40px;height:32px;padding:0;border:1px solid var(--border);border-radius:6px;cursor:pointer';
+      swatch.oninput = () => { b.color = swatch.value; upd(); };
+      const reset = document.createElement('button');
+      reset.type = 'button';
+      reset.className = 'bo-btn ghost sm';
+      reset.textContent = 'Use default green';
+      reset.onclick = () => { b.color = ''; swatch.value = '#295c38'; upd(); };
+      wrap.appendChild(swatch); wrap.appendChild(reset);
+      return field('Button color', 'optional — overrides the default green', wrap);
+    }
+
     // A cell inside a Row of Columns holds its own small stack of blocks -- every
     // block type the page itself can have (including a sign-up sheet or an embed),
     // except another Row of Columns, to avoid a grid nested inside a grid.
@@ -713,6 +738,20 @@
         fullCb.checked = !!cb.full;
         fullCb.onchange = () => { cb.full = fullCb.checked; upd(); };
         out.push(full);
+        const swatchWrap = document.createElement('div');
+        swatchWrap.style.cssText = 'display:flex;align-items:center;gap:6px;margin-bottom:4px';
+        const swatch = document.createElement('input');
+        swatch.type = 'color';
+        swatch.value = /^#[0-9a-fA-F]{6}$/.test(cb.color || '') ? cb.color : '#295c38';
+        swatch.style.cssText = 'width:34px;height:26px;padding:0;border:1px solid var(--border);border-radius:5px;cursor:pointer';
+        swatch.oninput = () => { cb.color = swatch.value; upd(); };
+        const swatchReset = document.createElement('button');
+        swatchReset.type = 'button'; swatchReset.className = 'bo-btn ghost sm';
+        swatchReset.style.cssText = 'padding:3px 7px;font-size:11px';
+        swatchReset.textContent = 'Default';
+        swatchReset.onclick = () => { cb.color = ''; swatch.value = '#295c38'; upd(); };
+        swatchWrap.appendChild(swatch); swatchWrap.appendChild(swatchReset);
+        out.push(swatchWrap);
       } else if (cb.type === 'list') {
         out.push(mkInput('One item per line', (cb.items || []).join('\n'), v => { cb.items = v.split('\n'); upd(); }, true));
       } else if (cb.type === 'signup') {
@@ -939,7 +978,7 @@
         fullCb.checked = !!b.full;
         fullCb.onchange = () => { b.full = fullCb.checked; upd(); };
         out.push(field('Button text','', lab), field('Where it goes','full web address', href),
-          field('Style','', st), field('Size','', sz), full, alignField(b, upd));
+          field('Style','', st), field('Size','', sz), full, alignField(b, upd), colorField(b, upd));
       }
       else if (b.type === 'columns') {
         if (!Array.isArray(b.cells)) b.cells = [{}, {}];

@@ -53,7 +53,15 @@
         if (b.size === 'sm' || b.size === 'lg') cls += ' ' + b.size;
         if (b.full) cls += ' full';
         const href = /^https?:|^mailto:|^\//.test(b.href || '') ? b.href : '#';
-        return `<p${alignStyle(b)}><a class="${cls}" href="${e(href)}" ${/^https?:/.test(href) ? 'target="_blank" rel="noopener"' : ''}>${e(b.label || 'Button')}</a></p>`;
+        // A custom color overrides the default green -- solid fills the button with it,
+        // outline uses it for the border/text instead (background stays white).
+        let colorStyle = '';
+        if (/^#[0-9a-fA-F]{6}$/.test(b.color || '')) {
+          colorStyle = b.style === 'outline'
+            ? `border-color:${b.color};color:${b.color}`
+            : `background:${b.color}`;
+        }
+        return `<p${alignStyle(b)}><a class="${cls}" ${colorStyle ? `style="${colorStyle}"` : ''} href="${e(href)}" ${/^https?:/.test(href) ? 'target="_blank" rel="noopener"' : ''}>${e(b.label || 'Button')}</a></p>`;
       }
       case 'divider':
         return '<hr>';
