@@ -74,7 +74,7 @@
         (cap ? (full ? 'Full' : left + ' of ' + cap + ' spot' + (cap === 1 ? '' : 's') + ' left') : (taken ? taken + ' signed up' : 'Open — sign up below')) + '</div>';
       if (names) html += '<div class="pg-su-names">' + names + '</div>';
       if (!closed && !full) {
-        html += '<button type="button" class="btn btn-outline pg-su-open" style="padding:7px 16px;font-size:13px">Sign up</button>';
+        html += '<button type="button" class="pg-su-open">Sign up</button>';
         html += '<form class="pg-su-form">' +
           '<label>Your name</label><input name="name" required maxlength="80" placeholder="First and last name">' +
           '<div class="pg-su-row2">' +
@@ -85,7 +85,7 @@
             '<div><label>Phone <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="phone"></div>' +
             '<div><label>Note to organizer <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="comment" maxlength="200"></div>' +
           '</div>' +
-          '<div style="margin-top:12px"><button type="submit" class="btn btn-primary" style="color:#000">Sign me up</button></div>' +
+          '<div style="margin-top:12px"><button type="submit" class="pg-su-submit">Sign me up</button></div>' +
           '<div class="pg-su-msg"></div>' +
         '</form>';
       }
