@@ -74,16 +74,13 @@
       }
       case 'signup': {
         if (!b.sheetId) return '';
-        const href = '/signup.html?id=' + encodeURIComponent(b.sheetId);
-        return `<div class="pg-signup">
-                  <div class="pg-signup-body">
-                    <div class="pg-signup-icon">🖊️</div>
-                    <div>
-                      <strong>${e(b.sheetTitle || 'Sign-Up Sheet')}</strong>
-                      ${b.note ? `<p style="margin:4px 0 0">${e(b.note)}</p>` : ''}
-                    </div>
-                  </div>
-                  <a class="pg-btn" href="${e(href)}" target="_blank" rel="noopener">Sign up &rarr;</a>
+        // The actual slots + sign-up form render right here, mounted at runtime by
+        // js/signup-embed.js (needs Firestore, which isn't available while this
+        // string is being built) -- see mountSignupEmbeds() in the calling page.
+        return `<div>
+                  <strong>${e(b.sheetTitle || 'Sign-Up Sheet')}</strong>
+                  ${b.note ? `<p style="margin:4px 0 12px;color:var(--text-light);font-size:14px">${e(b.note)}</p>` : ''}
+                  <div class="pg-su-embed" data-signup-id="${e(b.sheetId)}"><p style="color:var(--text-light)">Loading sign-up sheet…</p></div>
                 </div>`;
       }
       case 'embed': {
@@ -136,7 +133,7 @@
     const endTime = prettyTime(page.eventEndTime);
     const timeRange = time && endTime ? `${time} – ${endTime}` : time;
     const loc  = page.eventLocation;
-    if (date || timeRange || loc) {
+    if (!page.hideEventBox && (date || timeRange || loc)) {
       html += '<div class="pg-eventbox">';
       if (date || timeRange) {
         html += `<div class="pg-eventrow"><span class="pg-eventicon">📅</span><span>${e(date)}${date && timeRange ? ' · ' : ''}${e(timeRange)}</span></div>`;

@@ -73,10 +73,6 @@
       <label>Page title <span class="bo-hint">Shows at the top of the page and in the browser tab. Example: "Jefferson Fun Run 2026".</span></label>
       <input type="text" id="page-title" placeholder="Give your page a clear name">
     </div>
-    <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;margin:0 0 14px">
-      <input type="checkbox" id="hide-header-cb"> Hide the top navigation bar on this page
-      <span class="bo-hint" style="margin-left:2px">— useful for a standalone flyer/landing page with no site nav</span>
-    </label>
     <div class="bo-field" style="max-width:none">
       <label>Which school(s) is this page for? <span class="bo-hint">Tick every school it belongs to. Pick two or more and the page gets a shared address at schalmontpto.com/pto/&hellip;</span></label>
       <div id="page-schools" style="display:flex;flex-wrap:wrap;gap:16px;margin-top:4px"></div>
@@ -116,6 +112,9 @@
         </div>
         <div class="bo-blockfield"><label>Location <span style="font-weight:400;color:var(--text-light)">— name and/or address; becomes a Google Maps link</span></label>
           <input type="text" id="event-location" placeholder="Jefferson Elementary gym, 2 Sabre Lane, Schenectady NY"></div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;margin:10px 0 0">
+          <input type="checkbox" id="hide-eventbox-cb"> Hide the date/time/location box at the top of this page
+        </label>
         <div class="bo-blockfield" style="margin-top:10px">
           <label>Flyer or main image <span style="font-weight:400;color:var(--text-light)">— shows big at the top of the page. JPG or PNG, up to 12 MB</span></label>
           <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
@@ -174,7 +173,7 @@
           <button data-add="list">＋ Bullet list</button>
           <button data-add="image">＋ Photo</button>
           <button data-add="button">＋ Button</button>
-          <button data-add="columns">＋ Columns</button>
+          <button data-add="columns">＋ Row of Columns</button>
           <button data-add="signup">＋ Sign-up sheet</button>
           <button data-add="divider">＋ Divider line</button>
           <button data-add="embed">＋ Embed (Google Form, video&hellip;)</button>
@@ -190,13 +189,13 @@
       </div>
       <div>
         <div class="bo-preview">
-          <div class="bo-preview-label" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <span>Live preview — what visitors see</span>
+          <div class="bo-preview-label" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--light-bg);border-radius:8px;padding:8px 10px;margin-bottom:8px">
+            <span style="font-weight:700">Live preview — what visitors see on:</span>
             <span style="flex:1"></span>
-            <span id="pv-size" style="display:inline-flex;gap:2px;border:1px solid var(--border);border-radius:6px;overflow:hidden">
-              <button type="button" class="pv-btn" data-w="full" style="border:none;background:var(--primary);color:#fff;font:inherit;font-size:11px;padding:3px 8px;cursor:pointer">Desktop</button>
-              <button type="button" class="pv-btn" data-w="768" style="border:none;background:none;color:var(--text);font:inherit;font-size:11px;padding:3px 8px;cursor:pointer">Tablet</button>
-              <button type="button" class="pv-btn" data-w="380" style="border:none;background:none;color:var(--text);font:inherit;font-size:11px;padding:3px 8px;cursor:pointer">Phone</button>
+            <span id="pv-size" style="display:inline-flex;gap:3px;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:#fff">
+              <button type="button" class="pv-btn" data-w="full" style="border:none;background:var(--primary);color:#fff;font:inherit;font-weight:700;font-size:13px;padding:7px 14px;cursor:pointer">🖥️ Desktop</button>
+              <button type="button" class="pv-btn" data-w="768" style="border:none;background:none;color:var(--text);font:inherit;font-weight:700;font-size:13px;padding:7px 14px;cursor:pointer">📱 Tablet</button>
+              <button type="button" class="pv-btn" data-w="380" style="border:none;background:none;color:var(--text);font:inherit;font-weight:700;font-size:13px;padding:7px 14px;cursor:pointer">📲 Phone</button>
             </span>
           </div>
           <div id="pv-frame" style="margin:0 auto;transition:max-width .15s">
@@ -248,7 +247,7 @@
       syncRouting();
       document.getElementById('page-title').value = page.title || '';
       document.getElementById('page-slug').value = page.slug || '';
-      document.getElementById('hide-header-cb').checked = page.hideHeader === true;
+      document.getElementById('hide-eventbox-cb').checked = page.hideEventBox === true;
       document.getElementById('event-date').value = page.eventDate || '';
       document.getElementById('event-enddate').value = page.eventEndDate || '';
       document.getElementById('event-time').value = page.eventTime || '';
@@ -620,7 +619,7 @@
 
     function labelFor(t) {
       return { heading:'Heading', paragraph:'Paragraph', list:'Bullet list', image:'Photo',
-               button:'Button', columns:'Columns', signup:'Sign-up sheet',
+               button:'Button', columns:'Row of Columns', signup:'Sign-up sheet',
                divider:'Divider line', embed:'Embed' }[t] || t;
     }
 
@@ -740,9 +739,9 @@
 
         const addRowBtn = document.createElement('button');
         addRowBtn.type = 'button';
-        addRowBtn.className = 'bo-btn ghost sm';
-        addRowBtn.style.marginBottom = '8px';
-        addRowBtn.textContent = '↓ Add Another Row Below';
+        addRowBtn.className = 'bo-btn sm';
+        addRowBtn.style.cssText = 'margin:2px 0 12px;display:block;width:100%;font-weight:700';
+        addRowBtn.textContent = '➕ Add Another Row of Columns Below';
         addRowBtn.title = 'Adds a new row of columns right after this one -- each Columns block is one row';
         addRowBtn.onclick = () => {
           const n = b.count || 2;
@@ -879,7 +878,7 @@
 
       btns.forEach(b => b.disabled = true);
       page.hideCard = document.getElementById('card-hide').checked;
-      page.hideHeader = document.getElementById('hide-header-cb').checked;
+      page.hideEventBox = document.getElementById('hide-eventbox-cb').checked;
       const data = {
         title: page.title.trim(), slug: page.slug.trim(),
         schools: page.schools, school,
@@ -887,7 +886,7 @@
         eventDate: page.eventDate || '', eventTime: page.eventTime || '',
         eventEndTime: page.eventEndTime || '', eventEndDate: page.eventEndDate || '',
         eventLocation: page.eventLocation || '', flyerUrl: page.flyerUrl || '',
-        hideCard: page.hideCard, hideHeader: page.hideHeader,
+        hideCard: page.hideCard, hideEventBox: page.hideEventBox,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedBy: ME.email
       };
