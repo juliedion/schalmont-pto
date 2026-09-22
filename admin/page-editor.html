@@ -677,6 +677,141 @@
       return field('Alignment', '', sel);
     }
 
+    // A cell inside a Row of Columns holds its own small stack of blocks -- the same
+    // idea as the page's own blocks, just simpler fields and no columns-in-columns.
+    const CELL_BLOCK_LABELS = { heading:'Heading', paragraph:'Paragraph', image:'Photo', button:'Button', list:'List', divider:'Divider' };
+
+    function cellBlockFields(cb, upd) {
+      const out = [];
+      const mkInput = (ph, val, oninput, multiline) => {
+        const el = document.createElement(multiline ? 'textarea' : 'input');
+        if (!multiline) el.type = 'text';
+        el.placeholder = ph; el.value = val || '';
+        el.style.cssText = 'width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:12.5px;margin-bottom:4px';
+        el.oninput = () => oninput(el.value);
+        return el;
+      };
+      if (cb.type === 'heading') out.push(mkInput('Heading text', cb.text, v => { cb.text = v; upd(); }));
+      else if (cb.type === 'paragraph') out.push(mkInput('Text', cb.text, v => { cb.text = v; upd(); }, true));
+      else if (cb.type === 'image') {
+        out.push(mkInput('Image link', cb.url, v => { cb.url = v; upd(); }));
+        out.push(mkInput('Alt text (optional)', cb.alt, v => { cb.alt = v; upd(); }));
+      } else if (cb.type === 'button') {
+        out.push(mkInput('Button text', cb.label, v => { cb.label = v; upd(); }));
+        out.push(mkInput('Link (https://… or /jes/page)', cb.href, v => { cb.href = v; upd(); }));
+      } else if (cb.type === 'list') {
+        out.push(mkInput('One item per line', (cb.items || []).join('\n'), v => { cb.items = v.split('\n'); upd(); }, true));
+      }
+      return out;
+    }
+
+    function renderCellEditor(c, ci, b, upd, warn) {
+      if (!Array.isArray(c.blocks)) {
+        // Migrate an older fixed-field cell into real blocks the first time it's
+        // opened here, so nothing already typed in gets silently dropped.
+        const migrated = [];
+        if (c.imageUrl) migrated.push({ type: 'image', url: c.imageUrl, alt: c.imageAlt || '' });
+        if (c.heading) migrated.push({ type: 'heading', level: 3, text: c.heading });
+        if (c.body) migrated.push({ type: 'paragraph', text: c.body });
+        if (c.buttonLabel) migrated.push({ type: 'button', label: c.buttonLabel, href: c.buttonHref || '', style: 'solid' });
+        c.blocks = migrated;
+      }
+      const col = document.createElement('div');
+      col.style.cssText = 'flex:1;min-width:150px;border:1px solid var(--border);border-radius:8px;padding:10px;background:var(--light-bg)';
+      const hd = document.createElement('div');
+      hd.style.cssText = 'font-weight:700;font-size:12px;color:var(--text-light);margin-bottom:8px';
+      hd.textContent = 'Column ' + (ci + 1);
+      col.appendChild(hd);
+
+      const list = document.createElement('div');
+      list.style.cssText = 'display:flex;flex-direction:column;gap:6px;margin-bottom:8px';
+      col.appendChild(list);
+
+      const onChange = () => { upd(); checkColumnsWarning(b, warn); };
+
+      function redraw() {
+        list.innerHTML = '';
+        if (!c.blocks.length) {
+          const empty = document.createElement('p');
+          empty.style.cssText = 'font-size:12px;color:var(--text-light);margin:0';
+          empty.textContent = 'Empty — add a block below.';
+          list.appendChild(empty);
+        }
+        c.blocks.forEach((cb, cbi) => {
+          const row = document.createElement('div');
+          row.style.cssText = 'background:#fff;border:1px solid var(--border);border-radius:6px;padding:8px';
+          const top = document.createElement('div');
+          top.style.cssText = 'display:flex;align-items:center;gap:5px;margin-bottom:6px';
+          const lbl = document.createElement('span');
+          lbl.style.cssText = 'font-size:10.5px;font-weight:800;text-transform:uppercase;color:var(--text-light);flex:1';
+          lbl.textContent = CELL_BLOCK_LABELS[cb.type] || cb.type;
+          top.appendChild(lbl);
+          const mkBtn = (txt, title, onclick) => {
+            const btn = document.createElement('button');
+            btn.type = 'button'; btn.textContent = txt; btn.title = title;
+            btn.style.cssText = 'background:none;border:1px solid var(--border);border-radius:5px;cursor:pointer;font-size:11px;padding:2px 5px';
+            btn.onclick = onclick;
+            return btn;
+          };
+          if (cbi > 0) top.appendChild(mkBtn('▲', 'Move up', () => {
+            [c.blocks[cbi - 1], c.blocks[cbi]] = [c.blocks[cbi], c.blocks[cbi - 1]]; redraw(); onChange();
+          }));
+          if (cbi < c.blocks.length - 1) top.appendChild(mkBtn('▼', 'Move down', () => {
+            [c.blocks[cbi + 1], c.blocks[cbi]] = [c.blocks[cbi], c.blocks[cbi + 1]]; redraw(); onChange();
+          }));
+          top.appendChild(mkBtn('✕', 'Remove', () => { c.blocks.splice(cbi, 1); redraw(); onChange(); }));
+          row.appendChild(top);
+          row.append(...cellBlockFields(cb, onChange));
+          list.appendChild(row);
+        });
+      }
+      redraw();
+
+      const addBar = document.createElement('div');
+      addBar.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px';
+      [['heading', 'H'], ['paragraph', '¶'], ['image', '🖼️'], ['button', '🔘'], ['list', '•'], ['divider', '—']].forEach(([t, ic]) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'bo-btn ghost sm';
+        btn.style.cssText = 'padding:4px 8px;font-size:11px';
+        btn.textContent = ic + ' ' + CELL_BLOCK_LABELS[t];
+        btn.onclick = () => {
+          const starter = { heading: { type: 'heading', level: 3, text: '' }, paragraph: { type: 'paragraph', text: '' },
+            image: { type: 'image', url: '', alt: '' }, button: { type: 'button', label: '', href: '', style: 'solid' },
+            list: { type: 'list', items: [''] }, divider: { type: 'divider' } }[t];
+          c.blocks.push(starter);
+          redraw(); onChange();
+        };
+        addBar.appendChild(btn);
+      });
+      col.appendChild(addBar);
+      return col;
+    }
+
+    // Soft heuristic -- not a hard limit, just a nudge: 3+ columns with a lot of
+    // content in any one of them tends to look cramped once the row stacks down on
+    // a tablet or phone.
+    function checkColumnsWarning(b, warn) {
+      const n = b.count || 2;
+      let heavy = false;
+      (b.cells || []).forEach(c => {
+        const blocks = c.blocks || [];
+        let weight = blocks.length * 20;
+        blocks.forEach(cb => {
+          if (cb.type === 'paragraph' || cb.type === 'heading') weight += (cb.text || '').length;
+          if (cb.type === 'list') weight += (cb.items || []).join('').length;
+          if (cb.type === 'image') weight += 80;
+        });
+        if (weight > 260) heavy = true;
+      });
+      const risky = n >= 3 && heavy;
+      warn.style.display = risky ? '' : 'none';
+      warn.innerHTML = risky
+        ? '⚠️ <strong>This row may be hard to read on tablets and phones.</strong> With ' + n +
+          ' columns and this much content in one of them, it can look cramped once the row stacks down to fewer columns on a smaller screen. Consider shorter text, fewer blocks per column, or fewer columns.'
+        : '';
+    }
+
     function fieldsFor(b, i) {
       const out = [];
       const upd = () => refreshPreview();
@@ -784,28 +919,18 @@
         };
         out.push(addRowBtn);
 
+        const warn = document.createElement('div');
+        warn.className = 'bo-notice';
+        warn.style.cssText = 'display:none;background:#fff8e6;border-color:#e8d492;margin-top:10px';
+        out.push(warn);
+
+        const colsWrap = document.createElement('div');
+        colsWrap.style.cssText = 'display:flex;gap:10px;margin-top:8px;flex-wrap:wrap';
         (b.cells || []).slice(0, b.count || 2).forEach((c, ci) => {
-          const wrap = document.createElement('div');
-          wrap.style.cssText = 'border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:8px;background:var(--light-bg)';
-          const hd = document.createElement('div');
-          hd.style.cssText = 'font-weight:700;font-size:12px;color:var(--text-light);margin-bottom:6px';
-          hd.textContent = 'Column ' + (ci + 1);
-          wrap.appendChild(hd);
-          const mk = (ph, key, multiline) => {
-            const el = document.createElement(multiline ? 'textarea' : 'input');
-            if (!multiline) el.type = 'text';
-            el.placeholder = ph; el.value = c[key] || '';
-            el.oninput = () => { c[key] = el.value; upd(); };
-            const f = document.createElement('div'); f.className = 'bo-blockfield';
-            f.appendChild(el); return f;
-          };
-          wrap.appendChild(mk('Image link (optional)', 'imageUrl'));
-          wrap.appendChild(mk('Heading (optional)', 'heading'));
-          wrap.appendChild(mk('Text', 'body', true));
-          wrap.appendChild(mk('Button label (optional)', 'buttonLabel'));
-          wrap.appendChild(mk('Button link (https://… or /jes/page)', 'buttonHref'));
-          out.push(wrap);
+          colsWrap.appendChild(renderCellEditor(c, ci, b, upd, warn));
         });
+        out.push(colsWrap);
+        checkColumnsWarning(b, warn);
       }
       else if (b.type === 'signup') {
         const sel = document.createElement('select');
