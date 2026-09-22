@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PTO Back Office Tat the Teacher Orders</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" href="../images/favicon.svg">
+  <style>
+    table.tt-table { width:100%; border-collapse:collapse; font-size:13.5px; background:#fff; }
+    table.tt-table th, table.tt-table td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--border); vertical-align:top; }
+    table.tt-table th { background:var(--light-bg); font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-light); }
+    table.tt-table select { padding:5px 7px; border:1px solid var(--border); border-radius:6px; font-family:inherit; font-size:12.5px; }
+    .tt-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius-lg); }
+    .tt-summary { display:flex; gap:14px; flex-wrap:wrap; margin:16px 0 18px; }
+    .tt-stat { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:12px 18px; }
+    .tt-stat .n { font-size:22px; font-weight:800; color:var(--primary-dark); }
+    .tt-stat .l { font-size:12px; color:var(--text-light); font-weight:700; text-transform:uppercase; letter-spacing:.03em; }
+  </style>
+</head>
+<body>
+  <div id="bo-loading">Loading…</div>
+  <div id="bo-shell"></div>
+
+  <main id="bo-main" style="display:none">
+    <div style="margin-bottom:14px"><a class="bo-btn ghost sm" href="index.html">← Back Office Home</a></div>
+    <h1 class="bo-h1">🐯 Tat the Teacher — Orders</h1>
+    <p class="bo-lead">Everyone who ordered tattoos via schalmontpto.com/pto/tat-the-teacher,
+       newest first. Mark orders paid/delivered as you collect payment and hand out tattoos.</p>
+
+    <div class="tt-summary" id="tt-summary"></div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 18px">
+      <button class="bo-btn ghost sm" id="refresh-btn">↻ Refresh</button>
+      <button class="bo-btn ghost sm" id="csv-btn">⬇ Download CSV</button>
+      <label style="margin-left:auto;font-size:12px;font-weight:700;color:var(--text-light)">Status:
+        <select id="status-filter" style="padding:7px 9px;border:1px solid var(--border);border-radius:7px">
+          <option value="all">All</option>
+          <option value="new">New</option>
+          <option value="paid">Paid</option>
+          <option value="delivered">Delivered</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="tt-wrap"><table class="tt-table" id="tt-table">
+      <thead><tr>
+        <th>When</th><th>Teacher</th><th>Ordered by</th><th>Email</th><th>Phone</th>
+        <th>Small</th><th>Medium</th><th>Large</th><th>Face</th><th>Sleeve</th>
+        <th>Total</th><th>Notes</th><th>Status</th>
+      </tr></thead>
+      <tbody id="tt-body"><tr><td colspan="13" style="color:var(--text-light)">Loading…</td></tr></tbody>
+    </table></div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-storage-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="admin-core.js"></script>
+  <script>
+    const STATUSES = ['new', 'paid', 'delivered'];
+    let rows = [];
+
+    requireAdmin((me) => {
+      document.getElementById('refresh-btn').onclick = load;
+      document.getElementById('csv-btn').onclick = downloadCSV;
+      document.getElementById('status-filter').onchange = render;
+      load();
+    });
+
+    async function load() {
+      const body = document.getElementById('tt-body');
+      body.innerHTML = '<tr><td colspan="13" style="color:var(--text-light)">Loading…</td></tr>';
+      try {
+        const snap = await db.collection('tat_teacher_orders').get();
+        rows = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+          .sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
+        render();
+      } catch (e) {
+        body.innerHTML = '<tr><td colspan="13" style="color:var(--error)">Could not load: ' + esc(e.message) + '</td></tr>';
+      }
+    }
+
+    function render() {
+      const filter = document.getElementById('status-filter').value;
+      const body = document.getElementById('tt-body');
+      const list = rows.filter(r => filter === 'all' || (r.status || 'new') === filter);
+
+      const totalRevenue = rows.reduce((s, r) => s + (r.total || 0), 0);
+      document.getElementById('tt-summary').innerHTML =
+        `<div class="tt-stat"><div class="n">${rows.length}</div><div class="l">Orders</div></div>` +
+        `<div class="tt-stat"><div class="n">$${totalRevenue}</div><div class="l">Total ordered</div></div>`;
+
+      if (!list.length) { body.innerHTML = '<tr><td colspan="13" style="color:var(--text-light)">No orders yet.</td></tr>'; return; }
+      body.innerHTML = '';
+      list.forEach(r => {
+        const tr = document.createElement('tr');
+        const when = r.at?.toDate ? r.at.toDate().toLocaleString() : '';
+        tr.innerHTML = `
+          <td>${esc(when)}</td>
+          <td>${esc(r.teacherName)}</td>
+          <td>${esc(r.parentName)}</td>
+          <td>${r.email ? `<a href="mailto:${esc(r.email)}">${esc(r.email)}</a>` : ''}</td>
+          <td>${r.phone ? `<a href="tel:${esc(r.phone)}">${esc(r.phone)}</a>` : ''}</td>
+          <td>${r.smallQty || 0}</td>
+          <td>${r.mediumQty || 0}</td>
+          <td>${r.largeQty || 0}</td>
+          <td>${r.faceQty || 0}</td>
+          <td>${r.sleeveQty || 0}</td>
+          <td><strong>$${r.total || 0}</strong></td>
+          <td style="max-width:200px">${esc(r.notes)}</td>
+          <td></td>`;
+        const sel = document.createElement('select');
+        STATUSES.forEach(s => sel.add(new Option(s[0].toUpperCase() + s.slice(1), s, false, (r.status || 'new') === s)));
+        sel.onchange = async () => {
+          try { await db.collection('tat_teacher_orders').doc(r.id).update({ status: sel.value }); r.status = sel.value; toast('Updated'); }
+          catch (e) { toast('Could not update: ' + e.message, 'error'); }
+        };
+        tr.lastElementChild.appendChild(sel);
+        body.appendChild(tr);
+      });
+    }
+
+    function downloadCSV() {
+      const head = ['When', 'Teacher', 'Ordered by', 'Email', 'Phone', 'Small', 'Medium', 'Large', 'Face', 'Sleeve', 'Total', 'Notes', 'Status'];
+      const out = rows.map(r => [
+        r.at?.toDate ? r.at.toDate().toISOString() : '', r.teacherName, r.parentName, r.email, r.phone,
+        r.smallQty || 0, r.mediumQty || 0, r.largeQty || 0, r.faceQty || 0, r.sleeveQty || 0,
+        r.total || 0, r.notes, r.status || 'new'
+      ]);
+      const csv = [head].concat(out).map(row => row.map(c => `"${String(c || '').replace(/"/g, '""')}"`).join(',')).join('\n');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+      a.download = 'tat-teacher-orders.csv';
+      a.click();
+    }
+  </script>
+</body>
+</html>

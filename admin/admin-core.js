@@ -275,6 +275,7 @@ function renderShell() {
         <div class="bo-navgroup-label">More</div>
         ${link('meetings.html', 'Meetings', '🗓️', path === 'meetings.html')}
         ${link('signups.html', 'Sign-Up Sheets', '🖊️', path === 'signups.html')}
+        ${link('tat-teacher-orders.html', 'Tat the Teacher Orders', '🐯', path === 'tat-teacher-orders.html')}
         ${link('help.html', 'Help &amp; How-To', '📖', path === 'help.html')}
         ${ME.isSuper ? link('directory.html', 'Directory Sign-Ups', '✅', path === 'directory.html') : ''}
         ${ME.isSuper ? link('people.html', 'People &amp; Roles', '👥', path === 'people.html') : ''}

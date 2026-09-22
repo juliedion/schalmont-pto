@@ -157,6 +157,18 @@ service cloud.firestore {
                     && request.resource.data.status == 'new';
     }
 
+    /* ---- Tat the Teacher: tattoo orders (public form) ---- */
+    match /tat_teacher_orders/{id} {
+      allow read, update, delete: if isAnyAdmin();
+      allow create: if request.resource.data.keys().hasOnly(
+                        ['teacherName','parentName','email','phone','notes','smallQty','mediumQty','largeQty','faceQty','sleeveQty','total','status','at'])
+                    && request.resource.data.teacherName is string && request.resource.data.teacherName.size() > 0 && request.resource.data.teacherName.size() <= 100
+                    && request.resource.data.parentName is string && request.resource.data.parentName.size() > 0 && request.resource.data.parentName.size() <= 100
+                    && request.resource.data.email is string && request.resource.data.email.size() > 0 && request.resource.data.email.size() <= 200
+                    && request.resource.data.total is int && request.resource.data.total > 0 && request.resource.data.total <= 2000
+                    && request.resource.data.status == 'new';
+    }
+
     /* ---- Public sign-up sheets (volunteer slots, event RSVPs) ---- */
     match /signups/{sid} {
       allow read: if true;                              // public sign-up pages read this

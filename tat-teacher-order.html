@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order — Tat the Teacher | Schalmont PTO</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="css/styles.css?v=6">
+  <link rel="icon" href="images/favicon.svg">
+  <style>
+    #app { max-width:640px; margin:0 auto; padding:8px 4px 28px; }
+    .tto-menu { border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; margin-bottom:22px; background:#fff; }
+    .tto-row { display:flex; align-items:center; gap:12px; padding:12px 16px; border-top:1px solid var(--border); }
+    .tto-row:first-child { border-top:none; }
+    .tto-row .em { font-size:20px; width:28px; text-align:center; flex-shrink:0; }
+    .tto-row .info { flex:1; min-width:0; }
+    .tto-row .name { font-weight:700; color:var(--primary-dark); font-size:14.5px; }
+    .tto-row .price { font-size:13px; color:var(--text-light); }
+    .tto-row .qty { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+    .tto-row .qty button { width:30px; height:30px; border-radius:50%; border:1.5px solid var(--border); background:#fff; font-size:16px; font-weight:800; color:var(--primary); cursor:pointer; }
+    .tto-row .qty button:hover { background:var(--light-bg); }
+    .tto-row .qty input { width:38px; text-align:center; border:1px solid var(--border); border-radius:6px; padding:5px 2px; font-family:inherit; font-size:14px; }
+    .tto-total { display:flex; justify-content:space-between; align-items:center; padding:14px 16px; background:var(--light-bg); font-weight:800; color:var(--primary-dark); }
+    .tto-field { margin-bottom:14px; }
+    .tto-field label { display:block; font-weight:700; font-size:13px; margin-bottom:4px; }
+    .tto-field .req { color:var(--primary); }
+    .tto-field input, .tto-field textarea { width:100%; padding:10px 11px; border:1.5px solid var(--border); border-radius:var(--radius); font-family:inherit; font-size:14.5px; box-sizing:border-box; }
+    .tto-field textarea { min-height:70px; resize:vertical; }
+    .tto-row2 { display:flex; gap:12px; flex-wrap:wrap; }
+    .tto-row2 > div { flex:1; min-width:180px; }
+    .tto-err { font-size:12.5px; color:#9b2c2c; min-height:16px; }
+    .tto-msg { font-size:14px; font-weight:600; padding:12px 14px; border-radius:var(--radius); margin-top:10px; display:none; }
+    .tto-msg.show { display:block; }
+    .tto-msg.ok { background:var(--success-light); color:#216e3c; }
+    .tto-msg.error { background:var(--error-light); color:#8b1a14; }
+    body.embed .site-header, body.embed .homepage-sidenav, body.embed .site-footer { display:none !important; }
+    body.embed .homepage-layout { display:block; }
+    body.embed .homepage-main { padding:0; }
+  </style>
+</head>
+<body>
+
+  <div id="sc-header"></div>
+  <div class="homepage-layout">
+    <div id="sc-sidenav"></div>
+    <div class="homepage-main">
+      <section class="section">
+        <div class="container">
+          <div id="app">
+            <h2 style="margin:0 0 4px;color:var(--primary-dark)">Order Tattoos</h2>
+            <p style="margin:0 0 18px;color:var(--text-light);font-size:14.5px">Pick how many of each tattoo you'd like for the teacher or staff member of your choice, then place your order below. Payment is by check (payable to Schalmont PTO) or cash sent in with your child, or dropped off at the PTO table.</p>
+
+            <div class="tto-menu" id="tto-menu"></div>
+            <div class="tto-total"><span>Order total</span><span id="tto-total-amt">$0</span></div>
+
+            <form id="tto-form" novalidate style="margin-top:20px">
+              <div class="tto-field">
+                <label for="f-teacher">Teacher / Staff Member <span class="req">*</span> <span style="font-weight:400;color:var(--text-light)">— who is this tattoo order for?</span></label>
+                <input type="text" id="f-teacher" required placeholder="e.g. Mrs. Smith">
+                <div class="tto-err" id="err-teacher"></div>
+              </div>
+              <div class="tto-row2">
+                <div class="tto-field">
+                  <label for="f-name">Your Name <span class="req">*</span></label>
+                  <input type="text" id="f-name" required>
+                  <div class="tto-err" id="err-name"></div>
+                </div>
+                <div class="tto-field">
+                  <label for="f-email">Email <span class="req">*</span></label>
+                  <input type="email" id="f-email" required>
+                  <div class="tto-err" id="err-email"></div>
+                </div>
+              </div>
+              <div class="tto-field">
+                <label for="f-phone">Phone <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
+                <input type="tel" id="f-phone">
+              </div>
+              <div class="tto-field">
+                <label for="f-notes">Notes <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
+                <textarea id="f-notes" placeholder="Anything else we should know?"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary" id="tto-submit" style="width:100%;justify-content:center;color:#000">Place Order</button>
+              <div class="tto-msg" id="tto-msg" role="status" aria-live="polite"></div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+  <div id="sc-footer"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/site-chrome.js"></script>
+  <script>
+    if (new URLSearchParams(location.search).get('embed') === '1') document.body.classList.add('embed');
+    renderSiteChrome();
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.firestore();
+
+    var MENU = [
+      { key: 'small',  emoji: '⭐', name: 'Small Tattoo',  price: 1 },
+      { key: 'medium', emoji: '⚡', name: 'Medium Tattoo', price: 3 },
+      { key: 'large',  emoji: '🅢', name: 'Large Tattoo',  price: 5 },
+      { key: 'face',   emoji: '😊', name: 'Face Tattoo',   price: 10 },
+      { key: 'sleeve', emoji: '💪', name: 'Full Sleeve',   price: 20 }
+    ];
+    var qty = {};
+
+    var menuEl = document.getElementById('tto-menu');
+    menuEl.innerHTML = MENU.map(function (m) {
+      return '<div class="tto-row" data-key="' + m.key + '">' +
+        '<span class="em">' + m.emoji + '</span>' +
+        '<div class="info"><div class="name">' + m.name + '</div><div class="price">$' + m.price + ' each</div></div>' +
+        '<div class="qty">' +
+          '<button type="button" class="dn" aria-label="Decrease">−</button>' +
+          '<input type="number" min="0" max="99" value="0" inputmode="numeric">' +
+          '<button type="button" class="up" aria-label="Increase">+</button>' +
+        '</div></div>';
+    }).join('');
+
+    function updateTotal() {
+      var total = MENU.reduce(function (sum, m) { return sum + (qty[m.key] || 0) * m.price; }, 0);
+      document.getElementById('tto-total-amt').textContent = '$' + total;
+      return total;
+    }
+
+    menuEl.querySelectorAll('.tto-row').forEach(function (row) {
+      var key = row.dataset.key;
+      var input = row.querySelector('input');
+      qty[key] = 0;
+      function set(v) { v = Math.max(0, Math.min(99, v || 0)); qty[key] = v; input.value = v; updateTotal(); }
+      row.querySelector('.dn').onclick = function () { set(qty[key] - 1); };
+      row.querySelector('.up').onclick = function () { set(qty[key] + 1); };
+      input.oninput = function () { set(parseInt(input.value, 10)); };
+    });
+
+    var form = document.getElementById('tto-form');
+    var msg = document.getElementById('tto-msg');
+    function setErr(id, text) { var el = document.getElementById(id); if (el) el.textContent = text || ''; }
+    function showMsg(kind, text) { msg.className = 'tto-msg show ' + kind; msg.textContent = text; }
+
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      setErr('err-teacher', ''); setErr('err-name', ''); setErr('err-email', '');
+      msg.className = 'tto-msg';
+
+      var teacherName = document.getElementById('f-teacher').value.trim();
+      var parentName = document.getElementById('f-name').value.trim();
+      var email = document.getElementById('f-email').value.trim();
+      var phone = document.getElementById('f-phone').value.trim();
+      var notes = document.getElementById('f-notes').value.trim();
+      var total = updateTotal();
+
+      var ok = true;
+      if (!teacherName) { setErr('err-teacher', 'Required'); ok = false; }
+      if (!parentName) { setErr('err-name', 'Required'); ok = false; }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('err-email', 'Enter a valid email'); ok = false; }
+      if (total <= 0) { showMsg('error', 'Please choose at least one tattoo.'); ok = false; }
+      if (!ok) return;
+
+      var btn = document.getElementById('tto-submit');
+      btn.disabled = true; btn.textContent = 'Sending…';
+
+      db.collection('tat_teacher_orders').add({
+        teacherName: teacherName, parentName: parentName, email: email, phone: phone, notes: notes,
+        smallQty: qty.small, mediumQty: qty.medium, largeQty: qty.large, faceQty: qty.face, sleeveQty: qty.sleeve,
+        total: total, status: 'new', at: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function () {
+        form.reset();
+        MENU.forEach(function (m) { qty[m.key] = 0; });
+        menuEl.querySelectorAll('input').forEach(function (i) { i.value = 0; });
+        updateTotal();
+        showMsg('ok', '✓ Order placed! Send payment (check payable to Schalmont PTO, or cash) with your child or to the PTO. Thank you for supporting our Sabres!');
+      }).catch(function (e) {
+        showMsg('error', 'Something went wrong sending your order. Please try again, or email the PTO.');
+      }).finally(function () {
+        btn.disabled = false; btn.textContent = 'Place Order';
+      });
+    });
+  </script>
+</body>
+</html>
