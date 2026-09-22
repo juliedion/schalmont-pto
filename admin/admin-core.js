@@ -328,6 +328,26 @@ function renderHelpWidget() {
 /* The master planning spreadsheet (also used by the calendar importer). */
 const PLANNING_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1vIPpzz79LgBSm2lWDkFgjwKjb-h7JrSLFzdbtTf4JyM/edit';
 
+/* Every brand-new page starts from this skeleton instead of a blank page -- same
+   rhythm as the Middle School Book Fair page (photo, intro, a CTA section, then a
+   spot for sign-ups), but with placeholder text so nothing real gets copied in. A
+   function (not a plain array) so every new page gets its own fresh block objects,
+   never a shared reference. */
+function defaultPageTemplateBlocks() {
+  return [
+    { type: 'image', url: '', alt: 'Replace with your flyer or event photo', caption: '' },
+    { type: 'button', align: 'center', style: 'solid', label: 'Download the Flyer', href: '' },
+    { type: 'paragraph', align: 'center', text: 'Write a short introduction here — what this event or program is, when it happens, and why people should get involved.' },
+    { type: 'divider' },
+    { type: 'heading', align: 'center', level: 2, text: 'SECTION HEADING' },
+    { type: 'button', align: 'center', style: 'solid', label: 'Call to Action', href: '' },
+    { type: 'paragraph', align: 'center', text: 'Add a short supporting sentence under your button.' },
+    { type: 'divider' },
+    { type: 'heading', align: 'center', level: 2, text: 'Get Involved' },
+    { type: 'paragraph', align: 'center', text: 'If this needs volunteers, registrations, or orders, add a Sign-up sheet or Embed block right here.' }
+  ];
+}
+
 /* Start a brand-new web page for a section (Events & Programs, Facilities, …).
    Shows the "you'll also need the spreadsheet" notice, collects a school + working
    title, creates the draft, then opens the guided page editor. */
@@ -452,7 +472,7 @@ function newWebPage(cat, presetSchool, presetDate) {
         title, slug: slugify(title),
         showInTopMenu, showInLeftMenu,
         eventDate: presetDate || '',
-        status: 'draft', blocks: [],
+        status: 'draft', blocks: defaultPageTemplateBlocks(),
         createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
       // The landing-page card itself is created automatically the first time this page
