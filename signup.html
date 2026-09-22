@@ -17,6 +17,13 @@
     #app { max-width:720px; }
     .su-intro { color: var(--text); line-height: 1.6; white-space: pre-wrap; margin: 0 0 22px; }
     .su-closed { background:#fdecea; border:1px solid #f5c6c0; color:#8b1a14; padding:14px 16px; border-radius:10px; font-weight:600; margin-bottom:20px; }
+    .su-grid { display:grid; gap:14px; margin-bottom:4px; }
+    .su-grid .su-slot { margin-bottom:0; }
+    .su-grid-2 { grid-template-columns:repeat(2,1fr); }
+    .su-grid-3 { grid-template-columns:repeat(3,1fr); }
+    .su-grid-4 { grid-template-columns:repeat(4,1fr); }
+    @media (max-width:900px) { .su-grid-3, .su-grid-4 { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:560px) { .su-grid-2, .su-grid-3, .su-grid-4 { grid-template-columns:1fr; } }
     .su-slot { border:1px solid var(--border); border-radius:12px; padding:16px 18px; margin-bottom:14px; background:#fff; box-shadow:var(--shadow); }
     .su-slot h3 { margin:0 0 3px; font-size:17px; color:var(--primary-dark); }
     .su-when { font-size:13.5px; color:var(--text-light); margin-bottom:8px; }
@@ -123,11 +130,14 @@
           (sheet.contactEmail ? ' &middot; <a href="mailto:' + esc(sheet.contactEmail) + '" style="color:#fff;text-decoration:underline">' + esc(sheet.contactEmail) + '</a>' : '');
       }
 
+      var cols = [2, 3, 4].indexOf(sheet.columns) !== -1 ? sheet.columns : 1;
+
       var html = '';
       if (sheet.intro) html += '<p class="su-intro">' + esc(sheet.intro) + '</p>';
       if (closed) html += '<div class="su-closed">This sign-up sheet is closed.</div>';
       if (!slotDocs.length) html += '<p style="color:var(--text-light)">No slots have been added yet.</p>';
 
+      if (cols > 1) html += '<div class="su-grid su-grid-' + cols + '">';
       slotDocs.forEach(function (d) {
         var s = d.data(), taken = s.taken || 0, cap = s.capacity || 0;
         var left = cap ? Math.max(0, cap - taken) : null;
@@ -160,6 +170,7 @@
         }
         html += '</div>';
       });
+      if (cols > 1) html += '</div>';
       app.innerHTML = html;
 
       app.querySelectorAll('.su-open').forEach(function (b) {

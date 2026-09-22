@@ -51,11 +51,14 @@
     });
     var closed = sheet.status === 'closed';
 
+    var cols = [2, 3, 4].indexOf(sheet.columns) !== -1 ? sheet.columns : 1;
+
     var html = '';
     if (sheet.intro) html += '<p class="pg-su-intro">' + esc(sheet.intro) + '</p>';
     if (closed) html += '<div class="pg-su-closed">This sign-up sheet is closed.</div>';
     if (!slotDocs.length) html += '<p style="color:var(--text-light)">No slots have been added yet.</p>';
 
+    if (cols > 1) html += '<div class="pg-su-grid pg-su-grid-' + cols + '">';
     slotDocs.forEach(function (d) {
       var s = d.data(), taken = s.taken || 0, cap = s.capacity || 0;
       var left = cap ? Math.max(0, cap - taken) : null;
@@ -88,6 +91,7 @@
       }
       html += '</div>';
     });
+    if (cols > 1) html += '</div>';
     el.innerHTML = html;
 
     el.querySelectorAll('.pg-su-open').forEach(function (b) {
