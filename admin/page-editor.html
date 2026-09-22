@@ -19,6 +19,26 @@
     .bo-imgpick { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
     .bo-imgpick img { width:60px; height:46px; object-fit:cover; border-radius:5px; border:2px solid transparent; cursor:pointer; }
     .bo-imgpick img.sel { border-color:var(--primary); }
+
+    .emoji-picker {
+      position:absolute; z-index:40; top:100%; left:0; margin-top:4px;
+      width:280px; max-width:80vw; background:#fff; border:1px solid var(--border);
+      border-radius:10px; box-shadow:var(--shadow-lg); padding:10px;
+    }
+    .emoji-picker-tabs { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:8px; }
+    .emoji-picker-tab {
+      padding:4px 8px; border:1px solid var(--border); border-radius:6px; background:var(--light-bg);
+      font-size:11px; font-weight:700; color:var(--text-light); cursor:pointer;
+    }
+    .emoji-picker-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .emoji-picker-grid {
+      display:grid; grid-template-columns:repeat(7, 1fr); gap:2px;
+      max-height:180px; overflow-y:auto;
+    }
+    .emoji-picker-grid button {
+      font-size:19px; line-height:1; padding:5px 0; border:none; background:none; border-radius:6px; cursor:pointer;
+    }
+    .emoji-picker-grid button:hover { background:var(--light-bg); }
   </style>
 </head>
 <body>
@@ -117,8 +137,13 @@
           <input type="checkbox" id="card-hide"> Don't show a card for this page on the homepage
         </label>
         <div style="display:flex;gap:14px;flex-wrap:wrap">
-          <div class="bo-blockfield" style="max-width:100px"><label>Icon <span style="font-weight:400;color:var(--text-light)">— one emoji</span></label>
-            <input type="text" id="card-icon" placeholder="🎪" maxlength="4"></div>
+          <div class="bo-blockfield" style="max-width:140px;position:relative"><label>Icon <span style="font-weight:400;color:var(--text-light)">— one emoji</span></label>
+            <div style="display:flex;gap:6px">
+              <input type="text" id="card-icon" placeholder="🎪" maxlength="4" style="width:56px;text-align:center;font-size:18px">
+              <button type="button" class="bo-btn ghost sm" id="emoji-pick-btn" aria-label="Choose an emoji" style="padding:6px 10px">😀</button>
+            </div>
+            <div id="emoji-picker" class="emoji-picker" hidden></div>
+          </div>
           <div class="bo-blockfield" style="max-width:200px"><label>Badge</label>
             <select id="card-badge-type">
               <option value="active">Active</option>
@@ -270,6 +295,52 @@
       toast('Pulled from tracker — press Save or Publish to keep it');
     };
 
+    // A wide, categorized emoji picker for the card icon field -- typing an emoji by
+    // hand works too (the input still takes free text), this is just a faster way to
+    // browse a bunch of options instead of hunting through your OS's own picker.
+    const EMOJI_CATS = {
+      '🎉 Events': ['🎉','🎊','🎈','🎁','🎂','🎃','🎄','🎆','🎇','🧨','🪅','🎗️','🏆','🥇','🎖️','🎗️','🎠','🎡','🎢','🎪'],
+      '📚 School': ['📚','📖','📝','✏️','🖍️','🎒','🏫','🔔','📐','📏','🧮','🔬','🧪','🧑‍🏫','👩‍🏫','🎓','📓','📔','📒','✂️'],
+      '⚽ Sports': ['⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🎱','🏓','🏸','🥊','🥋','⛳','🏹','🎣','🤸','🤾','🏆','🏅'],
+      '😀 Faces': ['😀','😃','😄','😁','😊','🙂','😉','😍','🤩','🥳','😎','🤗','🤔','😴','🥰','😇','🙌','👏','👍','🎤'],
+      '🐾 Nature': ['🐯','🐶','🐱','🐻','🦁','🐸','🦋','🐝','🌳','🌲','🌸','🌼','🌻','🍁','🍂','☀️','⛄','❄️','🌈','⭐'],
+      '🍕 Food': ['🍕','🍔','🌭','🍟','🍿','🧁','🍪','🍩','🍰','🎂','🍎','🍊','🍓','🍉','🥤','☕','🍫','🍭','🍦','🥪'],
+      '📌 Objects': ['📌','📍','📅','📆','🗓️','⏰','🔑','📣','📢','💰','💵','🛒','🎟️','🎫','📷','📸','🎥','🎬','🖼️','🧾'],
+      '❤️ Symbols': ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','⭐','✨','💯','✅','❗','❓','🔥','💡','🎯','🚀','🙏','🤝']
+    };
+    function initEmojiPicker() {
+      const btn = document.getElementById('emoji-pick-btn');
+      const pop = document.getElementById('emoji-picker');
+      const icon = document.getElementById('card-icon');
+      if (!btn || btn.dataset.wired) return;
+      btn.dataset.wired = '1';
+
+      let activeCat = Object.keys(EMOJI_CATS)[0];
+      function render() {
+        const tabs = Object.keys(EMOJI_CATS).map(cat =>
+          `<button type="button" class="emoji-picker-tab${cat === activeCat ? ' active' : ''}" data-cat="${esc(cat)}">${esc(cat.split(' ')[0])}</button>`
+        ).join('');
+        const grid = EMOJI_CATS[activeCat].map(e =>
+          `<button type="button" data-emoji="${e}" aria-label="${e}">${e}</button>`
+        ).join('');
+        pop.innerHTML = `<div class="emoji-picker-tabs">${tabs}</div><div class="emoji-picker-grid">${grid}</div>`;
+        pop.querySelectorAll('.emoji-picker-tab').forEach(t => t.onclick = () => { activeCat = t.dataset.cat; render(); });
+        pop.querySelectorAll('.emoji-picker-grid button').forEach(b => b.onclick = () => {
+          icon.value = b.dataset.emoji;
+          icon.dispatchEvent(new Event('input', { bubbles: true }));
+          pop.hidden = true;
+        });
+      }
+      btn.onclick = (ev) => {
+        ev.stopPropagation();
+        pop.hidden = !pop.hidden;
+        if (!pop.hidden) render();
+      };
+      document.addEventListener('click', (ev) => {
+        if (!pop.hidden && !pop.contains(ev.target) && ev.target !== btn) pop.hidden = true;
+      });
+    }
+
     // Landing-page card fields live on this page's linked program_cards doc(s), not on
     // the page itself -- one card per school this page belongs to. All cards for a page
     // share the same icon/badge/description, edited here in one place.
@@ -420,6 +491,7 @@
         refreshPreview();
       };
       slug.oninput = () => { slugTouched = true; slug.value = pageSlug(slug.value); page.slug = slug.value; };
+      initEmojiPicker();
 
       const ed = document.getElementById('event-date'), et = document.getElementById('event-time'),
             eet = document.getElementById('event-endtime'), el = document.getElementById('event-location');
