@@ -599,8 +599,11 @@
       page.blocks.forEach((b, i) => {
         const box = document.createElement('div');
         box.className = 'bo-block';
+        box.draggable = true;
+        box.dataset.i = i;
         box.innerHTML = `
           <div class="bo-block-head">
+            <span class="bo-block-drag" title="Drag to reorder" aria-hidden="true">⠿</span>
             <span class="bo-block-type">${labelFor(b.type)}</span>
             <button data-mv="-1" title="Move up">▲</button>
             <button data-mv="1" title="Move down">▼</button>
@@ -614,6 +617,36 @@
         };
         box.querySelector('.bo-block-body').append(...fieldsFor(b, i));
         wrap.appendChild(box);
+      });
+      wireBlockDrag(wrap);
+    }
+
+    // Plain HTML5 drag-and-drop for reordering blocks (including a Row of Columns --
+    // each row is its own block, so dragging rows around works the same way).
+    function wireBlockDrag(wrap) {
+      let dragI = null;
+      wrap.querySelectorAll('.bo-block').forEach(box => {
+        box.addEventListener('dragstart', (ev) => {
+          dragI = +box.dataset.i;
+          box.classList.add('dragging');
+          ev.dataTransfer.effectAllowed = 'move';
+        });
+        box.addEventListener('dragend', () => { box.classList.remove('dragging'); dragI = null; });
+        box.addEventListener('dragover', (ev) => {
+          ev.preventDefault();
+          ev.dataTransfer.dropEffect = 'move';
+          box.classList.add('drag-over');
+        });
+        box.addEventListener('dragleave', () => box.classList.remove('drag-over'));
+        box.addEventListener('drop', (ev) => {
+          ev.preventDefault();
+          box.classList.remove('drag-over');
+          const dropI = +box.dataset.i;
+          if (dragI === null || dropI === dragI) return;
+          const [moved] = page.blocks.splice(dragI, 1);
+          page.blocks.splice(dropI, 0, moved);
+          renderBlockEditors(); refreshPreview();
+        });
       });
     }
 
