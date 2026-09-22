@@ -48,7 +48,10 @@
                   ${b.caption ? `<figcaption class="pg-caption">${e(b.caption)}</figcaption>` : ''}
                 </figure>`;
       case 'button': {
-        const cls = b.style === 'outline' ? 'pg-btn outline' : 'pg-btn';
+        let cls = 'pg-btn';
+        if (b.style === 'outline') cls += ' outline';
+        if (b.size === 'sm' || b.size === 'lg') cls += ' ' + b.size;
+        if (b.full) cls += ' full';
         const href = /^https?:|^mailto:|^\//.test(b.href || '') ? b.href : '#';
         return `<p${alignStyle(b)}><a class="${cls}" href="${e(href)}" ${/^https?:/.test(href) ? 'target="_blank" rel="noopener"' : ''}>${e(b.label || 'Button')}</a></p>`;
       }
