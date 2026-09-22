@@ -677,9 +677,10 @@
       return field('Alignment', '', sel);
     }
 
-    // A cell inside a Row of Columns holds its own small stack of blocks -- the same
-    // idea as the page's own blocks, just simpler fields and no columns-in-columns.
-    const CELL_BLOCK_LABELS = { heading:'Heading', paragraph:'Paragraph', image:'Photo', button:'Button', list:'List', divider:'Divider' };
+    // A cell inside a Row of Columns holds its own small stack of blocks -- every
+    // block type the page itself can have (including a sign-up sheet or an embed),
+    // except another Row of Columns, to avoid a grid nested inside a grid.
+    const CELL_BLOCK_LABELS = { heading:'Heading', paragraph:'Paragraph', image:'Photo', button:'Button', list:'List', signup:'Sign-up sheet', embed:'Embed', divider:'Divider' };
 
     function cellBlockFields(cb, upd) {
       const out = [];
@@ -714,6 +715,28 @@
         out.push(full);
       } else if (cb.type === 'list') {
         out.push(mkInput('One item per line', (cb.items || []).join('\n'), v => { cb.items = v.split('\n'); upd(); }, true));
+      } else if (cb.type === 'signup') {
+        const sel = document.createElement('select');
+        sel.style.cssText = 'width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:12.5px;margin-bottom:4px';
+        sel.innerHTML = '<option value="">— choose a sign-up sheet —</option>' +
+          (signupSheets || []).map(s => `<option value="${esc(s.id)}">${esc(s.title || '(untitled)')}</option>`).join('');
+        sel.value = cb.sheetId || '';
+        sel.onchange = () => {
+          cb.sheetId = sel.value;
+          const hit = (signupSheets || []).find(s => s.id === sel.value);
+          cb.sheetTitle = hit ? hit.title : '';
+          upd();
+        };
+        out.push(sel);
+        out.push(mkInput('Note (optional)', cb.note, v => { cb.note = v; upd(); }));
+        if (!(signupSheets && signupSheets.length)) {
+          const help = document.createElement('div');
+          help.style.cssText = 'font-size:11.5px;color:var(--text-light)';
+          help.innerHTML = 'No sign-up sheets yet — make one in <a href="signups.html" target="_blank">Sign-Up Sheets</a> first.';
+          out.push(help);
+        }
+      } else if (cb.type === 'embed') {
+        out.push(mkInput('Link to embed (https://…)', cb.src, v => { cb.src = v; upd(); }));
       }
       return out;
     }
@@ -782,7 +805,7 @@
 
       const addBar = document.createElement('div');
       addBar.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px';
-      [['heading', 'H'], ['paragraph', '¶'], ['image', '🖼️'], ['button', '🔘'], ['list', '•'], ['divider', '—']].forEach(([t, ic]) => {
+      [['heading', 'H'], ['paragraph', '¶'], ['image', '🖼️'], ['button', '🔘'], ['list', '•'], ['signup', '📝'], ['embed', '▶️'], ['divider', '—']].forEach(([t, ic]) => {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'bo-btn ghost sm';
@@ -791,7 +814,8 @@
         btn.onclick = () => {
           const starter = { heading: { type: 'heading', level: 3, text: '' }, paragraph: { type: 'paragraph', text: '' },
             image: { type: 'image', url: '', alt: '' }, button: { type: 'button', label: '', href: '', style: 'solid' },
-            list: { type: 'list', items: [''] }, divider: { type: 'divider' } }[t];
+            list: { type: 'list', items: [''] }, signup: { type: 'signup', sheetId: '', sheetTitle: '', note: '' },
+            embed: { type: 'embed', src: '' }, divider: { type: 'divider' } }[t];
           c.blocks.push(starter);
           redraw(); onChange();
         };
