@@ -421,10 +421,33 @@
     async function loadSignupSheets() {
       try {
         const snap = await db.collection('signups').get();
-        signupSheets = snap.docs.map(d => ({ id: d.id, title: d.data().title || '(untitled)' }))
+        signupSheets = snap.docs.map(d => ({ id: d.id, title: d.data().title || '(untitled)', columns: d.data().columns || 1 }))
           .sort((a, b) => a.title.localeCompare(b.title));
       } catch (_) { signupSheets = []; }
       renderBlockEditors();
+    }
+
+    // The slot layout (list vs. a 2/3/4-column grid) lives on the sign-up sheet itself,
+    // not on this page's signup block, so it stays consistent everywhere that sheet is
+    // used. Changing it here updates the sheet document directly.
+    async function setSignupColumns(sheetId, cols) {
+      const hit = signupSheets.find(s => s.id === sheetId);
+      if (hit) hit.columns = cols;
+      try {
+        await db.collection('signups').doc(sheetId).update({ columns: cols });
+      } catch (e) { toast('Could not update the slot layout: ' + e.message, 'error'); }
+    }
+
+    function signupColumnsField(sheetId, upd) {
+      const sel = document.createElement('select');
+      sel.style.cssText = 'width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:12.5px;margin-bottom:4px';
+      sel.innerHTML = '<option value="1">List — one slot per row</option><option value="2">Grid — 2 per row</option>' +
+        '<option value="3">Grid — 3 per row</option><option value="4">Grid — 4 per row</option>';
+      const hit = signupSheets.find(s => s.id === sheetId);
+      sel.value = String([2, 3, 4].includes(hit && hit.columns) ? hit.columns : 1);
+      sel.disabled = !sheetId;
+      sel.onchange = () => { setSignupColumns(sheetId, +sel.value); upd(); };
+      return sel;
     }
 
     /* ---- which school(s) this page is for ---- */
@@ -724,7 +747,7 @@
     // except another Row of Columns, to avoid a grid nested inside a grid.
     const CELL_BLOCK_LABELS = { heading:'Heading', paragraph:'Paragraph', image:'Photo', button:'Button', list:'List', signup:'Sign-up sheet', embed:'Embed', divider:'Divider' };
 
-    function cellBlockFields(cb, upd) {
+    function cellBlockFields(cb, upd, redrawCell) {
       const out = [];
       const mkInput = (ph, val, oninput, multiline) => {
         const el = document.createElement(multiline ? 'textarea' : 'input');
@@ -781,10 +804,18 @@
           cb.sheetId = sel.value;
           const hit = (signupSheets || []).find(s => s.id === sel.value);
           cb.sheetTitle = hit ? hit.title : '';
+          if (redrawCell) redrawCell(); else upd();
           upd();
         };
         out.push(sel);
         out.push(mkInput('Note (optional)', cb.note, v => { cb.note = v; upd(); }));
+        if (cb.sheetId) {
+          const layoutLbl = document.createElement('div');
+          layoutLbl.style.cssText = 'font-size:11px;font-weight:700;color:var(--text-light);margin:2px 0 3px';
+          layoutLbl.textContent = 'Slot layout (applies everywhere this sheet is used)';
+          out.push(layoutLbl);
+          out.push(signupColumnsField(cb.sheetId, upd));
+        }
         if (!(signupSheets && signupSheets.length)) {
           const help = document.createElement('div');
           help.style.cssText = 'font-size:11.5px;color:var(--text-light)';
@@ -853,7 +884,7 @@
           }));
           top.appendChild(mkBtn('✕', 'Remove', () => { c.blocks.splice(cbi, 1); redraw(); onChange(); }));
           row.appendChild(top);
-          row.append(...cellBlockFields(cb, onChange));
+          row.append(...cellBlockFields(cb, onChange, redraw));
           list.appendChild(row);
         });
       }
@@ -1045,7 +1076,7 @@
           b.sheetId = sel.value;
           const hit = (signupSheets || []).find(s => s.id === sel.value);
           b.sheetTitle = hit ? hit.title : '';
-          upd();
+          renderBlockEditors(); upd();
         };
         const note = document.createElement('input');
         note.type = 'text'; note.value = b.note || ''; note.placeholder = 'Optional line under the title, e.g. "2 volunteers per slot"';
@@ -1057,6 +1088,7 @@
           : 'No sign-up sheets yet — make one in <a href="signups.html" target="_blank">Sign-Up Sheets</a> first, then come back.';
         out.push(field('Which sheet', '', sel));
         out.push(field('Note', 'optional', note));
+        if (b.sheetId) out.push(field('Slot layout', 'this applies everywhere this sheet is used, not just this page', signupColumnsField(b.sheetId, upd)));
         const d = document.createElement('div'); d.className = 'bo-blockfield'; d.appendChild(help); out.push(d);
       }
       else if (b.type === 'divider') {
