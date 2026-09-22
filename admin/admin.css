@@ -196,6 +196,12 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 @media (max-width: 900px) { .pg-body .pg-cols-4 { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 800px) { .pg-body .pg-cols-3 { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .pg-body .pg-cols, .pg-body .pg-cols-4 { grid-template-columns: 1fr; } }
+/* Empty-cell placeholder -- editor preview only (#preview), never shown to real visitors */
+#preview .pg-col-empty {
+  min-height: 64px; border: 1px dashed var(--border); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+}
+#preview .pg-col-empty::after { content: 'Empty column — add a block below'; color: var(--text-light); font-size: 12.5px; text-align: center; padding: 8px; }
 
 /* Sign-up sheet block */
 .pg-body .pg-signup {

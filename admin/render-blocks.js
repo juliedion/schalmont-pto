@@ -55,20 +55,30 @@
       case 'divider':
         return '<hr>';
       case 'columns': {
-        // A responsive row of 2-4 simple cells. Stacks to one column on phones.
+        // A responsive row of 2-4 cells, each its own mini stack of blocks. Stacks to
+        // one column on phones. Older pages made before a cell could hold real blocks
+        // still have the simple imageUrl/heading/body/buttonLabel fields -- those are
+        // rendered the old way so nothing already published breaks.
         const n = [2, 3, 4].includes(b.count) ? b.count : 2;
         const cells = (b.cells || []).slice(0, n);
         while (cells.length < n) cells.push({});
         const inner = cells.map(c => {
           let h = '';
-          if (c.imageUrl) h += `<img src="${e(c.imageUrl)}" alt="${e(c.imageAlt || '')}" style="max-width:100%;border-radius:8px">`;
-          if (c.heading)  h += `<h3>${e(c.heading)}</h3>`;
-          if (c.body)     h += e(c.body).split(/\n{2,}/).map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
-          if (c.buttonLabel) {
-            const href = /^https?:|^mailto:|^\//.test(c.buttonHref || '') ? c.buttonHref : '#';
-            h += `<p><a class="pg-btn" href="${e(href)}" ${/^https?:/.test(href) ? 'target="_blank" rel="noopener"' : ''}>${e(c.buttonLabel)}</a></p>`;
+          if (Array.isArray(c.blocks) && c.blocks.length) {
+            h = c.blocks.map(renderBlock).join('');
+          } else {
+            if (c.imageUrl) h += `<img src="${e(c.imageUrl)}" alt="${e(c.imageAlt || '')}" style="max-width:100%;border-radius:8px">`;
+            if (c.heading)  h += `<h3>${e(c.heading)}</h3>`;
+            if (c.body)     h += e(c.body).split(/\n{2,}/).map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+            if (c.buttonLabel) {
+              const href = /^https?:|^mailto:|^\//.test(c.buttonHref || '') ? c.buttonHref : '#';
+              h += `<p><a class="pg-btn" href="${e(href)}" ${/^https?:/.test(href) ? 'target="_blank" rel="noopener"' : ''}>${e(c.buttonLabel)}</a></p>`;
+            }
           }
-          return `<div class="pg-col">${h}</div>`;
+          // An empty cell renders nothing publicly -- the "Empty column" placeholder
+          // some viewers see is a CSS-only hint scoped to the editor's own preview
+          // (#preview .pg-col-empty::after in admin.css), never real page content.
+          return `<div class="pg-col${h ? '' : ' pg-col-empty'}">${h}</div>`;
         }).join('');
         return `<div class="pg-cols pg-cols-${n}">${inner}</div>`;
       }

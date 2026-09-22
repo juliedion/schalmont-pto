@@ -214,6 +214,7 @@
   <script>window.BO_NO_SIDEBAR = true;</script>
   <script src="admin-core.js"></script>
   <script src="render-blocks.js"></script>
+  <script src="../js/signup-embed.js"></script>
   <script>
     let pageId = getParam('id');
     let school = getParam('s');          // routing school (derived); kept in sync
@@ -856,10 +857,15 @@
       renderBlockEditors(); refreshPreview();
     }
 
+    let signupMountTimer;
     function refreshPreview() {
       const titleHtml = page.title ? `<h1>${esc(page.title)}</h1>` : '';
       document.getElementById('preview').innerHTML =
         titleHtml + renderPageHeader(page, true) + renderBlocks(page.blocks);
+      // Debounced so typing elsewhere on the page doesn't re-fetch every sign-up
+      // sheet on every keystroke -- only once things settle down for a moment.
+      clearTimeout(signupMountTimer);
+      signupMountTimer = setTimeout(() => mountSignupEmbeds(db), 400);
     }
 
     async function openPreview() {
