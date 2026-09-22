@@ -55,8 +55,8 @@
       case 'divider':
         return '<hr>';
       case 'columns': {
-        // A responsive row of 2 or 3 simple cells. Stacks to one column on phones.
-        const n = (b.count === 3) ? 3 : 2;
+        // A responsive row of 2-4 simple cells. Stacks to one column on phones.
+        const n = [2, 3, 4].includes(b.count) ? b.count : 2;
         const cells = (b.cells || []).slice(0, n);
         while (cells.length < n) cells.push({});
         const inner = cells.map(c => {

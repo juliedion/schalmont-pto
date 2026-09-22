@@ -187,10 +187,12 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
   grid-template-columns: repeat(2, 1fr);
 }
 .pg-body .pg-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.pg-body .pg-cols-4 { grid-template-columns: repeat(4, 1fr); }
 .pg-body .pg-col > :first-child { margin-top: 0; }
 .pg-body .pg-col > :last-child { margin-bottom: 0; }
+@media (max-width: 900px) { .pg-body .pg-cols-4 { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 800px) { .pg-body .pg-cols-3 { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px) { .pg-body .pg-cols { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .pg-body .pg-cols, .pg-body .pg-cols-4 { grid-template-columns: 1fr; } }
 
 /* Sign-up sheet block */
 .pg-body .pg-signup {
@@ -204,9 +206,11 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 .pg-body .pg-signup .pg-btn { margin: 0; flex-shrink: 0; }
 
 /* Page-editor preview: simulate tablet / phone stacking without resizing the window */
-.pg-body.pv-tablet .pg-cols-3 { grid-template-columns: repeat(2, 1fr); }
+.pg-body.pv-tablet .pg-cols-3,
+.pg-body.pv-tablet .pg-cols-4 { grid-template-columns: repeat(2, 1fr); }
 .pg-body.pv-phone .pg-cols,
-.pg-body.pv-phone .pg-cols-3 { grid-template-columns: 1fr; }
+.pg-body.pv-phone .pg-cols-3,
+.pg-body.pv-phone .pg-cols-4 { grid-template-columns: 1fr; }
 .pg-body.pv-phone .pg-signup { flex-direction: column; align-items: stretch; text-align: center; }
 .pg-body.pv-phone .pg-signup .pg-btn { width: 100%; }
 

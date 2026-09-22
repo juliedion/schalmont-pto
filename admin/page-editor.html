@@ -725,15 +725,28 @@
       else if (b.type === 'columns') {
         if (!Array.isArray(b.cells)) b.cells = [{}, {}];
         const cnt = document.createElement('select');
-        cnt.innerHTML = '<option value="2">2 columns</option><option value="3">3 columns</option>';
-        cnt.value = String(b.count === 3 ? 3 : 2);
+        cnt.innerHTML = '<option value="2">2 columns</option><option value="3">3 columns</option><option value="4">4 columns</option>';
+        cnt.value = String([2, 3, 4].includes(b.count) ? b.count : 2);
         cnt.onchange = () => {
           b.count = +cnt.value;
           while (b.cells.length < b.count) b.cells.push({});
           b.cells = b.cells.slice(0, b.count);
           renderBlockEditors(); upd();
         };
-        out.push(field('How many columns', 'they stack into one column on phones automatically', cnt));
+        out.push(field('How many columns in this row', 'they stack into one column on phones automatically', cnt));
+
+        const addRowBtn = document.createElement('button');
+        addRowBtn.type = 'button';
+        addRowBtn.className = 'bo-btn ghost sm';
+        addRowBtn.style.marginBottom = '8px';
+        addRowBtn.textContent = '↓ Add Another Row Below';
+        addRowBtn.title = 'Adds a new row of columns right after this one -- each Columns block is one row';
+        addRowBtn.onclick = () => {
+          const n = b.count || 2;
+          page.blocks.splice(i + 1, 0, { type: 'columns', count: n, cells: Array.from({ length: n }, () => ({})) });
+          renderBlockEditors(); upd();
+        };
+        out.push(addRowBtn);
 
         (b.cells || []).slice(0, b.count || 2).forEach((c, ci) => {
           const wrap = document.createElement('div');
