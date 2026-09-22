@@ -139,6 +139,10 @@
         }
         if (!p) { notFound(); return; }
 
+        if (p.hideHeader) {
+          const header = document.querySelector('.site-header');
+          if (header) header.style.display = 'none';
+        }
         document.title = p.title + ' — Schalmont PTO';
         hero.textContent = p.title || 'Untitled page';
         if (preview && p.status !== 'published') document.getElementById('preview-banner').hidden = false;

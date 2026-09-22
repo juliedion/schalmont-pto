@@ -73,6 +73,10 @@
       <label>Page title <span class="bo-hint">Shows at the top of the page and in the browser tab. Example: "Jefferson Fun Run 2026".</span></label>
       <input type="text" id="page-title" placeholder="Give your page a clear name">
     </div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;margin:0 0 14px">
+      <input type="checkbox" id="hide-header-cb"> Hide the top navigation bar on this page
+      <span class="bo-hint" style="margin-left:2px">— useful for a standalone flyer/landing page with no site nav</span>
+    </label>
     <div class="bo-field" style="max-width:none">
       <label>Which school(s) is this page for? <span class="bo-hint">Tick every school it belongs to. Pick two or more and the page gets a shared address at schalmontpto.com/pto/&hellip;</span></label>
       <div id="page-schools" style="display:flex;flex-wrap:wrap;gap:16px;margin-top:4px"></div>
@@ -244,6 +248,7 @@
       syncRouting();
       document.getElementById('page-title').value = page.title || '';
       document.getElementById('page-slug').value = page.slug || '';
+      document.getElementById('hide-header-cb').checked = page.hideHeader === true;
       document.getElementById('event-date').value = page.eventDate || '';
       document.getElementById('event-enddate').value = page.eventEndDate || '';
       document.getElementById('event-time').value = page.eventTime || '';
@@ -858,6 +863,7 @@
 
       btns.forEach(b => b.disabled = true);
       page.hideCard = document.getElementById('card-hide').checked;
+      page.hideHeader = document.getElementById('hide-header-cb').checked;
       const data = {
         title: page.title.trim(), slug: page.slug.trim(),
         schools: page.schools, school,
@@ -865,7 +871,7 @@
         eventDate: page.eventDate || '', eventTime: page.eventTime || '',
         eventEndTime: page.eventEndTime || '', eventEndDate: page.eventEndDate || '',
         eventLocation: page.eventLocation || '', flyerUrl: page.flyerUrl || '',
-        hideCard: page.hideCard,
+        hideCard: page.hideCard, hideHeader: page.hideHeader,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedBy: ME.email
       };
