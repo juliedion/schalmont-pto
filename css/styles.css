@@ -626,13 +626,11 @@ a.pcal-pill:hover { background: #e8ece8; }
 
 /* === School Program Cards === */
 .program-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 20px;
 }
-@media (max-width: 1100px) { .program-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 720px)  { .program-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 480px)  { .program-grid { grid-template-columns: 1fr; } }
 .program-card {
   background: var(--white);
   border: 1px solid var(--border);
@@ -640,8 +638,11 @@ a.pcal-pill:hover { background: #e8ece8; }
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  flex: 1 1 240px;
+  max-width: 270px;
   transition: box-shadow var(--transition), transform var(--transition);
 }
+@media (max-width: 480px) { .program-card { flex-basis: 100%; max-width: 400px; } }
 .program-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 .program-card-header {
   background: var(--primary);
