@@ -75,7 +75,7 @@
       var e = d.data();
       liveIds[d.id] = !e.cancelled;
       if (e.cancelled) return;
-      (byName[e.slotId] = byName[e.slotId] || []).push({ name: e.name, count: e.count || 1 });
+      (byName[e.slotId] = byName[e.slotId] || []).push({ name: e.name, count: e.count || 1, item: e.item || '' });
     });
     // Drop any locally-remembered entry that's gone or been cancelled some other way
     // (e.g. an admin removed it) so a stale Cancel/Edit prompt doesn't linger.
@@ -99,7 +99,7 @@
       var full = cap && left <= 0;
       var when = [prettyDate(s.date), [prettyTime(s.start), prettyTime(s.end)].filter(Boolean).join('–')].filter(Boolean).join(' · ');
       var names = (byName[d.id] || []).map(function (n) {
-        return '<span>' + esc(n.name) + (n.count > 1 ? ' (' + n.count + ')' : '') + '</span>';
+        return '<span>' + esc(n.name) + (n.count > 1 ? ' (' + n.count + ')' : '') + (n.item ? ' — ' + esc(n.item) : '') + '</span>';
       }).join('');
       var myEntry = mineBySlot[d.id];
       html += '<div class="pg-su-slot" data-slot="' + esc(d.id) + '">';
@@ -150,6 +150,7 @@
         '<div><label>Phone</label><input name="phone" required value="' + esc(prefill.phone || '') + '"></div>' +
         '<div><label>Note to organizer <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="comment" maxlength="200" value="' + esc(prefill.comment || '') + '"></div>' +
       '</div>' +
+      '<label>What are you bringing? <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="item" maxlength="100" placeholder="e.g. A dozen cookies" value="' + esc(prefill.item || '') + '">' +
       '<div style="margin-top:12px"><button type="submit" class="pg-su-submit">Sign me up</button></div>' +
       '<div class="pg-su-msg"></div>' +
     '</form>';
@@ -161,6 +162,7 @@
     var name = form.name.value.trim();
     var count = Math.max(1, Math.min(20, parseInt(form.count.value, 10) || 1));
     var email = form.email.value.trim(), phone = form.phone.value.trim(), comment = form.comment.value.trim();
+    var item = form.item.value.trim();
     var msg = form.querySelector('.pg-su-msg');
     if (!name || !email || !phone) {
       msg.className = 'pg-su-msg err'; msg.textContent = 'Name, email and phone are all required.'; return;
@@ -178,12 +180,12 @@
         tx.update(slotRef, { taken: taken + count });
         var eref = db.collection('signups').doc(id).collection('entries').doc();
         newEntryId = eref.id;
-        tx.set(eref, { slotId: slotId, name: name, count: count, at: firebase.firestore.FieldValue.serverTimestamp() });
+        tx.set(eref, { slotId: slotId, name: name, count: count, item: item, at: firebase.firestore.FieldValue.serverTimestamp() });
         tx.set(db.collection('signups').doc(id).collection('contacts').doc(eref.id),
           { email: email, phone: phone, comment: comment });
       });
     }).then(function () {
-      rememberMine(id, { entryId: newEntryId, slotId: slotId, name: name, email: email, phone: phone, comment: comment });
+      rememberMine(id, { entryId: newEntryId, slotId: slotId, name: name, email: email, phone: phone, comment: comment, item: item });
       msg.className = 'pg-su-msg done'; msg.textContent = '✓ You\'re signed up. Thank you!';
       setTimeout(function () { loadOne(db, el); }, 900);
     }).catch(function (e) {
@@ -239,7 +241,7 @@
       ]).then(function (res) {
         render(db, el, id, sheet, res[0].docs, res[1].docs, {
           slotId: slotId, open: true,
-          name: priorFields.name, email: priorFields.email, phone: priorFields.phone, comment: priorFields.comment
+          name: priorFields.name, email: priorFields.email, phone: priorFields.phone, comment: priorFields.comment, item: priorFields.item
         });
       });
     });

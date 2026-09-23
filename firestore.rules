@@ -201,11 +201,12 @@ service cloud.firestore {
       // Who signed up — name + count only, publicly visible on the sheet.
       match /entries/{eid} {
         allow read: if true;
-        allow create: if request.resource.data.keys().hasOnly(['slotId','name','count','at'])
+        allow create: if request.resource.data.keys().hasOnly(['slotId','name','count','item','at'])
           && request.resource.data.name is string
           && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 80
           && request.resource.data.count is int
-          && request.resource.data.count > 0 && request.resource.data.count <= 20;
+          && request.resource.data.count > 0 && request.resource.data.count <= 20
+          && request.resource.data.item is string && request.resource.data.item.size() <= 100;
         allow update: if isAnyAdmin() || (
           // A signer can cancel their own entry by re-typing the email they signed up
           // with -- the only "identity" an anonymous visitor has, checked against the
