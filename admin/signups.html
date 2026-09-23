@@ -194,9 +194,40 @@
           <span class="su-pill ${s.status === 'closed' ? 'closed' : 'open'}">${s.status === 'closed' ? 'Closed' : 'Open'}</span>
           <span class="spacer"></span>
           <a class="bo-btn ghost sm" href="../signup.html?id=${s.id}" target="_blank">View ↗</a>
+          <button class="bo-btn ghost sm" data-dup>Duplicate</button>
           <a class="bo-btn sm" href="signups.html?id=${s.id}">Manage</a>`;
+        el.querySelector('[data-dup]').onclick = (ev) => duplicateSheet(s.id, ev.target);
         box.appendChild(el);
       });
+    }
+
+    // Copies the sheet's own fields and its slots (freshly reset to 0 taken) --
+    // never the entries/contacts, since those are real people who signed up for the
+    // ORIGINAL sheet, not the new one.
+    async function duplicateSheet(id, btn) {
+      btn.disabled = true; btn.textContent = 'Duplicating…';
+      try {
+        const snap = await db.collection('signups').doc(id).get();
+        const s = snap.data();
+        const ref = await db.collection('signups').add({
+          title: (s.title || 'Untitled sign-up sheet') + ' (Copy)',
+          intro: s.intro || '', school: s.school || 'pto', status: 'open',
+          columns: s.columns || 1,
+          contactName: s.contactName || ME.name, contactEmail: s.contactEmail || ME.email,
+          createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        const slots = await db.collection('signups').doc(id).collection('slots').orderBy('order').get();
+        for (const d of slots.docs) {
+          const { taken, ...rest } = d.data();
+          await ref.collection('slots').add({ ...rest, taken: 0 });
+        }
+        toast('Duplicated — opening the copy to edit');
+        location.href = 'signups.html?id=' + ref.id;
+      } catch (e) {
+        toast('Could not duplicate: ' + e.message, 'error');
+        btn.disabled = false; btn.textContent = 'Duplicate';
+      }
     }
 
     async function createSheet() {
