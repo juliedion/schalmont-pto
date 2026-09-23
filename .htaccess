@@ -27,6 +27,10 @@ RewriteRule ^yearbook/?$ /yearbooks [R=301,L]
 RewriteRule ^(woestina|jes|ms|hs|pto)/([A-Za-z0-9_-]+)/?$ p.html?prefix=$1&slug=$2 [L,QSA]
 RewriteRule ^p/([A-Za-z0-9_-]+)/?$ p.html?slug=$1 [L,QSA]
 
+# Haunted Trail of Treats -- the printed flyer's QR code/URL is schalmontpto.com/haunted-trail
+# (no /pto/ prefix), so alias it straight to the real PTO-wide page.
+RewriteRule ^haunted-trail/?$ p.html?prefix=pto&slug=haunted-trail [L,QSA]
+
 # Redirect /index and /index.html to /
 RewriteCond %{THE_REQUEST} \s/+index(\.html)?\s [NC]
 RewriteRule ^ / [R=301,L]
