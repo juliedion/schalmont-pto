@@ -98,6 +98,13 @@
     var contactEl = document.getElementById('su-contact');
 
     function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+    // Public list shows first name + last initial only, for privacy -- full names still
+    // live in Firestore/the admin Responses tab, this is display-only.
+    function displayName(name) {
+      var parts = (name || '').trim().split(/\s+/);
+      if (parts.length < 2) return parts[0] || '';
+      return parts.slice(0, -1).join(' ') + ' ' + parts[parts.length - 1].charAt(0).toUpperCase() + '.';
+    }
     function prettyDate(ymd) {
       if (!ymd) return '';
       var p = ymd.split('-'); if (p.length !== 3) return ymd;
@@ -194,7 +201,7 @@
         var full = cap && left <= 0;
         var when = [prettyDate(s.date), [prettyTime(s.start), prettyTime(s.end)].filter(Boolean).join('–')].filter(Boolean).join(' · ');
         var names = (byName[d.id] || []).map(function (n) {
-          return '<span>' + esc(n.name) + (n.count > 1 ? ' (' + n.count + ')' : '') + (n.item ? ' — ' + esc(n.item) : '') + '</span>';
+          return '<span>' + esc(displayName(n.name)) + (n.count > 1 ? ' (' + n.count + ')' : '') + (n.item ? ' — ' + esc(n.item) : '') + '</span>';
         }).join('');
         var myEntry = mineBySlot[d.id];
         html += '<div class="su-slot" data-slot="' + d.id + '">';
