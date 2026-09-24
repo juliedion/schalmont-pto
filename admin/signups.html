@@ -86,6 +86,10 @@
             <div class="su-field" style="flex:1;min-width:150px"><label>Organizer name</label><input type="text" id="f-cname"></div>
             <div class="su-field" style="flex:1;min-width:150px"><label>Organizer email</label><input type="email" id="f-cemail"></div>
           </div>
+          <div class="su-field">
+            <label>Email a notification to <span style="font-weight:400;color:var(--text-light)">— one or more addresses, comma-separated. Sent automatically every time someone new signs up. Leave blank for no notifications.</span></label>
+            <input type="text" id="f-notify" placeholder="e.g. secretary@schalmontpto.com, librarian@schalmontpto.com">
+          </div>
           <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;margin-top:6px">
             <input type="checkbox" id="f-ask-item"> Ask "What are you bringing?" <span style="font-weight:400;color:var(--text-light)">— an optional item field on every sign-up (good for a bake sale or food drive; turn off for volunteer shifts)</span>
           </label>
@@ -113,8 +117,12 @@
       </section>
 
       <section id="tab-responses" hidden>
-        <div style="display:flex;gap:8px;margin-bottom:12px"><button class="bo-btn ghost sm" id="csv-btn">⬇ Download CSV</button>
-          <button class="bo-btn ghost sm" id="refresh-btn">↻ Refresh</button></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+          <button class="bo-btn sm" id="add-entry-btn">＋ Add sign-up</button>
+          <button class="bo-btn ghost sm" id="print-btn">🖨 Print sign-in sheet</button>
+          <button class="bo-btn ghost sm" id="csv-btn">⬇ Download CSV</button>
+          <button class="bo-btn ghost sm" id="refresh-btn">↻ Refresh</button>
+        </div>
         <div id="resp-body"></div>
       </section>
 
@@ -162,6 +170,8 @@
       document.getElementById('del-btn').onclick = deleteSheet;
       document.getElementById('csv-btn').onclick = downloadCSV;
       document.getElementById('refresh-btn').onclick = loadResponses;
+      document.getElementById('add-entry-btn').onclick = addEntryManually;
+      document.getElementById('print-btn').onclick = printSignInSheet;
       document.querySelectorAll('.dir-tab').forEach(t => t.onclick = () => showTab(t.dataset.tab));
       document.getElementById('copy-link').onclick = () => copy(document.getElementById('pub-link').textContent);
       document.getElementById('copy-embed').onclick = () => copy(document.getElementById('embed-link').textContent);
@@ -261,6 +271,7 @@
       document.getElementById('f-ask-item').checked = curSheet.askItem !== false;
       document.getElementById('f-cname').value = curSheet.contactName || '';
       document.getElementById('f-cemail').value = curSheet.contactEmail || '';
+      document.getElementById('f-notify').value = curSheet.notifyEmails || '';
       const link = SITE + '/signup.html?id=' + id;
       document.getElementById('pub-link').textContent = link;
       document.getElementById('embed-link').textContent = link + '&embed=1';
@@ -303,6 +314,7 @@
           askItem: document.getElementById('f-ask-item').checked,
           contactName: document.getElementById('f-cname').value.trim(),
           contactEmail: document.getElementById('f-cemail').value.trim(),
+          notifyEmails: document.getElementById('f-notify').value.trim(),
           updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: ME.email
         });
         // slots: upsert visible rows, delete removed ones
@@ -343,6 +355,7 @@
 
     /* ---------------- responses ---------------- */
     let respRows = [];
+    let curSlots = [];   // [{id, label, date, start}] for the current sheet, for Add sign-up
     async function loadResponses() {
       const id = curSheet.id;
       const [slots, entries, contacts] = await Promise.all([
@@ -350,23 +363,104 @@
         db.collection('signups').doc(id).collection('entries').get(),
         db.collection('signups').doc(id).collection('contacts').get()
       ]);
+      curSlots = slots.docs.map(d => ({ id: d.id, ...d.data() }));
       const slotName = {};
-      slots.docs.forEach(d => { const s = d.data(); slotName[d.id] = [s.label, s.date, s.start].filter(Boolean).join(' · ') || '(slot)'; });
+      curSlots.forEach(s => { slotName[s.id] = [s.label, s.date, s.start].filter(Boolean).join(' · ') || '(slot)'; });
       const contact = {};
       contacts.docs.forEach(d => contact[d.id] = d.data());
       respRows = entries.docs.filter(d => !d.data().cancelled).map(d => {
         const e = d.data(), c = contact[d.id] || {};
         return { id: d.id, slotId: e.slotId, slot: slotName[e.slotId] || e.slotId, name: e.name, count: e.count || 1,
-                 email: c.email || '', phone: c.phone || '', comment: c.comment || '',
+                 item: e.item || '', email: c.email || '', phone: c.phone || '', comment: c.comment || '',
                  at: e.at?.toDate ? e.at.toDate() : null };
       }).sort((a, b) => (a.slot > b.slot ? 1 : -1) || (b.at - a.at));
       document.getElementById('resp-count').textContent = respRows.length;
       const box = document.getElementById('resp-body');
       if (!respRows.length) { box.innerHTML = '<p style="color:var(--text-light)">No sign-ups yet.</p>'; return; }
-      box.innerHTML = '<table class="su-resp"><thead><tr><th>Slot</th><th>Name</th><th>#</th><th>Email</th><th>Phone</th><th>Comment</th><th>When</th><th></th></tr></thead><tbody>' +
-        respRows.map(r => `<tr><td>${esc(r.slot)}</td><td>${esc(r.name)}</td><td>${r.count}</td><td>${esc(r.email)}</td><td>${esc(r.phone)}</td><td>${esc(r.comment)}</td><td>${r.at ? r.at.toLocaleString() : ''}</td><td><button class="bo-btn danger ghost sm" data-remove="${r.id}" data-slot="${r.slotId}">Remove</button></td></tr>`).join('') +
+      box.innerHTML = '<table class="su-resp"><thead><tr><th>Slot</th><th>Name</th><th>#</th><th>Bringing</th><th>Email</th><th>Phone</th><th>Comment</th><th>When</th><th></th></tr></thead><tbody>' +
+        respRows.map(r => `<tr><td>${esc(r.slot)}</td><td>${esc(r.name)}</td><td>${r.count}</td><td>${esc(r.item)}</td><td>${esc(r.email)}</td><td>${esc(r.phone)}</td><td>${esc(r.comment)}</td><td>${r.at ? r.at.toLocaleString() : ''}</td><td style="white-space:nowrap"><button class="bo-btn ghost sm" data-edit="${r.id}">Edit</button> <button class="bo-btn danger ghost sm" data-remove="${r.id}" data-slot="${r.slotId}">Remove</button></td></tr>`).join('') +
         '</tbody></table>';
       box.querySelectorAll('[data-remove]').forEach(b => { b.onclick = () => adminRemoveEntry(b.dataset.remove, b.dataset.slot); });
+      box.querySelectorAll('[data-edit]').forEach(b => { b.onclick = () => editEntry(b.dataset.edit); });
+    }
+
+    // Admin adds someone who signed up offline (phone call, in person, paper sheet) --
+    // writes the same entries/contacts shape a public sign-up would, just typed in here.
+    async function addEntryManually() {
+      if (!curSlots.length) { toast('Add a slot first (Set up tab)', 'error'); return; }
+      const options = curSlots.map((s, i) => `${i + 1}. ${[s.label, s.date, s.start].filter(Boolean).join(' · ') || '(slot)'}`).join('\n');
+      const pick = prompt('Which slot?\n' + options + '\n\nEnter the number:');
+      const idx = parseInt(pick, 10) - 1;
+      if (!(idx >= 0 && idx < curSlots.length)) return;
+      const slot = curSlots[idx];
+      const name = (prompt('Name?') || '').trim();
+      if (!name) return;
+      const email = (prompt('Email? (optional)') || '').trim();
+      const phone = (prompt('Phone? (optional)') || '').trim();
+      const item = curSheet.askItem !== false ? (prompt('What are they bringing? (optional)') || '').trim() : '';
+      const id = curSheet.id;
+      const eref = db.collection('signups').doc(id).collection('entries').doc();
+      await eref.set({ slotId: slot.id, name, count: 1, item, at: firebase.firestore.FieldValue.serverTimestamp() });
+      await db.collection('signups').doc(id).collection('contacts').doc(eref.id).set({ email, phone, comment: '' });
+      const sref = db.collection('signups').doc(id).collection('slots').doc(slot.id);
+      const ssnap = await sref.get();
+      await sref.update({ taken: (ssnap.data().taken || 0) + 1 });
+      toast('Added');
+      loadResponses();
+    }
+
+    async function editEntry(entryId) {
+      const row = respRows.find(r => r.id === entryId);
+      if (!row) return;
+      const name = prompt('Name:', row.name);
+      if (name === null) return;
+      const email = prompt('Email:', row.email);
+      if (email === null) return;
+      const phone = prompt('Phone:', row.phone);
+      if (phone === null) return;
+      const id = curSheet.id;
+      await db.collection('signups').doc(id).collection('entries').doc(entryId).update({ name: name.trim() || row.name });
+      await db.collection('signups').doc(id).collection('contacts').doc(entryId)
+        .set({ email: email.trim(), phone: phone.trim() }, { merge: true });
+      toast('Saved');
+      loadResponses();
+    }
+
+    // A printable roster: who's signed up for what, plus blank Sign-in/Sign-out columns
+    // with a Reason column (what they're bringing, or the slot itself) for building
+    // security to check against when a volunteer enters/leaves.
+    function printSignInSheet() {
+      if (!respRows.length) { toast('No sign-ups yet', 'error'); return; }
+      const rows = respRows.map(r => `<tr>
+          <td>${esc(r.name)}</td>
+          <td>${esc(r.slot)}</td>
+          <td>${esc(r.item || r.slot)}</td>
+          <td>${esc(r.phone)}</td>
+          <td class="pr-blank"></td>
+          <td class="pr-blank"></td>
+        </tr>`).join('');
+      const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${esc(curSheet.title || 'Sign-In Sheet')}</title>
+        <style>
+          body { font-family: -apple-system, Arial, sans-serif; padding: 24px; color: #111; }
+          h1 { font-size: 18px; margin: 0 0 4px; }
+          p { font-size: 12px; color: #555; margin: 0 0 18px; }
+          table { width: 100%; border-collapse: collapse; font-size: 12px; }
+          th, td { border: 1px solid #999; padding: 8px 6px; text-align: left; vertical-align: top; }
+          th { background: #eee; }
+          .pr-blank { min-width: 90px; height: 34px; }
+          @media print { body { padding: 0; } }
+        </style></head><body>
+        <h1>${esc(curSheet.title || 'Sign-In Sheet')}</h1>
+        <p>Printed ${new Date().toLocaleString()} &middot; ${respRows.length} volunteer${respRows.length === 1 ? '' : 's'}</p>
+        <table><thead><tr>
+          <th>Name</th><th>Slot</th><th>Reason for being in the building</th><th>Phone</th><th>Sign in (time)</th><th>Sign out (time)</th>
+        </tr></thead><tbody>${rows}</tbody></table>
+        </body></html>`;
+      const w = window.open('', '_blank');
+      w.document.write(html);
+      w.document.close();
+      w.focus();
+      w.print();
     }
 
     async function adminRemoveEntry(entryId, slotId) {

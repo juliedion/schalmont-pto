@@ -234,9 +234,14 @@ service cloud.firestore {
       // signer's cancel/edit request is checked against — see entries above).
       match /contacts/{eid} {
         allow read: if isAnyAdmin();
-        allow create: if request.resource.data.keys().hasOnly(['email','phone','comment'])
+        // A public sign-up always has both; an admin adding someone who signed up
+        // offline (phone call, paper sheet) may not have caught both, so admins skip
+        // the non-empty requirement.
+        allow create: if isAnyAdmin() || (
+          request.resource.data.keys().hasOnly(['email','phone','comment'])
           && request.resource.data.email is string && request.resource.data.email.size() > 0
-          && request.resource.data.phone is string && request.resource.data.phone.size() > 0;
+          && request.resource.data.phone is string && request.resource.data.phone.size() > 0
+        );
         allow update, delete: if isAnyAdmin();
       }
     }

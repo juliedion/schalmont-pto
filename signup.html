@@ -286,6 +286,12 @@
       }).then(function () {
         rememberMine(ID, { entryId: newEntryId, slotId: slotId, name: name, email: email, phone: phone, comment: comment, item: item });
         msg.className = 'su-msg su-done'; msg.textContent = '✓ You\'re signed up. Thank you!';
+        // Best-effort — whoever's watching this sheet gets an email. Never blocks or
+        // affects the sign-up itself, which is already saved by this point.
+        fetch('/api/notify-signup.php', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sheetId: ID, entryId: newEntryId })
+        }).catch(function () {});
         setTimeout(load, 900);
       }).catch(function (e) {
         btn.disabled = false;
