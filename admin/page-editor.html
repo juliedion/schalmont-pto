@@ -77,6 +77,9 @@
       <label>Which school(s) is this page for? <span class="bo-hint">Tick every school it belongs to. Pick two or more and the page gets a shared address at schalmontpto.com/pto/&hellip;</span></label>
       <div id="page-schools" style="display:flex;flex-wrap:wrap;gap:16px;margin-top:4px"></div>
       <p id="page-schools-locked" style="font-size:12px;color:var(--text-light);margin:6px 0 0" hidden></p>
+      <label id="page-leftmenu-row" style="display:none;align-items:center;gap:8px;font-size:13.5px;margin-top:10px">
+        <input type="checkbox" id="page-leftmenu"> Show in the left (Browse) sidebar menu, under each ticked school
+      </label>
     </div>
     <div class="bo-field" style="max-width:none">
       <label>Page link <span class="bo-hint">This is the web address. It's created from your title &mdash; you can shorten it. Lowercase letters and numbers only.</span></label>
@@ -248,6 +251,10 @@
       syncRouting();
       document.getElementById('page-title').value = page.title || '';
       document.getElementById('page-slug').value = page.slug || '';
+      if (page.category === 'events') {
+        document.getElementById('page-leftmenu-row').style.display = 'flex';
+        document.getElementById('page-leftmenu').checked = page.showInLeftMenu === true;
+      }
       document.getElementById('hide-eventbox-cb').checked = page.hideEventBox === true;
       document.getElementById('event-date').value = page.eventDate || '';
       document.getElementById('event-enddate').value = page.eventEndDate || '';
@@ -1171,10 +1178,13 @@
 
       // First time an event page goes live, ask whether it should also show as a link in
       // its school's left (Browse) sidebar -- the sidebar shouldn't fill up automatically.
+      // The "Show in left sidebar menu" checkbox above is the actual source of truth and
+      // can be changed any time after; this just sets its starting value.
       if (statusChange === 'published' && page.category === 'events' && page.status !== 'published') {
         const names = page.schools.map(s => SCHOOLS[s] || s).join(' + ');
-        page.showInLeftMenu = confirm(`Add "${page.title.trim()}" to the left sidebar menu for ${names}?`);
+        document.getElementById('page-leftmenu').checked = confirm(`Add "${page.title.trim()}" to the left sidebar menu for ${names}?`);
       }
+      if (page.category === 'events') page.showInLeftMenu = document.getElementById('page-leftmenu').checked;
 
       btns.forEach(b => b.disabled = true);
       page.hideCard = document.getElementById('card-hide').checked;
