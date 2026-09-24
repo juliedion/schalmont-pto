@@ -190,12 +190,12 @@
       });
     }).then(function () {
       rememberMine(id, { entryId: newEntryId, slotId: slotId, name: name, email: email, phone: phone, comment: comment, item: item });
-      msg.className = 'pg-su-msg done'; msg.textContent = '✓ You\'re signed up. Thank you!';
-      // Best-effort — whoever's watching this sheet gets an email. Never blocks or
-      // affects the sign-up itself, which is already saved by this point.
+      msg.className = 'pg-su-msg done'; msg.textContent = '✓ You\'re signed up. Thank you! Check your email for a confirmation.';
+      // Best-effort — a confirmation to the signer, plus whoever's watching this sheet.
+      // Never blocks or affects the sign-up itself, which is already saved by this point.
       fetch('/api/notify-signup.php', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sheetId: id, entryId: newEntryId })
+        body: JSON.stringify({ sheetId: id, entryId: newEntryId, signerEmail: email })
       }).catch(function () {});
       setTimeout(function () { loadOne(db, el); }, 900);
     }).catch(function (e) {

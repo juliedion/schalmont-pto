@@ -101,4 +101,43 @@ return [
     'middle'    => 'eumk9qp2llrljnfkp64k1dgk5g@group.calendar.google.com',
     'high'      => '8b7ohsc70vgab6398itc7e73q0@group.calendar.google.com',
   ],
+
+  /* ============================================================
+     SIGN-UP SHEET REMINDER EMAILS  —  optional, ~10 minute one-time setup
+     ------------------------------------------------------------
+     A new sign-up already emails a confirmation to the signer and (if a
+     sheet has "Notify these emails" filled in) whoever's watching it --
+     that part works with no setup at all, see api/notify-signup.php.
+
+     THIS setup is only for the two reminder emails ("3 days before" and
+     "2 hours before, day of") -- those can't be triggered by a page
+     load like the confirmation is, since nobody may visit the site at
+     the exact right moment. Something has to check on a timer instead.
+     Two steps:
+
+     1. Reuse the SAME service account from the Google Calendar section
+        above (skip this if you already did that setup) -- but it also
+        needs a Firestore permission that Calendar sharing doesn't grant:
+          a. Go to https://console.cloud.google.com/iam-admin/iam and
+             make sure the project selected (top left) is the same one
+             the service account was created in.
+          b. Find the service account's email (the "client_email" from
+             its JSON key, ends in .iam.gserviceaccount.com) in the list,
+             or "+ Grant Access" if it's not there yet.
+          c. Give it the role "Cloud Datastore User".
+        Paste the same JSON key on 'google_service_account_json' above
+        if you haven't already.
+     2. Make something actually call this URL every 15-30 minutes:
+          https://schalmontpto.com/api/send-reminders.php?key=YOUR-KEY-BELOW
+        Easiest free option: https://cron-job.org — free account, "Create
+        cron job", paste that URL, set it to run every 15 or 30 minutes.
+        (Bluehost's own cPanel → "Cron Jobs" works too, if you'd rather
+        keep it all on one host — same URL, called with curl or wget.)
+     3. Pick your own random secret key below (any string — this stops
+        strangers from spamming the reminder endpoint) and use the exact
+        same value in the URL in step 2.
+     ============================================================ */
+
+  // Any random string you make up — must match the ?key= in the cron URL above.
+  'reminders_secret_key' => 'REPLACE-WITH-A-RANDOM-STRING',
 ];
