@@ -151,7 +151,7 @@
       '<label>Your name</label><input name="name" required maxlength="80" placeholder="First and last name" value="' + esc(prefill.name || '') + '">' +
       '<label>Email</label><input name="email" type="email" required value="' + esc(prefill.email || '') + '">' +
       '<div class="pg-su-row2">' +
-        '<div><label>Phone</label><input name="phone" required value="' + esc(prefill.phone || '') + '"></div>' +
+        '<div><label>Phone <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="phone" value="' + esc(prefill.phone || '') + '"></div>' +
         '<div><label>Note to organizer <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="comment" maxlength="200" value="' + esc(prefill.comment || '') + '"></div>' +
       '</div>' +
       (askItem ? '<label>What are you bringing? <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="item" maxlength="100" placeholder="e.g. A dozen cookies" value="' + esc(prefill.item || '') + '">' : '') +
@@ -168,8 +168,8 @@
     var email = form.email.value.trim(), phone = form.phone.value.trim(), comment = form.comment.value.trim();
     var item = form.item ? form.item.value.trim() : '';
     var msg = form.querySelector('.pg-su-msg');
-    if (!name || !email || !phone) {
-      msg.className = 'pg-su-msg err'; msg.textContent = 'Name, email and phone are all required.'; return;
+    if (!name || !email) {
+      msg.className = 'pg-su-msg err'; msg.textContent = 'Name and email are required.'; return;
     }
     var btn = form.querySelector('button[type=submit]'); btn.disabled = true;
     msg.className = 'pg-su-msg'; msg.textContent = 'Saving…';
