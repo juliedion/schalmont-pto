@@ -237,10 +237,7 @@
       prefill = prefill || {};
       return '<form class="su-form' + (prefill.open ? ' open' : '') + '">' +
         '<label>Your name</label><input name="name" required maxlength="80" placeholder="First and last name" value="' + esc(prefill.name || '') + '">' +
-        '<div class="su-row2">' +
-          '<div><label>How many people / spots?</label><input name="count" type="number" min="1" max="20" value="' + esc(prefill.count || 1) + '"></div>' +
-          '<div><label>Email</label><input name="email" type="email" required value="' + esc(prefill.email || '') + '"></div>' +
-        '</div>' +
+        '<label>Email</label><input name="email" type="email" required value="' + esc(prefill.email || '') + '">' +
         '<div class="su-row2">' +
           '<div><label>Phone</label><input name="phone" required value="' + esc(prefill.phone || '') + '"></div>' +
           '<div><label>Note to organizer <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="comment" maxlength="200" value="' + esc(prefill.comment || '') + '"></div>' +
@@ -255,7 +252,7 @@
       var slotEl = form.closest('.su-slot');
       var slotId = slotEl.dataset.slot;
       var name = form.name.value.trim();
-      var count = Math.max(1, Math.min(20, parseInt(form.count.value, 10) || 1));
+      var count = 1;   // one sign-up = one spot; people no longer pick how many
       var email = form.email.value.trim(), phone = form.phone.value.trim(), comment = form.comment.value.trim();
       var item = form.item ? form.item.value.trim() : '';
       var msg = form.querySelector('.su-msg');
