@@ -211,7 +211,7 @@
           html += '<button class="su-open">Sign up</button>';
         }
         if (!myEntry && !closed && (!full || (prefill && prefill.slotId === d.id))) {
-          html += formHtml(prefill && prefill.slotId === d.id ? prefill : null);
+          html += formHtml(prefill && prefill.slotId === d.id ? prefill : null, sheet.askItem !== false);
         }
         html += '</div>';
       });
@@ -233,7 +233,7 @@
       });
     }
 
-    function formHtml(prefill) {
+    function formHtml(prefill, askItem) {
       prefill = prefill || {};
       return '<form class="su-form' + (prefill.open ? ' open' : '') + '">' +
         '<label>Your name</label><input name="name" required maxlength="80" placeholder="First and last name" value="' + esc(prefill.name || '') + '">' +
@@ -245,7 +245,7 @@
           '<div><label>Phone</label><input name="phone" required value="' + esc(prefill.phone || '') + '"></div>' +
           '<div><label>Note to organizer <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="comment" maxlength="200" value="' + esc(prefill.comment || '') + '"></div>' +
         '</div>' +
-        '<label>What are you bringing? <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="item" maxlength="100" placeholder="e.g. A dozen cookies" value="' + esc(prefill.item || '') + '">' +
+        (askItem ? '<label>What are you bringing? <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="item" maxlength="100" placeholder="e.g. A dozen cookies" value="' + esc(prefill.item || '') + '">' : '') +
         '<div style="margin-top:12px"><button type="submit" class="su-submit">Sign me up</button></div>' +
         '<div class="su-msg"></div>' +
       '</form>';
@@ -257,7 +257,7 @@
       var name = form.name.value.trim();
       var count = Math.max(1, Math.min(20, parseInt(form.count.value, 10) || 1));
       var email = form.email.value.trim(), phone = form.phone.value.trim(), comment = form.comment.value.trim();
-      var item = form.item.value.trim();
+      var item = form.item ? form.item.value.trim() : '';
       var msg = form.querySelector('.su-msg');
       if (!name || !email || !phone) {
         msg.className = 'su-msg su-err'; msg.textContent = 'Name, email and phone are all required.'; return;

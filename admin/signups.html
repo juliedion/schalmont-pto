@@ -86,6 +86,9 @@
             <div class="su-field" style="flex:1;min-width:150px"><label>Organizer name</label><input type="text" id="f-cname"></div>
             <div class="su-field" style="flex:1;min-width:150px"><label>Organizer email</label><input type="email" id="f-cemail"></div>
           </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;margin-top:6px">
+            <input type="checkbox" id="f-ask-item"> Ask "What are you bringing?" <span style="font-weight:400;color:var(--text-light)">— an optional item field on every sign-up (good for a bake sale or food drive; turn off for volunteer shifts)</span>
+          </label>
         </div>
 
         <h3 style="font-size:15px;color:var(--primary-dark);margin:18px 0 8px">Slots</h3>
@@ -232,7 +235,7 @@
 
     async function createSheet() {
       const ref = await db.collection('signups').add({
-        title: 'Untitled sign-up sheet', intro: '', school: 'pto', status: 'open',
+        title: 'Untitled sign-up sheet', intro: '', school: 'pto', status: 'open', askItem: false,
         contactName: ME.name, contactEmail: ME.email,
         createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -253,6 +256,9 @@
       document.getElementById('f-school').value = curSheet.school || 'pto';
       document.getElementById('f-status').value = curSheet.status || 'open';
       document.getElementById('f-columns').value = String([1, 2, 3, 4].includes(curSheet.columns) ? curSheet.columns : 1);
+      // Sheets made before this option existed always asked it -- default missing to on
+      // so nothing already collecting item data silently stops.
+      document.getElementById('f-ask-item').checked = curSheet.askItem !== false;
       document.getElementById('f-cname').value = curSheet.contactName || '';
       document.getElementById('f-cemail').value = curSheet.contactEmail || '';
       const link = SITE + '/signup.html?id=' + id;
@@ -294,6 +300,7 @@
           school: document.getElementById('f-school').value,
           status: document.getElementById('f-status').value,
           columns: +document.getElementById('f-columns').value,
+          askItem: document.getElementById('f-ask-item').checked,
           contactName: document.getElementById('f-cname').value.trim(),
           contactEmail: document.getElementById('f-cemail').value.trim(),
           updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: ME.email

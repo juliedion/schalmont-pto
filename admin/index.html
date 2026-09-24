@@ -117,7 +117,7 @@
             const sheetRef = await db.collection('signups').add({
               title: TITLE + ': Volunteer Sign-Up',
               intro: 'Help us run the Middle School Book Fair! Pick a shift below.',
-              school: 'middle', status: 'open',
+              school: 'middle', status: 'open', askItem: false,
               contactName: me.name, contactEmail: me.email,
               createdBy: me.email, createdAt: now, updatedAt: now
             });
