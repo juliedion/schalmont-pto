@@ -193,8 +193,8 @@ service cloud.firestore {
           && request.resource.data.taken is int
           && request.resource.data.taken >= 0
           && get(/databases/$(database)/documents/signups/$(sid)/entries/$(request.resource.data.lastCancelEid)).data.slotId == slotId
-          && get(/databases/$(database)/documents/signups/$(sid)/entries/$(request.resource.data.lastCancelEid)).data.cancelled == true
-          && get(/databases/$(database)/documents/signups/$(sid)/entries/$(request.resource.data.lastCancelEid)).data.takenReverted != true
+          && get(/databases/$(database)/documents/signups/$(sid)/entries/$(request.resource.data.lastCancelEid)).data.get('cancelled', false) == true
+          && get(/databases/$(database)/documents/signups/$(sid)/entries/$(request.resource.data.lastCancelEid)).data.get('takenReverted', false) != true
           && resource.data.taken - request.resource.data.taken == get(/databases/$(database)/documents/signups/$(sid)/entries/$(request.resource.data.lastCancelEid)).data.count
         );
       }
@@ -207,19 +207,24 @@ service cloud.firestore {
           && request.resource.data.count is int
           && request.resource.data.count > 0 && request.resource.data.count <= 20
           && request.resource.data.item is string && request.resource.data.item.size() <= 100;
+        // A normal (never-cancelled) entry has no `cancelled`/`takenReverted` field at
+        // all -- dereferencing a map key that isn't there throws in these rules (it does
+        // NOT quietly act like undefined), which fails the whole rule closed. Every
+        // access to one of those two fields below goes through .get(field, default) so
+        // a plain, never-touched entry doesn't blow up just by existing.
         allow update: if isAnyAdmin() || (
           // A signer can cancel their own entry by re-typing the email they signed up
           // with -- the only "identity" an anonymous visitor has, checked against the
           // private contacts doc for this same entry. Cancelled entries are kept (not
           // deleted) so the matching slot rollback below can verify against them.
-          resource.data.cancelled != true
+          resource.data.get('cancelled', false) != true
           && request.resource.data.cancelled == true
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['cancelled', 'checkEmail'])
           && request.resource.data.checkEmail is string
           && get(/databases/$(database)/documents/signups/$(sid)/contacts/$(eid)).data.email == request.resource.data.checkEmail
         ) || (
           // Marks the slot's taken-count rollback as done, so it can't be replayed.
-          resource.data.cancelled == true
+          resource.data.get('cancelled', false) == true
           && request.resource.data.takenReverted == true
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['takenReverted'])
         );
