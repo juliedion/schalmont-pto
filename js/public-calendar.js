@@ -63,8 +63,8 @@
         if (e.category === 'District Calendar' || e.source === 'gcal') return;
         var key = e.title.trim().toLowerCase() + '|' + e.date;
         byKey[key] = {
-          title: e.title, date: e.date, time: e.time || '',
-          location: e.location || '', school: e.school || 'pto', href: null
+          title: e.title, date: e.date, endDate: e.endDate && e.endDate > e.date ? e.endDate : '',
+          time: e.time || '', location: e.location || '', school: e.school || 'pto', href: null
         };
       });
 
@@ -75,14 +75,16 @@
         var sch = routeOf(Array.isArray(p.schools) && p.schools.length ? p.schools : (p.school ? [p.school] : []));
         var prefix = { woestina: 'woestina', jefferson: 'jes', middle: 'ms', high: 'hs', pto: 'pto' }[sch] || 'pto';
         var href = '/' + prefix + '/' + p.slug;
+        var endDate = p.eventEndDate && p.eventEndDate > p.eventDate ? p.eventEndDate : '';
         var existing = byKey[key];
         if (existing) {
           existing.href = href;
           if (p.eventTime) existing.time = p.eventTime;
           if (p.eventLocation) existing.location = p.eventLocation;
+          if (endDate) existing.endDate = endDate;
         } else {
           byKey[key] = {
-            title: p.title, date: p.eventDate, time: p.eventTime || '',
+            title: p.title, date: p.eventDate, endDate: endDate, time: p.eventTime || '',
             location: p.eventLocation || '', school: sch, href: href
           };
         }
@@ -117,7 +119,13 @@
 
     var byDate = {};
     events.forEach(function (e) {
-      (byDate[e.date] = byDate[e.date] || []).push(e);
+      if (!e.endDate) { (byDate[e.date] = byDate[e.date] || []).push(e); return; }
+      // Multi-day event -- show it on every day from start to end, not just the first.
+      var cur = new Date(e.date + 'T00:00:00'), last = new Date(e.endDate + 'T00:00:00');
+      for (var guard = 0; cur <= last && guard < 62; guard++) {
+        (byDate[cur.toISOString().slice(0, 10)] = byDate[cur.toISOString().slice(0, 10)] || []).push(e);
+        cur.setDate(cur.getDate() + 1);
+      }
     });
 
     var firstDow = new Date(year, month, 1).getDay();
