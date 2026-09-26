@@ -115,17 +115,22 @@
       return false;
     }
 
+    function routeOf(d) {
+      const list = Array.isArray(d.schools) && d.schools.length ? d.schools
+                 : (d.school ? [d.school] : []);
+      return list.length === 1 ? list[0] : 'pto';
+    }
+    function pageHref(d) {
+      const prefix = { woestina:'woestina', jefferson:'jes', middle:'ms', high:'hs', pto:'pto' }[routeOf(d)] || 'pto';
+      return '/' + prefix + '/' + d.slug;
+    }
+
     async function render(preview) {
       try {
-        const routeOf = d => {
-          const list = Array.isArray(d.schools) && d.schools.length ? d.schools
-                     : (d.school ? [d.school] : []);
-          return list.length === 1 ? list[0] : 'pto';
-        };
-        let p = null;
+        let p = null, pId = null;
         if (pageIdParam) {
           const doc = await db.collection('pages').doc(pageIdParam).get();
-          if (doc.exists && (preview || doc.data().status === 'published')) p = doc.data();
+          if (doc.exists && (preview || doc.data().status === 'published')) { p = doc.data(); pId = doc.id; }
         } else {
           if (!slug) { notFound(); return; }
           // Firestore denies an entire query (not just the non-matching docs) if any
@@ -135,8 +140,8 @@
           let query = db.collection('pages').where('slug', '==', slug);
           if (!preview) query = query.where('status', '==', 'published');
           const snap = await query.get();
-          p = snap.docs.map(d => d.data())
-            .find(d => (preview || d.status === 'published') && (!wantSchool || routeOf(d) === wantSchool)) || null;
+          const hit = snap.docs.find(d => (preview || d.data().status === 'published') && (!wantSchool || routeOf(d.data()) === wantSchool));
+          if (hit) { p = hit.data(); pId = hit.id; }
         }
         if (!p) { notFound(); return; }
 
@@ -145,12 +150,45 @@
         if (preview && p.status !== 'published') document.getElementById('preview-banner').hidden = false;
         body.innerHTML = renderPageHeader(p) + renderBlocks(p.blocks);
         mountSignupEmbeds(db);
+        renderPageRelations(p, pId);
       } catch (e) {
         hero.textContent = 'Sorry';
         body.innerHTML = isPreview
           ? '<p>Could not load this page: ' + escapeHtml(e.message || String(e)) + '</p>'
           : '<p>This page could not be loaded right now.</p>';
       }
+    }
+
+    // A parent link at the top and a sub-pages list at the bottom, when this page
+    // has either. Best-effort/non-fatal -- a missing or still-draft parent, or a
+    // failed lookup, just means that piece doesn't show, never breaks the page itself.
+    async function renderPageRelations(p, pId) {
+      if (p.parentPageId) {
+        try {
+          const parentSnap = await db.collection('pages').doc(p.parentPageId).get();
+          if (parentSnap.exists && parentSnap.data().status === 'published') {
+            const parent = parentSnap.data();
+            body.insertAdjacentHTML('afterbegin',
+              '<p style="margin:0 0 16px"><a href="' + escapeHtml(pageHref(parent)) +
+              '" style="color:var(--primary);font-weight:700;text-decoration:none">&larr; Part of: ' +
+              escapeHtml(parent.title) + '</a></p>');
+          }
+        } catch (_) {}
+      }
+      if (!pId) return;
+      try {
+        const kidsSnap = await db.collection('pages')
+          .where('parentPageId', '==', pId).where('status', '==', 'published').get();
+        if (!kidsSnap.size) return;
+        const items = kidsSnap.docs.map(d => {
+          const k = d.data();
+          return '<li><a href="' + escapeHtml(pageHref(k)) + '" style="color:var(--primary);font-weight:600">' +
+            escapeHtml(k.title) + '</a></li>';
+        }).join('');
+        body.insertAdjacentHTML('beforeend',
+          '<div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border)">' +
+          '<h3 style="margin:0 0 10px">Related pages</h3><ul style="margin:0;padding-left:20px">' + items + '</ul></div>');
+      } catch (_) {}
     }
 
     function notFound() {
