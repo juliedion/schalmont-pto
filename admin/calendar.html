@@ -276,7 +276,7 @@
       high:      '#c53030'    // High       — red
     };
     const SCHOOL_LABEL = {
-      pto: 'District', woestina: 'Woestina Pre-K',
+      pto: 'PTO-wide', woestina: 'Woestina Pre-K',
       jefferson: 'Jefferson Elementary', middle: 'Middle School', high: 'High School'
     };
     function schoolColor(s) {
@@ -306,11 +306,12 @@
         // buttons -- so this copy inside the embed would just be a confusing duplicate.
         document.getElementById('cal-toolbar').style.display = 'none';
       }
-      // Opened from a school workspace → only offer that school's own calendar (plus
-      // District, off by default -- turn it on with the toggle if you want it layered in);
-      // opened from the top level → every school is a real option, so show them all.
+      // Opened from a school workspace → only offer that school's own calendar plus
+      // "District" (really: every school:'pto' entry -- PTO-wide meetings and the like,
+      // not just the auto-synced district closings, so it's on by default too, same as
+      // every other toggle); opened from the top level → every school is a real option.
       const scoped = s && SCHOOLS[s] && s !== 'pto';
-      const preselect = scoped ? [s] : Object.keys(SCHOOL_LABEL).filter(k => k !== 'pto');
+      const preselect = scoped ? [s, 'pto'] : Object.keys(SCHOOL_LABEL);
       const renderKeys = scoped ? [s, 'pto'] : null;
       if (s && SCHOOLS[s]) {
         const b = document.getElementById('back-school');
