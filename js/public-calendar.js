@@ -51,7 +51,27 @@
       db.collection('pages').where('status', '==', 'published').get()
     ]).then(function (results) {
       var eventsSnap = results[0], pagesSnap = results[1];
-      var byKey = {};   // title+date -> merged event
+      var byKey = {};       // title+date -> merged event
+      var pageByTitle = {}; // title alone -> {href, time, location} (first match wins)
+
+      pagesSnap.docs.forEach(function (d) {
+        var p = d.data();
+        if (!p.title || !p.slug) return;
+        var titleKey = p.title.trim().toLowerCase();
+        var sch = routeOf(Array.isArray(p.schools) && p.schools.length ? p.schools : (p.school ? [p.school] : []));
+        var prefix = { woestina: 'woestina', jefferson: 'jes', middle: 'ms', high: 'hs', pto: 'pto' }[sch] || 'pto';
+        var href = '/' + prefix + '/' + p.slug;
+        if (!pageByTitle[titleKey]) {
+          pageByTitle[titleKey] = { href: href, time: p.eventTime || '', location: p.eventLocation || '' };
+        }
+        if (!p.eventDate) return;
+        var key = titleKey + '|' + p.eventDate;
+        var endDate = p.eventEndDate && p.eventEndDate > p.eventDate ? p.eventEndDate : '';
+        byKey[key] = {
+          title: p.title, date: p.eventDate, endDate: endDate, time: p.eventTime || '',
+          location: p.eventLocation || '', school: sch, href: href
+        };
+      });
 
       eventsSnap.docs.forEach(function (d) {
         if (BOOKKEEPING[d.id] || d.id.indexOf('__') === 0) return;
@@ -61,33 +81,20 @@
         // District tab (the embedded Google Calendar) -- keep them out of the back-office
         // tabs so they don't show twice, once here and once under School PTO (MS & HS).
         if (e.category === 'District Calendar' || e.source === 'gcal') return;
-        var key = e.title.trim().toLowerCase() + '|' + e.date;
-        byKey[key] = {
-          title: e.title, date: e.date, endDate: e.endDate && e.endDate > e.date ? e.endDate : '',
-          time: e.time || '', location: e.location || '', school: e.school || 'pto', href: null
-        };
-      });
-
-      pagesSnap.docs.forEach(function (d) {
-        var p = d.data();
-        if (!p.eventDate || !p.title || !p.slug) return;
-        var key = p.title.trim().toLowerCase() + '|' + p.eventDate;
-        var sch = routeOf(Array.isArray(p.schools) && p.schools.length ? p.schools : (p.school ? [p.school] : []));
-        var prefix = { woestina: 'woestina', jefferson: 'jes', middle: 'ms', high: 'hs', pto: 'pto' }[sch] || 'pto';
-        var href = '/' + prefix + '/' + p.slug;
-        var endDate = p.eventEndDate && p.eventEndDate > p.eventDate ? p.eventEndDate : '';
+        var titleKey = e.title.trim().toLowerCase();
+        var key = titleKey + '|' + e.date;
+        // Link to a page with the same title even if its own event date has drifted from
+        // this tracker row's date -- same "close enough" match the back office's own
+        // calendar already uses to send a click to the right page/editor.
+        var pageMatch = pageByTitle[titleKey];
         var existing = byKey[key];
-        if (existing) {
-          existing.href = href;
-          if (p.eventTime) existing.time = p.eventTime;
-          if (p.eventLocation) existing.location = p.eventLocation;
-          if (endDate) existing.endDate = endDate;
-        } else {
-          byKey[key] = {
-            title: p.title, date: p.eventDate, endDate: endDate, time: p.eventTime || '',
-            location: p.eventLocation || '', school: sch, href: href
-          };
-        }
+        byKey[key] = {
+          title: e.title, date: e.date, endDate: e.endDate && e.endDate > e.date ? e.endDate : (existing ? existing.endDate : ''),
+          time: e.time || (existing ? existing.time : ''),
+          location: e.location || (existing ? existing.location : ''),
+          school: e.school || 'pto',
+          href: (existing && existing.href) || (pageMatch && pageMatch.href) || null
+        };
       });
 
       var events = Object.keys(byKey).map(function (k) { return byKey[k]; });
