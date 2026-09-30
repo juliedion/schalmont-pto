@@ -94,6 +94,17 @@
             <div class="su-field" style="flex:1;min-width:150px"><label>School</label><select id="f-school"></select></div>
             <div class="su-field" style="flex:1;min-width:150px"><label>Status</label><select id="f-status"><option value="open">Open — accepting sign-ups</option><option value="closed">Closed</option></select></div>
           </div>
+          <p style="font-size:12.5px;color:var(--text-light);margin:14px 0 6px">Location, date and time for the
+             event this sheet is for — shown at the top of the public sheet. Leave blank if slots below already
+             have their own dates/times (like a book fair's daily shifts).</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div class="su-field" style="flex:2;min-width:200px"><label>Location</label><input type="text" id="f-location" placeholder="e.g. Middle School Back Fields"></div>
+            <div class="su-field" style="flex:1;min-width:140px"><label>Date</label><input type="date" id="f-date"></div>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div class="su-field" style="flex:1;min-width:140px"><label>Start time</label><input type="time" id="f-time"></div>
+            <div class="su-field" style="flex:1;min-width:140px"><label>End time <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input type="time" id="f-endtime"></div>
+          </div>
           <div class="su-field" style="max-width:260px">
             <label>Slot layout <span style="font-weight:400;color:var(--text-light)">— how slots are arranged for people signing up</span></label>
             <select id="f-columns">
@@ -283,6 +294,8 @@
           title: (s.title || 'Untitled sign-up sheet') + ' (Copy)',
           intro: s.intro || '', school: s.school || 'pto', status: 'open',
           columns: s.columns || 1,
+          eventLocation: s.eventLocation || '', eventDate: s.eventDate || '',
+          eventTime: s.eventTime || '', eventEndTime: s.eventEndTime || '',
           contactName: s.contactName || ME.name, contactEmail: s.contactEmail || ME.email,
           createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -326,6 +339,10 @@
       // Sheets made before this option existed always asked it -- default missing to on
       // so nothing already collecting item data silently stops.
       document.getElementById('f-ask-item').checked = curSheet.askItem !== false;
+      document.getElementById('f-location').value = curSheet.eventLocation || '';
+      document.getElementById('f-date').value = curSheet.eventDate || '';
+      document.getElementById('f-time').value = curSheet.eventTime || '';
+      document.getElementById('f-endtime').value = curSheet.eventEndTime || '';
       document.getElementById('f-cname').value = curSheet.contactName || '';
       document.getElementById('f-cemail').value = curSheet.contactEmail || '';
       document.getElementById('f-notify').value = curSheet.notifyEmails || '';
@@ -370,6 +387,10 @@
           status: document.getElementById('f-status').value,
           columns: +document.getElementById('f-columns').value,
           askItem: document.getElementById('f-ask-item').checked,
+          eventLocation: document.getElementById('f-location').value.trim(),
+          eventDate: document.getElementById('f-date').value,
+          eventTime: document.getElementById('f-time').value,
+          eventEndTime: document.getElementById('f-endtime').value,
           contactName: document.getElementById('f-cname').value.trim(),
           contactEmail: document.getElementById('f-cemail').value.trim(),
           notifyEmails: document.getElementById('f-notify').value.trim(),

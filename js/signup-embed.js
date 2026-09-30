@@ -130,6 +130,16 @@
     var cols = [2, 3, 4].indexOf(sheet.columns) !== -1 ? sheet.columns : 1;
 
     var html = '';
+    var when = [prettyDate(sheet.eventDate), [prettyTime(sheet.eventTime), prettyTime(sheet.eventEndTime)].filter(Boolean).join('–')].filter(Boolean).join(' · ');
+    if (when || sheet.eventLocation) {
+      html += '<div class="pg-su-eventbox">';
+      if (when) html += '<div class="pg-su-eventrow"><span class="pg-su-eventicon">📅</span><span>' + esc(when) + '</span></div>';
+      if (sheet.eventLocation) {
+        var maps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(sheet.eventLocation);
+        html += '<div class="pg-su-eventrow"><span class="pg-su-eventicon">📍</span><a href="' + esc(maps) + '" target="_blank" rel="noopener">' + esc(sheet.eventLocation) + '</a></div>';
+      }
+      html += '</div>';
+    }
     if (sheet.intro) html += '<div class="pg-su-intro">' + sanitizeIntroHtml(sheet.intro) + '</div>';
     if (closed) html += '<div class="pg-su-closed">This sign-up sheet is closed.</div>';
     if (!slotDocs.length) html += '<p style="color:var(--text-light)">No slots have been added yet.</p>';
