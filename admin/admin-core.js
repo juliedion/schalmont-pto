@@ -394,8 +394,9 @@ function newWebPage(cat, presetSchool, presetDate) {
       <label class="bo-modal-lbl">Which school(s) is this for? <span style="font-weight:400;color:var(--text-light)">— tick every one it belongs to, or leave blank</span></label>
       <div class="bo-modal-checklist">${checks}</div>
       <p style="font-size:12px;color:var(--text-light);margin:0 0 8px">
-        Tick more than one and the page gets a shared address at <code>schalmontpto.com/pto/&hellip;</code>.
-        Leave every box unticked and it publishes at <code>schalmontpto.com/&hellip;</code> instead, with no prefix.
+        Tick more than one (including just "PTO-wide" on its own) and the page gets a shared
+        address at <code>schalmontpto.com/pto/&hellip;</code>. Leave every box unticked and it
+        publishes with no prefix at all, <code>schalmontpto.com/&hellip;</code>.
       </p>
       <label class="bo-modal-lbl">What kind of page is this?</label>
       <select id="nwp-type">${typeOpts}</select>

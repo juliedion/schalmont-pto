@@ -74,7 +74,7 @@
       <input type="text" id="page-title" placeholder="Give your page a clear name">
     </div>
     <div class="bo-field" style="max-width:none">
-      <label>Which school(s) is this page for? <span class="bo-hint">Tick every school it belongs to. Pick two or more and the page gets a shared address at schalmontpto.com/pto/&hellip;</span></label>
+      <label>Which school(s) is this page for? <span class="bo-hint">Tick every school it belongs to. Pick two or more (including just "PTO-wide") and the page gets a shared address at schalmontpto.com/pto/&hellip; — leave every box unticked for no prefix at all, schalmontpto.com/&hellip;</span></label>
       <div id="page-schools" style="display:flex;flex-wrap:wrap;gap:16px;margin-top:4px"></div>
       <p id="page-schools-locked" style="font-size:12px;color:var(--text-light);margin:6px 0 0" hidden></p>
       <label id="page-leftmenu-row" style="display:none;align-items:center;gap:8px;font-size:13.5px;margin-top:10px">
@@ -1185,9 +1185,11 @@
       const btns = document.querySelectorAll('.bo-topbar button');
       if (!page.title.trim()) { toast('Give your page a title first', 'error'); return; }
       page.schools = currentSchools();
-      if (!page.schools.length) { toast('Tick at least one school for this page', 'error'); return; }
       const mine = page.schools.filter(s => !lockedSchools.includes(s));
-      if (!canManageAll(mine)) { toast('You can only publish pages for your own school(s)', 'error'); return; }
+      if (!canManageAll(mine)) {
+        toast(mine.length ? 'You can only publish pages for your own school(s)' : 'Only a PTO owner can publish a page with no school', 'error');
+        return;
+      }
       school = routingSchool(page.schools);
       if (!page.slug.trim()) { page.slug = pageSlug(page.title); }
 
