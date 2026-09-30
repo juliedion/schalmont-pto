@@ -533,7 +533,11 @@
 
     async function uploadImage(file) {
       const fd = new FormData();
-      fd.append('school', school);
+      // The upload endpoint only knows the 5 real school folders -- a page with no
+      // school attached (routingSchool() -> '') still has to land its images
+      // somewhere, so fall back to the shared pto/ folder just for storage; it
+      // doesn't change the page's own routing/prefix.
+      fd.append('school', school || 'pto');
       fd.append('image', file);
       fd.append('idToken', await auth.currentUser.getIdToken());
       const res = await fetch('../api/upload-image.php', { method: 'POST', body: fd });
