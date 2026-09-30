@@ -75,6 +75,14 @@
         <div style="max-width:620px">
           <div class="su-field"><label>Title</label><input type="text" id="f-title" placeholder="e.g. Fall Conference Sign-Ups"></div>
           <div class="su-field">
+            <label>Custom URL <span style="font-weight:400;color:var(--text-light)">— editable, defaults to the title</span></label>
+            <div style="display:flex;align-items:center;gap:4px">
+              <span style="color:var(--text-light);white-space:nowrap;font-size:13.5px">schalmontpto.com/signup/</span>
+              <input type="text" id="f-slug" style="max-width:280px" placeholder="candy-monsters">
+            </div>
+            <div id="slug-err" style="font-size:12px;color:var(--error);margin-top:4px"></div>
+          </div>
+          <div class="su-field">
             <label>Intro / instructions <span style="font-weight:400;color:var(--text-light)">— shown at the top of the sheet</span></label>
             <div class="su-rte-bar">
               <button type="button" data-cmd="bold" title="Bold"><b>B</b></button>
@@ -104,6 +112,35 @@
           <div style="display:flex;gap:12px;flex-wrap:wrap">
             <div class="su-field" style="flex:1;min-width:140px"><label>Start time</label><input type="time" id="f-time"></div>
             <div class="su-field" style="flex:1;min-width:140px"><label>End time <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input type="time" id="f-endtime"></div>
+          </div>
+          <div class="su-field">
+            <label>Image <span style="font-weight:400;color:var(--text-light)">— a flyer or photo shown at the top of the sheet (optional)</span></label>
+            <input type="text" id="f-image-url" placeholder="Upload below, or paste an image link">
+            <div style="margin-top:6px;display:flex;align-items:center;gap:10px">
+              <button type="button" class="bo-btn ghost sm" id="image-upload-btn">Upload a photo</button>
+              <input type="file" id="image-upload-file" accept="image/png,image/jpeg,image/webp" hidden>
+              <span id="image-upload-stat" style="font-size:12px;color:var(--text-light)"></span>
+            </div>
+            <img id="image-thumb" style="display:none;max-width:160px;border-radius:8px;margin-top:8px;border:1px solid var(--border)">
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+              <input type="text" id="f-image-alt" style="flex:1;min-width:160px" placeholder="Describe the photo (for visually-impaired visitors)">
+              <input type="text" id="f-image-caption" style="flex:1;min-width:160px" placeholder="Optional caption shown under the photo">
+            </div>
+          </div>
+          <div class="su-field">
+            <label>Button <span style="font-weight:400;color:var(--text-light)">— an optional call-to-action shown near the top of the sheet, e.g. "Download the Flyer"</span></label>
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
+              <input type="text" id="f-btn-label" style="flex:1;min-width:160px" placeholder="Button text, e.g. Download the Flyer">
+              <input type="text" id="f-btn-href" style="flex:1;min-width:200px" placeholder="https://… (or /jes/another-page)">
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:8px">
+              <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="radio" name="btn-style" value="solid" checked> Solid</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="radio" name="btn-style" value="outline"> Outline</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:13px">Color
+                <input type="color" id="f-btn-color" value="#295c38">
+                <button type="button" class="bo-btn ghost sm" id="btn-color-reset">Reset to default</button>
+              </label>
+            </div>
           </div>
           <div class="su-field" style="max-width:260px">
             <label>Slot layout <span style="font-weight:400;color:var(--text-light)">— how slots are arranged for people signing up</span></label>
@@ -189,7 +226,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
     const SITE = location.origin;
-    let sheets = [], slotRows = [], curId = null, curSheet = null;
+    let sheets = [], slotRows = [], curId = null, curSheet = null, slugTouched = false;
 
     requireAdmin((me) => {
       const sf = document.getElementById('school-filter');
@@ -215,6 +252,23 @@
       document.getElementById('copy-link').onclick = () => copy(document.getElementById('pub-link').textContent);
       document.getElementById('copy-embed').onclick = () => copy(document.getElementById('embed-link').textContent);
       document.getElementById('download-qr').onclick = downloadQR;
+      const titleInp = document.getElementById('f-title'), slugInp = document.getElementById('f-slug');
+      titleInp.oninput = () => { if (!slugTouched) slugInp.value = slugify(titleInp.value); };
+      slugInp.oninput = () => { slugTouched = true; slugInp.value = slugify(slugInp.value); };
+      document.getElementById('image-upload-btn').onclick = () => document.getElementById('image-upload-file').click();
+      document.getElementById('image-upload-file').onchange = async (e) => {
+        const file = e.target.files[0]; if (!file) return;
+        const stat = document.getElementById('image-upload-stat');
+        stat.textContent = 'Uploading…';
+        try {
+          const url = await uploadSheetImage(file);
+          document.getElementById('f-image-url').value = url;
+          showImageThumb(url);
+          stat.textContent = '';
+        } catch (err) { stat.textContent = err.message; }
+      };
+      document.getElementById('f-image-url').oninput = (e) => showImageThumb(e.target.value);
+      document.getElementById('btn-color-reset').onclick = () => { document.getElementById('f-btn-color').value = '#295c38'; };
       // Clicking a toolbar button or opening the size <select> moves focus off the
       // contenteditable, which would otherwise collapse whatever text was selected --
       // so track the last real selection inside it and restore that exact range right
@@ -296,6 +350,9 @@
           columns: s.columns || 1,
           eventLocation: s.eventLocation || '', eventDate: s.eventDate || '',
           eventTime: s.eventTime || '', eventEndTime: s.eventEndTime || '',
+          imageUrl: s.imageUrl || '', imageAlt: s.imageAlt || '', imageCaption: s.imageCaption || '',
+          buttonLabel: s.buttonLabel || '', buttonHref: s.buttonHref || '',
+          buttonStyle: s.buttonStyle || 'solid', buttonColor: s.buttonColor || '',
           contactName: s.contactName || ME.name, contactEmail: s.contactEmail || ME.email,
           createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -332,6 +389,9 @@
       curSheet = { id, ...snap.data() };
       document.getElementById('edit-crumb').textContent = curSheet.title || 'Edit';
       document.getElementById('f-title').value = curSheet.title || '';
+      document.getElementById('f-slug').value = curSheet.slug || '';
+      document.getElementById('slug-err').textContent = '';
+      slugTouched = !!curSheet.slug;
       document.getElementById('f-intro').innerHTML = sanitizeIntroHtml(curSheet.intro || '');
       document.getElementById('f-school').value = curSheet.school || 'pto';
       document.getElementById('f-status').value = curSheet.status || 'open';
@@ -339,6 +399,14 @@
       // Sheets made before this option existed always asked it -- default missing to on
       // so nothing already collecting item data silently stops.
       document.getElementById('f-ask-item').checked = curSheet.askItem !== false;
+      document.getElementById('f-image-url').value = curSheet.imageUrl || '';
+      document.getElementById('f-image-alt').value = curSheet.imageAlt || '';
+      document.getElementById('f-image-caption').value = curSheet.imageCaption || '';
+      showImageThumb(curSheet.imageUrl || '');
+      document.getElementById('f-btn-label').value = curSheet.buttonLabel || '';
+      document.getElementById('f-btn-href').value = curSheet.buttonHref || '';
+      document.querySelector(`input[name="btn-style"][value="${curSheet.buttonStyle === 'outline' ? 'outline' : 'solid'}"]`).checked = true;
+      document.getElementById('f-btn-color').value = /^#[0-9a-fA-F]{6}$/.test(curSheet.buttonColor || '') ? curSheet.buttonColor : '#295c38';
       document.getElementById('f-location').value = curSheet.eventLocation || '';
       document.getElementById('f-date').value = curSheet.eventDate || '';
       document.getElementById('f-time').value = curSheet.eventTime || '';
@@ -346,9 +414,9 @@
       document.getElementById('f-cname').value = curSheet.contactName || '';
       document.getElementById('f-cemail').value = curSheet.contactEmail || '';
       document.getElementById('f-notify').value = curSheet.notifyEmails || '';
-      const link = SITE + '/signup.html?id=' + id;
+      const link = curSheet.slug ? SITE + '/signup/' + curSheet.slug : SITE + '/signup.html?id=' + id;
       document.getElementById('pub-link').textContent = link;
-      document.getElementById('embed-link').textContent = link + '&embed=1';
+      document.getElementById('embed-link').textContent = link + (curSheet.slug ? '?embed=1' : '&embed=1');
       renderQR(link);
       document.getElementById('preview-btn').href = '../signup.html?id=' + id;
 
@@ -378,15 +446,33 @@
 
     async function saveSheet() {
       const btn = document.getElementById('save-btn'); btn.disabled = true;
+      document.getElementById('slug-err').textContent = '';
       try {
         const id = curSheet.id;
+        const title = document.getElementById('f-title').value.trim() || 'Untitled sign-up sheet';
+        let slug = slugify(document.getElementById('f-slug').value) || slugify(title) || id;
+        const dupe = await db.collection('signups').where('slug', '==', slug).get();
+        if (dupe.docs.some(d => d.id !== id)) {
+          document.getElementById('slug-err').textContent = 'That URL is already used by another sign-up sheet -- pick a different one.';
+          btn.disabled = false;
+          return;
+        }
+        document.getElementById('f-slug').value = slug;
         await db.collection('signups').doc(id).update({
-          title: document.getElementById('f-title').value.trim() || 'Untitled sign-up sheet',
+          title,
+          slug,
           intro: sanitizeIntroHtml(document.getElementById('f-intro').innerHTML),
           school: document.getElementById('f-school').value,
           status: document.getElementById('f-status').value,
           columns: +document.getElementById('f-columns').value,
           askItem: document.getElementById('f-ask-item').checked,
+          imageUrl: document.getElementById('f-image-url').value.trim(),
+          imageAlt: document.getElementById('f-image-alt').value.trim(),
+          imageCaption: document.getElementById('f-image-caption').value.trim(),
+          buttonLabel: document.getElementById('f-btn-label').value.trim(),
+          buttonHref: document.getElementById('f-btn-href').value.trim(),
+          buttonStyle: document.querySelector('input[name="btn-style"]:checked').value,
+          buttonColor: document.getElementById('f-btn-color').value,
           eventLocation: document.getElementById('f-location').value.trim(),
           eventDate: document.getElementById('f-date').value,
           eventTime: document.getElementById('f-time').value,
@@ -574,6 +660,21 @@
       if (tab === 'responses') loadResponses();
     }
     function copy(t) { navigator.clipboard.writeText(t).then(() => toast('Copied')); }
+
+    async function uploadSheetImage(file) {
+      const fd = new FormData();
+      fd.append('school', document.getElementById('f-school').value || 'pto');
+      fd.append('image', file);
+      fd.append('idToken', await auth.currentUser.getIdToken());
+      const res = await fetch('../api/upload-image.php', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || 'Upload failed');
+      return data.url;
+    }
+    function showImageThumb(url) {
+      const t = document.getElementById('image-thumb');
+      if (url) { t.src = url; t.style.display = ''; } else { t.style.display = 'none'; }
+    }
 
     // Keeps the Intro field to a small safe subset of HTML (bold/italic/underline and a
     // font-size-only span) -- strips everything else, including any attribute that isn't

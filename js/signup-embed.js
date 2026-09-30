@@ -76,6 +76,17 @@
     var h = +p[0], ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
     return h + ':' + p[1] + ' ' + ap;
   }
+  // A sheet's own optional call-to-action button (label + link), same solid/outline +
+  // custom-color options a regular page's button block has.
+  function ctaButtonHtml(sheet, cls) {
+    var href = /^https?:|^mailto:|^\//.test(sheet.buttonHref || '') ? sheet.buttonHref : '#';
+    var outline = sheet.buttonStyle === 'outline';
+    var color = /^#[0-9a-fA-F]{6}$/.test(sheet.buttonColor || '') ? sheet.buttonColor : '';
+    var style = color ? (outline ? 'border-color:' + color + ';color:' + color : 'background:' + color) : '';
+    return '<p style="text-align:center"><a class="' + cls + (outline ? ' outline' : '') + '"' +
+      (style ? ' style="' + style + '"' : '') + ' href="' + esc(href) + '"' +
+      (/^https?:/.test(href) ? ' target="_blank" rel="noopener"' : '') + '>' + esc(sheet.buttonLabel) + '</a></p>';
+  }
 
   // ---- "my signups" (per-browser, per-sheet) ----
   function mineKey(id) { return 'pto_su_mine_' + id; }
@@ -130,6 +141,13 @@
     var cols = [2, 3, 4].indexOf(sheet.columns) !== -1 ? sheet.columns : 1;
 
     var html = '';
+    if (sheet.imageUrl) {
+      html += '<figure class="pg-su-figure"><img src="' + esc(sheet.imageUrl) + '" alt="' + esc(sheet.imageAlt || '') + '">' +
+        (sheet.imageCaption ? '<figcaption class="pg-caption">' + esc(sheet.imageCaption) + '</figcaption>' : '') + '</figure>';
+    }
+    if (sheet.buttonLabel && sheet.buttonHref) {
+      html += ctaButtonHtml(sheet, 'pg-su-cta');
+    }
     var when = [prettyDate(sheet.eventDate), [prettyTime(sheet.eventTime), prettyTime(sheet.eventEndTime)].filter(Boolean).join('–')].filter(Boolean).join(' · ');
     if (when || sheet.eventLocation) {
       html += '<div class="pg-su-eventbox">';

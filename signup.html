@@ -15,6 +15,13 @@
     .page-hero h1 { margin:0; }
     .page-hero p { margin:8px 0 0; opacity:.92; }
     #app { max-width:720px; }
+    .su-figure { margin:0 0 20px; }
+    .su-figure img { max-width:100%; border-radius:8px; display:block; }
+    .su-figure .su-caption { font-size:12px; color:var(--text-light); margin:6px 0 0; }
+    .su-cta { display:inline-block; padding:11px 24px; border-radius:var(--radius); font-family:'Urbanist',sans-serif; font-weight:700; font-size:14px; background:var(--secondary); color:var(--primary-dark); text-decoration:none; }
+    .su-cta:hover { background:var(--secondary-dark); }
+    .su-cta.outline { background:#fff; color:var(--primary); border:2px solid var(--primary); padding:9px 22px; }
+    .su-cta.outline:hover { background:var(--primary); color:#fff; }
     .su-eventbox { background:#eef6ec; border:1px solid #cfe6c8; border-radius:10px; padding:14px 16px; margin:0 0 20px; }
     .su-eventrow { display:flex; gap:10px; align-items:flex-start; font-size:15px; color:var(--primary-dark); font-weight:600; }
     .su-eventrow + .su-eventrow { margin-top:7px; }
@@ -94,6 +101,7 @@
   <script>
     var params = new URLSearchParams(location.search);
     var ID = params.get('id');
+    var SLUG = params.get('slug');
     if (params.get('embed') === '1') document.body.classList.add('embed');
     renderSiteChrome();
     firebase.initializeApp(firebaseConfig);
@@ -156,6 +164,17 @@
       var h = +p[0], ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
       return h + ':' + p[1] + ' ' + ap;
     }
+    // A sheet's own optional call-to-action button (label + link), same solid/outline +
+    // custom-color options a regular page's button block has.
+    function ctaButtonHtml(sheet, cls) {
+      var href = /^https?:|^mailto:|^\//.test(sheet.buttonHref || '') ? sheet.buttonHref : '#';
+      var outline = sheet.buttonStyle === 'outline';
+      var color = /^#[0-9a-fA-F]{6}$/.test(sheet.buttonColor || '') ? sheet.buttonColor : '';
+      var style = color ? (outline ? 'border-color:' + color + ';color:' + color : 'background:' + color) : '';
+      return '<p style="text-align:center"><a class="' + cls + (outline ? ' outline' : '') + '"' +
+        (style ? ' style="' + style + '"' : '') + ' href="' + esc(href) + '"' +
+        (/^https?:/.test(href) ? ' target="_blank" rel="noopener"' : '') + '>' + esc(sheet.buttonLabel) + '</a></p>';
+    }
 
     // ---- "my signups" (per-browser, per-sheet) ----
     function mineKey(id) { return 'pto_su_mine_' + id; }
@@ -174,8 +193,17 @@
       setMine(id, getMine(id).filter(function (m) { return m.entryId !== entryId; }));
     }
 
-    if (!ID) { app.innerHTML = '<p class="su-err">Missing sign-up link.</p>'; }
-    else load();
+    if (!ID && !SLUG) { app.innerHTML = '<p class="su-err">Missing sign-up link.</p>'; }
+    else if (ID) { load(); }
+    else {
+      // Came in via /signup/<slug> -- resolve the slug to its doc id once, then load
+      // normally (ID is used everywhere else: cancel/edit, the "mine" localStorage key).
+      db.collection('signups').where('slug', '==', SLUG).limit(1).get().then(function (snap) {
+        if (snap.empty) { app.innerHTML = '<p class="su-err">This sign-up sheet was not found.</p>'; return; }
+        ID = snap.docs[0].id;
+        load();
+      }).catch(function (e) { app.innerHTML = '<p class="su-err">Could not load this sheet. ' + esc(e.message) + '</p>'; });
+    }
 
     function load() {
       db.collection('signups').doc(ID).get().then(function (snap) {
@@ -230,6 +258,13 @@
       var cols = [2, 3, 4].indexOf(sheet.columns) !== -1 ? sheet.columns : 1;
 
       var html = '';
+      if (sheet.imageUrl) {
+        html += '<figure class="su-figure"><img src="' + esc(sheet.imageUrl) + '" alt="' + esc(sheet.imageAlt || '') + '">' +
+          (sheet.imageCaption ? '<figcaption class="su-caption">' + esc(sheet.imageCaption) + '</figcaption>' : '') + '</figure>';
+      }
+      if (sheet.buttonLabel && sheet.buttonHref) {
+        html += ctaButtonHtml(sheet, 'su-cta');
+      }
       var when = [prettyDate(sheet.eventDate), [prettyTime(sheet.eventTime), prettyTime(sheet.eventEndTime)].filter(Boolean).join('–')].filter(Boolean).join(' · ');
       if (when || sheet.eventLocation) {
         html += '<div class="su-eventbox">';

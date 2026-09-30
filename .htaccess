@@ -27,6 +27,9 @@ RewriteRule ^yearbook/?$ /yearbooks [R=301,L]
 RewriteRule ^(woestina|jes|ms|hs|pto)/([A-Za-z0-9_-]+)/?$ p.html?prefix=$1&slug=$2 [L,QSA]
 RewriteRule ^p/([A-Za-z0-9_-]+)/?$ p.html?slug=$1 [L,QSA]
 
+# Sign-up sheets with a custom URL, e.g. /signup/candy-monsters
+RewriteRule ^signup/([A-Za-z0-9_-]+)/?$ signup.html?slug=$1 [L,QSA]
+
 # Trail of Treats -- the real page's address is /pto/trail-of-treats (its actual slug),
 # but the flyer's printed URL and a couple of other spellings have been used to refer to
 # it, so alias all of them straight to the real page.
