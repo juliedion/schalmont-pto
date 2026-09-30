@@ -83,7 +83,7 @@
     var outline = sheet.buttonStyle === 'outline';
     var color = /^#[0-9a-fA-F]{6}$/.test(sheet.buttonColor || '') ? sheet.buttonColor : '';
     var style = color ? (outline ? 'border-color:' + color + ';color:' + color : 'background:' + color) : '';
-    var align = ['center', 'right'].indexOf(sheet.buttonAlign) !== -1 ? sheet.buttonAlign : (sheet.buttonAlign === '' ? 'left' : 'center');
+    var align = (sheet.buttonAlign === 'center' || sheet.buttonAlign === 'right') ? sheet.buttonAlign : 'left';
     return '<p style="text-align:' + align + '"><a class="' + cls + (outline ? ' outline' : '') + '"' +
       (style ? ' style="' + style + '"' : '') + ' href="' + esc(href) + '"' +
       (/^https?:/.test(href) ? ' target="_blank" rel="noopener"' : '') + '>' + esc(sheet.buttonLabel) + '</a></p>';
@@ -165,9 +165,6 @@
       html += '<figure class="pg-su-figure"' + (imgMargin ? ' style="' + imgMargin + '"' : '') + '><img src="' + esc(sheet.imageUrl) + '" alt="' + esc(sheet.imageAlt || '') + '">' +
         (sheet.imageCaption ? '<figcaption class="pg-caption">' + esc(sheet.imageCaption) + '</figcaption>' : '') + '</figure>';
     }
-    if (sheet.buttonLabel && sheet.buttonHref) {
-      html += ctaButtonHtml(sheet, 'pg-su-cta');
-    }
     if (closed) html += '<div class="pg-su-closed">This sign-up sheet is closed.</div>';
     if (!slotDocs.length) html += '<p style="color:var(--text-light)">No slots have been added yet.</p>';
 
@@ -200,6 +197,9 @@
       html += '</div>';
     });
     if (cols > 1) html += '</div>';
+    if (sheet.buttonLabel && sheet.buttonHref) {
+      html += ctaButtonHtml(sheet, 'pg-su-cta');
+    }
     el.innerHTML = html;
 
     el.querySelectorAll('.pg-su-open').forEach(function (b) {

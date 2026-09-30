@@ -224,9 +224,10 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 .pg-su-figure img { max-width: 100%; border-radius: 8px; display: block; }
 .pg-su-figure .pg-caption { font-size: 12px; color: var(--text-light); margin: 6px 0 0; }
 .pg-su-cta { display: inline-block; padding: 11px 24px; border-radius: var(--radius); font-family: 'Urbanist', sans-serif; font-weight: 700; font-size: 14px; background: var(--secondary); color: var(--primary-dark); text-decoration: none; }
-.pg-su-cta:hover { background: var(--secondary-dark); }
 .pg-su-cta.outline { background: #fff; color: var(--primary); border: 2px solid var(--primary); padding: 9px 22px; }
-.pg-su-cta.outline:hover { background: var(--primary); color: #fff; }
+/* Always white-on-green on hover, even over a custom inline color (an admin-set
+   background/border-color style), so hover state stays predictable everywhere. */
+.pg-su-cta:hover, .pg-su-cta.outline:hover { background: var(--primary) !important; border-color: var(--primary) !important; color: #fff !important; }
 .pg-su-eventbox { background: #eef6ec; border: 1px solid #cfe6c8; border-radius: 10px; padding: 14px 16px; margin: 0 0 16px; }
 .pg-su-eventrow { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; color: var(--primary-dark); font-weight: 600; }
 .pg-su-eventrow + .pg-su-eventrow { margin-top: 7px; }

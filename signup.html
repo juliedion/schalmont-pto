@@ -19,9 +19,8 @@
     .su-figure img { max-width:100%; border-radius:8px; display:block; }
     .su-figure .su-caption { font-size:12px; color:var(--text-light); margin:6px 0 0; }
     .su-cta { display:inline-block; padding:11px 24px; border-radius:var(--radius); font-family:'Urbanist',sans-serif; font-weight:700; font-size:14px; background:var(--secondary); color:var(--primary-dark); text-decoration:none; }
-    .su-cta:hover { background:var(--secondary-dark); }
     .su-cta.outline { background:#fff; color:var(--primary); border:2px solid var(--primary); padding:9px 22px; }
-    .su-cta.outline:hover { background:var(--primary); color:#fff; }
+    .su-cta:hover, .su-cta.outline:hover { background:var(--primary) !important; border-color:var(--primary) !important; color:#fff !important; }
     .su-eventbox { background:#eef6ec; border:1px solid #cfe6c8; border-radius:10px; padding:14px 16px; margin:0 0 20px; }
     .su-eventrow { display:flex; gap:10px; align-items:flex-start; font-size:15px; color:var(--primary-dark); font-weight:600; }
     .su-eventrow + .su-eventrow { margin-top:7px; }
@@ -179,7 +178,7 @@
       var outline = sheet.buttonStyle === 'outline';
       var color = /^#[0-9a-fA-F]{6}$/.test(sheet.buttonColor || '') ? sheet.buttonColor : '';
       var style = color ? (outline ? 'border-color:' + color + ';color:' + color : 'background:' + color) : '';
-      var align = ['center', 'right'].indexOf(sheet.buttonAlign) !== -1 ? sheet.buttonAlign : (sheet.buttonAlign === '' ? 'left' : 'center');
+      var align = (sheet.buttonAlign === 'center' || sheet.buttonAlign === 'right') ? sheet.buttonAlign : 'left';
       return '<p style="text-align:' + align + '"><a class="' + cls + (outline ? ' outline' : '') + '"' +
         (style ? ' style="' + style + '"' : '') + ' href="' + esc(href) + '"' +
         (/^https?:/.test(href) ? ' target="_blank" rel="noopener"' : '') + '>' + esc(sheet.buttonLabel) + '</a></p>';
@@ -290,9 +289,6 @@
         html += '<figure class="su-figure"' + (imgMargin ? ' style="' + imgMargin + '"' : '') + '><img src="' + esc(sheet.imageUrl) + '" alt="' + esc(sheet.imageAlt || '') + '">' +
           (sheet.imageCaption ? '<figcaption class="su-caption">' + esc(sheet.imageCaption) + '</figcaption>' : '') + '</figure>';
       }
-      if (sheet.buttonLabel && sheet.buttonHref) {
-        html += ctaButtonHtml(sheet, 'su-cta');
-      }
       if (closed) html += '<div class="su-closed">This sign-up sheet is closed.</div>';
       if (!slotDocs.length) html += '<p style="color:var(--text-light)">No slots have been added yet.</p>';
 
@@ -325,6 +321,9 @@
         html += '</div>';
       });
       if (cols > 1) html += '</div>';
+      if (sheet.buttonLabel && sheet.buttonHref) {
+        html += ctaButtonHtml(sheet, 'su-cta');
+      }
       app.innerHTML = html;
 
       app.querySelectorAll('.su-open').forEach(function (b) {
