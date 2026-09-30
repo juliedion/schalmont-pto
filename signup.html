@@ -174,10 +174,18 @@
     // A sheet's own optional call-to-action button (label + link), same solid/outline +
     // custom-color options a regular page's button block has.
     function ctaButtonHtml(sheet, cls) {
-      var href = /^https?:|^mailto:|^\//.test(sheet.buttonHref || '') ? sheet.buttonHref : '#';
+      var rawHref = (sheet.buttonHref || '').trim();
+      // A bare domain typed without a scheme (e.g. "schalmontpto.com/page") would
+      // otherwise silently fail the safety check below and turn into a dead "#" link.
+      if (rawHref && !/^https?:|^mailto:|^\//.test(rawHref) && /^[a-z0-9-]+(\.[a-z0-9-]+)+(\/|$)/i.test(rawHref)) {
+        rawHref = 'https://' + rawHref;
+      }
+      var href = /^https?:|^mailto:|^\//.test(rawHref) ? rawHref : '#';
       var outline = sheet.buttonStyle === 'outline';
       var color = /^#[0-9a-fA-F]{6}$/.test(sheet.buttonColor || '') ? sheet.buttonColor : '';
-      var style = color ? (outline ? 'border-color:' + color + ';color:' + color : 'background:' + color) : '';
+      // A custom solid background needs an explicit white text color -- the default green
+      // text would otherwise blend into a dark custom background and become unreadable.
+      var style = color ? (outline ? 'border-color:' + color + ';color:' + color : 'background:' + color + ';color:#fff') : '';
       var align = (sheet.buttonAlign === 'center' || sheet.buttonAlign === 'right') ? sheet.buttonAlign : 'left';
       return '<p style="text-align:' + align + '"><a class="' + cls + (outline ? ' outline' : '') + '"' +
         (style ? ' style="' + style + '"' : '') + ' href="' + esc(href) + '"' +
