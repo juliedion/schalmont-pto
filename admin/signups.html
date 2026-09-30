@@ -349,10 +349,12 @@
           <span class="su-badge">${esc(SCHOOLS[s.school || 'pto'] || s.school)}</span>
           <span class="su-pill ${s.status === 'closed' ? 'closed' : 'open'}">${s.status === 'closed' ? 'Closed' : 'Open'}</span>
           <span class="spacer"></span>
-          <a class="bo-btn ghost sm" href="../signup.html?id=${s.id}" target="_blank">View ↗</a>
+          <a class="bo-btn ghost sm" href="${s.slug ? '/signup/' + esc(s.slug) : '../signup.html?id=' + s.id}" target="_blank">View ↗</a>
+          <button class="bo-btn ghost sm" data-qr>⬇ QR</button>
           <button class="bo-btn ghost sm" data-dup>Duplicate</button>
           <a class="bo-btn sm" href="signups.html?id=${s.id}">Manage</a>`;
         el.querySelector('[data-dup]').onclick = (ev) => duplicateSheet(s.id, ev.target);
+        el.querySelector('[data-qr]').onclick = () => downloadQRFor(s);
         box.appendChild(el);
       });
     }
@@ -443,7 +445,7 @@
       document.getElementById('pub-link').textContent = link;
       document.getElementById('embed-link').textContent = link + (curSheet.slug ? '?embed=1' : '&embed=1');
       renderQR(link);
-      document.getElementById('preview-btn').href = '../signup.html?id=' + id;
+      document.getElementById('preview-btn').href = link;
 
       const slots = await db.collection('signups').doc(id).collection('slots').orderBy('order').get();
       document.querySelectorAll('#slots .su-slotrow:not(.su-slothead)').forEach(r => r.remove());
@@ -765,6 +767,25 @@
       a.href = canvas.toDataURL('image/png');
       a.download = (curSheet.title || 'signup').replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '-qr.png';
       a.click();
+    }
+    // Same idea as downloadQR(), but callable straight from a card in the list --
+    // renders into a throwaway off-screen container instead of the Share tab's.
+    function downloadQRFor(s) {
+      const link = s.slug ? SITE + '/signup/' + s.slug : SITE + '/signup.html?id=' + s.id;
+      const box = document.createElement('div');
+      box.style.cssText = 'position:fixed;left:-9999px;top:-9999px';
+      document.body.appendChild(box);
+      new QRCode(box, { text: link, width: 180, height: 180, correctLevel: QRCode.CorrectLevel.M });
+      setTimeout(() => {
+        const canvas = box.querySelector('canvas');
+        if (canvas) {
+          const a = document.createElement('a');
+          a.href = canvas.toDataURL('image/png');
+          a.download = (s.title || 'signup').replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '-qr.png';
+          a.click();
+        }
+        box.remove();
+      }, 50);
     }
   </script>
   <style>
