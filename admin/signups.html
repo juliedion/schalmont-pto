@@ -127,6 +127,13 @@
               <input type="text" id="f-image-alt" style="flex:1;min-width:160px" placeholder="Describe the photo (for visually-impaired visitors)">
               <input type="text" id="f-image-caption" style="flex:1;min-width:160px" placeholder="Optional caption shown under the photo">
             </div>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-top:8px">Alignment
+              <select id="f-image-align" style="width:auto">
+                <option value="">Left</option>
+                <option value="center">Center</option>
+                <option value="right">Right</option>
+              </select>
+            </label>
           </div>
           <div class="su-field">
             <label>Button <span style="font-weight:400;color:var(--text-light)">— an optional call-to-action shown near the top of the sheet, e.g. "Download the Flyer"</span></label>
@@ -140,6 +147,13 @@
               <label style="display:flex;align-items:center;gap:6px;font-size:13px">Color
                 <input type="color" id="f-btn-color" value="#295c38">
                 <button type="button" class="bo-btn ghost sm" id="btn-color-reset">Reset to default</button>
+              </label>
+              <label style="display:flex;align-items:center;gap:8px;font-size:13px">Alignment
+                <select id="f-btn-align" style="width:auto">
+                  <option value="">Left</option>
+                  <option value="center" selected>Center</option>
+                  <option value="right">Right</option>
+                </select>
               </label>
             </div>
           </div>
@@ -358,8 +372,10 @@
           eventLocation: s.eventLocation || '', eventDate: s.eventDate || '',
           eventTime: s.eventTime || '', eventEndTime: s.eventEndTime || '',
           imageUrl: s.imageUrl || '', imageAlt: s.imageAlt || '', imageCaption: s.imageCaption || '',
+          imageAlign: s.imageAlign || '',
           buttonLabel: s.buttonLabel || '', buttonHref: s.buttonHref || '',
           buttonStyle: s.buttonStyle || 'solid', buttonColor: s.buttonColor || '',
+          buttonAlign: s.buttonAlign != null ? s.buttonAlign : 'center',
           contactName: s.contactName || ME.name, contactEmail: s.contactEmail || ME.email,
           createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -409,11 +425,13 @@
       document.getElementById('f-image-url').value = curSheet.imageUrl || '';
       document.getElementById('f-image-alt').value = curSheet.imageAlt || '';
       document.getElementById('f-image-caption').value = curSheet.imageCaption || '';
+      document.getElementById('f-image-align').value = curSheet.imageAlign || '';
       showImageThumb(curSheet.imageUrl || '');
       document.getElementById('f-btn-label').value = curSheet.buttonLabel || '';
       document.getElementById('f-btn-href').value = curSheet.buttonHref || '';
       document.querySelector(`input[name="btn-style"][value="${curSheet.buttonStyle === 'outline' ? 'outline' : 'solid'}"]`).checked = true;
       document.getElementById('f-btn-color').value = /^#[0-9a-fA-F]{6}$/.test(curSheet.buttonColor || '') ? curSheet.buttonColor : '#295c38';
+      document.getElementById('f-btn-align').value = curSheet.buttonAlign != null ? curSheet.buttonAlign : 'center';
       document.getElementById('f-location').value = curSheet.eventLocation || '';
       document.getElementById('f-date').value = curSheet.eventDate || '';
       document.getElementById('f-time').value = curSheet.eventTime || '';
@@ -476,10 +494,12 @@
           imageUrl: document.getElementById('f-image-url').value.trim(),
           imageAlt: document.getElementById('f-image-alt').value.trim(),
           imageCaption: document.getElementById('f-image-caption').value.trim(),
+          imageAlign: document.getElementById('f-image-align').value,
           buttonLabel: document.getElementById('f-btn-label').value.trim(),
           buttonHref: document.getElementById('f-btn-href').value.trim(),
           buttonStyle: document.querySelector('input[name="btn-style"]:checked').value,
           buttonColor: document.getElementById('f-btn-color').value,
+          buttonAlign: document.getElementById('f-btn-align').value,
           eventLocation: document.getElementById('f-location').value.trim(),
           eventDate: document.getElementById('f-date').value,
           eventTime: document.getElementById('f-time').value,

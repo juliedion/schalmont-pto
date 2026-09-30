@@ -15,7 +15,7 @@
     .page-hero h1 { margin:0; }
     .page-hero p { margin:8px 0 0; opacity:.92; }
     #app { max-width:720px; }
-    .su-figure { margin:0 0 20px; }
+    .su-figure { display:table; max-width:100%; margin:0 0 20px; }
     .su-figure img { max-width:100%; border-radius:8px; display:block; }
     .su-figure .su-caption { font-size:12px; color:var(--text-light); margin:6px 0 0; }
     .su-cta { display:inline-block; padding:11px 24px; border-radius:var(--radius); font-family:'Urbanist',sans-serif; font-weight:700; font-size:14px; background:var(--secondary); color:var(--primary-dark); text-decoration:none; }
@@ -171,9 +171,17 @@
       var outline = sheet.buttonStyle === 'outline';
       var color = /^#[0-9a-fA-F]{6}$/.test(sheet.buttonColor || '') ? sheet.buttonColor : '';
       var style = color ? (outline ? 'border-color:' + color + ';color:' + color : 'background:' + color) : '';
-      return '<p style="text-align:center"><a class="' + cls + (outline ? ' outline' : '') + '"' +
+      var align = ['center', 'right'].indexOf(sheet.buttonAlign) !== -1 ? sheet.buttonAlign : (sheet.buttonAlign === '' ? 'left' : 'center');
+      return '<p style="text-align:' + align + '"><a class="' + cls + (outline ? ' outline' : '') + '"' +
         (style ? ' style="' + style + '"' : '') + ' href="' + esc(href) + '"' +
         (/^https?:/.test(href) ? ' target="_blank" rel="noopener"' : '') + '>' + esc(sheet.buttonLabel) + '</a></p>';
+    }
+    // Aligns a block-level element (like the flyer image) via margins rather than
+    // text-align, since it isn't inline content.
+    function alignMargin(align) {
+      if (align === 'center') return 'margin-left:auto;margin-right:auto';
+      if (align === 'right') return 'margin-left:auto';
+      return '';
     }
 
     // ---- "my signups" (per-browser, per-sheet) ----
@@ -258,13 +266,6 @@
       var cols = [2, 3, 4].indexOf(sheet.columns) !== -1 ? sheet.columns : 1;
 
       var html = '';
-      if (sheet.imageUrl) {
-        html += '<figure class="su-figure"><img src="' + esc(sheet.imageUrl) + '" alt="' + esc(sheet.imageAlt || '') + '">' +
-          (sheet.imageCaption ? '<figcaption class="su-caption">' + esc(sheet.imageCaption) + '</figcaption>' : '') + '</figure>';
-      }
-      if (sheet.buttonLabel && sheet.buttonHref) {
-        html += ctaButtonHtml(sheet, 'su-cta');
-      }
       var when = [prettyDate(sheet.eventDate), [prettyTime(sheet.eventTime), prettyTime(sheet.eventEndTime)].filter(Boolean).join('–')].filter(Boolean).join(' · ');
       if (when || sheet.eventLocation) {
         html += '<div class="su-eventbox">';
@@ -276,6 +277,14 @@
         html += '</div>';
       }
       if (sheet.intro) html += '<div class="su-intro">' + sanitizeIntroHtml(sheet.intro) + '</div>';
+      if (sheet.imageUrl) {
+        var imgMargin = alignMargin(sheet.imageAlign);
+        html += '<figure class="su-figure"' + (imgMargin ? ' style="' + imgMargin + '"' : '') + '><img src="' + esc(sheet.imageUrl) + '" alt="' + esc(sheet.imageAlt || '') + '">' +
+          (sheet.imageCaption ? '<figcaption class="su-caption">' + esc(sheet.imageCaption) + '</figcaption>' : '') + '</figure>';
+      }
+      if (sheet.buttonLabel && sheet.buttonHref) {
+        html += ctaButtonHtml(sheet, 'su-cta');
+      }
       if (closed) html += '<div class="su-closed">This sign-up sheet is closed.</div>';
       if (!slotDocs.length) html += '<p style="color:var(--text-light)">No slots have been added yet.</p>';
 

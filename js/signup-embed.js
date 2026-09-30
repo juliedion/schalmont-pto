@@ -83,9 +83,17 @@
     var outline = sheet.buttonStyle === 'outline';
     var color = /^#[0-9a-fA-F]{6}$/.test(sheet.buttonColor || '') ? sheet.buttonColor : '';
     var style = color ? (outline ? 'border-color:' + color + ';color:' + color : 'background:' + color) : '';
-    return '<p style="text-align:center"><a class="' + cls + (outline ? ' outline' : '') + '"' +
+    var align = ['center', 'right'].indexOf(sheet.buttonAlign) !== -1 ? sheet.buttonAlign : (sheet.buttonAlign === '' ? 'left' : 'center');
+    return '<p style="text-align:' + align + '"><a class="' + cls + (outline ? ' outline' : '') + '"' +
       (style ? ' style="' + style + '"' : '') + ' href="' + esc(href) + '"' +
       (/^https?:/.test(href) ? ' target="_blank" rel="noopener"' : '') + '>' + esc(sheet.buttonLabel) + '</a></p>';
+  }
+  // Aligns a block-level element (like the flyer image) via margins rather than
+  // text-align, since it isn't inline content.
+  function alignMargin(align) {
+    if (align === 'center') return 'margin-left:auto;margin-right:auto';
+    if (align === 'right') return 'margin-left:auto';
+    return '';
   }
 
   // ---- "my signups" (per-browser, per-sheet) ----
@@ -141,13 +149,6 @@
     var cols = [2, 3, 4].indexOf(sheet.columns) !== -1 ? sheet.columns : 1;
 
     var html = '';
-    if (sheet.imageUrl) {
-      html += '<figure class="pg-su-figure"><img src="' + esc(sheet.imageUrl) + '" alt="' + esc(sheet.imageAlt || '') + '">' +
-        (sheet.imageCaption ? '<figcaption class="pg-caption">' + esc(sheet.imageCaption) + '</figcaption>' : '') + '</figure>';
-    }
-    if (sheet.buttonLabel && sheet.buttonHref) {
-      html += ctaButtonHtml(sheet, 'pg-su-cta');
-    }
     var when = [prettyDate(sheet.eventDate), [prettyTime(sheet.eventTime), prettyTime(sheet.eventEndTime)].filter(Boolean).join('–')].filter(Boolean).join(' · ');
     if (when || sheet.eventLocation) {
       html += '<div class="pg-su-eventbox">';
@@ -159,6 +160,14 @@
       html += '</div>';
     }
     if (sheet.intro) html += '<div class="pg-su-intro">' + sanitizeIntroHtml(sheet.intro) + '</div>';
+    if (sheet.imageUrl) {
+      var imgMargin = alignMargin(sheet.imageAlign);
+      html += '<figure class="pg-su-figure"' + (imgMargin ? ' style="' + imgMargin + '"' : '') + '><img src="' + esc(sheet.imageUrl) + '" alt="' + esc(sheet.imageAlt || '') + '">' +
+        (sheet.imageCaption ? '<figcaption class="pg-caption">' + esc(sheet.imageCaption) + '</figcaption>' : '') + '</figure>';
+    }
+    if (sheet.buttonLabel && sheet.buttonHref) {
+      html += ctaButtonHtml(sheet, 'pg-su-cta');
+    }
     if (closed) html += '<div class="pg-su-closed">This sign-up sheet is closed.</div>';
     if (!slotDocs.length) html += '<p style="color:var(--text-light)">No slots have been added yet.</p>';
 
