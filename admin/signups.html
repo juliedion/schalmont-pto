@@ -76,9 +76,10 @@
           <div class="su-field"><label>Title</label><input type="text" id="f-title" placeholder="e.g. Fall Conference Sign-Ups"></div>
           <div class="su-field">
             <label>Custom URL <span style="font-weight:400;color:var(--text-light)">— editable, defaults to the title</span></label>
-            <div style="display:flex;align-items:center;gap:4px">
+            <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
               <span style="color:var(--text-light);white-space:nowrap;font-size:13.5px">schalmontpto.com/signup/</span>
               <input type="text" id="f-slug" style="max-width:280px" placeholder="candy-monsters">
+              <button type="button" class="bo-btn ghost sm" id="copy-setup-link">Copy full URL</button>
             </div>
             <div id="slug-err" style="font-size:12px;color:var(--error);margin-top:4px"></div>
           </div>
@@ -255,6 +256,12 @@
       const titleInp = document.getElementById('f-title'), slugInp = document.getElementById('f-slug');
       titleInp.oninput = () => { if (!slugTouched) slugInp.value = slugify(titleInp.value); };
       slugInp.oninput = () => { slugTouched = true; slugInp.value = slugify(slugInp.value); };
+      document.getElementById('copy-setup-link').onclick = () => {
+        const slug = slugify(slugInp.value) || slugify(titleInp.value);
+        const link = slug ? SITE + '/signup/' + slug : SITE + '/signup.html?id=' + curSheet.id;
+        const msg = (slug && slug !== curSheet.slug) ? 'Copied — click Save to actually publish this URL' : 'Copied';
+        navigator.clipboard.writeText(link).then(() => toast(msg));
+      };
       document.getElementById('image-upload-btn').onclick = () => document.getElementById('image-upload-file').click();
       document.getElementById('image-upload-file').onchange = async (e) => {
         const file = e.target.files[0]; if (!file) return;
