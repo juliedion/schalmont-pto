@@ -98,6 +98,41 @@
     var contactEl = document.getElementById('su-contact');
 
     function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+    // The Intro field allows a small safe subset of HTML (bold/italic/underline, a
+    // font-size-only span) set via the admin's rich text toolbar -- re-sanitize on the
+    // way out too, in case anything ever reaches Firestore without going through that.
+    function sanitizeIntroHtml(html) {
+      var ALLOWED = { B: 1, STRONG: 1, I: 1, EM: 1, U: 1, SPAN: 1, BR: 1, DIV: 1, P: 1 };
+      var root = document.createElement('div');
+      root.innerHTML = html || '';
+      (function walk(node) {
+        var child = node.firstChild;
+        while (child) {
+          var next = child.nextSibling;
+          if (child.nodeType === 1) {
+            if (!ALLOWED[child.tagName]) {
+              var first = child.firstChild;
+              while (child.firstChild) node.insertBefore(child.firstChild, child);
+              node.removeChild(child);
+              next = first || next;
+            } else {
+              var keep = null;
+              if (child.tagName === 'SPAN') {
+                var m = /font-size\s*:\s*([\d.]+(?:px|em|%))/i.exec(child.getAttribute('style') || '');
+                if (m) keep = 'font-size:' + m[1];
+              }
+              Array.prototype.slice.call(child.attributes).forEach(function (a) { child.removeAttribute(a.name); });
+              if (keep) child.setAttribute('style', keep);
+              walk(child);
+            }
+          } else if (child.nodeType !== 3) {
+            node.removeChild(child);
+          }
+          child = next;
+        }
+      })(root);
+      return root.innerHTML;
+    }
     // Public list shows first name + last initial only, for privacy -- full names still
     // live in Firestore/the admin Responses tab, this is display-only.
     function displayName(name) {
@@ -190,7 +225,7 @@
       var cols = [2, 3, 4].indexOf(sheet.columns) !== -1 ? sheet.columns : 1;
 
       var html = '';
-      if (sheet.intro) html += '<p class="su-intro">' + esc(sheet.intro) + '</p>';
+      if (sheet.intro) html += '<div class="su-intro">' + sanitizeIntroHtml(sheet.intro) + '</div>';
       if (closed) html += '<div class="su-closed">This sign-up sheet is closed.</div>';
       if (!slotDocs.length) html += '<p style="color:var(--text-light)">No slots have been added yet.</p>';
 

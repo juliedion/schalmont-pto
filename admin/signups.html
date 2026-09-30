@@ -27,6 +27,12 @@
     .su-slothead { background:var(--light-bg); font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--text-light); }
     .su-slotrow input { width:100%; padding:6px 7px; border:1px solid var(--border); border-radius:6px; font-family:inherit; font-size:13px; }
     .su-x { background:none; border:none; color:var(--error); font-size:16px; cursor:pointer; }
+    .su-rte-bar { display:flex; gap:4px; align-items:center; margin-bottom:6px; }
+    .su-rte-bar button { width:30px; height:30px; border:1px solid var(--border); border-radius:6px; background:#fff; cursor:pointer; font-family:inherit; font-size:14px; }
+    .su-rte-bar button:hover { background:var(--light-bg); }
+    .su-rte-bar select { width:auto; padding:5px 7px; border:1px solid var(--border); border-radius:6px; font-family:inherit; font-size:13px; }
+    .su-rte { min-height:60px; padding:9px 10px; border:1px solid var(--border); border-radius:7px; font-family:inherit; font-size:14px; }
+    .su-rte:focus { outline: 2px solid var(--primary-light); outline-offset: -1px; }
     .su-linkbox { background:var(--light-bg); border:1px solid var(--border); border-radius:8px; padding:11px 13px; font-size:13px; margin-bottom:10px; word-break:break-all; }
     .su-linkbox code { background:#fff; padding:2px 6px; border-radius:4px; }
     table.su-resp { width:100%; border-collapse:collapse; font-size:13px; }
@@ -68,7 +74,22 @@
       <section id="tab-setup">
         <div style="max-width:620px">
           <div class="su-field"><label>Title</label><input type="text" id="f-title" placeholder="e.g. Fall Conference Sign-Ups"></div>
-          <div class="su-field"><label>Intro / instructions <span style="font-weight:400;color:var(--text-light)">— shown at the top of the sheet</span></label><textarea id="f-intro"></textarea></div>
+          <div class="su-field">
+            <label>Intro / instructions <span style="font-weight:400;color:var(--text-light)">— shown at the top of the sheet</span></label>
+            <div class="su-rte-bar">
+              <button type="button" data-cmd="bold" title="Bold"><b>B</b></button>
+              <button type="button" data-cmd="italic" title="Italic"><i>I</i></button>
+              <button type="button" data-cmd="underline" title="Underline"><u>U</u></button>
+              <select id="f-intro-size" title="Font size">
+                <option value="">Size…</option>
+                <option value="2">Small</option>
+                <option value="3">Normal</option>
+                <option value="5">Large</option>
+                <option value="6">X-Large</option>
+              </select>
+            </div>
+            <div id="f-intro" class="su-rte" contenteditable="true"></div>
+          </div>
           <div style="display:flex;gap:12px;flex-wrap:wrap">
             <div class="su-field" style="flex:1;min-width:150px"><label>School</label><select id="f-school"></select></div>
             <div class="su-field" style="flex:1;min-width:150px"><label>Status</label><select id="f-status"><option value="open">Open — accepting sign-ups</option><option value="closed">Closed</option></select></div>
@@ -183,6 +204,34 @@
       document.getElementById('copy-link').onclick = () => copy(document.getElementById('pub-link').textContent);
       document.getElementById('copy-embed').onclick = () => copy(document.getElementById('embed-link').textContent);
       document.getElementById('download-qr').onclick = downloadQR;
+      // Clicking a toolbar button or opening the size <select> moves focus off the
+      // contenteditable, which would otherwise collapse whatever text was selected --
+      // so track the last real selection inside it and restore that exact range right
+      // before running the formatting command.
+      const introEl = document.getElementById('f-intro');
+      let savedIntroRange = null;
+      const saveIntroSelection = () => {
+        const sel = window.getSelection();
+        if (sel.rangeCount && introEl.contains(sel.anchorNode)) savedIntroRange = sel.getRangeAt(0).cloneRange();
+      };
+      introEl.addEventListener('mouseup', saveIntroSelection);
+      introEl.addEventListener('keyup', saveIntroSelection);
+      const restoreIntroSelection = () => {
+        if (!savedIntroRange) return;
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(savedIntroRange);
+      };
+      document.querySelectorAll('.su-rte-bar [data-cmd]').forEach(b => b.onclick = () => {
+        restoreIntroSelection();
+        document.execCommand(b.dataset.cmd, false, null);
+      });
+      document.getElementById('f-intro-size').onchange = (e) => {
+        if (!e.target.value) return;
+        restoreIntroSelection();
+        document.execCommand('fontSize', false, e.target.value);
+        e.target.value = '';
+      };
 
       curId = getParam('id');
       if (curId) openEditor(curId);
@@ -270,7 +319,7 @@
       curSheet = { id, ...snap.data() };
       document.getElementById('edit-crumb').textContent = curSheet.title || 'Edit';
       document.getElementById('f-title').value = curSheet.title || '';
-      document.getElementById('f-intro').value = curSheet.intro || '';
+      document.getElementById('f-intro').innerHTML = sanitizeIntroHtml(curSheet.intro || '');
       document.getElementById('f-school').value = curSheet.school || 'pto';
       document.getElementById('f-status').value = curSheet.status || 'open';
       document.getElementById('f-columns').value = String([1, 2, 3, 4].includes(curSheet.columns) ? curSheet.columns : 1);
@@ -316,7 +365,7 @@
         const id = curSheet.id;
         await db.collection('signups').doc(id).update({
           title: document.getElementById('f-title').value.trim() || 'Untitled sign-up sheet',
-          intro: document.getElementById('f-intro').value.trim(),
+          intro: sanitizeIntroHtml(document.getElementById('f-intro').innerHTML),
           school: document.getElementById('f-school').value,
           status: document.getElementById('f-status').value,
           columns: +document.getElementById('f-columns').value,
@@ -504,6 +553,52 @@
       if (tab === 'responses') loadResponses();
     }
     function copy(t) { navigator.clipboard.writeText(t).then(() => toast('Copied')); }
+
+    // Keeps the Intro field to a small safe subset of HTML (bold/italic/underline and a
+    // font-size-only span) -- strips everything else, including any attribute that isn't
+    // that one style, so nothing execCommand or a pasted-in Word/Docs blob produces can
+    // carry scripts, event handlers, or arbitrary styling onto the public sign-up page.
+    function sanitizeIntroHtml(html) {
+      var ALLOWED = { B: 1, STRONG: 1, I: 1, EM: 1, U: 1, SPAN: 1, BR: 1, DIV: 1, P: 1 };
+      var FONT_PX = { '1': '10px', '2': '13px', '3': '16px', '4': '18px', '5': '24px', '6': '32px', '7': '48px' };
+      var root = document.createElement('div');
+      root.innerHTML = html || '';
+      // execCommand('fontSize', ...) writes legacy <font size="N"> -- normalize to a span.
+      Array.prototype.slice.call(root.querySelectorAll('font')).forEach(function (f) {
+        var span = document.createElement('span');
+        var px = FONT_PX[f.getAttribute('size')];
+        if (px) span.style.fontSize = px;
+        while (f.firstChild) span.appendChild(f.firstChild);
+        f.parentNode.replaceChild(span, f);
+      });
+      (function walk(node) {
+        var child = node.firstChild;
+        while (child) {
+          var next = child.nextSibling;
+          if (child.nodeType === 1) {
+            if (!ALLOWED[child.tagName]) {
+              var first = child.firstChild;
+              while (child.firstChild) node.insertBefore(child.firstChild, child);
+              node.removeChild(child);
+              next = first || next; // re-scan the promoted content too
+            } else {
+              var keep = null;
+              if (child.tagName === 'SPAN') {
+                var m = /font-size\s*:\s*([\d.]+(?:px|em|%))/i.exec(child.getAttribute('style') || '');
+                if (m) keep = 'font-size:' + m[1];
+              }
+              Array.prototype.slice.call(child.attributes).forEach(function (a) { child.removeAttribute(a.name); });
+              if (keep) child.setAttribute('style', keep);
+              walk(child);
+            }
+          } else if (child.nodeType !== 3) {
+            node.removeChild(child); // comments etc.
+          }
+          child = next;
+        }
+      })(root);
+      return root.innerHTML;
+    }
 
     // Each sheet gets its own QR code pointing straight at its public sign-up link --
     // handy for a flyer or a sign right at the spot people sign up in person (e.g. one
