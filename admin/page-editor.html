@@ -84,7 +84,7 @@
     <div class="bo-field" style="max-width:none">
       <label>Page link <span class="bo-hint">This is the web address. It's created from your title &mdash; you can shorten it. Lowercase letters and numbers only.</span></label>
       <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-        <span style="color:var(--text-light)">schalmontpto.com/<span id="slug-prefix">p</span>/</span>
+        <span style="color:var(--text-light)">schalmontpto.com/<span id="slug-prefix">p/</span></span>
         <input type="text" id="page-slug" style="max-width:280px" placeholder="funrun">
       </div>
     </div>
@@ -509,7 +509,7 @@
     }
     function syncRouting() {
       const sp = document.getElementById('slug-prefix');
-      if (sp) sp.textContent = SCHOOL_PREFIX[school] || 'p';
+      if (sp) sp.textContent = school ? SCHOOL_PREFIX[school] + '/' : '';
       const bs = document.getElementById('back-school');
       if (bs) bs.href = 'school.html?s=' + school;
       const bsn = document.getElementById('back-school-name');

@@ -50,3 +50,11 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME}.html -f
 RewriteRule ^(.+)$ $1.html [L]
+
+# Anything else that's a single clean segment and isn't a real file/page above falls
+# through to a back-office page with no school attached -- those publish with no
+# prefix at all, e.g. schalmontpto.com/some-event instead of schalmontpto.com/pto/....
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}.html !-f
+RewriteRule ^([A-Za-z0-9_-]+)/?$ p.html?slug=$1 [L,QSA]

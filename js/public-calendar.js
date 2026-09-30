@@ -27,10 +27,12 @@
     h = h % 12 || 12;
     return h + ':' + m + ' ' + ap;
   }
-  // A page/event's routing school -- shared with several schools routes to 'pto',
-  // matching how the rest of the site (p.html, page-menu.js) already routes pages.
+  // A page/event's routing school -- shared with several schools routes to 'pto', no
+  // school at all routes to '' (prefix-less), matching how the rest of the site
+  // (p.html, admin-core.js) already routes pages.
   function routeOf(schools) {
-    return (Array.isArray(schools) && schools.length === 1) ? schools[0] : 'pto';
+    if (Array.isArray(schools) && schools.length === 1) return schools[0];
+    return (Array.isArray(schools) && schools.length === 0) ? '' : 'pto';
   }
 
   // Every visit to the homepage or any school page calls this -- cache the result in
@@ -59,8 +61,8 @@
         if (!p.title || !p.slug) return;
         var titleKey = p.title.trim().toLowerCase();
         var sch = routeOf(Array.isArray(p.schools) && p.schools.length ? p.schools : (p.school ? [p.school] : []));
-        var prefix = { woestina: 'woestina', jefferson: 'jes', middle: 'ms', high: 'hs', pto: 'pto' }[sch] || 'pto';
-        var href = '/' + prefix + '/' + p.slug;
+        var prefix = { woestina: 'woestina', jefferson: 'jes', middle: 'ms', high: 'hs', pto: 'pto' }[sch];
+        var href = prefix ? '/' + prefix + '/' + p.slug : '/' + p.slug;
         if (!pageByTitle[titleKey]) {
           pageByTitle[titleKey] = { href: href, time: p.eventTime || '', location: p.eventLocation || '' };
         }

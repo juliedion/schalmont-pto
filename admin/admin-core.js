@@ -31,7 +31,7 @@ const SCHOOL_PREFIX = {
   high:      'hs',
   pto:       'pto'
 };
-function pagePath(school, slug) { return SCHOOL_PREFIX[school] + '/' + slug; }
+function pagePath(school, slug) { return school ? SCHOOL_PREFIX[school] + '/' + slug : slug; }
 
 /* The top-level back-office sections, in nav order. `cat` is the page-category key
    stored on `pages` docs. `singular` (when set) turns on an "Add New ___ Web Page"
@@ -529,9 +529,11 @@ function canManage(school) {
 /* A page can belong to more than one school. These helpers keep the rest of the
    app simple:
      pageSchools(p)  -> always an array, even for old single-school docs
-     routingSchool() -> the ONE school key used for the public URL / prefix:
+     routingSchool() -> the school key used for the public URL / prefix:
                         a single-school page keeps its school; a page shared by
-                        two or more schools lives under the PTO-wide prefix. */
+                        two or more schools lives under the PTO-wide prefix;
+                        a page with NO school at all gets '' -- no prefix, just
+                        schalmontpto.com/<slug> -- see pagePath(). */
 function pageSchools(p) {
   if (!p) return [];
   if (Array.isArray(p.schools) && p.schools.length) return p.schools;
@@ -540,6 +542,7 @@ function pageSchools(p) {
 function routingSchool(schools) {
   const list = Array.isArray(schools) ? schools.filter(Boolean) : pageSchools(schools);
   if (list.length === 1) return list[0];
+  if (list.length === 0) return '';
   return 'pto';
 }
 /* Can the current person manage EVERY school in the list? (super-admins always can) */

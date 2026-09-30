@@ -74,7 +74,11 @@
     let prefix = params.get('prefix');
     if (!slug) {
       const m = location.pathname.match(/^\/(woestina|jes|ms|hs|pto)\/([A-Za-z0-9_-]+)/)
-             || location.pathname.match(/^\/p\/([A-Za-z0-9_-]+)/);
+             || location.pathname.match(/^\/p\/([A-Za-z0-9_-]+)/)
+             // A page with no school at all publishes prefix-less, schalmontpto.com/<slug> --
+             // .htaccess only ever routes a bare single segment here when it isn't a real
+             // static page, so this is safe to match unconditionally.
+             || location.pathname.match(/^\/([A-Za-z0-9_-]+)\/?$/);
       if (m) { if (m.length === 3) { prefix = m[1]; slug = m[2]; } else { slug = m[1]; } }
     }
     const wantSchool = prefix ? PREFIX_TO_SCHOOL[prefix] : null;
@@ -118,11 +122,13 @@
     function routeOf(d) {
       const list = Array.isArray(d.schools) && d.schools.length ? d.schools
                  : (d.school ? [d.school] : []);
-      return list.length === 1 ? list[0] : 'pto';
+      if (list.length === 1) return list[0];
+      return list.length === 0 ? '' : 'pto';
     }
     function pageHref(d) {
-      const prefix = { woestina:'woestina', jefferson:'jes', middle:'ms', high:'hs', pto:'pto' }[routeOf(d)] || 'pto';
-      return '/' + prefix + '/' + d.slug;
+      const school = routeOf(d);
+      const prefix = { woestina:'woestina', jefferson:'jes', middle:'ms', high:'hs', pto:'pto' }[school];
+      return prefix ? '/' + prefix + '/' + d.slug : '/' + d.slug;
     }
 
     async function render(preview) {
