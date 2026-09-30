@@ -102,6 +102,14 @@
     var params = new URLSearchParams(location.search);
     var ID = params.get('id');
     var SLUG = params.get('slug');
+    // /signup/<slug> is an internal .htaccess rewrite, not a redirect -- the browser's
+    // own address bar (and so location.search) never sees the appended ?slug=..., only
+    // the server-side request used to pick which file to serve does. Same reason p.html
+    // falls back to reading the visible path directly.
+    if (!SLUG && !ID) {
+      var m = location.pathname.match(/^\/signup\/([A-Za-z0-9_-]+)/);
+      if (m) SLUG = m[1];
+    }
     if (params.get('embed') === '1') document.body.classList.add('embed');
     renderSiteChrome();
     firebase.initializeApp(firebaseConfig);
