@@ -391,11 +391,11 @@ function newWebPage(cat, presetSchool, presetDate) {
         dates, and reminders stay in sync.
         <a href="${PLANNING_SHEET_URL}" target="_blank" rel="noopener">Open the planning spreadsheet ↗</a>
       </div>` : ''}
-      <label class="bo-modal-lbl">Which school(s) is this for? <span style="font-weight:400;color:var(--text-light)">— tick every one it belongs to</span></label>
+      <label class="bo-modal-lbl">Which school(s) is this for? <span style="font-weight:400;color:var(--text-light)">— tick every one it belongs to, or leave blank</span></label>
       <div class="bo-modal-checklist">${checks}</div>
       <p style="font-size:12px;color:var(--text-light);margin:0 0 8px">
-        Tick more than one and the page gets a shared address at
-        <code>schalmontpto.com/pto/&hellip;</code>.
+        Tick more than one and the page gets a shared address at <code>schalmontpto.com/pto/&hellip;</code>.
+        Leave every box unticked and it publishes at <code>schalmontpto.com/&hellip;</code> instead, with no prefix.
       </p>
       <label class="bo-modal-lbl">What kind of page is this?</label>
       <select id="nwp-type">${typeOpts}</select>
@@ -411,7 +411,7 @@ function newWebPage(cat, presetSchool, presetDate) {
         <label><input type="checkbox" id="nwp-leftmenu" checked> Show in the left (Browse) menu</label>
       </div>
       <p id="nwp-hint" style="font-size:12px;color:var(--text-light);margin:8px 0 0">
-        Tick at least one school, choose a type, and enter a title to continue.
+        Choose a type and enter a title to continue.
       </p>
       <div class="bo-modal-actions">
         <button class="bo-btn ghost sm" id="nwp-cancel">Cancel</button>
@@ -429,10 +429,9 @@ function newWebPage(cat, presetSchool, presetDate) {
   const goBtn = back.querySelector('#nwp-go');
   const hint  = back.querySelector('#nwp-hint');
   const revalidate = () => {
-    const hasSchool = back.querySelectorAll('.nwp-school:checked').length > 0;
     const hasType   = back.querySelector('#nwp-type').value !== '';
     const hasTitle  = back.querySelector('#nwp-title').value.trim().length > 0;
-    goBtn.disabled = !(hasSchool && hasType && hasTitle);
+    goBtn.disabled = !(hasType && hasTitle);
     hint.style.display = goBtn.disabled ? '' : 'none';
   };
   back.querySelectorAll('.nwp-school').forEach(c => c.addEventListener('change', revalidate));
@@ -446,9 +445,11 @@ function newWebPage(cat, presetSchool, presetDate) {
     const chosenCat = back.querySelector('#nwp-type').value;
     const showInTopMenu = back.querySelector('#nwp-topmenu').checked;
     const showInLeftMenu = back.querySelector('#nwp-leftmenu').checked;
-    if (!schools.length) { toast('Pick at least one school', 'error'); return; }
     if (!title) { toast('Give it a working title', 'error'); return; }
-    if (!canManageAll(schools)) { toast('You can only create pages for your own school(s)', 'error'); return; }
+    if (!canManageAll(schools)) {
+      toast(schools.length ? 'You can only create pages for your own school(s)' : 'Only a PTO owner can create a page with no school', 'error');
+      return;
+    }
     back.querySelector('#nwp-go').disabled = true;
     try {
       const key = title.toLowerCase();
