@@ -177,6 +177,9 @@
           <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;margin-top:6px">
             <input type="checkbox" id="f-ask-item"> Ask "What are you bringing?" <span style="font-weight:400;color:var(--text-light)">— an optional item field on every sign-up (good for a bake sale or food drive; turn off for volunteer shifts)</span>
           </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;margin-top:6px">
+            <input type="checkbox" id="f-ask-school"> Ask "Which school do you work for?" <span style="font-weight:400;color:var(--text-light)">— a required dropdown (Woestina, Jefferson, Middle School, High School, District, or Other), good for a staff-only sign-up like Tat the Teacher</span>
+          </label>
         </div>
 
         <h3 style="font-size:15px;color:var(--primary-dark);margin:18px 0 8px">Slots</h3>
@@ -370,7 +373,7 @@
         const ref = await db.collection('signups').add({
           title: (s.title || 'Untitled sign-up sheet') + ' (Copy)',
           intro: s.intro || '', school: s.school || 'pto', status: 'open',
-          columns: s.columns || 1,
+          columns: s.columns || 1, askItem: s.askItem !== false, askSchool: s.askSchool === true,
           eventLocation: s.eventLocation || '', eventDate: s.eventDate || '',
           eventTime: s.eventTime || '', eventEndTime: s.eventEndTime || '',
           imageUrl: s.imageUrl || '', imageAlt: s.imageAlt || '', imageCaption: s.imageCaption || '',
@@ -424,6 +427,7 @@
       // Sheets made before this option existed always asked it -- default missing to on
       // so nothing already collecting item data silently stops.
       document.getElementById('f-ask-item').checked = curSheet.askItem !== false;
+      document.getElementById('f-ask-school').checked = curSheet.askSchool === true;
       document.getElementById('f-image-url').value = curSheet.imageUrl || '';
       document.getElementById('f-image-alt').value = curSheet.imageAlt || '';
       document.getElementById('f-image-caption').value = curSheet.imageCaption || '';
@@ -493,6 +497,7 @@
           status: document.getElementById('f-status').value,
           columns: +document.getElementById('f-columns').value,
           askItem: document.getElementById('f-ask-item').checked,
+          askSchool: document.getElementById('f-ask-school').checked,
           imageUrl: document.getElementById('f-image-url').value.trim(),
           imageAlt: document.getElementById('f-image-alt').value.trim(),
           imageCaption: document.getElementById('f-image-caption').value.trim(),
@@ -565,14 +570,14 @@
       respRows = entries.docs.filter(d => !d.data().cancelled).map(d => {
         const e = d.data(), c = contact[d.id] || {};
         return { id: d.id, slotId: e.slotId, slot: slotName[e.slotId] || e.slotId, name: e.name, count: e.count || 1,
-                 item: e.item || '', email: c.email || '', phone: c.phone || '', comment: c.comment || '',
+                 item: e.item || '', workSchool: e.workSchool || '', email: c.email || '', phone: c.phone || '', comment: c.comment || '',
                  at: e.at?.toDate ? e.at.toDate() : null };
       }).sort((a, b) => (a.slot > b.slot ? 1 : -1) || (b.at - a.at));
       document.getElementById('resp-count').textContent = respRows.length;
       const box = document.getElementById('resp-body');
       if (!respRows.length) { box.innerHTML = '<p style="color:var(--text-light)">No sign-ups yet.</p>'; return; }
-      box.innerHTML = '<table class="su-resp"><thead><tr><th>Slot</th><th>Name</th><th>#</th><th>Bringing</th><th>Email</th><th>Phone</th><th>Comment</th><th>When</th><th></th></tr></thead><tbody>' +
-        respRows.map(r => `<tr><td>${esc(r.slot)}</td><td>${esc(r.name)}</td><td>${r.count}</td><td>${esc(r.item)}</td><td>${esc(r.email)}</td><td>${esc(r.phone)}</td><td>${esc(r.comment)}</td><td>${r.at ? r.at.toLocaleString() : ''}</td><td style="white-space:nowrap"><button class="bo-btn ghost sm" data-edit="${r.id}">Edit</button> <button class="bo-btn danger ghost sm" data-remove="${r.id}" data-slot="${r.slotId}">Remove</button></td></tr>`).join('') +
+      box.innerHTML = '<table class="su-resp"><thead><tr><th>Slot</th><th>Name</th><th>#</th><th>School</th><th>Bringing</th><th>Email</th><th>Phone</th><th>Comment</th><th>When</th><th></th></tr></thead><tbody>' +
+        respRows.map(r => `<tr><td>${esc(r.slot)}</td><td>${esc(r.name)}</td><td>${r.count}</td><td>${esc(r.workSchool)}</td><td>${esc(r.item)}</td><td>${esc(r.email)}</td><td>${esc(r.phone)}</td><td>${esc(r.comment)}</td><td>${r.at ? r.at.toLocaleString() : ''}</td><td style="white-space:nowrap"><button class="bo-btn ghost sm" data-edit="${r.id}">Edit</button> <button class="bo-btn danger ghost sm" data-remove="${r.id}" data-slot="${r.slotId}">Remove</button></td></tr>`).join('') +
         '</tbody></table>';
       box.querySelectorAll('[data-remove]').forEach(b => { b.onclick = () => adminRemoveEntry(b.dataset.remove, b.dataset.slot); });
       box.querySelectorAll('[data-edit]').forEach(b => { b.onclick = () => editEntry(b.dataset.edit); });
@@ -592,9 +597,10 @@
       const email = (prompt('Email? (optional)') || '').trim();
       const phone = (prompt('Phone? (optional)') || '').trim();
       const item = curSheet.askItem !== false ? (prompt('What are they bringing? (optional)') || '').trim() : '';
+      const workSchool = curSheet.askSchool === true ? (prompt('Which school do they work for? (Woestina, Jefferson, Middle School, High School, District, or Other)') || '').trim() : '';
       const id = curSheet.id;
       const eref = db.collection('signups').doc(id).collection('entries').doc();
-      await eref.set({ slotId: slot.id, name, count: 1, item, at: firebase.firestore.FieldValue.serverTimestamp() });
+      await eref.set({ slotId: slot.id, name, count: 1, item, workSchool, at: firebase.firestore.FieldValue.serverTimestamp() });
       await db.collection('signups').doc(id).collection('contacts').doc(eref.id).set({ email, phone, comment: '' });
       const sref = db.collection('signups').doc(id).collection('slots').doc(slot.id);
       const ssnap = await sref.get();
@@ -672,8 +678,8 @@
       loadResponses();
     }
     function downloadCSV() {
-      const head = ['Slot', 'Name', 'Count', 'Email', 'Phone', 'Comment', 'When'];
-      const rows = respRows.map(r => [r.slot, r.name, r.count, r.email, r.phone, r.comment, r.at ? r.at.toISOString() : '']);
+      const head = ['Slot', 'Name', 'Count', 'School', 'Bringing', 'Email', 'Phone', 'Comment', 'When'];
+      const rows = respRows.map(r => [r.slot, r.name, r.count, r.workSchool, r.item, r.email, r.phone, r.comment, r.at ? r.at.toISOString() : '']);
       const csv = [head].concat(rows).map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));

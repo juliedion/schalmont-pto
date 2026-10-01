@@ -264,7 +264,7 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 .pg-su-form { display: none; border-top: 1px dashed var(--border); margin-top: 12px; padding-top: 14px; }
 .pg-su-form.open { display: block; }
 .pg-su-form label { display: block; font-size: 12px; font-weight: 700; margin: 8px 0 3px; }
-.pg-su-form input { width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 7px; font-family: inherit; font-size: 14px; }
+.pg-su-form input, .pg-su-form select { width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 7px; font-family: inherit; font-size: 14px; background: #fff; }
 .pg-su-row2 { display: flex; gap: 10px; flex-wrap: wrap; }
 .pg-su-row2 > div { flex: 1; min-width: 140px; }
 .pg-su-msg { margin-top: 10px; font-size: 13px; font-weight: 600; }

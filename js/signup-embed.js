@@ -22,6 +22,7 @@
    your old answers.
    ============================================================ */
 (function (global) {
+  var WORK_SCHOOL_OPTIONS = ['Woestina', 'Jefferson', 'Middle School', 'High School', 'District', 'Other'];
   function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
   // The Intro field allows a small safe subset of HTML (bold/italic/underline, a
   // font-size-only span) set via the admin's rich text toolbar -- re-sanitize on the
@@ -144,7 +145,7 @@
       var e = d.data();
       liveIds[d.id] = !e.cancelled;
       if (e.cancelled) return;
-      (byName[e.slotId] = byName[e.slotId] || []).push({ name: e.name, count: e.count || 1, item: e.item || '' });
+      (byName[e.slotId] = byName[e.slotId] || []).push({ name: e.name, count: e.count || 1, item: e.item || '', workSchool: e.workSchool || '' });
     });
     // Drop any locally-remembered entry that's gone or been cancelled some other way
     // (e.g. an admin removed it) so a stale Cancel/Edit prompt doesn't linger.
@@ -183,7 +184,7 @@
       var full = cap && left <= 0;
       var when = [prettyDate(s.date), [prettyTime(s.start), prettyTime(s.end)].filter(Boolean).join('–')].filter(Boolean).join(' · ');
       var names = (byName[d.id] || []).map(function (n) {
-        return '<span>' + esc(displayName(n.name)) + (n.count > 1 ? ' (' + n.count + ')' : '') + (n.item ? ' — ' + esc(n.item) : '') + '</span>';
+        return '<span>' + esc(displayName(n.name)) + (n.count > 1 ? ' (' + n.count + ')' : '') + (n.workSchool ? ' — ' + esc(n.workSchool) : '') + (n.item ? ' — ' + esc(n.item) : '') + '</span>';
       }).join('');
       var myEntry = mineBySlot[d.id];
       html += '<div class="pg-su-slot" data-slot="' + esc(d.id) + '">';
@@ -200,7 +201,7 @@
         html += '<button type="button" class="pg-su-open">Sign up</button>';
       }
       if (!myEntry && !closed && (!full || (prefill && prefill.slotId === d.id))) {
-        html += formHtml(prefill && prefill.slotId === d.id ? prefill : null, sheet.askItem !== false);
+        html += formHtml(prefill && prefill.slotId === d.id ? prefill : null, sheet.askItem !== false, sheet.askSchool === true);
       }
       html += '</div>';
     });
@@ -225,11 +226,15 @@
     });
   }
 
-  function formHtml(prefill, askItem) {
+  function formHtml(prefill, askItem, askSchool) {
     prefill = prefill || {};
     return '<form class="pg-su-form' + (prefill.open ? ' open' : '') + '">' +
       '<label>Your name</label><input name="name" required maxlength="80" placeholder="First and last name" value="' + esc(prefill.name || '') + '">' +
       '<label>Email</label><input name="email" type="email" required value="' + esc(prefill.email || '') + '">' +
+      (askSchool ? '<label>Which school do you work for?</label><select name="workSchool" required>' +
+        '<option value="" disabled' + (prefill.workSchool ? '' : ' selected') + '>Select a school…</option>' +
+        WORK_SCHOOL_OPTIONS.map(function (o) { return '<option value="' + esc(o) + '"' + (prefill.workSchool === o ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') +
+        '</select>' : '') +
       '<div class="pg-su-row2">' +
         '<div><label>Phone <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="phone" value="' + esc(prefill.phone || '') + '"></div>' +
         '<div><label>Note to organizer <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input name="comment" maxlength="200" value="' + esc(prefill.comment || '') + '"></div>' +
@@ -247,9 +252,13 @@
     var count = 1;   // one sign-up = one spot; people no longer pick how many
     var email = form.email.value.trim(), phone = form.phone.value.trim(), comment = form.comment.value.trim();
     var item = form.item ? form.item.value.trim() : '';
+    var workSchool = form.workSchool ? form.workSchool.value : '';
     var msg = form.querySelector('.pg-su-msg');
     if (!name || !email) {
       msg.className = 'pg-su-msg err'; msg.textContent = 'Name and email are required.'; return;
+    }
+    if (form.workSchool && !workSchool) {
+      msg.className = 'pg-su-msg err'; msg.textContent = 'Please select which school you work for.'; return;
     }
     var btn = form.querySelector('button[type=submit]'); btn.disabled = true;
     msg.className = 'pg-su-msg'; msg.textContent = 'Saving…';
@@ -264,12 +273,12 @@
         tx.update(slotRef, { taken: taken + count });
         var eref = db.collection('signups').doc(id).collection('entries').doc();
         newEntryId = eref.id;
-        tx.set(eref, { slotId: slotId, name: name, count: count, item: item, at: firebase.firestore.FieldValue.serverTimestamp() });
+        tx.set(eref, { slotId: slotId, name: name, count: count, item: item, workSchool: workSchool, at: firebase.firestore.FieldValue.serverTimestamp() });
         tx.set(db.collection('signups').doc(id).collection('contacts').doc(eref.id),
           { email: email, phone: phone, comment: comment });
       });
     }).then(function () {
-      rememberMine(id, { entryId: newEntryId, slotId: slotId, name: name, email: email, phone: phone, comment: comment, item: item });
+      rememberMine(id, { entryId: newEntryId, slotId: slotId, name: name, email: email, phone: phone, comment: comment, item: item, workSchool: workSchool });
       msg.className = 'pg-su-msg done'; msg.textContent = '✓ You\'re signed up. Thank you! Check your email for a confirmation.';
       // Best-effort — a confirmation to the signer, plus whoever's watching this sheet.
       // Never blocks or affects the sign-up itself, which is already saved by this point.
@@ -331,7 +340,7 @@
       ]).then(function (res) {
         render(db, el, id, sheet, res[0].docs, res[1].docs, {
           slotId: slotId, open: true,
-          name: priorFields.name, email: priorFields.email, phone: priorFields.phone, comment: priorFields.comment, item: priorFields.item
+          name: priorFields.name, email: priorFields.email, phone: priorFields.phone, comment: priorFields.comment, item: priorFields.item, workSchool: priorFields.workSchool
         });
       });
     });

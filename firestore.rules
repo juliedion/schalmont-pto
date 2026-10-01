@@ -201,12 +201,13 @@ service cloud.firestore {
       // Who signed up — name + count only, publicly visible on the sheet.
       match /entries/{eid} {
         allow read: if true;
-        allow create: if request.resource.data.keys().hasOnly(['slotId','name','count','item','at'])
+        allow create: if request.resource.data.keys().hasOnly(['slotId','name','count','item','workSchool','at'])
           && request.resource.data.name is string
           && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 80
           && request.resource.data.count is int
           && request.resource.data.count > 0 && request.resource.data.count <= 20
-          && request.resource.data.item is string && request.resource.data.item.size() <= 100;
+          && request.resource.data.item is string && request.resource.data.item.size() <= 100
+          && request.resource.data.workSchool is string && request.resource.data.workSchool.size() <= 20;
         // A normal (never-cancelled) entry has no `cancelled`/`takenReverted` field at
         // all -- dereferencing a map key that isn't there throws in these rules (it does
         // NOT quietly act like undefined), which fails the whole rule closed. Every
