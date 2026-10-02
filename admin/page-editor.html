@@ -89,6 +89,15 @@
       </div>
     </div>
     <div class="bo-field" style="max-width:none">
+      <label>Old links that redirect here <span class="bo-hint">If this page's link used to be something else, or an old/misspelled URL is floating around, add it here — anyone who visits the old address is sent straight to this page instead of seeing "Page not found."</span></label>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+        <span style="color:var(--text-light)">schalmontpto.com/<span id="redirect-prefix">p/</span></span>
+        <input type="text" id="redirect-input" style="max-width:280px" placeholder="oldlinkname">
+        <button type="button" class="bo-btn ghost sm" id="redirect-add-btn">+ Add redirect</button>
+      </div>
+      <div id="redirect-list" style="display:flex;flex-direction:column;gap:6px;max-width:460px"></div>
+    </div>
+    <div class="bo-field" style="max-width:none">
       <label>Parent page <span class="bo-hint">Optional — nest this under another page, e.g. a "Volunteer Sign-Up" page under its main event page. The parent shows a link to every sub page it has, and this page shows a link back up to it.</span></label>
       <select id="page-parent" style="max-width:380px"><option value="">— none, this is a top-level page —</option></select>
     </div>
@@ -225,7 +234,7 @@
   <script>
     let pageId = getParam('id');
     let school = getParam('s');          // routing school (derived); kept in sync
-    let page = { title:'', slug:'', schools:[], status:'draft', blocks:[] };
+    let page = { title:'', slug:'', schools:[], status:'draft', blocks:[], redirects:[] };
     let images = [];          // uploaded photos for this school, for the Photo block
     let signupSheets = [];    // available sign-up sheets, for the Sign-up sheet block
     let slugTouched = false;
@@ -270,6 +279,7 @@
       if (!page.blocks || !page.blocks.length) page.blocks = [{ type:'heading', level:1, text:'' }];
 
       wireInputs();
+      wireRedirects();
       renderBlockEditors();
       refreshPreview();
       reflectStatus();
@@ -510,6 +520,8 @@
     function syncRouting() {
       const sp = document.getElementById('slug-prefix');
       if (sp) sp.textContent = school ? SCHOOL_PREFIX[school] + '/' : '';
+      const rp = document.getElementById('redirect-prefix');
+      if (rp) rp.textContent = school ? SCHOOL_PREFIX[school] + '/' : '';
       const bs = document.getElementById('back-school');
       if (bs) bs.href = 'school.html?s=' + school;
       const bsn = document.getElementById('back-school-name');
@@ -554,7 +566,19 @@
         if (!slugTouched) { slug.value = pageSlug(title.value); page.slug = slug.value; }
         refreshPreview();
       };
-      slug.oninput = () => { slugTouched = true; slug.value = pageSlug(slug.value); page.slug = slug.value; };
+      slug.oninput = () => {
+        slugTouched = true;
+        const clean = pageSlug(slug.value);
+        if (clean !== slug.value) {
+          // Re-assigning .value while focused snaps the cursor to the end even when
+          // the string didn't really change length-wise -- only do it when the clean
+          // version actually differs, and put the cursor back where it was typing.
+          const pos = slug.selectionStart;
+          slug.value = clean;
+          slug.setSelectionRange(Math.min(pos, clean.length), Math.min(pos, clean.length));
+        }
+        page.slug = clean;
+      };
       initEmojiPicker();
 
       const ed = document.getElementById('event-date'), et = document.getElementById('event-time'),
@@ -621,6 +645,43 @@
       document.getElementById('publish-btn').onclick = () => save('published');
       document.getElementById('unpublish-btn').onclick = () => save('draft');
       document.getElementById('delete-btn').onclick = deletePage;
+    }
+
+    function renderRedirects() {
+      const list = document.getElementById('redirect-list');
+      list.innerHTML = '';
+      if (!page.redirects || !page.redirects.length) {
+        list.innerHTML = '<span style="font-size:12.5px;color:var(--text-light)">No old links point here yet.</span>';
+        return;
+      }
+      page.redirects.forEach((r, i) => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:8px;background:var(--light-bg);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:13px';
+        const label = document.createElement('span');
+        label.style.cssText = 'flex:1;font-family:monospace';
+        label.textContent = r;
+        const rm = document.createElement('button');
+        rm.type = 'button'; rm.className = 'bo-btn ghost sm'; rm.textContent = '✕ Remove';
+        rm.onclick = () => { page.redirects.splice(i, 1); renderRedirects(); };
+        row.append(label, rm);
+        list.appendChild(row);
+      });
+    }
+
+    function wireRedirects() {
+      renderRedirects();
+      const input = document.getElementById('redirect-input');
+      const addRedirect = () => {
+        const clean = pageSlug(input.value);
+        if (!clean) return;
+        if (clean === page.slug) { toast("That's this page's own current link — no need to redirect it to itself", 'error'); return; }
+        if (page.redirects.includes(clean)) { toast('That redirect is already on the list', 'error'); return; }
+        page.redirects.push(clean);
+        input.value = '';
+        renderRedirects();
+      };
+      document.getElementById('redirect-add-btn').onclick = addRedirect;
+      input.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); addRedirect(); } };
     }
 
     async function deletePage() {
@@ -793,7 +854,50 @@
       if (cb.type === 'heading') out.push(mkInput('Heading text', cb.text, v => { cb.text = v; upd(); }));
       else if (cb.type === 'paragraph') out.push(mkInput('Text', cb.text, v => { cb.text = v; upd(); }, true));
       else if (cb.type === 'image') {
-        out.push(mkInput('Image link', cb.url, v => { cb.url = v; upd(); }));
+        const urlInp = mkInput('Upload below, pick a saved photo, or paste a link', cb.url, v => { cb.url = v; upd(); });
+        out.push(urlInp);
+
+        const up = document.createElement('button');
+        up.type = 'button'; up.className = 'bo-btn ghost sm';
+        up.style.cssText = 'padding:4px 8px;font-size:11px';
+        up.textContent = 'Upload a photo';
+        const upFile = document.createElement('input');
+        upFile.type = 'file'; upFile.accept = 'image/png,image/jpeg,image/webp'; upFile.hidden = true;
+        const upStat = document.createElement('span');
+        upStat.style.cssText = 'font-size:11px;color:var(--text-light);margin-left:8px';
+        up.onclick = () => upFile.click();
+        upFile.onchange = async () => {
+          if (!upFile.files[0]) return;
+          upStat.textContent = 'Uploading…';
+          try {
+            cb.url = await uploadImage(upFile.files[0]);
+            upStat.textContent = '';
+            if (redrawCell) redrawCell(); else upd();
+            upd();
+          } catch (e) { upStat.textContent = e.message; }
+        };
+        const upWrap = document.createElement('div');
+        upWrap.style.cssText = 'margin-bottom:4px';
+        upWrap.append(up, upFile, upStat);
+        out.push(upWrap);
+
+        if (images.length) {
+          const pick = document.createElement('div');
+          pick.className = 'bo-imgpick';
+          images.forEach(img => {
+            const t = document.createElement('img');
+            t.src = img.url; t.title = img.name;
+            if (img.url === cb.url) t.className = 'sel';
+            t.onclick = () => {
+              cb.url = img.url;
+              if (redrawCell) redrawCell(); else upd();
+              upd();
+            };
+            pick.appendChild(t);
+          });
+          out.push(pick);
+        }
+
         out.push(mkInput('Alt text (optional)', cb.alt, v => { cb.alt = v; upd(); }));
       } else if (cb.type === 'button') {
         out.push(mkInput('Button text', cb.label, v => { cb.label = v; upd(); }));
@@ -1202,6 +1306,16 @@
         const dupe = await db.collection('pages').where('slug','==',page.slug).get();
         const clash = dupe.docs.find(d => d.id !== pageId && routingSchool(pageSchools(d.data())) === school);
         if (clash) { toast('That link is already used by another ' + (SCHOOLS[school] || 'PTO') + ' page — change the Page link', 'error'); return; }
+
+        // ...and that none of this page's redirects would hijack another page's real,
+        // current link out from under it.
+        for (const r of (page.redirects || [])) {
+          const rDupe = await db.collection('pages').where('slug','==',r).get();
+          if (rDupe.docs.find(d => d.id !== pageId)) {
+            toast('"' + r + '" in your redirects list is another page\'s real link — remove it first', 'error');
+            return;
+          }
+        }
       }
 
       // First time an event page goes live, ask whether it should also show as a link in
@@ -1219,6 +1333,7 @@
       page.hideEventBox = document.getElementById('hide-eventbox-cb').checked;
       const data = {
         title: page.title.trim(), slug: page.slug.trim(),
+        redirects: page.redirects || [],
         schools: page.schools, school,
         blocks: page.blocks,
         eventDate: page.eventDate || '', eventTime: page.eventTime || '',

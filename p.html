@@ -148,6 +148,17 @@
           const snap = await query.get();
           const hit = snap.docs.find(d => (preview || d.data().status === 'published') && (!wantSchool || routeOf(d.data()) === wantSchool));
           if (hit) { p = hit.data(); pId = hit.id; }
+          if (!p) {
+            // No page has this as its current slug -- maybe it used to, before the page's
+            // own link changed, or it's an alias the admin added on purpose. Either way,
+            // a page's own `redirects` list is itself admin-controlled, so it's safe to
+            // check regardless of prefix/school -- the canonical href carries the right one.
+            let rq = db.collection('pages').where('redirects', 'array-contains', slug);
+            if (!preview) rq = rq.where('status', '==', 'published');
+            const rsnap = await rq.get();
+            const rhit = rsnap.docs.find(d => preview || d.data().status === 'published');
+            if (rhit) { location.replace(pageHref(rhit.data())); return; }
+          }
         }
         if (!p) { notFound(); return; }
 

@@ -123,8 +123,11 @@
   }
 
   function renderMonth(container, events, year, month) {
-    container.querySelector('.pcal-month-label').textContent =
-      new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    var label = new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    var now = new Date(), monthDiff = (year - now.getFullYear()) * 12 + (month - now.getMonth());
+    if (monthDiff > 0) label += ' (Next month)';
+    else if (monthDiff < 0) label += ' (Last month)';
+    container.querySelector('.pcal-month-label').textContent = label;
 
     var byDate = {};
     events.forEach(function (e) {
@@ -165,9 +168,54 @@
     container.querySelector('.pcal-grid').innerHTML = cells.join('');
   }
 
+  // "Coming up this week!" -- same merged event list as the "All Events" month tab,
+  // just windowed to the next 7 days (today through today+6) and listed day by day
+  // instead of laid out on a grid.
+  function renderWeek(container, events) {
+    var byDate = {};
+    events.forEach(function (e) {
+      var cur = new Date(e.date + 'T00:00:00'), last = new Date((e.endDate || e.date) + 'T00:00:00');
+      for (var guard = 0; cur <= last && guard < 62; guard++) {
+        var ds = cur.toISOString().slice(0, 10);
+        (byDate[ds] = byDate[ds] || []).push(e);
+        cur.setDate(cur.getDate() + 1);
+      }
+    });
+
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    var days = [];
+    for (var i = 0; i < 7; i++) {
+      var d = new Date(today); d.setDate(d.getDate() + i);
+      var ds = ymd(d.getFullYear(), d.getMonth(), d.getDate());
+      var dayEvents = (byDate[ds] || []).sort(function (a, b) { return (a.time || '').localeCompare(b.time || ''); });
+      if (dayEvents.length) days.push({ date: d, events: dayEvents });
+    }
+
+    if (!days.length) {
+      container.innerHTML = '<div class="pweek-empty">No events scheduled for the next 7 days.</div>';
+      return;
+    }
+
+    container.innerHTML = days.map(function (day) {
+      var label = day.date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+      var items = day.events.map(function (e) {
+        var color = SCHOOL_COLOR[e.school] || 'var(--primary)';
+        var schoolLabel = SCHOOL_LABEL[e.school] || 'PTO';
+        var meta = [e.time ? prettyTime(e.time) : '', e.location].filter(Boolean).join(' &middot; ');
+        var inner = '<span class="pweek-title">' + esc(e.title) + '</span>' +
+          (meta ? '<span class="pweek-meta">' + meta + '</span>' : '') +
+          '<span class="pweek-school" style="color:' + color + '">' + esc(schoolLabel) + '</span>';
+        return (e.href ? '<a href="' + esc(e.href) + '" class="pweek-item"' : '<div class="pweek-item"') +
+          ' style="border-left-color:' + color + '">' + inner + (e.href ? '</a>' : '</div>');
+      }).join('');
+      return '<div class="pweek-day"><div class="pweek-daylabel">' + label + '</div><div class="pweek-items">' + items + '</div></div>';
+    }).join('');
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     var containers = document.querySelectorAll('.pcal-cal[data-school]');
-    if (!containers.length || !window.firebase || !firebase.apps || !firebase.apps.length) return;
+    var weekEl = document.getElementById('pweek-list');
+    if ((!containers.length && !weekEl) || !window.firebase || !firebase.apps || !firebase.apps.length) return;
 
     var state = { year: new Date().getFullYear(), month: new Date().getMonth() };
     var allEvents = [];
@@ -195,11 +243,13 @@
     loadEvents().then(function (events) {
       allEvents = events;
       renderAll();
+      if (weekEl) renderWeek(weekEl, events);
     }).catch(function () {
       containers.forEach(function (el) {
         el.querySelector('.pcal-grid').innerHTML =
           '<div class="pcal-cell pcal-cell-empty" style="grid-column:1/-1;padding:32px;text-align:center;color:var(--text-light)">Could not load the calendar right now.</div>';
       });
+      if (weekEl) weekEl.innerHTML = '<div class="pweek-empty">Could not load this week\'s events right now.</div>';
     });
   });
 })();
