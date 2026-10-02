@@ -72,6 +72,17 @@ service cloud.firestore {
       allow delete: if signedIn() && canManageAllOf(pageSchoolList(resource.data));
     }
 
+    /* ---- Back office: slug -> page redirects, doc id is the old/alias slug itself.
+       Public read (not sensitive -- just an old-link-to-page-id map) so an anonymous
+       visitor's lookup in p.html is a plain doc get, never a query. Write only requires
+       being signed in as an admin; the page itself already enforces who can manage it,
+       and redirects are low-stakes enough across this small trusted admin group not to
+       need a second per-school check here. */
+    match /page_redirects/{slug} {
+      allow read: if true;
+      allow write: if signedIn();
+    }
+
     /* ---- Back office: uploaded files/photos metadata ---- */
     match /assets/{assetId} {
       allow read: if true;   // used on public pages

@@ -150,14 +150,18 @@
           if (hit) { p = hit.data(); pId = hit.id; }
           if (!p) {
             // No page has this as its current slug -- maybe it used to, before the page's
-            // own link changed, or it's an alias the admin added on purpose. Either way,
-            // a page's own `redirects` list is itself admin-controlled, so it's safe to
-            // check regardless of prefix/school -- the canonical href carries the right one.
-            let rq = db.collection('pages').where('redirects', 'array-contains', slug);
-            if (!preview) rq = rq.where('status', '==', 'published');
-            const rsnap = await rq.get();
-            const rhit = rsnap.docs.find(d => preview || d.data().status === 'published');
-            if (rhit) { location.replace(pageHref(rhit.data())); return; }
+            // own link changed, or it's an alias the admin added on purpose. Redirects live
+            // in their own page_redirects/<slug> doc (see admin/page-editor.html's
+            // syncRedirects()), so this is a plain doc-id lookup -- no query, no index,
+            // and no security-rule gymnastics over which drafts a query could touch.
+            const rdoc = await db.collection('page_redirects').doc(slug).get();
+            if (rdoc.exists) {
+              const targetSnap = await db.collection('pages').doc(rdoc.data().pageId).get();
+              if (targetSnap.exists && (preview || targetSnap.data().status === 'published')) {
+                location.replace(pageHref(targetSnap.data()));
+                return;
+              }
+            }
           }
         }
         if (!p) { notFound(); return; }

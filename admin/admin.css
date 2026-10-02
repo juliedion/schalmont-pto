@@ -140,7 +140,14 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 .bo-field textarea { min-height: 90px; resize: vertical; }
 
 /* ---------- Page editor ---------- */
-.bo-editor { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+/* Tools column (title/link/blocks/etc.) vs. live preview, on a 12-column desktop grid --
+   tools takes the first 3, preview the remaining 9. fr units mean it scales fluidly with
+   the viewport within a breakpoint, not just at the breakpoint edges. Narrows to a looser
+   ratio at tablet width, then stacks to one column at true mobile width (below). */
+.bo-editor { display: grid; grid-template-columns: 3fr 9fr; gap: 24px; align-items: start; }
+@media (max-width: 1200px) {
+  .bo-editor { grid-template-columns: 2fr 6fr; }
+}
 .bo-richtext-bar { display: flex; gap: 4px; margin-bottom: 4px; }
 .bo-richtext-bar button {
   border: 1px solid var(--border); background: #fff; border-radius: 4px; cursor: pointer;

@@ -252,12 +252,22 @@
     let slugTouched = false;
     let lockedSchools = [];   // schools already on this page that I can't manage (super: none)
     let cardDocs = [];        // existing program_cards docs linked to this page (one per school)
+    // Redirects live in their own `page_redirects` collection, keyed by the old slug itself
+    // (see syncRedirects()) -- a direct doc-id lookup needs no query/index at all, unlike an
+    // array-contains query, which this back office deliberately avoids (firestore.indexes.json).
+    // This mirrors the saved copy so save() only writes what actually changed.
+    let originalRedirects = [];
 
     requireAdmin(async (me) => {
       if (pageId) {
         const snap = await db.collection('pages').doc(pageId).get();
         if (!snap.exists) { toast('Page not found', 'error'); location.href = 'index.html'; return; }
         page = Object.assign(page, snap.data());
+        // Ignore any `redirects` array a page doc saved under the old design -- the
+        // page_redirects collection below is the only source of truth now.
+        const rSnap = await db.collection('page_redirects').where('pageId', '==', pageId).get();
+        page.redirects = rSnap.docs.map(d => d.id);
+        originalRedirects = page.redirects.slice();
       }
       // normalise to an array (old pages store a single `school`)
       let sel = pageSchools(page);
@@ -1362,11 +1372,16 @@
         if (clash) { toast('That link is already used by another ' + (SCHOOLS[school] || 'PTO') + ' page — change the Page link', 'error'); return; }
 
         // ...and that none of this page's redirects would hijack another page's real,
-        // current link out from under it.
+        // current link, or another page's own redirect, out from under it.
         for (const r of (page.redirects || [])) {
           const rDupe = await db.collection('pages').where('slug','==',r).get();
           if (rDupe.docs.find(d => d.id !== pageId)) {
             toast('"' + r + '" in your redirects list is another page\'s real link — remove it first', 'error');
+            return;
+          }
+          const rDoc = await db.collection('page_redirects').doc(r).get();
+          if (rDoc.exists && rDoc.data().pageId !== pageId) {
+            toast('"' + r + '" already redirects to a different page — remove it first', 'error');
             return;
           }
         }
@@ -1387,7 +1402,6 @@
       page.hideEventBox = document.getElementById('hide-eventbox-cb').checked;
       const data = {
         title: page.title.trim(), slug: page.slug.trim(),
-        redirects: page.redirects || [],
         schools: page.schools, school,
         blocks: page.blocks,
         eventDate: page.eventDate || '', eventTime: page.eventTime || '',
@@ -1430,10 +1444,29 @@
       try {
         await syncCard();
         await syncTrackerFromPage();
+        await syncRedirects();
       } catch (e) {
         toast('Published, but the homepage card could not update: ' + e.message, 'error');
       }
       btns.forEach(b => b.disabled = false);
+    }
+
+    // Writes/deletes page_redirects/<slug> docs so they match page.redirects -- only the
+    // entries that actually changed since load, keyed by the redirect slug itself so a
+    // visit to the old address is a single doc-id lookup (see p.html), never a query.
+    async function syncRedirects() {
+      const current = page.redirects || [];
+      const added = current.filter(r => !originalRedirects.includes(r));
+      const removed = originalRedirects.filter(r => !current.includes(r));
+      for (const r of added) {
+        await db.collection('page_redirects').doc(r).set({
+          pageId, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      }
+      for (const r of removed) {
+        await db.collection('page_redirects').doc(r).delete();
+      }
+      originalRedirects = current.slice();
     }
 
     // The other half of the tracker <-> back-office link: an Events & Programs page with a
