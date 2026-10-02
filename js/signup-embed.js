@@ -273,7 +273,12 @@
         tx.update(slotRef, { taken: taken + count });
         var eref = db.collection('signups').doc(id).collection('entries').doc();
         newEntryId = eref.id;
-        tx.set(eref, { slotId: slotId, name: name, count: count, item: item, workSchool: workSchool, at: firebase.firestore.FieldValue.serverTimestamp() });
+        // Only include workSchool at all on a sheet that actually asks for it -- until
+        // the matching rules update is published, an old-shape sheet that never
+        // mentions this field should keep working exactly as before.
+        var entryData = { slotId: slotId, name: name, count: count, item: item, at: firebase.firestore.FieldValue.serverTimestamp() };
+        if (workSchool) entryData.workSchool = workSchool;
+        tx.set(eref, entryData);
         tx.set(db.collection('signups').doc(id).collection('contacts').doc(eref.id),
           { email: email, phone: phone, comment: comment });
       });
