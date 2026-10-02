@@ -61,7 +61,7 @@
         if (!p.title || !p.slug) return;
         var titleKey = p.title.trim().toLowerCase();
         var sch = routeOf(Array.isArray(p.schools) && p.schools.length ? p.schools : (p.school ? [p.school] : []));
-        var prefix = { woestina: 'woestina', jefferson: 'jes', middle: 'ms', high: 'hs', pto: 'pto' }[sch];
+        var prefix = { woestina: 'woestina', jefferson: 'jefferson', middle: 'ms', high: 'hs', pto: 'pto' }[sch];
         var href = prefix ? '/' + prefix + '/' + p.slug : '/' + p.slug;
         if (!pageByTitle[titleKey]) {
           pageByTitle[titleKey] = { href: href, time: p.eventTime || '', location: p.eventLocation || '' };

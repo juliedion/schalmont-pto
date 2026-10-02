@@ -149,7 +149,7 @@
       const name = inp.value.trim();
       if (!name) return;
       // Every folder's slug is namespaced under this school's URL prefix (matching how
-      // every other page on the site is addressed), e.g. schalmontpto.com/jes/yearbook/
+      // every other page on the site is addressed), e.g. schalmontpto.com/jefferson/yearbook/
       // backtoschool -- so folders never collide across schools even if reused elsewhere.
       const slug = (SCHOOL_PREFIX[school] || school) + '/yearbook/' + slugify(name);
       if (folders.some(f => f.slug === slug)) { toast('A folder with a similar name already exists', 'error'); return; }

@@ -60,7 +60,7 @@
   <script>
     renderSiteChrome();
 
-    const PREFIX_TO_SCHOOL = { woestina:'woestina', jes:'jefferson', ms:'middle', hs:'high', pto:'pto' };
+    const PREFIX_TO_SCHOOL = { woestina:'woestina', jefferson:'jefferson', ms:'middle', hs:'high', pto:'pto' };
     const SCHOOL_LABEL = { woestina:'Woestina Pre-K', jefferson:'Jefferson Elementary',
       middle:'Middle School', high:'High School', pto:'Schalmont PTO' };
     const OWNER_EMAIL = 'julie@schalmontpto.com';
@@ -73,7 +73,7 @@
     let slug = params.get('slug');
     let prefix = params.get('prefix');
     if (!slug) {
-      const m = location.pathname.match(/^\/(woestina|jes|ms|hs|pto)\/([A-Za-z0-9_-]+)/)
+      const m = location.pathname.match(/^\/(woestina|jefferson|ms|hs|pto)\/([A-Za-z0-9_-]+)/)
              || location.pathname.match(/^\/p\/([A-Za-z0-9_-]+)/)
              // A page with no school at all publishes prefix-less, schalmontpto.com/<slug> --
              // .htaccess only ever routes a bare single segment here when it isn't a real
@@ -127,7 +127,7 @@
     }
     function pageHref(d) {
       const school = routeOf(d);
-      const prefix = { woestina:'woestina', jefferson:'jes', middle:'ms', high:'hs', pto:'pto' }[school];
+      const prefix = { woestina:'woestina', jefferson:'jefferson', middle:'ms', high:'hs', pto:'pto' }[school];
       return prefix ? '/' + prefix + '/' + d.slug : '/' + d.slug;
     }
 

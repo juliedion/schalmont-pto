@@ -26,7 +26,7 @@ const SCHOOLS = {
    These must also be listed in .htaccess and p.html. */
 const SCHOOL_PREFIX = {
   woestina:  'woestina',
-  jefferson: 'jes',
+  jefferson: 'jefferson',
   middle:    'ms',
   high:      'hs',
   pto:       'pto'
@@ -508,6 +508,42 @@ function fmtDate(ts) {
   if (!ts) return '—';
   const d = ts.toDate ? ts.toDate() : new Date(ts);
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+/* Watches a standard 12/8/4-column grid (see .bo-editor in admin.css) and puts up a
+   loud on-page warning if its direct children's `grid-column: span N` declarations
+   ever stop adding up to the current breakpoint's total -- so a future edit that
+   breaks the column math (an extra child, a typo'd span, a missed breakpoint) gets
+   caught visibly instead of silently shipping a gap or an overflowing row. Call once
+   per grid, right after its content is in the DOM; it re-checks on every resize. */
+function checkGridLayout(selector) {
+  const grid = document.querySelector(selector);
+  if (!grid) return;
+  const check = () => {
+    const w = window.innerWidth;
+    const total = w <= 860 ? 4 : w <= 1200 ? 8 : 12;
+    let sum = 0;
+    [...grid.children].forEach(k => {
+      const m = /span\s+(\d+)/.exec(getComputedStyle(k).gridColumn || '');
+      sum += m ? parseInt(m[1], 10) : 0;
+    });
+    let warn = document.getElementById('bo-grid-warn-' + selector.replace(/\W/g, ''));
+    if (sum !== total) {
+      if (!warn) {
+        warn = document.createElement('div');
+        warn.id = 'bo-grid-warn-' + selector.replace(/\W/g, '');
+        warn.style.cssText = 'background:#fdecea;border:1px solid #f5c6c0;color:#8b1a14;' +
+          'padding:10px 14px;border-radius:8px;margin-bottom:14px;font-weight:700;font-size:13px';
+        grid.parentNode.insertBefore(warn, grid);
+      }
+      warn.textContent = '⚠️ Layout grid mismatch on ' + selector + ': columns add up to ' +
+        sum + ', not the standard ' + total + ' for this screen width. This needs fixing.';
+    } else if (warn) {
+      warn.remove();
+    }
+  };
+  check();
+  window.addEventListener('resize', check);
 }
 
 function toast(msg, kind) {

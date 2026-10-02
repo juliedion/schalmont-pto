@@ -23,8 +23,12 @@ RewriteRule ^class-of-([0-9]{4})$ /classof$1 [R=301,L]
 # Singular /yearbook -> the yearbooks hub page
 RewriteRule ^yearbook/?$ /yearbooks [R=301,L]
 
-# Back-office published pages, e.g. /ms/spring-concert  or  /jes/fun-run
-RewriteRule ^(woestina|jes|ms|hs|pto)/([A-Za-z0-9_-]+)/?$ p.html?prefix=$1&slug=$2 [L,QSA]
+# Old /jes/... links (Jefferson's prefix before it was renamed to the full word) --
+# redirect to the new address rather than 404 any flyer/QR code already printed with it.
+RewriteRule ^jes/([A-Za-z0-9_-]+)/?$ /jefferson/$1 [R=301,L]
+
+# Back-office published pages, e.g. /ms/spring-concert  or  /jefferson/fun-run
+RewriteRule ^(woestina|jefferson|ms|hs|pto)/([A-Za-z0-9_-]+)/?$ p.html?prefix=$1&slug=$2 [L,QSA]
 RewriteRule ^p/([A-Za-z0-9_-]+)/?$ p.html?slug=$1 [L,QSA]
 
 # Sign-up sheets with a custom URL, e.g. /signup/candy-monsters

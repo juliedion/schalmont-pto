@@ -10,7 +10,7 @@
    pages and appends a link into that submenu.
    ============================================================ */
 (function () {
-  var SCHOOL_PREFIX = { woestina: 'woestina', jefferson: 'jes', middle: 'ms', high: 'hs', pto: 'pto' };
+  var SCHOOL_PREFIX = { woestina: 'woestina', jefferson: 'jefferson', middle: 'ms', high: 'hs', pto: 'pto' };
 
   function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
 

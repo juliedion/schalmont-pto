@@ -140,14 +140,40 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 .bo-field textarea { min-height: 90px; resize: vertical; }
 
 /* ---------- Page editor ---------- */
-/* Tools column (title/link/blocks/etc.) vs. live preview, on a 12-column desktop grid --
-   tools takes the first 3, preview the remaining 9. fr units mean it scales fluidly with
-   the viewport within a breakpoint, not just at the breakpoint edges. Narrows to a looser
-   ratio at tablet width, then stacks to one column at true mobile width (below). */
-.bo-editor { display: grid; grid-template-columns: 3fr 9fr; gap: 24px; align-items: start; }
+/* THE STANDARD BACK-OFFICE GRID -- any page laying tools/content/preview side by side
+   should use this same 12/8/4-column grid, not a one-off ratio, so every admin page
+   checks out the same way at the same three breakpoints (desktop/tablet/mobile).
+     desktop (>1200px):      12 columns
+     tablet  (861-1200px):    8 columns
+     mobile  (<=860px):       4 columns
+   A column-span child declares `grid-column: span N` for whichever breakpoint it's in
+   (see .bo-tools-col below for the pattern: 3 of 12, 2 of 8, 1 of 4 -- always the same
+   ~25% share). checkGridLayout() in admin-core.js watches that a grid's children's
+   spans add up to the current breakpoint's total and puts up a loud on-page warning if
+   a future change ever breaks that math, instead of silently shipping a gap or overflow. */
+.bo-editor { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; align-items: start; }
+.bo-editor > :last-child { grid-column: span 9; }
 @media (max-width: 1200px) {
-  .bo-editor { grid-template-columns: 2fr 6fr; }
+  .bo-editor { grid-template-columns: repeat(8, 1fr); }
+  .bo-editor > :last-child { grid-column: span 6; }
 }
+@media (max-width: 860px) {
+  .bo-editor { grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .bo-editor > :last-child { grid-column: span 3; }
+}
+/* Tools column: 3 of 12 (desktop) / 2 of 8 (tablet) / 1 of 4 (mobile) -- a steady ~25%
+   share of the grid at every breakpoint. Pinned to the viewport and scrolls on its own
+   once its content runs taller than the visible height, while the preview column scrolls
+   normally with the rest of the page -- so you can keep editing without losing your
+   place in a long block list, while the preview moves past as you scroll like anything
+   else on the page. */
+.bo-tools-col {
+  grid-column: span 3;
+  position: sticky; top: 20px; align-self: start;
+  max-height: calc(100vh - 40px); overflow-y: auto; padding-right: 4px;
+}
+@media (max-width: 1200px) { .bo-tools-col { grid-column: span 2; } }
+@media (max-width: 860px) { .bo-tools-col { grid-column: span 1; } }
 .bo-richtext-bar { display: flex; gap: 4px; margin-bottom: 4px; }
 .bo-richtext-bar button {
   border: 1px solid var(--border); background: #fff; border-radius: 4px; cursor: pointer;
@@ -174,7 +200,10 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 .bo-addbar button { background: #fff; border: 1px dashed var(--primary-light); color: var(--primary-dark); border-radius: 8px; padding: 8px 12px; font-size: 13px; font-weight: 600; cursor: pointer; }
 .bo-addbar button:hover { background: #eef6ec; }
 .bo-preview {
-  position: sticky; top: 20px; background: #fff; border: 1px solid var(--border);
+  /* No sticky positioning here on purpose -- the preview scrolls with the rest of the
+     page now; .bo-tools-col (the pinned, independently-scrolling side) is where that
+     behavior lives instead. */
+  background: #fff; border: 1px solid var(--border);
   border-radius: var(--radius-lg); padding: 22px; min-height: 300px;
 }
 .bo-preview-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--text-light); margin-bottom: 12px; }
@@ -395,6 +424,6 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
   .bo-nav { flex-direction: row; flex-wrap: wrap; flex: 1; }
   .bo-navgroup-label { width: 100%; padding-top: 6px; }
   .bo-sidebar-foot { width: 100%; border-top: none; }
-  .bo-editor { grid-template-columns: 1fr; }
-  .bo-preview { position: static; }
+  /* .bo-editor's own 4-column mobile layout lives with its other breakpoints above --
+     not overridden here anymore now that tools/preview sit side by side at every width. */
 }

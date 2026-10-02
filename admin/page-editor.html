@@ -70,7 +70,7 @@
     </div>
 
     <div class="bo-editor" style="margin-top:20px">
-      <div>
+      <div class="bo-tools-col">
         <div class="bo-field" style="max-width:none">
           <label>Page title <span class="bo-hint">Shows at the top of the page and in the browser tab. Example: "Jefferson Fun Run 2026".</span></label>
           <input type="text" id="page-title" placeholder="Give your page a clear name">
@@ -311,6 +311,7 @@
       loadCard();
       findTrackerRow();
       loadParentOptions();
+      checkGridLayout('.bo-editor');
     });
 
     // Any other page can be this page's parent, except itself or one of its own
@@ -551,9 +552,14 @@
       if (bsn) bsn.textContent = SCHOOLS[school] || 'School';
     }
 
-    // web-address friendly: lowercase letters + numbers only, no spaces or dashes
+    // web-address friendly, same rules as admin-core.js's shared slugify() (lowercase,
+    // dashes between words, no other punctuation) -- EXCEPT it doesn't trim a trailing
+    // dash, since this runs on every keystroke: slugify() stripping it immediately would
+    // make it impossible to ever type "trail-of-treats" one word at a time. The live
+    // field can end in a bare "-" mid-typing; save() runs the final value through the
+    // real slugify() once more so nothing half-typed ever actually gets saved.
     function pageSlug(s) {
-      return String(s).toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 60);
+      return String(s).toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/[\s-]+/g, '-').slice(0, 60);
     }
 
     function showFlyer() {
@@ -695,7 +701,7 @@
       renderRedirects();
       const input = document.getElementById('redirect-input');
       const addRedirect = () => {
-        const clean = pageSlug(input.value);
+        const clean = slugify(input.value);
         if (!clean) return;
         if (clean === page.slug) { toast("That's this page's own current link — no need to redirect it to itself", 'error'); return; }
         if (page.redirects.includes(clean)) { toast('That redirect is already on the list', 'error'); return; }
@@ -967,7 +973,7 @@
         out.push(mkInput('Alt text (optional)', cb.alt, v => { cb.alt = v; upd(); }));
       } else if (cb.type === 'button') {
         out.push(mkInput('Button text', cb.label, v => { cb.label = v; upd(); }));
-        out.push(mkInput('Link (https://… or /jes/page)', cb.href, v => { cb.href = v; upd(); }));
+        out.push(mkInput('Link (https://… or /jefferson/page)', cb.href, v => { cb.href = v; upd(); }));
         const sz = document.createElement('select');
         sz.style.cssText = 'width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:12.5px;margin-bottom:4px';
         sz.innerHTML = '<option value="sm">Small</option><option value="md">Medium</option><option value="lg">Large</option>';
@@ -1210,7 +1216,7 @@
         lab.type='text'; lab.value=b.label||''; lab.placeholder='e.g. Sign up now';
         lab.oninput = () => { b.label = lab.value; upd(); };
         const href = document.createElement('input');
-        href.type='text'; href.value=b.href||''; href.placeholder='https://…  (or /jes/another-page)';
+        href.type='text'; href.value=b.href||''; href.placeholder='https://…  (or /jefferson/another-page)';
         href.oninput = () => { b.href = href.value; upd(); };
         const st = document.createElement('select');
         st.innerHTML = '<option value="solid">Filled (green)</option><option value="outline">Outline</option>';
@@ -1363,7 +1369,9 @@
         return;
       }
       school = routingSchool(page.schools);
-      if (!page.slug.trim()) { page.slug = pageSlug(page.title); }
+      // Final cleanup -- strips a stray leading/trailing dash the live, keystroke-by-
+      // keystroke field above deliberately leaves alone while typing.
+      page.slug = slugify(page.slug) || slugify(page.title);
 
       if (statusChange === 'published') {
         // make sure the link isn't already used by another page at the same address
