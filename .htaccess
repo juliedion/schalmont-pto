@@ -27,20 +27,22 @@ RewriteRule ^yearbook/?$ /yearbooks [R=301,L]
 # redirect to the new address rather than 404 any flyer/QR code already printed with it.
 RewriteRule ^jes/([A-Za-z0-9_-]+)/?$ /jefferson/$1 [R=301,L]
 
+# Trail of Treats -- the real page's address is now /trailoftreats (an all-district
+# page, no school prefix). Both the flyer's printed URL and the page's old /pto/...
+# address (from before it became an all-district page) still get used, so alias them
+# straight to the real page. Must come before the back-office rule below, which would
+# otherwise swallow /pto/trail-of-treats itself. (Do NOT alias plain /trailoftreats here
+# -- that IS the real page's own address now, and self-redirecting it caused an
+# infinite redirect loop.)
+RewriteRule ^haunted-trail/?$ /trailoftreats [R=301,L]
+RewriteRule ^pto/trail-of-treats/?$ /trailoftreats [R=301,L]
+
 # Back-office published pages, e.g. /ms/spring-concert  or  /jefferson/fun-run
 RewriteRule ^(woestina|jefferson|ms|hs|pto)/([A-Za-z0-9_-]+)/?$ p.html?prefix=$1&slug=$2 [L,QSA]
 RewriteRule ^p/([A-Za-z0-9_-]+)/?$ p.html?slug=$1 [L,QSA]
 
 # Sign-up sheets with a custom URL, e.g. /signup/candy-monsters
 RewriteRule ^signup/([A-Za-z0-9_-]+)/?$ signup.html?slug=$1 [L,QSA]
-
-# Trail of Treats -- the real page's address is now /trailoftreats (an all-district
-# page, no school prefix). Both the flyer's printed URL and the page's old /pto/...
-# address (from before it became an all-district page) still get used, so alias them
-# straight to the real page. (Do NOT alias plain /trailoftreats here -- that IS the
-# real page's own address now, and self-redirecting it caused an infinite redirect loop.)
-RewriteRule ^haunted-trail/?$ /trailoftreats [R=301,L]
-RewriteRule ^pto/trail-of-treats/?$ /trailoftreats [R=301,L]
 
 # Redirect /index and /index.html to /
 RewriteCond %{THE_REQUEST} \s/+index(\.html)?\s [NC]
