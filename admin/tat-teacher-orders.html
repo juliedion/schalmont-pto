@@ -49,9 +49,9 @@
       <thead><tr>
         <th>When</th><th>Teacher</th><th>Ordered by</th><th>Email</th><th>Phone</th>
         <th>Small</th><th>Medium</th><th>Large</th><th>Face</th><th>Sleeve</th>
-        <th>Total</th><th>Notes</th><th>Status</th>
+        <th>Total</th><th>Notes</th><th>Status</th><th></th>
       </tr></thead>
-      <tbody id="tt-body"><tr><td colspan="13" style="color:var(--text-light)">Loading…</td></tr></tbody>
+      <tbody id="tt-body"><tr><td colspan="14" style="color:var(--text-light)">Loading…</td></tr></tbody>
     </table></div>
   </main>
 
@@ -74,14 +74,14 @@
 
     async function load() {
       const body = document.getElementById('tt-body');
-      body.innerHTML = '<tr><td colspan="13" style="color:var(--text-light)">Loading…</td></tr>';
+      body.innerHTML = '<tr><td colspan="14" style="color:var(--text-light)">Loading…</td></tr>';
       try {
         const snap = await db.collection('tat_teacher_orders').get();
         rows = snap.docs.map(d => ({ id: d.id, ...d.data() }))
           .sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
         render();
       } catch (e) {
-        body.innerHTML = '<tr><td colspan="13" style="color:var(--error)">Could not load: ' + esc(e.message) + '</td></tr>';
+        body.innerHTML = '<tr><td colspan="14" style="color:var(--error)">Could not load: ' + esc(e.message) + '</td></tr>';
       }
     }
 
@@ -95,7 +95,7 @@
         `<div class="tt-stat"><div class="n">${rows.length}</div><div class="l">Orders</div></div>` +
         `<div class="tt-stat"><div class="n">$${totalRevenue}</div><div class="l">Total ordered</div></div>`;
 
-      if (!list.length) { body.innerHTML = '<tr><td colspan="13" style="color:var(--text-light)">No orders yet.</td></tr>'; return; }
+      if (!list.length) { body.innerHTML = '<tr><td colspan="14" style="color:var(--text-light)">No orders yet.</td></tr>'; return; }
       body.innerHTML = '';
       list.forEach(r => {
         const tr = document.createElement('tr');
@@ -113,16 +113,28 @@
           <td>${r.sleeveQty || 0}</td>
           <td><strong>$${r.total || 0}</strong></td>
           <td style="max-width:200px">${esc(r.notes)}</td>
-          <td></td>`;
+          <td class="tt-status-cell"></td>
+          <td><button class="bo-btn danger ghost sm" data-remove="${r.id}">Remove</button></td>`;
         const sel = document.createElement('select');
         STATUSES.forEach(s => sel.add(new Option(s[0].toUpperCase() + s.slice(1), s, false, (r.status || 'new') === s)));
         sel.onchange = async () => {
           try { await db.collection('tat_teacher_orders').doc(r.id).update({ status: sel.value }); r.status = sel.value; toast('Updated'); }
           catch (e) { toast('Could not update: ' + e.message, 'error'); }
         };
-        tr.lastElementChild.appendChild(sel);
+        tr.querySelector('.tt-status-cell').appendChild(sel);
+        tr.querySelector('[data-remove]').onclick = () => removeOrder(r.id);
         body.appendChild(tr);
       });
+    }
+
+    async function removeOrder(id) {
+      if (!confirm('Delete this order? This cannot be undone.')) return;
+      try {
+        await db.collection('tat_teacher_orders').doc(id).delete();
+        rows = rows.filter(r => r.id !== id);
+        toast('Deleted');
+        render();
+      } catch (e) { toast('Could not delete: ' + e.message, 'error'); }
     }
 
     function downloadCSV() {
