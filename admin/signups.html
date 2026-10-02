@@ -253,6 +253,17 @@
         .forEach(([v, l]) => { sf.add(new Option(l, v)); fs.add(new Option(l, v)); });
       sf.onchange = renderList;
 
+      // Arriving from a specific school's own sidebar section (school.html's "Sign-Up
+      // Sheets" link, scoped with ?s=) starts the list pre-filtered to that school --
+      // the toggle itself stays fully open, so switching to "All" or another school
+      // from here still works exactly like landing on this page directly.
+      const scopeSchool = getParam('s');
+      if (scopeSchool && SCHOOLS[scopeSchool] && canManage(scopeSchool)) {
+        sf.value = scopeSchool;
+        const home = document.getElementById('home-link');
+        if (home) { home.href = 'school.html?s=' + scopeSchool; home.textContent = '← ' + (SCHOOLS[scopeSchool] || scopeSchool) + ' Workspace'; }
+      }
+
       document.getElementById('new-btn').onclick = createSheet;
       document.getElementById('add-slot').onclick = () => addSlotRow({});
       document.getElementById('bulk-cap-btn').onclick = () => {

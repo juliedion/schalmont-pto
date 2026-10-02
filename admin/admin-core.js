@@ -39,6 +39,7 @@ function pagePath(school, slug) { return school ? SCHOOL_PREFIX[school] + '/' + 
 const SECTIONS = [
   { cat: 'calendar',   label: 'Calendar',              icon: '📅', href: 'school.html?tab=calendar', tab: 'calendar' },
   { cat: 'events',     label: 'Events &amp; Programs', icon: '🎪', href: 'section.html?cat=events',     singular: 'Event',       sheet: true },
+  { cat: 'signups',    label: 'Sign-Up Sheets',        icon: '🖊️', href: 'signups.html' },
   { cat: 'pages',      label: 'All Pages',             icon: '📄', href: 'school.html?tab=pages', tab: 'pages' },
   { cat: 'files',      label: 'Files',                 icon: '📁', href: 'school.html?tab=files', tab: 'files' },
   { cat: 'photos',     label: 'Photos',                icon: '🖼️', href: 'school.html?tab=photos', tab: 'photos' },
@@ -274,7 +275,6 @@ function renderShell() {
         ${schoolGroups}
         <div class="bo-navgroup-label">More</div>
         ${link('meetings.html', 'Meetings', '🗓️', path === 'meetings.html')}
-        ${link('signups.html', 'Sign-Up Sheets', '🖊️', path === 'signups.html')}
         ${link('tat-teacher-orders.html', 'Tat the Teacher Orders', '🐯', path === 'tat-teacher-orders.html')}
         ${link('help.html', 'Help &amp; How-To', '📖', path === 'help.html')}
         ${ME.isSuper ? link('directory.html', 'Directory Sign-Ups', '✅', path === 'directory.html') : ''}
