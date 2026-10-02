@@ -284,12 +284,18 @@
     async function loadPages() {
       const box = document.getElementById('pages-list');
       try {
-        const [byField, byArray] = await Promise.all([
+        const queries = [
           db.collection('pages').where('school', '==', school).get(),
           db.collection('pages').where('schools', 'array-contains', school).get()
-        ]);
+        ];
+        // A page with no school at all (routingSchool() -> '', publishes with no URL
+        // prefix) has nowhere else to show up in the back office -- surface it in the
+        // PTO-wide workspace specifically, since that's the natural home for
+        // district-level content even though its own address has no /pto/ in it.
+        if (school === 'pto') queries.push(db.collection('pages').where('school', '==', '').get());
+        const snaps = await Promise.all(queries);
         const seen = new Map();
-        [...byField.docs, ...byArray.docs].forEach(d => seen.set(d.id, d));
+        snaps.forEach(snap => snap.docs.forEach(d => seen.set(d.id, d)));
         allPageDocs = [...seen.values()];
         await loadProgramCards();
         await backfillCards();

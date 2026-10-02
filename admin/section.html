@@ -112,12 +112,17 @@
         if (scopeSchool) {
           // Constrain the query to this school so Firestore rules can vet every row
           // (an unconstrained category query would trip over other schools' drafts).
-          const [a, b] = await Promise.all([
+          const queries = [
             db.collection('pages').where('school', '==', scopeSchool).get(),
             db.collection('pages').where('schools', 'array-contains', scopeSchool).get()
-          ]);
+          ];
+          // A page with no school at all has nowhere else to show up in the back office
+          // -- surface it under PTO-wide specifically, the natural home for
+          // district-level content even though its address has no /pto/ prefix.
+          if (scopeSchool === 'pto') queries.push(db.collection('pages').where('school', '==', '').get());
+          const snaps = await Promise.all(queries);
           const seen = new Map();
-          [...a.docs, ...b.docs].forEach(d => seen.set(d.id, d));
+          snaps.forEach(snap => snap.docs.forEach(d => seen.set(d.id, d)));
           docs = [...seen.values()].filter(d => matchesCat(d.data().category, cat));
         } else if (LEGACY_CATS[cat]) {
           const snaps = await Promise.all(
@@ -140,7 +145,9 @@
       const filter = scopeSchool || document.getElementById('school-filter').value;
       const box = document.getElementById('sec-list');
       const list = pages
-        .filter(p => filter === 'all' || pageSchools(p).includes(filter))
+        // A schoolless page (pageSchools() -> []) surfaces under PTO-wide specifically --
+        // see load()'s own comment on why that's its workspace home in the back office.
+        .filter(p => filter === 'all' || pageSchools(p).includes(filter) || (filter === 'pto' && !pageSchools(p).length))
         .sort((a, b) => (b.updatedAt?.seconds || b.createdAt?.seconds || 0) - (a.updatedAt?.seconds || a.createdAt?.seconds || 0));
       if (!list.length) {
         box.innerHTML = '<div class="sec-empty">No pages here yet.' +
