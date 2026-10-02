@@ -69,118 +69,130 @@
       often. When it's ready, press <strong>Publish</strong> and share the link.
     </div>
 
-    <div class="bo-field" style="max-width:none">
-      <label>Page title <span class="bo-hint">Shows at the top of the page and in the browser tab. Example: "Jefferson Fun Run 2026".</span></label>
-      <input type="text" id="page-title" placeholder="Give your page a clear name">
-    </div>
-    <div class="bo-field" style="max-width:none">
-      <label>Which school(s) is this page for? <span class="bo-hint">Tick every school it belongs to. Pick two or more (including just "PTO-wide") and the page gets a shared address at schalmontpto.com/pto/&hellip; — leave every box unticked for no prefix at all, schalmontpto.com/&hellip;</span></label>
-      <div id="page-schools" style="display:flex;flex-wrap:wrap;gap:16px;margin-top:4px"></div>
-      <p id="page-schools-locked" style="font-size:12px;color:var(--text-light);margin:6px 0 0" hidden></p>
-      <label id="page-leftmenu-row" style="display:none;align-items:center;gap:8px;font-size:13.5px;margin-top:10px">
-        <input type="checkbox" id="page-leftmenu"> Show in the left (Browse) sidebar menu, under each ticked school
-      </label>
-    </div>
-    <div class="bo-field" style="max-width:none">
-      <label>Page link <span class="bo-hint">This is the web address. It's created from your title &mdash; you can shorten it. Lowercase letters and numbers only.</span></label>
-      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-        <span style="color:var(--text-light)">schalmontpto.com/<span id="slug-prefix">p/</span></span>
-        <input type="text" id="page-slug" style="max-width:280px" placeholder="funrun">
-      </div>
-    </div>
-    <div class="bo-field" style="max-width:none">
-      <label>Old links that redirect here <span class="bo-hint">If this page's link used to be something else, or an old/misspelled URL is floating around, add it here — anyone who visits the old address is sent straight to this page instead of seeing "Page not found."</span></label>
-      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px">
-        <span style="color:var(--text-light)">schalmontpto.com/<span id="redirect-prefix">p/</span></span>
-        <input type="text" id="redirect-input" style="max-width:280px" placeholder="oldlinkname">
-        <button type="button" class="bo-btn ghost sm" id="redirect-add-btn">+ Add redirect</button>
-      </div>
-      <div id="redirect-list" style="display:flex;flex-direction:column;gap:6px;max-width:460px"></div>
-    </div>
-    <div class="bo-field" style="max-width:none">
-      <label>Parent page <span class="bo-hint">Optional — nest this under another page, e.g. a "Volunteer Sign-Up" page under its main event page. The parent shows a link to every sub page it has, and this page shows a link back up to it.</span></label>
-      <select id="page-parent" style="max-width:380px"><option value="">— none, this is a top-level page —</option></select>
-    </div>
-
-    <div style="margin:8px 0 4px;max-width:none">
-      <label class="bo-modal-lbl" style="font-weight:700;font-size:13.5px;color:var(--text);margin-bottom:8px;display:block">Event details &amp; main image / flyer</label>
-      <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px">
-        <div class="bo-tip" style="margin-bottom:14px">
-          The date, time and location show in a highlighted box near the top of the page, and the
-          flyer appears as a big image above it.
-        </div>
-        <div id="tracker-sync-row" style="display:none;margin-bottom:12px">
-          <button type="button" class="bo-btn ghost sm" id="tracker-sync-btn">↻ Update from tracker</button>
-          <span style="font-size:12px;color:var(--text-light);margin-left:6px">
-            Pulls the date, end date, time and location from this event's row in the planning spreadsheet.
-            Won't touch anything else on this page.
-          </span>
-        </div>
-        <div style="display:flex;gap:14px;flex-wrap:wrap">
-          <div class="bo-blockfield"><label>Date</label>
-            <input type="date" id="event-date"></div>
-          <div class="bo-blockfield"><label>End date <span style="font-weight:400;color:var(--text-light)">(for multi-day events)</span></label>
-            <input type="date" id="event-enddate"></div>
-          <div class="bo-blockfield"><label>Start time</label>
-            <input type="time" id="event-time"></div>
-          <div class="bo-blockfield"><label>End time <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
-            <input type="time" id="event-endtime"></div>
-        </div>
-        <div class="bo-blockfield"><label>Location <span style="font-weight:400;color:var(--text-light)">— name and/or address; becomes a Google Maps link</span></label>
-          <input type="text" id="event-location" placeholder="Jefferson Elementary gym, 2 Sabre Lane, Schenectady NY"></div>
-        <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;margin:10px 0 0">
-          <input type="checkbox" id="hide-eventbox-cb"> Hide the date/time/location box at the top of this page
-        </label>
-        <div class="bo-blockfield" style="margin-top:10px">
-          <label>Flyer or main image <span style="font-weight:400;color:var(--text-light)">— shows big at the top of the page. JPG or PNG, up to 12 MB</span></label>
-          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-            <button type="button" class="bo-btn ghost sm" id="flyer-pick">Upload flyer or image</button>
-            <button type="button" class="bo-btn ghost sm" id="flyer-remove" style="display:none">Remove</button>
-            <span id="flyer-status" style="font-size:12px;color:var(--text-light)"></span>
-            <input type="file" id="flyer-input" accept="image/png,image/jpeg,image/webp" hidden>
-          </div>
-          <img id="flyer-thumb" style="display:none;max-width:180px;margin-top:8px;border-radius:8px;border:1px solid var(--border)">
-        </div>
-      </div>
-    </div>
-
-    <details style="margin:8px 0 4px;max-width:none" open>
-      <summary style="cursor:pointer;font-weight:700;font-size:13.5px;color:var(--text)">Homepage card</summary>
-      <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:10px">
-        <div class="bo-tip" style="margin-bottom:14px">
-          Every published page automatically gets a card on its school's homepage, so
-          you don't have to build it twice. Fill these in to control how the card looks;
-          leave them blank and sensible defaults are used.
-        </div>
-        <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;margin-bottom:12px">
-          <input type="checkbox" id="card-hide"> Don't show a card for this page on the homepage
-        </label>
-        <div style="display:flex;gap:14px;flex-wrap:wrap">
-          <div class="bo-blockfield" style="max-width:140px;position:relative"><label>Icon <span style="font-weight:400;color:var(--text-light)">— one emoji</span></label>
-            <div style="display:flex;gap:6px">
-              <input type="text" id="card-icon" placeholder="🎪" maxlength="4" style="width:56px;text-align:center;font-size:18px">
-              <button type="button" class="bo-btn ghost sm" id="emoji-pick-btn" aria-label="Choose an emoji" style="padding:6px 10px">😀</button>
-            </div>
-            <div id="emoji-picker" class="emoji-picker" hidden></div>
-          </div>
-          <div class="bo-blockfield" style="max-width:200px"><label>Badge</label>
-            <select id="card-badge-type">
-              <option value="active">Active</option>
-              <option value="coming">Coming soon</option>
-              <option value="past">Past event</option>
-            </select></div>
-          <div class="bo-blockfield" style="flex:1;min-width:200px"><label>Badge text <span style="font-weight:400;color:var(--text-light)">— optional override</span></label>
-            <input type="text" id="card-badge-text" placeholder="e.g. Sign up now"></div>
-        </div>
-        <div class="bo-blockfield">
-          <label>Card description <span style="font-weight:400;color:var(--text-light)">— shown on the card; leave blank to use the page title only</span></label>
-          <textarea id="card-desc" rows="2" placeholder="A short one- or two-sentence teaser"></textarea>
-        </div>
-      </div>
-    </details>
-
     <div class="bo-editor" style="margin-top:20px">
       <div>
+        <div class="bo-field" style="max-width:none">
+          <label>Page title <span class="bo-hint">Shows at the top of the page and in the browser tab. Example: "Jefferson Fun Run 2026".</span></label>
+          <input type="text" id="page-title" placeholder="Give your page a clear name">
+        </div>
+        <div class="bo-field" style="max-width:none">
+          <label>Which school(s) is this page for? <span class="bo-hint">Tick every school it belongs to. Pick two or more (including just "PTO-wide") and the page gets a shared address at schalmontpto.com/pto/&hellip; — leave every box unticked for no prefix at all, schalmontpto.com/&hellip;</span></label>
+          <div id="page-schools" style="display:flex;flex-wrap:wrap;gap:16px;margin-top:4px"></div>
+          <p id="page-schools-locked" style="font-size:12px;color:var(--text-light);margin:6px 0 0" hidden></p>
+          <label id="page-leftmenu-row" style="display:none;align-items:center;gap:8px;font-size:13.5px;margin-top:10px">
+            <input type="checkbox" id="page-leftmenu"> Show in the left (Browse) sidebar menu, under each ticked school
+          </label>
+        </div>
+        <div class="bo-field" style="max-width:none">
+          <label>Page link <span class="bo-hint">This is the web address. It's created from your title &mdash; you can shorten it. Lowercase letters and numbers only.</span></label>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span style="color:var(--text-light)">schalmontpto.com/<span id="slug-prefix">p/</span></span>
+            <input type="text" id="page-slug" style="max-width:280px" placeholder="funrun">
+          </div>
+        </div>
+        <div class="bo-field" style="max-width:none">
+          <label>Old links that redirect here <span class="bo-hint">If this page's link used to be something else, or an old/misspelled URL is floating around, add it here — anyone who visits the old address is sent straight to this page instead of seeing "Page not found."</span></label>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+            <span style="color:var(--text-light)">schalmontpto.com/<span id="redirect-prefix">p/</span></span>
+            <input type="text" id="redirect-input" style="max-width:280px" placeholder="oldlinkname">
+            <button type="button" class="bo-btn ghost sm" id="redirect-add-btn">+ Add redirect</button>
+          </div>
+          <div id="redirect-list" style="display:flex;flex-direction:column;gap:6px;max-width:460px"></div>
+        </div>
+        <div class="bo-field" style="max-width:none">
+          <label>Parent page <span class="bo-hint">Optional — nest this under another page, e.g. a "Volunteer Sign-Up" page under its main event page. The parent shows a link to every sub page it has, and this page shows a link back up to it.</span></label>
+          <select id="page-parent" style="max-width:380px"><option value="">— none, this is a top-level page —</option></select>
+        </div>
+
+        <div style="margin:8px 0 4px;max-width:none">
+          <label class="bo-modal-lbl" style="font-weight:700;font-size:13.5px;color:var(--text);margin-bottom:8px;display:block">Event details &amp; main image / flyer</label>
+          <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px">
+            <div class="bo-tip" style="margin-bottom:14px">
+              The date, time and location show in a highlighted box near the top of the page, and the
+              flyer appears as a big image above it.
+            </div>
+            <div id="tracker-sync-row" style="display:none;margin-bottom:12px">
+              <button type="button" class="bo-btn ghost sm" id="tracker-sync-btn">↻ Update from tracker</button>
+              <span style="font-size:12px;color:var(--text-light);margin-left:6px">
+                Pulls the date, end date, time and location from this event's row in the planning spreadsheet.
+                Won't touch anything else on this page.
+              </span>
+            </div>
+            <div style="display:flex;gap:14px;flex-wrap:wrap">
+              <div class="bo-blockfield"><label>Date</label>
+                <input type="date" id="event-date"></div>
+              <div class="bo-blockfield"><label>End date <span style="font-weight:400;color:var(--text-light)">(for multi-day events)</span></label>
+                <input type="date" id="event-enddate"></div>
+              <div class="bo-blockfield"><label>Start time</label>
+                <input type="time" id="event-time"></div>
+              <div class="bo-blockfield"><label>End time <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
+                <input type="time" id="event-endtime"></div>
+            </div>
+            <div class="bo-blockfield"><label>Location <span style="font-weight:400;color:var(--text-light)">— name and/or address; becomes a Google Maps link</span></label>
+              <input type="text" id="event-location" placeholder="Jefferson Elementary gym, 2 Sabre Lane, Schenectady NY"></div>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;margin:10px 0 0">
+              <input type="checkbox" id="hide-eventbox-cb"> Hide the date/time/location box at the top of this page
+            </label>
+            <div class="bo-blockfield" style="margin-top:10px">
+              <label>Flyer or main image <span style="font-weight:400;color:var(--text-light)">— shows big at the top of the page. JPG or PNG, up to 12 MB</span></label>
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                <button type="button" class="bo-btn ghost sm" id="flyer-pick">Upload flyer or image</button>
+                <button type="button" class="bo-btn ghost sm" id="flyer-remove" style="display:none">Remove</button>
+                <span id="flyer-status" style="font-size:12px;color:var(--text-light)"></span>
+                <input type="file" id="flyer-input" accept="image/png,image/jpeg,image/webp" hidden>
+              </div>
+              <img id="flyer-thumb" style="display:none;max-width:180px;margin-top:8px;border-radius:8px;border:1px solid var(--border)">
+            </div>
+          </div>
+        </div>
+
+        <details style="margin:8px 0 4px;max-width:none" open>
+          <summary style="cursor:pointer;font-weight:700;font-size:13.5px;color:var(--text)">Homepage card</summary>
+          <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:10px">
+            <div class="bo-tip" style="margin-bottom:14px">
+              Every published page automatically gets a card on its school's homepage, so
+              you don't have to build it twice. Fill these in to control how the card looks;
+              leave them blank and sensible defaults are used.
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;margin-bottom:12px">
+              <input type="checkbox" id="card-hide"> Don't show a card for this page on the homepage
+            </label>
+            <div style="display:flex;gap:14px;flex-wrap:wrap">
+              <div class="bo-blockfield" style="max-width:140px;position:relative"><label>Icon <span style="font-weight:400;color:var(--text-light)">— one emoji</span></label>
+                <div style="display:flex;gap:6px">
+                  <input type="text" id="card-icon" placeholder="🎪" maxlength="4" style="width:56px;text-align:center;font-size:18px">
+                  <button type="button" class="bo-btn ghost sm" id="emoji-pick-btn" aria-label="Choose an emoji" style="padding:6px 10px">😀</button>
+                </div>
+                <div id="emoji-picker" class="emoji-picker" hidden></div>
+              </div>
+              <div class="bo-blockfield" style="max-width:200px"><label>Badge</label>
+                <select id="card-badge-type">
+                  <option value="active">Active</option>
+                  <option value="coming">Coming soon</option>
+                  <option value="past">Past event</option>
+                </select></div>
+              <div class="bo-blockfield" style="flex:1;min-width:200px"><label>Badge text <span style="font-weight:400;color:var(--text-light)">— optional override</span></label>
+                <input type="text" id="card-badge-text" placeholder="e.g. Sign up now"></div>
+            </div>
+            <div class="bo-blockfield">
+              <label>Card description <span style="font-weight:400;color:var(--text-light)">— shown on the card; leave blank to use the page title only</span></label>
+              <textarea id="card-desc" rows="2" placeholder="A short one- or two-sentence teaser"></textarea>
+            </div>
+          </div>
+        </details>
+
+        <div style="margin:8px 0 4px;max-width:none" id="facility-card-section" hidden>
+          <label class="bo-modal-lbl" style="font-weight:700;font-size:13.5px;color:var(--text);margin-bottom:8px;display:block">Facility use request</label>
+          <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px">
+            <div class="bo-tip" style="margin-bottom:12px">
+              Reserving school space for this event? New York requires a signed Certificate of
+              Liability on the district's own facility-use form before the space is booked. This
+              is a reminder for whoever is building the page — visitors never see it.
+            </div>
+            <a href="https://www.schalmont.org/wp-content/uploads/2023/03/Schalmont_Facilities_Use_Request_Form.pdf" target="_blank" rel="noopener" class="bo-btn ghost sm">📋 Request Facility Use (District Form) →</a>
+          </div>
+        </div>
+
         <div class="bo-preview-label">Building blocks</div>
         <div class="bo-blocks" id="blocks"></div>
         <div class="bo-addbar">
@@ -267,6 +279,7 @@
       if (page.category === 'events') {
         document.getElementById('page-leftmenu-row').style.display = 'flex';
         document.getElementById('page-leftmenu').checked = page.showInLeftMenu === true;
+        document.getElementById('facility-card-section').hidden = false;
       }
       document.getElementById('hide-eventbox-cb').checked = page.hideEventBox === true;
       document.getElementById('event-date').value = page.eventDate || '';
@@ -836,6 +849,41 @@
       return field('Button color', 'optional — overrides the default green', wrap);
     }
 
+    // A small rich-text field for a heading's text -- Bold/Italic always (safe inside any
+    // <h1>-<h3>); Bullet/Numbered list only when opts.allowLists (a real heading tag can't
+    // legally contain a <ul>/<ol>, so lists only unlock once the heading is set to render
+    // as a "Paragraph"-style div -- see the Style dropdown next to this field). Sanitized
+    // via the same sanitizeRichText() the public page renders with, so what's typed here
+    // is always exactly what will show up live.
+    function richTextField(initialHtml, onChange, opts) {
+      opts = opts || {};
+      const wrap = document.createElement('div');
+      const ed = document.createElement('div');
+      const clean = () => {
+        const sanitized = sanitizeRichText(ed.innerHTML, !opts.allowLists);
+        if (sanitized !== ed.innerHTML) ed.innerHTML = sanitized;
+        onChange(sanitized);
+      };
+      const bar = document.createElement('div');
+      bar.className = 'bo-richtext-bar';
+      const mkBtn = (label, title, cmd) => {
+        const btn = document.createElement('button');
+        btn.type = 'button'; btn.title = title; btn.textContent = label;
+        btn.onmousedown = (e) => e.preventDefault(); // keep the selection in the editable area
+        btn.onclick = () => { ed.focus(); document.execCommand(cmd); clean(); };
+        return btn;
+      };
+      bar.append(mkBtn('B', 'Bold', 'bold'), mkBtn('I', 'Italic', 'italic'));
+      if (opts.allowLists) bar.append(mkBtn('•', 'Bullet list', 'insertUnorderedList'), mkBtn('1.', 'Numbered list', 'insertOrderedList'));
+      ed.contentEditable = 'true';
+      ed.className = 'bo-richtext';
+      ed.innerHTML = sanitizeRichText(initialHtml || '', !opts.allowLists);
+      ed.oninput = clean;
+      ed.onblur = clean;
+      wrap.append(bar, ed);
+      return wrap;
+    }
+
     // A cell inside a Row of Columns holds its own small stack of blocks -- every
     // block type the page itself can have (including a sign-up sheet or an embed),
     // except another Row of Columns, to avoid a grid nested inside a grid.
@@ -851,7 +899,15 @@
         el.oninput = () => oninput(el.value);
         return el;
       };
-      if (cb.type === 'heading') out.push(mkInput('Heading text', cb.text, v => { cb.text = v; upd(); }));
+      if (cb.type === 'heading') {
+        const sel = document.createElement('select');
+        sel.style.cssText = 'width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:12.5px;margin-bottom:4px';
+        sel.innerHTML = '<option value="1">Big</option><option value="2">Medium</option><option value="3">Small</option><option value="p">Paragraph style</option>';
+        sel.value = cb.level === 'p' ? 'p' : (cb.level || 3);
+        sel.onchange = () => { cb.level = sel.value === 'p' ? 'p' : +sel.value; upd(); if (redrawCell) redrawCell(); };
+        out.push(sel);
+        out.push(richTextField(cb.text, v => { cb.text = v; upd(); }, { allowLists: cb.level === 'p' }));
+      }
       else if (cb.type === 'paragraph') out.push(mkInput('Text', cb.text, v => { cb.text = v; upd(); }, true));
       else if (cb.type === 'image') {
         const urlInp = mkInput('Upload below, pick a saved photo, or paste a link', cb.url, v => { cb.url = v; upd(); });
@@ -1078,13 +1134,11 @@
       const upd = () => refreshPreview();
       if (b.type === 'heading') {
         const sel = document.createElement('select');
-        sel.innerHTML = '<option value="1">Big (page title)</option><option value="2">Medium (section)</option><option value="3">Small</option>';
-        sel.value = b.level || 2;
-        sel.onchange = () => { b.level = +sel.value; upd(); };
-        const inp = document.createElement('input');
-        inp.type = 'text'; inp.value = b.text || ''; inp.placeholder = 'Heading text';
-        inp.oninput = () => { b.text = inp.value; upd(); };
-        out.push(field('Size','', sel), field('Text','', inp), alignField(b, upd));
+        sel.innerHTML = '<option value="1">Big (page title)</option><option value="2">Medium (section)</option><option value="3">Small</option><option value="p">Paragraph style — normal body text, with bullets/numbered lists</option>';
+        sel.value = b.level === 'p' ? 'p' : (b.level || 2);
+        sel.onchange = () => { b.level = sel.value === 'p' ? 'p' : +sel.value; upd(); renderBlockEditors(); };
+        const rich = richTextField(b.text, v => { b.text = v; upd(); }, { allowLists: b.level === 'p' });
+        out.push(field('Size / style','', sel), field('Text','', rich), alignField(b, upd));
       }
       else if (b.type === 'paragraph') {
         const ta = document.createElement('textarea');
@@ -1259,7 +1313,7 @@
     function refreshPreview() {
       const titleHtml = page.title ? `<h1>${esc(page.title)}</h1>` : '';
       document.getElementById('preview').innerHTML =
-        renderFacilityNotice(page) + titleHtml + renderPageHeader(page) + renderBlocks(page.blocks);
+        titleHtml + renderPageHeader(page) + renderBlocks(page.blocks);
       // Debounced so typing elsewhere on the page doesn't re-fetch every sign-up
       // sheet on every keystroke -- only once things settle down for a moment.
       clearTimeout(signupMountTimer);

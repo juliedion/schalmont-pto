@@ -30,11 +30,45 @@
     return (b.align === 'center' || b.align === 'right') ? ` style="text-align:${b.align}"` : '';
   }
 
+  // A heading block's text can carry light formatting (bold/italic always; bullet and
+  // numbered lists only when it's rendered as a "Paragraph"-style div, since a real
+  // <h1>-<h3> can't legally contain a <ul>/<ol>). Only ever keeps this small safe set of
+  // tags and strips every attribute, so admin-authored formatting can never carry a
+  // script, style or event handler onto the public page -- used both when the editor
+  // cleans up what was typed and when the public page renders it.
+  const RICH_INLINE_TAGS = { B: 1, STRONG: 1, I: 1, EM: 1, U: 1, BR: 1 };
+  const RICH_BLOCK_TAGS = { UL: 1, OL: 1, LI: 1 };
+  function sanitizeRichText(html, inlineOnly) {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = String(html == null ? '' : html);
+    (function clean(node) {
+      [...node.childNodes].forEach(child => {
+        if (child.nodeType === 1) {
+          const allowed = RICH_INLINE_TAGS[child.tagName] || (!inlineOnly && RICH_BLOCK_TAGS[child.tagName]);
+          if (!allowed) {
+            while (child.firstChild) node.insertBefore(child.firstChild, child);
+            if (inlineOnly && child.tagName === 'LI') node.insertBefore(document.createElement('br'), child);
+            node.removeChild(child);
+            return;
+          }
+          [...child.attributes].forEach(a => child.removeAttribute(a.name));
+          clean(child);
+        } else if (child.nodeType !== 3) {
+          node.removeChild(child);
+        }
+      });
+    })(tmp);
+    return tmp.innerHTML;
+  }
+  global.sanitizeRichText = sanitizeRichText;
+
   function renderBlock(b) {
     switch (b.type) {
       case 'heading': {
-        const lvl = b.level === 3 ? 'h3' : b.level === 1 ? 'h1' : 'h2';
-        return `<${lvl}${alignStyle(b)}>${e(b.text)}</${lvl}>`;
+        const isPara = b.level === 'p';
+        const lvl = isPara ? 'div' : (b.level === 3 ? 'h3' : b.level === 1 ? 'h1' : 'h2');
+        const cls = isPara ? ' class="pg-richtext"' : '';
+        return `<${lvl}${cls}${alignStyle(b)}>${sanitizeRichText(b.text, !isPara)}</${lvl}>`;
       }
       case 'paragraph':
         return e(b.text).split(/\n{2,}/).map(p =>
@@ -136,20 +170,6 @@
     h = h % 12 || 12;
     return `${h}:${m} ${ap}`;
   }
-
-  /* The internal reminder to file the district's official facility-use PDF -- not a
-     website form, since that process legally requires a wet signature and a submitted
-     Certificate of Liability reviewed by the district itself. Shown only in the page
-     editor's own live preview (never on the real public page -- it's a note for
-     whoever is building the page, not visitors), and shown ABOVE the page title so it
-     can't be missed. Kept separate from renderPageHeader() so the caller controls
-     where it lands relative to the title. */
-  global.renderFacilityNotice = function (page) {
-    if (page.category !== 'events') return '';
-    return `<div class="pg-facility-request">
-      <a href="https://www.schalmont.org/wp-content/uploads/2023/03/Schalmont_Facilities_Use_Request_Form.pdf" target="_blank" rel="noopener" class="pg-btn outline">📋 Request Facility Use (District Form) →</a>
-    </div>`;
-  };
 
   /* Flyer image + event date/time/location card, shown above the blocks. */
   global.renderPageHeader = function (page) {
