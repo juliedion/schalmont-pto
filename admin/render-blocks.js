@@ -30,28 +30,57 @@
     return (b.align === 'center' || b.align === 'right') ? ` style="text-align:${b.align}"` : '';
   }
 
-  // A heading block's text can carry light formatting (bold/italic always; bullet and
-  // numbered lists only when it's rendered as a "Paragraph"-style div, since a real
-  // <h1>-<h3> can't legally contain a <ul>/<ol>). Only ever keeps this small safe set of
-  // tags and strips every attribute, so admin-authored formatting can never carry a
-  // script, style or event handler onto the public page -- used both when the editor
-  // cleans up what was typed and when the public page renders it.
-  const RICH_INLINE_TAGS = { B: 1, STRONG: 1, I: 1, EM: 1, U: 1, BR: 1 };
+  // A heading/subhead's text can carry light formatting (bold/italic/underline/font-size
+  // always; bullet and numbered lists only when it's rendered as a "Paragraph"-style div,
+  // since a real <h1>-<h3> can't legally contain a <ul>/<ol>). Only ever keeps this small
+  // safe set of tags, and on SPAN only a font-size style -- strips every other attribute,
+  // so admin-authored formatting can never carry a script, style or event handler onto
+  // the public page. Used both when the editor cleans up what was typed and when the
+  // public page renders it.
+  const RICH_INLINE_TAGS = { B: 1, STRONG: 1, I: 1, EM: 1, U: 1, BR: 1, SPAN: 1 };
   const RICH_BLOCK_TAGS = { UL: 1, OL: 1, LI: 1 };
+  // Tags a contenteditable region commonly wraps a new line in (Chrome/Firefox/Safari
+  // all differ here) -- in inline-only mode (a real <h1>-<h3>, which can't legally
+  // contain block children) these get unwrapped like anything else disallowed, but
+  // unlike a plain stray wrapper, a <br> has to go in their place or the line break
+  // itself silently disappears along with the tag.
+  const LINE_WRAPPER_TAGS = { DIV: 1, P: 1, LI: 1 };
+  // execCommand('fontSize', ...) (the editor's font-size picker) writes legacy
+  // <font size="N">, 1-7 -- normalize to a span with an actual pixel size.
+  const FONT_SIZE_PX = { '1': '10px', '2': '13px', '3': '16px', '4': '18px', '5': '24px', '6': '32px', '7': '48px' };
   function sanitizeRichText(html, inlineOnly) {
     const tmp = document.createElement('div');
     tmp.innerHTML = String(html == null ? '' : html);
+    [...tmp.querySelectorAll('font')].forEach(f => {
+      const span = document.createElement('span');
+      const px = FONT_SIZE_PX[f.getAttribute('size')];
+      if (px) span.style.fontSize = px;
+      while (f.firstChild) span.appendChild(f.firstChild);
+      f.parentNode.replaceChild(span, f);
+    });
     (function clean(node) {
       [...node.childNodes].forEach(child => {
         if (child.nodeType === 1) {
           const allowed = RICH_INLINE_TAGS[child.tagName] || (!inlineOnly && RICH_BLOCK_TAGS[child.tagName]);
           if (!allowed) {
+            // A line-wrapper tag (a contenteditable's own "new line" element -- which
+            // browser differs) means "start a new line here", so its promoted content
+            // needs a <br> right before it to keep that line break -- unless it's the
+            // very first thing in the field, where there's nothing to break away from.
+            const needsBreak = inlineOnly && LINE_WRAPPER_TAGS[child.tagName] && child.previousSibling;
+            const first = child.firstChild;
             while (child.firstChild) node.insertBefore(child.firstChild, child);
-            if (inlineOnly && child.tagName === 'LI') node.insertBefore(document.createElement('br'), child);
+            if (needsBreak) node.insertBefore(document.createElement('br'), first || child);
             node.removeChild(child);
             return;
           }
-          [...child.attributes].forEach(a => child.removeAttribute(a.name));
+          if (child.tagName === 'SPAN') {
+            const m = /font-size\s*:\s*([\d.]+(?:px|em|%))/i.exec(child.getAttribute('style') || '');
+            [...child.attributes].forEach(a => child.removeAttribute(a.name));
+            if (m) child.setAttribute('style', 'font-size:' + m[1]);
+          } else {
+            [...child.attributes].forEach(a => child.removeAttribute(a.name));
+          }
           clean(child);
         } else if (child.nodeType !== 3) {
           node.removeChild(child);
@@ -76,11 +105,24 @@
       case 'list':
         return '<ul>' + (b.items || []).filter(Boolean)
           .map(i => `<li>${e(i)}</li>`).join('') + '</ul>';
-      case 'image':
+      case 'image': {
+        // Small/medium cap how wide the image can get; large (and no size set at all,
+        // for every image already on the site before this existed) is the original
+        // unbounded "fill the content column" behavior.
+        const sizeCap = { sm: '240px', md: '420px' }[b.size];
+        const img = `<img src="${e(b.url)}" alt="${e(b.alt || '')}" style="max-width:100%${sizeCap ? ';width:' + sizeCap : ''}">`;
+        // A QR code or flyer image often needs to actually go somewhere when tapped --
+        // same safe-link rule as a button, works identically on desktop/tablet/mobile
+        // since it's just a normal anchor around the image, nothing device-specific.
+        const href = /^https?:|^mailto:|^\//.test(b.href || '') ? b.href : '';
+        const picture = href
+          ? `<a href="${e(href)}"${/^https?:/.test(href) ? ' target="_blank" rel="noopener"' : ''}>${img}</a>`
+          : img;
         return `<figure style="margin:0">
-                  <img src="${e(b.url)}" alt="${e(b.alt || '')}" style="max-width:100%">
+                  ${picture}
                   ${b.caption ? `<figcaption class="pg-caption">${e(b.caption)}</figcaption>` : ''}
                 </figure>`;
+      }
       case 'button': {
         let cls = 'pg-btn';
         if (b.style === 'outline') cls += ' outline';

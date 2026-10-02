@@ -85,7 +85,7 @@ body.bo-has-shell {
 .bo-tip {
   background: #eef6ec; border: 1px solid #cfe6c8; border-radius: var(--radius);
   padding: 13px 15px; font-size: 13.5px; color: #2f5d34; line-height: 1.6;
-  margin: 0 0 22px; max-width: 70ch;
+  margin: 0 0 22px;
 }
 .bo-tip strong { color: var(--primary-dark); }
 
@@ -147,33 +147,39 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
      tablet  (861-1200px):    8 columns
      mobile  (<=860px):       4 columns
    A column-span child declares `grid-column: span N` for whichever breakpoint it's in
-   (see .bo-tools-col below for the pattern: 3 of 12, 2 of 8, 1 of 4 -- always the same
-   ~25% share). checkGridLayout() in admin-core.js watches that a grid's children's
-   spans add up to the current breakpoint's total and puts up a loud on-page warning if
-   a future change ever breaks that math, instead of silently shipping a gap or overflow. */
+   (see .bo-tools-col below for the pattern: 6 of 12, 4 of 8, 1 of 4). checkGridLayout()
+   in admin-core.js watches that a grid's children's spans add up to the current
+   breakpoint's total and puts up a loud on-page warning if a future change ever breaks
+   that math, instead of silently shipping a gap or overflow. */
 .bo-editor { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; align-items: start; }
-.bo-editor > :last-child { grid-column: span 9; }
+.bo-editor > :last-child { grid-column: span 6; }
 @media (max-width: 1200px) {
   .bo-editor { grid-template-columns: repeat(8, 1fr); }
-  .bo-editor > :last-child { grid-column: span 6; }
+  .bo-editor > :last-child { grid-column: span 4; }
 }
 @media (max-width: 860px) {
   .bo-editor { grid-template-columns: repeat(4, 1fr); gap: 14px; }
   .bo-editor > :last-child { grid-column: span 3; }
 }
-/* Tools column: 3 of 12 (desktop) / 2 of 8 (tablet) / 1 of 4 (mobile) -- a steady ~25%
-   share of the grid at every breakpoint. Pinned to the viewport and scrolls on its own
+/* Tools column: 6 of 12 (desktop) / 4 of 8 (tablet) / 1 of 4 (mobile) -- wide enough on
+   desktop/tablet to lay its own fields out in two side-by-side columns (see the
+   .bo-tools-col > * rule below); short fields pair up automatically, and anything too
+   wide to share a row (checkbox rows, the event-details box, the homepage-card panel)
+   opts out with the .bo-tools-full class. Pinned to the viewport and scrolls on its own
    once its content runs taller than the visible height, while the preview column scrolls
    normally with the rest of the page -- so you can keep editing without losing your
    place in a long block list, while the preview moves past as you scroll like anything
    else on the page. */
 .bo-tools-col {
-  grid-column: span 3;
+  grid-column: span 6;
   position: sticky; top: 20px; align-self: start;
   max-height: calc(100vh - 40px); overflow-y: auto; padding-right: 4px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; align-content: start;
 }
-@media (max-width: 1200px) { .bo-tools-col { grid-column: span 2; } }
-@media (max-width: 860px) { .bo-tools-col { grid-column: span 1; } }
+.bo-tools-col > * { min-width: 0; }
+.bo-tools-full { grid-column: 1 / -1; }
+@media (max-width: 1200px) { .bo-tools-col { grid-column: span 4; } }
+@media (max-width: 860px) { .bo-tools-col { grid-column: span 1; display: block; } }
 .bo-richtext-bar { display: flex; gap: 4px; margin-bottom: 4px; }
 .bo-richtext-bar button {
   border: 1px solid var(--border); background: #fff; border-radius: 4px; cursor: pointer;

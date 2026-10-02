@@ -76,6 +76,13 @@
           <input type="text" id="page-title" placeholder="Give your page a clear name">
         </div>
         <div class="bo-field" style="max-width:none">
+          <label>Page link <span class="bo-hint">This is the web address. It's created from your title &mdash; you can shorten it. Lowercase letters and numbers only.</span></label>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span style="color:var(--text-light)">schalmontpto.com/<span id="slug-prefix">p/</span></span>
+            <input type="text" id="page-slug" style="max-width:280px" placeholder="funrun">
+          </div>
+        </div>
+        <div class="bo-field bo-tools-full" style="max-width:none">
           <label>Which school(s) is this page for? <span class="bo-hint">Tick every school it belongs to. Pick two or more (including just "PTO-wide") and the page gets a shared address at schalmontpto.com/pto/&hellip; — leave every box unticked for no prefix at all, schalmontpto.com/&hellip;</span></label>
           <div id="page-schools" style="display:flex;flex-wrap:wrap;gap:16px;margin-top:4px"></div>
           <p id="page-schools-locked" style="font-size:12px;color:var(--text-light);margin:6px 0 0" hidden></p>
@@ -84,13 +91,10 @@
           </label>
         </div>
         <div class="bo-field" style="max-width:none">
-          <label>Page link <span class="bo-hint">This is the web address. It's created from your title &mdash; you can shorten it. Lowercase letters and numbers only.</span></label>
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-            <span style="color:var(--text-light)">schalmontpto.com/<span id="slug-prefix">p/</span></span>
-            <input type="text" id="page-slug" style="max-width:280px" placeholder="funrun">
-          </div>
+          <label>Parent page <span class="bo-hint">Optional — nest this under another page, e.g. a "Volunteer Sign-Up" page under its main event page. The parent shows a link to every sub page it has, and this page shows a link back up to it.</span></label>
+          <select id="page-parent" style="max-width:380px"><option value="">— none, this is a top-level page —</option></select>
         </div>
-        <div class="bo-field" style="max-width:none">
+        <div class="bo-field bo-tools-full" style="max-width:none">
           <label>Old links that redirect here <span class="bo-hint">If this page's link used to be something else, or an old/misspelled URL is floating around, add it here — anyone who visits the old address is sent straight to this page instead of seeing "Page not found."</span></label>
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px">
             <span style="color:var(--text-light)">schalmontpto.com/<span id="redirect-prefix">p/</span></span>
@@ -99,17 +103,14 @@
           </div>
           <div id="redirect-list" style="display:flex;flex-direction:column;gap:6px;max-width:460px"></div>
         </div>
-        <div class="bo-field" style="max-width:none">
-          <label>Parent page <span class="bo-hint">Optional — nest this under another page, e.g. a "Volunteer Sign-Up" page under its main event page. The parent shows a link to every sub page it has, and this page shows a link back up to it.</span></label>
-          <select id="page-parent" style="max-width:380px"><option value="">— none, this is a top-level page —</option></select>
-        </div>
 
-        <div style="margin:8px 0 4px;max-width:none">
-          <label class="bo-modal-lbl" style="font-weight:700;font-size:13.5px;color:var(--text);margin-bottom:8px;display:block">Event details &amp; main image / flyer</label>
+        <div class="bo-tools-full" style="margin:8px 0 4px;max-width:none">
+          <label class="bo-modal-lbl" style="font-weight:700;font-size:13.5px;color:var(--text);margin-bottom:8px;display:block">Event details</label>
           <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px">
             <div class="bo-tip" style="margin-bottom:14px">
-              The date, time and location show in a highlighted box near the top of the page, and the
-              flyer appears as a big image above it.
+              The date, time and location show in a highlighted box near the top of the page. For a
+              flyer or main image, add a <strong>＋ Photo</strong> block below instead — it can go
+              anywhere on the page, not just the very top.
             </div>
             <div id="tracker-sync-row" style="display:none;margin-bottom:12px">
               <button type="button" class="bo-btn ghost sm" id="tracker-sync-btn">↻ Update from tracker</button>
@@ -133,20 +134,10 @@
             <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;margin:10px 0 0">
               <input type="checkbox" id="hide-eventbox-cb"> Hide the date/time/location box at the top of this page
             </label>
-            <div class="bo-blockfield" style="margin-top:10px">
-              <label>Flyer or main image <span style="font-weight:400;color:var(--text-light)">— shows big at the top of the page. JPG or PNG, up to 12 MB</span></label>
-              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-                <button type="button" class="bo-btn ghost sm" id="flyer-pick">Upload flyer or image</button>
-                <button type="button" class="bo-btn ghost sm" id="flyer-remove" style="display:none">Remove</button>
-                <span id="flyer-status" style="font-size:12px;color:var(--text-light)"></span>
-                <input type="file" id="flyer-input" accept="image/png,image/jpeg,image/webp" hidden>
-              </div>
-              <img id="flyer-thumb" style="display:none;max-width:180px;margin-top:8px;border-radius:8px;border:1px solid var(--border)">
-            </div>
           </div>
         </div>
 
-        <details style="margin:8px 0 4px;max-width:none" open>
+        <details class="bo-tools-full" style="margin:8px 0 4px;max-width:none" open>
           <summary style="cursor:pointer;font-weight:700;font-size:13.5px;color:var(--text)">Homepage card</summary>
           <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:10px">
             <div class="bo-tip" style="margin-bottom:14px">
@@ -181,7 +172,7 @@
           </div>
         </details>
 
-        <div style="margin:8px 0 4px;max-width:none" id="facility-card-section" hidden>
+        <div class="bo-tools-full" style="margin:8px 0 4px;max-width:none" id="facility-card-section" hidden>
           <label class="bo-modal-lbl" style="font-weight:700;font-size:13.5px;color:var(--text);margin-bottom:8px;display:block">Facility use request</label>
           <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px">
             <div class="bo-tip" style="margin-bottom:12px">
@@ -193,9 +184,9 @@
           </div>
         </div>
 
-        <div class="bo-preview-label">Building blocks</div>
-        <div class="bo-blocks" id="blocks"></div>
-        <div class="bo-addbar">
+        <div class="bo-preview-label bo-tools-full">Building blocks</div>
+        <div class="bo-blocks bo-tools-full" id="blocks"></div>
+        <div class="bo-addbar bo-tools-full">
           <button data-add="heading">＋ Heading</button>
           <button data-add="paragraph">＋ Paragraph</button>
           <button data-add="list">＋ Bullet list</button>
@@ -206,7 +197,7 @@
           <button data-add="divider">＋ Divider line</button>
           <button data-add="embed">＋ Embed (Google Form, video&hellip;)</button>
         </div>
-        <div class="bo-tip" style="margin-top:18px">
+        <div class="bo-tip bo-tools-full" style="margin-top:18px">
           <strong>Want a sign-up sheet?</strong> Use the built-in
           <a href="signups.html" target="_blank">Sign-Up Sheets</a> tool &mdash; set dates, time
           slots and spot limits, then either share its public link or add an <strong>Embed</strong>
@@ -297,7 +288,6 @@
       document.getElementById('event-time').value = page.eventTime || '';
       document.getElementById('event-endtime').value = page.eventEndTime || '';
       document.getElementById('event-location').value = page.eventLocation || '';
-      showFlyer();
       if (page.slug) slugTouched = true;
       if (!page.blocks || !page.blocks.length) page.blocks = [{ type:'heading', level:1, text:'' }];
 
@@ -562,16 +552,6 @@
       return String(s).toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/[\s-]+/g, '-').slice(0, 60);
     }
 
-    function showFlyer() {
-      const thumb = document.getElementById('flyer-thumb');
-      const rm = document.getElementById('flyer-remove');
-      if (page.flyerUrl) {
-        thumb.src = page.flyerUrl; thumb.style.display = ''; rm.style.display = '';
-      } else {
-        thumb.style.display = 'none'; rm.style.display = 'none';
-      }
-    }
-
     async function uploadImage(file) {
       const fd = new FormData();
       // The upload endpoint only knows the 5 real school folders -- a page with no
@@ -618,22 +598,6 @@
       et.oninput = () => { page.eventTime = et.value; refreshPreview(); };
       eet.oninput = () => { page.eventEndTime = eet.value; refreshPreview(); };
       el.oninput = () => { page.eventLocation = el.value.trim(); refreshPreview(); };
-
-      const fpick = document.getElementById('flyer-pick'), finput = document.getElementById('flyer-input'),
-            fstat = document.getElementById('flyer-status');
-      fpick.onclick = () => finput.click();
-      finput.onchange = async () => {
-        if (!finput.files[0]) return;
-        fstat.textContent = 'Uploading…';
-        try {
-          page.flyerUrl = await uploadImage(finput.files[0]);
-          fstat.textContent = ''; showFlyer(); refreshPreview();
-        } catch (e) { fstat.textContent = e.message; }
-        finput.value = '';
-      };
-      document.getElementById('flyer-remove').onclick = () => {
-        page.flyerUrl = ''; showFlyer(); refreshPreview();
-      };
 
       document.getElementById('preview-btn').onclick = (e) => {
         e.preventDefault();
@@ -746,7 +710,9 @@
       page.blocks.forEach((b, i) => {
         const box = document.createElement('div');
         box.className = 'bo-block';
-        box.draggable = true;
+        // Only draggable while the ⠿ handle is held down -- otherwise dragging to
+        // select text in a paragraph/heading field drags the whole block instead.
+        box.draggable = false;
         box.dataset.i = i;
         box.innerHTML = `
           <div class="bo-block-head">
@@ -755,6 +721,7 @@
             ${b.type !== 'columns' ? '<button data-split title="Turn this into a row of columns, keeping this block as the first column">⊞ Split into Columns</button>' : '<button data-ungroup title="Undo the columns -- puts every block from every column back as normal, one after another">↩ Ungroup Columns</button>'}
             <button data-mv="-1" title="Move up">▲</button>
             <button data-mv="1" title="Move down">▼</button>
+            <button data-dup title="Duplicate this block">⧉</button>
             <button data-rm title="Delete this block">✕</button>
           </div>
           <div class="bo-block-body"></div>`;
@@ -783,6 +750,11 @@
         }
         box.querySelector('[data-mv="-1"]').onclick = () => move(i, -1);
         box.querySelector('[data-mv="1"]').onclick = () => move(i, 1);
+        box.querySelector('[data-dup]').onclick = () => {
+          const copy = JSON.parse(JSON.stringify(b));
+          page.blocks.splice(i + 1, 0, copy);
+          renderBlockEditors(); refreshPreview();
+        };
         box.querySelector('[data-rm]').onclick = () => {
           if (confirm('Delete this block?')) { page.blocks.splice(i,1); renderBlockEditors(); refreshPreview(); }
         };
@@ -797,12 +769,17 @@
     function wireBlockDrag(wrap) {
       let dragI = null;
       wrap.querySelectorAll('.bo-block').forEach(box => {
+        const handle = box.querySelector('.bo-block-drag');
+        if (handle) {
+          handle.addEventListener('mousedown', () => { box.draggable = true; });
+          handle.addEventListener('mouseup', () => { box.draggable = false; });
+        }
         box.addEventListener('dragstart', (ev) => {
           dragI = +box.dataset.i;
           box.classList.add('dragging');
           ev.dataTransfer.effectAllowed = 'move';
         });
-        box.addEventListener('dragend', () => { box.classList.remove('dragging'); dragI = null; });
+        box.addEventListener('dragend', () => { box.classList.remove('dragging'); box.draggable = false; dragI = null; });
         box.addEventListener('dragover', (ev) => {
           ev.preventDefault();
           ev.dataTransfer.dropEffect = 'move';
@@ -889,8 +866,30 @@
         btn.onclick = () => { ed.focus(); document.execCommand(cmd); clean(); };
         return btn;
       };
-      bar.append(mkBtn('B', 'Bold', 'bold'), mkBtn('I', 'Italic', 'italic'));
+      bar.append(mkBtn('B', 'Bold', 'bold'), mkBtn('I', 'Italic', 'italic'), mkBtn('U', 'Underline', 'underline'));
       if (opts.allowLists) bar.append(mkBtn('•', 'Bullet list', 'insertUnorderedList'), mkBtn('1.', 'Numbered list', 'insertOrderedList'));
+      // A <select> can't use the button trick above (picking an option always moves
+      // focus/selection off the editable area first) -- track the last real selection
+      // inside it instead, and restore that exact range right before applying the size.
+      let savedRange = null;
+      const saveSel = () => {
+        const sel = window.getSelection();
+        if (sel.rangeCount && ed.contains(sel.anchorNode)) savedRange = sel.getRangeAt(0).cloneRange();
+      };
+      ed.addEventListener('mouseup', saveSel);
+      ed.addEventListener('keyup', saveSel);
+      const sizeSel = document.createElement('select');
+      sizeSel.title = 'Font size';
+      ['Size…', 'Small', 'Normal', 'Large', 'X-Large'].forEach((label, i) => {
+        sizeSel.add(new Option(label, i ? [2, 3, 5, 6][i - 1] : ''));
+      });
+      sizeSel.onchange = () => {
+        if (!sizeSel.value) return;
+        if (savedRange) { const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(savedRange); }
+        ed.focus(); document.execCommand('fontSize', false, sizeSel.value); clean();
+        sizeSel.value = '';
+      };
+      bar.append(sizeSel);
       ed.contentEditable = 'true';
       ed.className = 'bo-richtext';
       ed.innerHTML = sanitizeRichText(initialHtml || '', !opts.allowLists);
@@ -971,6 +970,13 @@
         }
 
         out.push(mkInput('Alt text (optional)', cb.alt, v => { cb.alt = v; upd(); }));
+        const cellImgSize = document.createElement('select');
+        cellImgSize.style.cssText = 'width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:12.5px;margin-bottom:4px';
+        cellImgSize.innerHTML = '<option value="">Large — fills the column</option><option value="md">Medium</option><option value="sm">Small</option>';
+        cellImgSize.value = cb.size === 'sm' || cb.size === 'md' ? cb.size : '';
+        cellImgSize.onchange = () => { cb.size = cellImgSize.value; upd(); };
+        out.push(cellImgSize);
+        out.push(mkInput('Link (optional) — makes the photo clickable', cb.href, v => { cb.href = v; upd(); }));
       } else if (cb.type === 'button') {
         out.push(mkInput('Button text', cb.label, v => { cb.label = v; upd(); }));
         out.push(mkInput('Link (https://… or /jefferson/page)', cb.href, v => { cb.href = v; upd(); }));
@@ -1205,11 +1211,20 @@
         const cap = document.createElement('input');
         cap.type='text'; cap.value=b.caption||''; cap.placeholder='Optional caption shown under the photo';
         cap.oninput = () => { b.caption = cap.value; upd(); };
+        const linkInp = document.createElement('input');
+        linkInp.type='text'; linkInp.value=b.href||''; linkInp.placeholder='https://…  (or /jes/another-page) — makes the whole photo clickable';
+        linkInp.oninput = () => { b.href = linkInp.value; upd(); };
+        const sizeSel = document.createElement('select');
+        sizeSel.innerHTML = '<option value="">Large — fills the width</option><option value="md">Medium</option><option value="sm">Small</option>';
+        sizeSel.value = b.size === 'sm' || b.size === 'md' ? b.size : '';
+        sizeSel.onchange = () => { b.size = sizeSel.value; upd(); };
         out.push(field('Photo link','', inp));
         out.push((() => { const d=document.createElement('div'); d.className='bo-blockfield'; d.append(up, upFile, upStat); return d; })());
         out.push((() => { const d=document.createElement('div'); d.className='bo-blockfield'; d.appendChild(pick); return d; })());
         out.push(field('Describe the photo','for visually-impaired visitors', alt));
         out.push(field('Caption','optional', cap));
+        out.push(field('Size','', sizeSel));
+        out.push(field('Link (optional)','e.g. a QR code image that should go somewhere when tapped', linkInp));
       }
       else if (b.type === 'button') {
         const lab = document.createElement('input');
