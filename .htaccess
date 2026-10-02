@@ -35,10 +35,12 @@ RewriteRule ^p/([A-Za-z0-9_-]+)/?$ p.html?slug=$1 [L,QSA]
 RewriteRule ^signup/([A-Za-z0-9_-]+)/?$ signup.html?slug=$1 [L,QSA]
 
 # Trail of Treats -- the real page's address is now /trailoftreats (an all-district
-# page, no school prefix). The flyer's printed URL uses an older spelling, so alias it
+# page, no school prefix). Both the flyer's printed URL and the page's old /pto/...
+# address (from before it became an all-district page) still get used, so alias them
 # straight to the real page. (Do NOT alias plain /trailoftreats here -- that IS the
 # real page's own address now, and self-redirecting it caused an infinite redirect loop.)
 RewriteRule ^haunted-trail/?$ /trailoftreats [R=301,L]
+RewriteRule ^pto/trail-of-treats/?$ /trailoftreats [R=301,L]
 
 # Redirect /index and /index.html to /
 RewriteCond %{THE_REQUEST} \s/+index(\.html)?\s [NC]
