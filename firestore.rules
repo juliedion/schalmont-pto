@@ -218,7 +218,10 @@ service cloud.firestore {
           && request.resource.data.count is int
           && request.resource.data.count > 0 && request.resource.data.count <= 20
           && request.resource.data.item is string && request.resource.data.item.size() <= 100
-          && request.resource.data.workSchool is string && request.resource.data.workSchool.size() <= 20;
+          // workSchool is only sent at all on a sheet that asks for it -- .get() with a
+          // default avoids the same "dereferencing a missing field throws" trap the
+          // cancelled/takenReverted fields below are guarded against.
+          && request.resource.data.get('workSchool', '') is string && request.resource.data.get('workSchool', '').size() <= 20;
         // A normal (never-cancelled) entry has no `cancelled`/`takenReverted` field at
         // all -- dereferencing a map key that isn't there throws in these rules (it does
         // NOT quietly act like undefined), which fails the whole rule closed. Every
