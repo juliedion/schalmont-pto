@@ -177,7 +177,7 @@
         return `<div>
                   <strong>${e(b.sheetTitle || 'Sign-Up Sheet')}</strong>
                   ${b.note ? `<p style="margin:4px 0 12px;color:var(--text-light);font-size:14px">${e(b.note)}</p>` : ''}
-                  <div class="pg-su-embed" data-signup-id="${e(b.sheetId)}"><p style="color:var(--text-light)">Loading sign-up sheet…</p></div>
+                  <div class="pg-su-embed" data-signup-id="${e(b.sheetId)}"${b.hideButton ? ' data-hide-button="1"' : ''}><p style="color:var(--text-light)">Loading sign-up sheet…</p></div>
                 </div>`;
       }
       case 'embed': {

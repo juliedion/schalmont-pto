@@ -1030,6 +1030,13 @@
           layoutLbl.textContent = 'Slot layout (applies everywhere this sheet is used)';
           out.push(layoutLbl);
           out.push(signupColumnsField(cb.sheetId, upd));
+          const hideBtn = document.createElement('label');
+          hideBtn.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;margin:4px 0';
+          hideBtn.innerHTML = '<input type="checkbox"> Hide this sheet\'s own button here';
+          const hideBtnCb = hideBtn.querySelector('input');
+          hideBtnCb.checked = !!cb.hideButton;
+          hideBtnCb.onchange = () => { cb.hideButton = hideBtnCb.checked; upd(); };
+          out.push(hideBtn);
         }
         if (!(signupSheets && signupSheets.length)) {
           const help = document.createElement('div');
@@ -1310,7 +1317,16 @@
           : 'No sign-up sheets yet — make one in <a href="signups.html" target="_blank">Sign-Up Sheets</a> first, then come back.';
         out.push(field('Which sheet', '', sel));
         out.push(field('Note', 'optional', note));
-        if (b.sheetId) out.push(field('Slot layout', 'this applies everywhere this sheet is used, not just this page', signupColumnsField(b.sheetId, upd)));
+        if (b.sheetId) {
+          out.push(field('Slot layout', 'this applies everywhere this sheet is used, not just this page', signupColumnsField(b.sheetId, upd)));
+          const hideBtn = document.createElement('label');
+          hideBtn.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;margin-top:4px';
+          hideBtn.innerHTML = '<input type="checkbox"> Hide this sheet\'s own button here';
+          const hideBtnCb = hideBtn.querySelector('input');
+          hideBtnCb.checked = !!b.hideButton;
+          hideBtnCb.onchange = () => { b.hideButton = hideBtnCb.checked; upd(); };
+          out.push(field('', 'useful on a page that lists several sign-up sheets together, where each one’s own "return to" button would be repetitive', hideBtn));
+        }
         const d = document.createElement('div'); d.className = 'bo-blockfield'; d.appendChild(help); out.push(d);
       }
       else if (b.type === 'divider') {

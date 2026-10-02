@@ -206,7 +206,7 @@
       html += '</div>';
     });
     if (cols > 1) html += '</div>';
-    if (sheet.buttonLabel && sheet.buttonHref) {
+    if (sheet.buttonLabel && sheet.buttonHref && el.dataset.hideButton !== '1') {
       html += ctaButtonHtml(sheet, 'pg-su-cta');
     }
     el.innerHTML = html;
