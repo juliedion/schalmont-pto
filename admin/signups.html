@@ -96,6 +96,7 @@
                 <option value="5">Large</option>
                 <option value="6">X-Large</option>
               </select>
+              <input type="color" id="f-intro-color" title="Text color" value="#295c38" style="width:30px;height:30px;padding:2px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:#fff">
             </div>
             <div id="f-intro" class="su-rte" contenteditable="true"></div>
           </div>
@@ -331,6 +332,10 @@
         restoreIntroSelection();
         document.execCommand('fontSize', false, e.target.value);
         e.target.value = '';
+      };
+      document.getElementById('f-intro-color').oninput = (e) => {
+        restoreIntroSelection();
+        document.execCommand('foreColor', false, e.target.value);
       };
 
       curId = getParam('id');
@@ -731,11 +736,19 @@
       var FONT_PX = { '1': '10px', '2': '13px', '3': '16px', '4': '18px', '5': '24px', '6': '32px', '7': '48px' };
       var root = document.createElement('div');
       root.innerHTML = html || '';
-      // execCommand('fontSize', ...) writes legacy <font size="N"> -- normalize to a span.
+      // execCommand('fontSize'/'foreColor', ...) writes legacy <font size="N" color="...">
+      // in some browsers -- normalize both to a span.
       Array.prototype.slice.call(root.querySelectorAll('font')).forEach(function (f) {
         var span = document.createElement('span');
         var px = FONT_PX[f.getAttribute('size')];
-        if (px) span.style.fontSize = px;
+        var color = f.getAttribute('color');
+        // setAttribute, not the style property -- Chrome's CSSOM silently reformats a
+        // hex color to rgb(...) on the way back out, which the regex that re-extracts
+        // it later doesn't recognize.
+        var styleParts = [];
+        if (px) styleParts.push('font-size:' + px);
+        if (color) styleParts.push('color:' + color);
+        if (styleParts.length) span.setAttribute('style', styleParts.join(';'));
         while (f.firstChild) span.appendChild(f.firstChild);
         f.parentNode.replaceChild(span, f);
       });
@@ -750,13 +763,16 @@
               node.removeChild(child);
               next = first || next; // re-scan the promoted content too
             } else {
-              var keep = null;
+              var kept = [];
               if (child.tagName === 'SPAN') {
-                var m = /font-size\s*:\s*([\d.]+(?:px|em|%))/i.exec(child.getAttribute('style') || '');
-                if (m) keep = 'font-size:' + m[1];
+                var style = child.getAttribute('style') || '';
+                var sizeM = /font-size\s*:\s*([\d.]+(?:px|em|%))/i.exec(style);
+                var colorM = /color\s*:\s*(#[0-9a-f]{6}|#[0-9a-f]{3}|rgba?\([\d.%,\s]+\))/i.exec(style);
+                if (sizeM) kept.push('font-size:' + sizeM[1]);
+                if (colorM) kept.push('color:' + colorM[1]);
               }
               Array.prototype.slice.call(child.attributes).forEach(function (a) { child.removeAttribute(a.name); });
-              if (keep) child.setAttribute('style', keep);
+              if (kept.length) child.setAttribute('style', kept.join(';'));
               walk(child);
             }
           } else if (child.nodeType !== 3) {

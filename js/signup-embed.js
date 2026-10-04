@@ -42,13 +42,16 @@
             node.removeChild(child);
             next = first || next;
           } else {
-            var keep = null;
+            var kept = [];
             if (child.tagName === 'SPAN') {
-              var m = /font-size\s*:\s*([\d.]+(?:px|em|%))/i.exec(child.getAttribute('style') || '');
-              if (m) keep = 'font-size:' + m[1];
+              var style = child.getAttribute('style') || '';
+              var sizeM = /font-size\s*:\s*([\d.]+(?:px|em|%))/i.exec(style);
+              var colorM = /color\s*:\s*(#[0-9a-f]{6}|#[0-9a-f]{3}|rgba?\([\d.%,\s]+\))/i.exec(style);
+              if (sizeM) kept.push('font-size:' + sizeM[1]);
+              if (colorM) kept.push('color:' + colorM[1]);
             }
             Array.prototype.slice.call(child.attributes).forEach(function (a) { child.removeAttribute(a.name); });
-            if (keep) child.setAttribute('style', keep);
+            if (kept.length) child.setAttribute('style', kept.join(';'));
             walk(child);
           }
         } else if (child.nodeType !== 3) {

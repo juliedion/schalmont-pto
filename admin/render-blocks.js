@@ -54,7 +54,16 @@
     [...tmp.querySelectorAll('font')].forEach(f => {
       const span = document.createElement('span');
       const px = FONT_SIZE_PX[f.getAttribute('size')];
-      if (px) span.style.fontSize = px;
+      // execCommand('foreColor', ...) without styleWithCSS also lands here as a
+      // <font color="..."> in some browsers, same as fontSize does. Set these via
+      // setAttribute rather than the style property -- Chrome's CSSOM silently
+      // reformats a hex color to rgb(...) on the way back out, which the regex
+      // below that re-extracts it later doesn't recognize.
+      const color = f.getAttribute('color');
+      const styleParts = [];
+      if (px) styleParts.push('font-size:' + px);
+      if (color) styleParts.push('color:' + color);
+      if (styleParts.length) span.setAttribute('style', styleParts.join(';'));
       while (f.firstChild) span.appendChild(f.firstChild);
       f.parentNode.replaceChild(span, f);
     });
@@ -75,9 +84,14 @@
             return;
           }
           if (child.tagName === 'SPAN') {
-            const m = /font-size\s*:\s*([\d.]+(?:px|em|%))/i.exec(child.getAttribute('style') || '');
+            const style = child.getAttribute('style') || '';
+            const size = /font-size\s*:\s*([\d.]+(?:px|em|%))/i.exec(style);
+            const color = /color\s*:\s*(#[0-9a-f]{6}|#[0-9a-f]{3}|rgba?\([\d.%,\s]+\))/i.exec(style);
+            const kept = [];
+            if (size) kept.push('font-size:' + size[1]);
+            if (color) kept.push('color:' + color[1]);
             [...child.attributes].forEach(a => child.removeAttribute(a.name));
-            if (m) child.setAttribute('style', 'font-size:' + m[1]);
+            if (kept.length) child.setAttribute('style', kept.join(';'));
           } else {
             [...child.attributes].forEach(a => child.removeAttribute(a.name));
           }

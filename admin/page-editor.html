@@ -890,6 +890,14 @@
         sizeSel.value = '';
       };
       bar.append(sizeSel);
+      const colorInp = document.createElement('input');
+      colorInp.type = 'color'; colorInp.title = 'Text color'; colorInp.value = '#295c38';
+      colorInp.style.cssText = 'width:30px;height:28px;padding:2px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:#fff';
+      colorInp.oninput = () => {
+        if (savedRange) { const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(savedRange); }
+        ed.focus(); document.execCommand('foreColor', false, colorInp.value); clean();
+      };
+      bar.append(colorInp);
       ed.contentEditable = 'true';
       ed.className = 'bo-richtext';
       ed.innerHTML = sanitizeRichText(initialHtml || '', !opts.allowLists);
