@@ -21,10 +21,16 @@
       // A page's routing `school` is only set when it belongs to exactly one school --
       // a page shared by several schools (routed under /pto/...) only has `schools`,
       // an array, so it needs its own query to show up in each of those schools' menus.
-      Promise.all([
+      var queries = [
         col.where('school', '==', school).where('showInLeftMenu', '==', true).where('status', '==', 'published').get(),
         col.where('schools', 'array-contains', school).where('showInLeftMenu', '==', true).where('status', '==', 'published').get()
-      ]).then(function (results) {
+      ];
+      // A page with no school at all has nowhere else to live in this menu -- same
+      // convention as the admin back office, it shows up under PTO-Wide specifically.
+      if (school === 'pto') {
+        queries.push(col.where('school', '==', '').where('showInLeftMenu', '==', true).where('status', '==', 'published').get());
+      }
+      Promise.all(queries).then(function (results) {
         var seen = {};
         var prefix = SCHOOL_PREFIX[school] || school;
         results.forEach(function (snap) {
@@ -33,10 +39,12 @@
             seen[d.id] = true;
             var p = d.data();
             if (!p.slug) return;
-            // A shared page is routed under /pto/..., not this school's own prefix.
-            var pagePrefix = (Array.isArray(p.schools) && p.schools.length > 1) ? 'pto' : prefix;
+            var noSchoolAtAll = !p.school && (!Array.isArray(p.schools) || !p.schools.length);
+            // A shared page is routed under /pto/..., not this school's own prefix; a
+            // page with no school at all publishes with no prefix segment whatsoever.
+            var pagePrefix = noSchoolAtAll ? '' : ((Array.isArray(p.schools) && p.schools.length > 1) ? 'pto' : prefix);
             var a = document.createElement('a');
-            a.href = '/' + pagePrefix + '/' + p.slug;
+            a.href = pagePrefix ? '/' + pagePrefix + '/' + p.slug : '/' + p.slug;
             a.className = 'sidenav-item sub';
             a.textContent = p.title || 'Untitled';
             submenu.appendChild(a);
