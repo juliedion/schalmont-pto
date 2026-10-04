@@ -244,6 +244,17 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
   #pg-body .pg-photo-xxl img { width: 138%; max-width: 138%; display: block; }
   #pg-body .pg-photo-xxl { margin-right: -38%; }
 }
+/* The breakout above only ever shows on the real page (its own column needs to be wide
+   enough first) -- in this narrower preview box there's no room to demonstrate it
+   without overflowing the box itself, so show a plain note instead of silently looking
+   unchanged, which otherwise reads as "my Size choice didn't do anything." */
+#preview .pg-photo-xl, #preview .pg-photo-xxl {
+  outline: 2px dashed var(--primary-light); outline-offset: 5px;
+}
+#preview .pg-photo-xl::after, #preview .pg-photo-xxl::after {
+  content: 'On the published page, this photo spans wider than the text column \2014 too wide to show at actual size in this preview.';
+  display: block; font-size: 11.5px; color: var(--text-light); font-style: italic; margin-top: 8px;
+}
 .pg-body .pg-btn {
   display: inline-block; background: var(--primary); color: #fff; font-weight: 700;
   padding: 12px 22px; border-radius: 8px; text-decoration: none; margin: 6px 0;
