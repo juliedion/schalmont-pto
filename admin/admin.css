@@ -226,6 +226,24 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 .pg-body .pg-richtext ul, .pg-body .pg-richtext ol { margin-bottom: 0; }
 .pg-body img { border-radius: 10px; margin: 8px 0; }
 .pg-body .pg-caption { font-size: 12px; color: var(--text-light); margin-top: -6px; }
+.pg-photo-center { text-align: center; }
+.pg-photo-right { text-align: right; }
+/* X-Large/XX-Large break the photo out past the normal ~760px reading column, into
+   the page's full content width -- scoped to #pg-body (the real public page) on
+   purpose, so the same block inside the editor's own narrower preview (id="preview"),
+   or inside a Row of Columns cell, just falls back to filling its own container
+   instead of overflowing it. Percentages self-scale with the column's own rendered
+   width rather than assuming a fixed viewport, so this stays safe as that width
+   changes between breakpoints; disabled below 1024px, where there isn't reliably
+   enough spare room beside the sidebar for it not to overflow -- a plain max-width:100%
+   keeps it a normal full-width photo there instead. */
+.pg-photo-xl img, .pg-photo-xxl img { max-width: 100%; }
+@media (min-width: 1024px) {
+  #pg-body .pg-photo-xl img { width: 120%; max-width: 120%; display: block; }
+  #pg-body .pg-photo-xl { margin-right: -20%; }
+  #pg-body .pg-photo-xxl img { width: 138%; max-width: 138%; display: block; }
+  #pg-body .pg-photo-xxl { margin-right: -38%; }
+}
 .pg-body .pg-btn {
   display: inline-block; background: var(--primary); color: #fff; font-weight: 700;
   padding: 12px 22px; border-radius: 8px; text-decoration: none; margin: 6px 0;

@@ -108,9 +108,14 @@
       case 'image': {
         // Small/medium cap how wide the image can get; large (and no size set at all,
         // for every image already on the site before this existed) is the original
-        // unbounded "fill the content column" behavior.
+        // unbounded "fill the content column" behavior. X-Large/XX-Large break out
+        // past the column entirely -- that's done with CSS classes (see #pg-body
+        // .pg-photo-xl/-xxl in admin.css), so the inline max-width:100% that every
+        // other size relies on has to be skipped for those two, since an inline style
+        // would otherwise always win over the external rule and silently cap it back.
+        const isBreakout = b.size === 'xl' || b.size === 'xxl';
         const sizeCap = { sm: '240px', md: '420px' }[b.size];
-        const img = `<img src="${e(b.url)}" alt="${e(b.alt || '')}" style="max-width:100%${sizeCap ? ';width:' + sizeCap : ''}">`;
+        const img = `<img src="${e(b.url)}" alt="${e(b.alt || '')}"${isBreakout ? '' : ` style="max-width:100%${sizeCap ? ';width:' + sizeCap : ''}"`}>`;
         // A QR code or flyer image often needs to actually go somewhere when tapped --
         // same safe-link rule as a button, works identically on desktop/tablet/mobile
         // since it's just a normal anchor around the image, nothing device-specific.
@@ -118,7 +123,9 @@
         const picture = href
           ? `<a href="${e(href)}"${/^https?:/.test(href) ? ' target="_blank" rel="noopener"' : ''}>${img}</a>`
           : img;
-        return `<figure style="margin:0">
+        const figClass = [isBreakout ? 'pg-photo-' + b.size : '', b.align === 'center' ? 'pg-photo-center' : b.align === 'right' ? 'pg-photo-right' : '']
+          .filter(Boolean).join(' ');
+        return `<figure${figClass ? ` class="${figClass}"` : ''} style="margin:0">
                   ${picture}
                   ${b.caption ? `<figcaption class="pg-caption">${e(b.caption)}</figcaption>` : ''}
                 </figure>`;

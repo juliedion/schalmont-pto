@@ -1222,8 +1222,9 @@
         linkInp.type='text'; linkInp.value=b.href||''; linkInp.placeholder='https://…  (or /jes/another-page) — makes the whole photo clickable';
         linkInp.oninput = () => { b.href = linkInp.value; upd(); };
         const sizeSel = document.createElement('select');
-        sizeSel.innerHTML = '<option value="">Large — fills the width</option><option value="md">Medium</option><option value="sm">Small</option>';
-        sizeSel.value = b.size === 'sm' || b.size === 'md' ? b.size : '';
+        sizeSel.innerHTML = '<option value="">Large — fills the width</option><option value="md">Medium</option><option value="sm">Small</option>' +
+          '<option value="xl">X-Large — wider than the page text</option><option value="xxl">XX-Large — as wide as the page allows</option>';
+        sizeSel.value = ['sm', 'md', 'xl', 'xxl'].includes(b.size) ? b.size : '';
         sizeSel.onchange = () => { b.size = sizeSel.value; upd(); };
         out.push(field('Photo link','', inp));
         out.push((() => { const d=document.createElement('div'); d.className='bo-blockfield'; d.append(up, upFile, upStat); return d; })());
@@ -1231,6 +1232,7 @@
         out.push(field('Describe the photo','for visually-impaired visitors', alt));
         out.push(field('Caption','optional', cap));
         out.push(field('Size','', sizeSel));
+        out.push(alignField(b, upd));
         out.push(field('Link (optional)','e.g. a QR code image that should go somewhere when tapped', linkInp));
       }
       else if (b.type === 'button') {
