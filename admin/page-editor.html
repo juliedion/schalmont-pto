@@ -139,6 +139,30 @@
           </div>
         </div>
 
+        <details class="bo-tools-full" style="margin:8px 0 4px;max-width:none">
+          <summary style="cursor:pointer;font-weight:700;font-size:13.5px;color:var(--text)">Link preview — the picture and blurb when you text or post this page's link</summary>
+          <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:8px">
+            <div class="bo-tip" style="margin-bottom:12px">
+              Leave the picture blank to use this page's first photo (or the PTO logo if it has none).
+              A wide picture works best (about 1200 × 630). Texting apps remember a link's preview for
+              a while, so a change can take a day to show up for a link you've already sent.
+            </div>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+              <img id="share-thumb" alt="" style="width:180px;height:95px;object-fit:cover;border-radius:6px;border:1px solid var(--border);background:var(--light-bg)">
+              <div style="flex:1;min-width:240px">
+                <div class="bo-blockfield"><label>Preview picture</label>
+                  <input type="text" id="share-image" placeholder="Upload below, or paste an image link">
+                  <div style="margin-top:6px;display:flex;gap:8px;align-items:center">
+                    <input type="file" id="share-upload" accept="image/*" style="font-size:12.5px">
+                    <button type="button" class="bo-btn ghost sm" id="share-clear">Use the page's first photo</button>
+                  </div></div>
+                <div class="bo-blockfield"><label>Preview text <span style="font-weight:400;color:var(--text-light)">(optional) — one sentence; blank uses the first paragraph</span></label>
+                  <input type="text" id="share-desc" maxlength="200" placeholder="e.g. Join us Friday night for games, food and fun!"></div>
+              </div>
+            </div>
+          </div>
+        </details>
+
         <details class="bo-tools-full" style="margin:8px 0 4px;max-width:none" open>
           <summary style="cursor:pointer;font-weight:700;font-size:13.5px;color:var(--text)">Homepage card</summary>
           <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:10px">
@@ -290,6 +314,8 @@
       document.getElementById('event-endtime').value = page.eventEndTime || '';
       document.getElementById('event-location').value = page.eventLocation || '';
       document.getElementById('event-location-detail').value = page.eventLocationDetail || '';
+      document.getElementById('share-image').value = page.shareImage || '';
+      document.getElementById('share-desc').value = page.shareDesc || '';
       if (page.slug) slugTouched = true;
       if (!page.blocks || !page.blocks.length) page.blocks = [{ type:'heading', level:1, text:'' }];
 
@@ -554,6 +580,41 @@
       return String(s).toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/[\s-]+/g, '-').slice(0, 60);
     }
 
+    // The page's own first photo -- top level or inside a row of columns -- which is
+    // what the link preview falls back to (p.php picks it the same way).
+    function firstPhotoUrl() {
+      for (const b of page.blocks || []) {
+        if (b.type === 'image' && b.url) return b.url;
+        if (b.type === 'columns') for (const c of b.cells || []) {
+          for (const cb of c.blocks || []) if (cb.type === 'image' && cb.url) return cb.url;
+          if (c.imageUrl) return c.imageUrl;
+        }
+      }
+      return '';
+    }
+    function wireSharePreview() {
+      const inp = document.getElementById('share-image'), thumb = document.getElementById('share-thumb');
+      const showThumb = () => { thumb.src = page.shareImage || firstPhotoUrl() || '/images/Schalmont-PTO-logo.png'; };
+      inp.oninput = () => { page.shareImage = inp.value.trim(); showThumb(); };
+      document.getElementById('share-clear').onclick = () => { inp.value = ''; page.shareImage = ''; showThumb(); };
+      const desc = document.getElementById('share-desc');
+      desc.oninput = () => { page.shareDesc = desc.value.trim(); };
+      const up = document.getElementById('share-upload');
+      up.onchange = async () => {
+        if (!up.files[0]) return;
+        try {
+          toast('Uploading…');
+          page.shareImage = inp.value = await uploadImage(up.files[0]);
+          showThumb(); toast('Uploaded — press Save or Publish to keep it');
+        } catch (e) { toast('Upload failed: ' + e.message, 'error'); }
+        up.value = '';
+      };
+      showThumb();
+      // Photos added/changed below update the fallback thumbnail too.
+      document.getElementById('blocks').addEventListener('input', showThumb);
+      document.getElementById('blocks').addEventListener('change', () => setTimeout(showThumb, 0));
+    }
+
     async function uploadImage(file) {
       const fd = new FormData();
       // The upload endpoint only knows the 5 real school folders -- a page with no
@@ -600,6 +661,7 @@
       et.oninput = () => { page.eventTime = et.value; refreshPreview(); };
       eet.oninput = () => { page.eventEndTime = eet.value; refreshPreview(); };
       el.oninput = () => { page.eventLocation = el.value.trim(); refreshPreview(); };
+      wireSharePreview();
       const eld = document.getElementById('event-location-detail');
       eld.oninput = () => { page.eventLocationDetail = eld.value.trim(); refreshPreview(); };
 
@@ -1542,6 +1604,7 @@
         eventEndTime: page.eventEndTime || '', eventEndDate: page.eventEndDate || '',
         eventLocation: page.eventLocation || '', eventLocationDetail: page.eventLocationDetail || '',
         flyerUrl: page.flyerUrl || '',
+        shareImage: page.shareImage || '', shareDesc: page.shareDesc || '',
         hideCard: page.hideCard, hideEventBox: page.hideEventBox,
         parentPageId: document.getElementById('page-parent').value || '',
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
