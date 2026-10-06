@@ -180,7 +180,7 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 .bo-tools-full { grid-column: 1 / -1; }
 @media (max-width: 1200px) { .bo-tools-col { grid-column: span 4; } }
 @media (max-width: 860px) { .bo-tools-col { grid-column: span 1; display: block; } }
-.bo-richtext-bar { display: flex; gap: 4px; margin-bottom: 4px; }
+.bo-richtext-bar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
 .bo-richtext-bar button {
   border: 1px solid var(--border); background: #fff; border-radius: 4px; cursor: pointer;
   font-size: 12px; font-weight: 700; padding: 3px 9px; color: var(--text);
@@ -192,6 +192,8 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 }
 .bo-richtext:focus { outline: 2px solid var(--primary-light); outline-offset: -1px; }
 .bo-richtext ul, .bo-richtext ol { margin: 0 0 0 20px; }
+.bo-richtext-para { min-height: 96px; line-height: 1.55; }
+.bo-richtext a { color: var(--primary); text-decoration: underline; }
 .bo-blocks { display: flex; flex-direction: column; gap: 12px; }
 .bo-block {
   background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px;
@@ -274,6 +276,9 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 .pg-eventrow + .pg-eventrow { margin-top: 7px; }
 .pg-eventrow a { color: var(--primary); }
 .pg-eventicon { flex-shrink: 0; }
+/* "Where at the location" (Gymnasium, Middle school loop) -- tucked right under the map link. */
+.pg-eventrow + .pg-eventspot { margin-top: 2px; }
+.pg-eventspot { font-weight: 500; }
 
 /* Columns block — a responsive row that ALWAYS stacks on phones */
 .pg-body .pg-cols {

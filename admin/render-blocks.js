@@ -37,7 +37,9 @@
   // so admin-authored formatting can never carry a script, style or event handler onto
   // the public page. Used both when the editor cleans up what was typed and when the
   // public page renders it.
-  const RICH_INLINE_TAGS = { B: 1, STRONG: 1, I: 1, EM: 1, U: 1, BR: 1, SPAN: 1 };
+  const RICH_INLINE_TAGS = { B: 1, STRONG: 1, I: 1, EM: 1, U: 1, S: 1, STRIKE: 1, BR: 1, SPAN: 1, A: 1 };
+  // A link's href must pass the same rule as a Button block's (web, email or on-site).
+  const SAFE_HREF = /^https?:|^mailto:|^\//;
   const RICH_BLOCK_TAGS = { UL: 1, OL: 1, LI: 1 };
   // Tags a contenteditable region commonly wraps a new line in (Chrome/Firefox/Safari
   // all differ here) -- in inline-only mode (a real <h1>-<h3>, which can't legally
@@ -45,11 +47,16 @@
   // unlike a plain stray wrapper, a <br> has to go in their place or the line break
   // itself silently disappears along with the tag.
   const LINE_WRAPPER_TAGS = { DIV: 1, P: 1, LI: 1 };
+  // Dropped along with everything inside them (a pasted Word doc carries a <style> block).
+  const DROP_TAGS = { SCRIPT: 1, STYLE: 1, TEMPLATE: 1, NOSCRIPT: 1, IFRAME: 1, OBJECT: 1,
+                      EMBED: 1, SVG: 1, MATH: 1, HEAD: 1, TITLE: 1, META: 1, LINK: 1, svg: 1, math: 1 };
   // execCommand('fontSize', ...) (the editor's font-size picker) writes legacy
   // <font size="N">, 1-7 -- normalize to a span with an actual pixel size.
   const FONT_SIZE_PX = { '1': '10px', '2': '13px', '3': '16px', '4': '18px', '5': '24px', '6': '32px', '7': '48px' };
   function sanitizeRichText(html, inlineOnly) {
-    const tmp = document.createElement('div');
+    // Parse in a detached, inert document -- in the live page, an <img onerror=...>
+    // would load (and run) the moment it's assigned, before it could be stripped.
+    const tmp = document.implementation.createHTMLDocument('').createElement('div');
     tmp.innerHTML = String(html == null ? '' : html);
     [...tmp.querySelectorAll('font')].forEach(f => {
       const span = document.createElement('span');
@@ -69,14 +76,24 @@
     });
     (function clean(node) {
       [...node.childNodes].forEach(child => {
-        if (child.nodeType === 1) {
+        if (child.nodeType === 1 && DROP_TAGS[child.tagName]) {
+          node.removeChild(child);
+        } else if (child.nodeType === 1) {
+          // Clean the inside first, so anything promoted out of an unwrapped tag
+          // below has already been checked (otherwise it would skip the cleaning).
+          clean(child);
           const allowed = RICH_INLINE_TAGS[child.tagName] || (!inlineOnly && RICH_BLOCK_TAGS[child.tagName]);
           if (!allowed) {
             // A line-wrapper tag (a contenteditable's own "new line" element -- which
             // browser differs) means "start a new line here", so its promoted content
             // needs a <br> right before it to keep that line break -- unless it's the
             // very first thing in the field, where there's nothing to break away from.
-            const needsBreak = inlineOnly && LINE_WRAPPER_TAGS[child.tagName] && child.previousSibling;
+            // (In list-allowed mode, a line right after a list already starts on its own line.)
+            const prev = child.previousSibling;
+            // A wrapper holding only a <br> is itself the blank line -- its own <br> is enough.
+            const onlyBr = child.childNodes.length === 1 && child.firstChild.nodeName === 'BR';
+            const needsBreak = LINE_WRAPPER_TAGS[child.tagName] && prev && !onlyBr &&
+              !(prev.nodeType === 1 && (prev.tagName === 'UL' || prev.tagName === 'OL'));
             const first = child.firstChild;
             while (child.firstChild) node.insertBefore(child.firstChild, child);
             if (needsBreak) node.insertBefore(document.createElement('br'), first || child);
@@ -92,10 +109,20 @@
             if (color) kept.push('color:' + color[1]);
             [...child.attributes].forEach(a => child.removeAttribute(a.name));
             if (kept.length) child.setAttribute('style', kept.join(';'));
+          } else if (child.tagName === 'A') {
+            const href = (child.getAttribute('href') || '').trim();
+            [...child.attributes].forEach(a => child.removeAttribute(a.name));
+            if (!SAFE_HREF.test(href)) {
+              // Unsafe or empty link -- keep the words, drop the link.
+              while (child.firstChild) node.insertBefore(child.firstChild, child);
+              node.removeChild(child);
+              return;
+            }
+            child.setAttribute('href', href);
+            if (/^https?:/.test(href)) { child.setAttribute('target', '_blank'); child.setAttribute('rel', 'noopener'); }
           } else {
             [...child.attributes].forEach(a => child.removeAttribute(a.name));
           }
-          clean(child);
         } else if (child.nodeType !== 3) {
           node.removeChild(child);
         }
@@ -114,6 +141,9 @@
         return `<${lvl}${cls}${alignStyle(b)}>${sanitizeRichText(b.text, !isPara)}</${lvl}>`;
       }
       case 'paragraph':
+        // `rich` paragraphs were typed in the formatting editor and hold sanitized HTML;
+        // older ones (and AI-assistant drafts) are plain text with blank-line breaks.
+        if (b.rich) return `<div class="pg-richtext"${alignStyle(b)}>${sanitizeRichText(b.text, false)}</div>`;
         return e(b.text).split(/\n{2,}/).map(p =>
           `<p${alignStyle(b)}>${p.replace(/\n/g, '<br>')}</p>`).join('');
       case 'list':
@@ -247,7 +277,8 @@
     const endTime = prettyTime(page.eventEndTime);
     const timeRange = time && endTime ? `${time} – ${endTime}` : time;
     const loc  = page.eventLocation;
-    if (!page.hideEventBox && (date || timeRange || loc)) {
+    const spot = page.eventLocationDetail;   // e.g. "Gymnasium" -- its own line, not a map link
+    if (!page.hideEventBox && (date || timeRange || loc || spot)) {
       html += '<div class="pg-eventbox">';
       if (date || timeRange) {
         html += `<div class="pg-eventrow"><span class="pg-eventicon">📅</span><span>${e(date)}${date && timeRange ? ' · ' : ''}${e(timeRange)}</span></div>`;
@@ -255,6 +286,10 @@
       if (loc) {
         const maps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(loc);
         html += `<div class="pg-eventrow"><span class="pg-eventicon">📍</span><a href="${e(maps)}" target="_blank" rel="noopener">${e(loc)}</a></div>`;
+      }
+      if (spot) {
+        // Under a map address the pin is kept invisible so the text lines up beneath it.
+        html += `<div class="pg-eventrow pg-eventspot"><span class="pg-eventicon"${loc ? ' style="visibility:hidden"' : ''}>📍</span><span>${e(spot)}</span></div>`;
       }
       html += '</div>';
     }

@@ -129,8 +129,10 @@
               <div class="bo-blockfield"><label>End time <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
                 <input type="time" id="event-endtime"></div>
             </div>
-            <div class="bo-blockfield"><label>Location <span style="font-weight:400;color:var(--text-light)">— name and/or address; becomes a Google Maps link</span></label>
-              <input type="text" id="event-location" placeholder="Jefferson Elementary gym, 2 Sabre Lane, Schenectady NY"></div>
+            <div class="bo-blockfield"><label>Location for the map <span style="font-weight:400;color:var(--text-light)">— building name and/or address; becomes a Google Maps link</span></label>
+              <input type="text" id="event-location" placeholder="Schalmont Middle School, 2 Sabre Drive, Schenectady NY"></div>
+            <div class="bo-blockfield"><label>Where at the location <span style="font-weight:400;color:var(--text-light)">(optional) — shows on its own line under the map link</span></label>
+              <input type="text" id="event-location-detail" placeholder="e.g. Gymnasium, or Middle school loop"></div>
             <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;margin:10px 0 0">
               <input type="checkbox" id="hide-eventbox-cb"> Hide the date/time/location box at the top of this page
             </label>
@@ -228,7 +230,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-storage-compat.js"></script>
   <script src="../js/firebase-config.js"></script>
   <script>window.BO_NO_SIDEBAR = true;</script>
   <script src="admin-core.js"></script>
@@ -288,6 +289,7 @@
       document.getElementById('event-time').value = page.eventTime || '';
       document.getElementById('event-endtime').value = page.eventEndTime || '';
       document.getElementById('event-location').value = page.eventLocation || '';
+      document.getElementById('event-location-detail').value = page.eventLocationDetail || '';
       if (page.slug) slugTouched = true;
       if (!page.blocks || !page.blocks.length) page.blocks = [{ type:'heading', level:1, text:'' }];
 
@@ -598,6 +600,8 @@
       et.oninput = () => { page.eventTime = et.value; refreshPreview(); };
       eet.oninput = () => { page.eventEndTime = eet.value; refreshPreview(); };
       el.oninput = () => { page.eventLocation = el.value.trim(); refreshPreview(); };
+      const eld = document.getElementById('event-location-detail');
+      eld.oninput = () => { page.eventLocationDetail = eld.value.trim(); refreshPreview(); };
 
       document.getElementById('preview-btn').onclick = (e) => {
         e.preventDefault();
@@ -866,7 +870,11 @@
         btn.onclick = () => { ed.focus(); document.execCommand(cmd); clean(); };
         return btn;
       };
-      bar.append(mkBtn('B', 'Bold', 'bold'), mkBtn('I', 'Italic', 'italic'), mkBtn('U', 'Underline', 'underline'));
+      const boldBtn = mkBtn('B', 'Bold', 'bold'), italBtn = mkBtn('I', 'Italic', 'italic'),
+            undBtn = mkBtn('U', 'Underline', 'underline'), strikeBtn = mkBtn('S', 'Strikethrough', 'strikeThrough');
+      italBtn.style.fontStyle = 'italic'; undBtn.style.textDecoration = 'underline';
+      strikeBtn.style.textDecoration = 'line-through';
+      bar.append(boldBtn, italBtn, undBtn, strikeBtn);
       if (opts.allowLists) bar.append(mkBtn('•', 'Bullet list', 'insertUnorderedList'), mkBtn('1.', 'Numbered list', 'insertOrderedList'));
       // A <select> can't use the button trick above (picking an option always moves
       // focus/selection off the editable area first) -- track the last real selection
@@ -898,13 +906,93 @@
         ed.focus(); document.execCommand('foreColor', false, colorInp.value); clean();
       };
       bar.append(colorInp);
+      // Link: select some words, press 🔗, paste the address. Same rule as a Button's
+      // link (web, email, or an on-site /path) -- anything else is dropped on save.
+      const linkBtn = mkBtn('🔗', 'Link the selected words', 'createLink');
+      linkBtn.onclick = () => {
+        saveSel();
+        const sel = window.getSelection();
+        if (!savedRange || savedRange.collapsed) { toast('Select the words to link first', 'error'); return; }
+        let url = (prompt('Link address (https://…, mailto:…, or /page-on-this-site):', 'https://') || '').trim();
+        if (!url || url === 'https://') return;
+        if (!/^https?:|^mailto:|^\//i.test(url)) url = /@/.test(url) && !/\s/.test(url) ? 'mailto:' + url : 'https://' + url;
+        sel.removeAllRanges(); sel.addRange(savedRange);
+        ed.focus(); document.execCommand('createLink', false, url); clean();
+      };
+      const unlinkBtn = mkBtn('Unlink', 'Remove the link from the selected words', 'unlink');
+      const clearBtn = mkBtn('⌫ Clear', 'Remove all formatting from the selected words', 'removeFormat');
+      bar.append(linkBtn, unlinkBtn, clearBtn);
       ed.contentEditable = 'true';
       ed.className = 'bo-richtext';
       ed.innerHTML = sanitizeRichText(initialHtml || '', !opts.allowLists);
       ed.oninput = clean;
       ed.onblur = clean;
+      // Enter = a simple line break (a browser's own "new line" wrapper would get
+      // unwrapped by clean() and jump the cursor); inside a bullet list Enter still
+      // makes the next bullet.
+      ed.addEventListener('keydown', (ev) => {
+        if (ev.key !== 'Enter' || ev.shiftKey) return;
+        const sel = window.getSelection();
+        const at = sel.anchorNode && (sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentNode);
+        if (at && at.closest && at.closest('li')) return;
+        ev.preventDefault();
+        document.execCommand('insertLineBreak');
+      });
+      // Paste keeps bold/italic/links from e.g. a Google Doc or email but nothing else.
+      ed.addEventListener('paste', (ev) => {
+        const cd = ev.clipboardData;
+        if (!cd) return;
+        ev.preventDefault();
+        const html = cd.getData('text/html');
+        const safe = html ? sanitizeRichText(pastedStylesToTags(html), !opts.allowLists)
+          : esc(cd.getData('text/plain')).replace(/\r?\n/g, '<br>');
+        document.execCommand('insertHTML', false, safe);
+        clean();
+      });
       wrap.append(bar, ed);
       return wrap;
+    }
+
+    // Google Docs / Word mark bold, italic and underline with inline styles, not tags,
+    // and Google Docs wraps a whole paste in a <b style="font-weight:normal">. Turn
+    // those styles into real tags, and drop the source's own colors/sizes, so a paste
+    // matches the page instead of carrying the other document's look along.
+    function pastedStylesToTags(html) {
+      const doc = document.implementation.createHTMLDocument('');
+      doc.body.innerHTML = html;
+      doc.body.querySelectorAll('b, strong').forEach(el => {
+        if (/font-weight\s*:\s*(normal|[1-4]00)\b/i.test(el.getAttribute('style') || '')) {
+          const span = doc.createElement('span');
+          while (el.firstChild) span.appendChild(el.firstChild);
+          el.replaceWith(span);
+        }
+      });
+      doc.body.querySelectorAll('[style]').forEach(el => {
+        const st = el.getAttribute('style');
+        el.removeAttribute('style');
+        const wrapIn = (tag) => {
+          const w = doc.createElement(tag);
+          while (el.firstChild) w.appendChild(el.firstChild);
+          el.appendChild(w);
+        };
+        if (/font-weight\s*:\s*(bold|[6-9]00)\b/i.test(st)) wrapIn('b');
+        if (/font-style\s*:\s*italic/i.test(st)) wrapIn('i');
+        if (/text-decoration[^;]*underline/i.test(st)) wrapIn('u');
+        if (/text-decoration[^;]*line-through/i.test(st)) wrapIn('s');
+      });
+      doc.body.querySelectorAll('font').forEach(f => { f.removeAttribute('color'); f.removeAttribute('size'); });
+      return doc.body.innerHTML;
+    }
+
+    // A Paragraph block's text box, with the same formatting toolbar (plus lists).
+    // Paragraphs saved before this were plain text -- shown here converted to the
+    // equivalent formatted text, and only flagged `rich` (switching the public page
+    // to the HTML renderer) once someone actually edits it.
+    function paragraphField(b, upd) {
+      const initial = b.rich ? b.text : esc(b.text || '').replace(/\r?\n/g, '<br>');
+      const box = richTextField(initial, v => { b.text = v; b.rich = true; upd(); }, { allowLists: true });
+      box.querySelector('.bo-richtext').classList.add('bo-richtext-para');
+      return box;
     }
 
     // A cell inside a Row of Columns holds its own small stack of blocks -- every
@@ -931,7 +1019,7 @@
         out.push(sel);
         out.push(richTextField(cb.text, v => { cb.text = v; upd(); }, { allowLists: cb.level === 'p' }));
       }
-      else if (cb.type === 'paragraph') out.push(mkInput('Text', cb.text, v => { cb.text = v; upd(); }, true));
+      else if (cb.type === 'paragraph') out.push(paragraphField(cb, upd));
       else if (cb.type === 'image') {
         const urlInp = mkInput('Upload below, pick a saved photo, or paste a link', cb.url, v => { cb.url = v; upd(); });
         out.push(urlInp);
@@ -1178,10 +1266,7 @@
         out.push(field('Size / style','', sel), field('Text','', rich), alignField(b, upd));
       }
       else if (b.type === 'paragraph') {
-        const ta = document.createElement('textarea');
-        ta.value = b.text || ''; ta.placeholder = 'Type your text here. Leave a blank line to start a new paragraph.';
-        ta.oninput = () => { b.text = ta.value; upd(); };
-        out.push(field('Text','', ta), alignField(b, upd));
+        out.push(field('Text','select words, then use the buttons to format them', paragraphField(b, upd)), alignField(b, upd));
       }
       else if (b.type === 'list') {
         const ta = document.createElement('textarea');
@@ -1455,7 +1540,8 @@
         blocks: page.blocks,
         eventDate: page.eventDate || '', eventTime: page.eventTime || '',
         eventEndTime: page.eventEndTime || '', eventEndDate: page.eventEndDate || '',
-        eventLocation: page.eventLocation || '', flyerUrl: page.flyerUrl || '',
+        eventLocation: page.eventLocation || '', eventLocationDetail: page.eventLocationDetail || '',
+        flyerUrl: page.flyerUrl || '',
         hideCard: page.hideCard, hideEventBox: page.hideEventBox,
         parentPageId: document.getElementById('page-parent').value || '',
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
