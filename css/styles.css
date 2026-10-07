@@ -625,21 +625,32 @@ a.pcal-pill:hover { background: #e8ece8; }
 }
 
 /* === "Coming up this week" (same live back-office data as the month calendar) === */
-.pweek-list { display: flex; flex-direction: column; gap: 0; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 6px 20px; }
+.pweek-toggle { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
+.pweek-toggle button {
+  background: var(--white); border: 1px solid var(--border); border-radius: 20px;
+  padding: 7px 20px; font-size: 13px; font-weight: 700; color: var(--text-light); cursor: pointer;
+}
+.pweek-toggle button:hover:not(.active) { background: var(--bg-light, #f4f6f4); }
+.pweek-toggle button.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.pweek-list { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 20px; }
 .pweek-loading, .pweek-empty { text-align: center; color: var(--text-light); font-size: 14px; padding: 20px 0; }
-.pweek-day { display: flex; gap: 16px; padding: 12px 0; border-top: 1px solid var(--border); }
-.pweek-day:first-child { border-top: none; }
-.pweek-daylabel { flex: 0 0 120px; font-size: 13px; font-weight: 800; color: var(--primary); padding-top: 3px; }
-.pweek-items { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.pweek-item { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; border-left: 3px solid var(--primary); background: #f4f6f4; border-radius: 0 var(--radius) var(--radius) 0; padding: 6px 10px; text-decoration: none; color: var(--text); }
+/* Day/Week views -- one column per day, side by side (--pweek-cols set in JS to 1 or 7).
+   Equal-width columns fill the available row on desktop; on a phone the minimum column
+   width no longer fits so the row scrolls horizontally instead of squeezing unreadably
+   thin, keeping the side-by-side layout rather than falling back to a stacked list. */
+.pweek-cols { display: grid; grid-template-columns: repeat(var(--pweek-cols, 7), minmax(130px, 1fr)); gap: 14px; overflow-x: auto; padding-bottom: 4px; }
+.pweek-col { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.pweek-col-label { font-size: 13px; font-weight: 800; color: var(--primary); text-align: center; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+.pweek-col-label.is-today { color: var(--primary-dark); }
+.pweek-col-empty { font-size: 12px; color: var(--text-light); text-align: center; padding: 10px 0; }
+.pweek-items { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.pweek-item { display: flex; flex-direction: column; gap: 1px; border-left: 3px solid var(--primary); background: #f4f6f4; border-radius: 0 var(--radius) var(--radius) 0; padding: 6px 8px; text-decoration: none; color: var(--text); }
 a.pweek-item:hover { background: #e8ece8; }
-.pweek-title { font-size: 13.5px; font-weight: 700; }
-.pweek-meta { font-size: 12px; color: var(--text-light); }
-.pweek-school { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; margin-left: auto; }
+.pweek-title { font-size: 12.5px; font-weight: 700; }
+.pweek-meta { font-size: 11px; color: var(--text-light); }
+.pweek-school { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
 @media (max-width: 640px) {
-  .pweek-day { flex-direction: column; gap: 4px; }
-  .pweek-daylabel { flex: none; }
-  .pweek-school { margin-left: 0; }
+  .pweek-cols { grid-template-columns: repeat(var(--pweek-cols, 7), minmax(120px, 1fr)); }
 }
 
 /* === School Program Cards === */

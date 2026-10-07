@@ -259,10 +259,6 @@
               <div class="deadline-title">Custodian Appreciation Day</div>
               <div class="deadline-date">Oct 2</div>
             </div>
-            <div class="deadline-item" data-expires="2026-10-13">
-              <div class="deadline-title">Go Pink for Breast Cancer</div>
-              <div class="deadline-date">Oct 13</div>
-            </div>
             <div class="deadline-item" data-expires="2026-10-27">
               <div class="deadline-title">Holiday Food Drive Starts</div>
               <div class="deadline-date">Oct 27</div>
@@ -466,9 +462,14 @@
   <section class="section-sm">
     <div class="container">
       <div class="section-heading">
-        <h2>Coming up this week!</h2>
-        <p>Everything on the calendar across all four schools for the next 7 days.</p>
+        <h2 id="pweek-heading">Coming up this week!</h2>
+        <p id="pweek-sub">Everything on the calendar across all four schools for the next 7 days.</p>
         <div class="accent-line"></div>
+      </div>
+      <div class="pweek-toggle" id="pweek-toggle" role="tablist" aria-label="Choose a time range">
+        <button type="button" data-mode="day">Day</button>
+        <button type="button" data-mode="week" class="active">Week</button>
+        <button type="button" data-mode="month">Month</button>
       </div>
       <div class="pweek-list" id="pweek-list">
         <div class="pweek-loading">Loading this week&rsquo;s events&hellip;</div>
@@ -901,7 +902,7 @@
   <script src="js/firebase-config.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
-  <script src="js/public-calendar.js"></script>
+  <script src="js/public-calendar.js?v=2"></script>
   <script>
   // ── Today at Schalmont (Homepage) ─────────────────────────────────────────
   (function() {
@@ -1295,6 +1296,6 @@
     });
   })();
   </script>
-  <script src="js/page-menu.js"></script>
+  <script src="js/page-menu.js?v=2"></script>
 </body>
 </html>

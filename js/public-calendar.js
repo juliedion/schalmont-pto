@@ -122,13 +122,8 @@
       '<div class="pcal-grid"></div>';
   }
 
-  function renderMonth(container, events, year, month) {
-    var label = new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    var now = new Date(), monthDiff = (year - now.getFullYear()) * 12 + (month - now.getMonth());
-    if (monthDiff > 0) label += ' (Next month)';
-    else if (monthDiff < 0) label += ' (Last month)';
-    container.querySelector('.pcal-month-label').textContent = label;
-
+  // Shared by the "Sort by" month tabs and the "Coming up" widget's own Month view.
+  function monthCellsHtml(events, year, month) {
     var byDate = {};
     events.forEach(function (e) {
       if (!e.endDate) { (byDate[e.date] = byDate[e.date] || []).push(e); return; }
@@ -164,14 +159,35 @@
     }
     // Pad the trailing row out to a full week for a tidy grid.
     while (cells.length % 7 !== 0) cells.push('<div class="pcal-cell pcal-cell-empty"></div>');
-
-    container.querySelector('.pcal-grid').innerHTML = cells.join('');
+    return cells.join('');
   }
 
-  // "Coming up this week!" -- same merged event list as the "All Events" month tab,
-  // just windowed to the next 7 days (today through today+6) and listed day by day
-  // instead of laid out on a grid.
-  function renderWeek(container, events) {
+  function renderMonth(container, events, year, month) {
+    var label = new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    var now = new Date(), monthDiff = (year - now.getFullYear()) * 12 + (month - now.getMonth());
+    if (monthDiff > 0) label += ' (Next month)';
+    else if (monthDiff < 0) label += ' (Last month)';
+    container.querySelector('.pcal-month-label').textContent = label;
+    container.querySelector('.pcal-grid').innerHTML = monthCellsHtml(events, year, month);
+  }
+
+  function pweekItemHtml(e) {
+    var color = SCHOOL_COLOR[e.school] || 'var(--primary)';
+    var schoolLabel = SCHOOL_LABEL[e.school] || 'PTO';
+    var meta = [e.time ? prettyTime(e.time) : '', e.location].filter(Boolean).join(' &middot; ');
+    var inner = '<span class="pweek-title">' + esc(e.title) + '</span>' +
+      (meta ? '<span class="pweek-meta">' + meta + '</span>' : '') +
+      '<span class="pweek-school" style="color:' + color + '">' + esc(schoolLabel) + '</span>';
+    return (e.href ? '<a href="' + esc(e.href) + '" class="pweek-item"' : '<div class="pweek-item"') +
+      ' style="border-left-color:' + color + '">' + inner + (e.href ? '</a>' : '</div>');
+  }
+
+  // Day/Week views of the "Coming up" widget -- one column per day (1 for Day, 7 for
+  // Week), laid out side by side instead of stacked, each showing every event that day
+  // (or a quiet "No events" note) so every day in the range gets its own slot whether or
+  // not anything's scheduled -- same merged event list as the Month view and the "Sort
+  // by" tabs below.
+  function renderDayColumns(container, events, numDays) {
     var byDate = {};
     events.forEach(function (e) {
       var cur = new Date(e.date + 'T00:00:00'), last = new Date((e.endDate || e.date) + 'T00:00:00');
@@ -183,44 +199,72 @@
     });
 
     var today = new Date(); today.setHours(0, 0, 0, 0);
-    var days = [];
-    for (var i = 0; i < 7; i++) {
+    var todayStr = ymd(today.getFullYear(), today.getMonth(), today.getDate());
+    var cols = [];
+    for (var i = 0; i < numDays; i++) {
       var d = new Date(today); d.setDate(d.getDate() + i);
       var ds = ymd(d.getFullYear(), d.getMonth(), d.getDate());
       var dayEvents = (byDate[ds] || []).sort(function (a, b) { return (a.time || '').localeCompare(b.time || ''); });
-      if (dayEvents.length) days.push({ date: d, events: dayEvents });
+      var label = numDays === 1
+        ? d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
+        : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      var body = dayEvents.length
+        ? '<div class="pweek-items">' + dayEvents.map(pweekItemHtml).join('') + '</div>'
+        : '<div class="pweek-col-empty">No events</div>';
+      cols.push('<div class="pweek-col"><div class="pweek-col-label' + (ds === todayStr ? ' is-today' : '') + '">' +
+        esc(label) + '</div>' + body + '</div>');
     }
+    container.style.setProperty('--pweek-cols', numDays);
+    container.innerHTML = '<div class="pweek-cols">' + cols.join('') + '</div>';
+  }
 
-    if (!days.length) {
-      container.innerHTML = '<div class="pweek-empty">No events scheduled for the next 7 days.</div>';
-      return;
-    }
+  // Month view of the "Coming up" widget -- the current calendar month, reusing the
+  // exact same grid the "Sort by" tabs use below, just for every school merged together
+  // and with no prev/next navigation (that's what the tabs are for).
+  function renderMonthView(container, events) {
+    var now = new Date();
+    container.style.removeProperty('--pweek-cols');
+    container.innerHTML =
+      '<div class="pcal-weekdays">' + WEEKDAYS.map(function (w) { return '<div>' + w + '</div>'; }).join('') + '</div>' +
+      '<div class="pcal-grid">' + monthCellsHtml(events, now.getFullYear(), now.getMonth()) + '</div>';
+  }
 
-    container.innerHTML = days.map(function (day) {
-      var label = day.date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-      var items = day.events.map(function (e) {
-        var color = SCHOOL_COLOR[e.school] || 'var(--primary)';
-        var schoolLabel = SCHOOL_LABEL[e.school] || 'PTO';
-        var meta = [e.time ? prettyTime(e.time) : '', e.location].filter(Boolean).join(' &middot; ');
-        var inner = '<span class="pweek-title">' + esc(e.title) + '</span>' +
-          (meta ? '<span class="pweek-meta">' + meta + '</span>' : '') +
-          '<span class="pweek-school" style="color:' + color + '">' + esc(schoolLabel) + '</span>';
-        return (e.href ? '<a href="' + esc(e.href) + '" class="pweek-item"' : '<div class="pweek-item"') +
-          ' style="border-left-color:' + color + '">' + inner + (e.href ? '</a>' : '</div>');
-      }).join('');
-      return '<div class="pweek-day"><div class="pweek-daylabel">' + label + '</div><div class="pweek-items">' + items + '</div></div>';
-    }).join('');
+  var UPCOMING_COPY = {
+    day: { heading: 'Coming up today!', sub: 'Everything on the calendar across all four schools for today.' },
+    week: { heading: 'Coming up this week!', sub: 'Everything on the calendar across all four schools for the next 7 days.' },
+    month: { heading: 'Coming up this month!', sub: 'Everything on the calendar across all four schools this month.' }
+  };
+  function renderUpcoming(container, events, mode) {
+    var copy = UPCOMING_COPY[mode] || UPCOMING_COPY.week;
+    var heading = document.getElementById('pweek-heading'), sub = document.getElementById('pweek-sub');
+    if (heading) heading.textContent = copy.heading;
+    if (sub) sub.textContent = copy.sub;
+    if (mode === 'month') { renderMonthView(container, events); return; }
+    if (mode === 'day') { renderDayColumns(container, events, 1); return; }
+    renderDayColumns(container, events, 7);
   }
 
   document.addEventListener('DOMContentLoaded', function () {
     var containers = document.querySelectorAll('.pcal-cal[data-school]');
     var weekEl = document.getElementById('pweek-list');
+    var toggleEl = document.getElementById('pweek-toggle');
     if ((!containers.length && !weekEl) || !window.firebase || !firebase.apps || !firebase.apps.length) return;
 
     var state = { year: new Date().getFullYear(), month: new Date().getMonth() };
     var allEvents = [];
+    var upcomingMode = 'week';
 
     containers.forEach(buildShell);
+
+    if (toggleEl) {
+      toggleEl.addEventListener('click', function (e) {
+        var btn = e.target.closest('button[data-mode]');
+        if (!btn || !weekEl) return;
+        upcomingMode = btn.dataset.mode;
+        toggleEl.querySelectorAll('button').forEach(function (b) { b.classList.toggle('active', b === btn); });
+        renderUpcoming(weekEl, allEvents, upcomingMode);
+      });
+    }
 
     function renderAll() {
       containers.forEach(function (el) {
@@ -243,7 +287,7 @@
     loadEvents().then(function (events) {
       allEvents = events;
       renderAll();
-      if (weekEl) renderWeek(weekEl, events);
+      if (weekEl) renderUpcoming(weekEl, events, upcomingMode);
     }).catch(function () {
       containers.forEach(function (el) {
         el.querySelector('.pcal-grid').innerHTML =
