@@ -204,7 +204,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-storage-compat.js"></script>
   <script src="../js/firebase-config.js"></script>
   <script src="admin-core.js"></script>
   <script src="../js/program-cards.js"></script>
@@ -236,13 +235,17 @@
       if (panel) panel.classList.add('active');
       document.getElementById('crumb-tab').textContent = TAB_LABEL[tab];
 
-      loadPages();
-      loadMedia();
+      // Only one panel is ever visible per visit (switching tabs is a full sidebar
+      // navigation), so only fetch what that panel shows. Loading every tab's data --
+      // plus the calendar AND yearbook iframes, each of which boots its own Firebase and
+      // auth check -- on every open was what made the workspace slow to appear.
       initAssetForm();
       initIdeas();
-      loadIdeas();
-      initCalendarTab();
-      document.getElementById('yearbook-iframe').src = 'yearbook.html?s=' + school + '&embed=1';
+      initCalendarTab(tab === 'calendar');
+      if (tab === 'pages') loadPages();
+      if (tab === 'files' || tab === 'photos') loadMedia();
+      if (tab === 'ideas') loadIdeas();
+      if (tab === 'photos') document.getElementById('yearbook-iframe').src = 'yearbook.html?s=' + school + '&embed=1';
     });
 
     /* ---------------- CALENDAR ---------------- */
@@ -252,9 +255,9 @@
     // requireAdmin). This page's toolbar buttons sit outside the iframe, outside the
     // calendar's own white box, and just proxy their click into the real button inside
     // the (same-origin) iframe, so there's only one implementation of each action.
-    function initCalendarTab() {
+    function initCalendarTab(show) {
       const iframe = document.getElementById('cal-office-iframe');
-      iframe.src = 'calendar.html?s=' + school + '&embed=1';
+      if (show) iframe.src = 'calendar.html?s=' + school + '&embed=1';
 
       document.getElementById('pcal-sheet-btn').style.display = ME.isSuper ? '' : 'none';
       document.getElementById('pcal-district-btn').style.display = ME.isSuper ? '' : 'none';
@@ -893,7 +896,7 @@
           category: p.category || '', schools: pageSchools(p), school: routingSchool(pageSchools(p)),
           blocks: p.blocks || [],
           eventDate: p.eventDate || '', eventTime: p.eventTime || '', eventLocation: p.eventLocation || '',
-          flyerUrl: p.flyerUrl || '',
+          eventLocationDetail: p.eventLocationDetail || '', flyerUrl: p.flyerUrl || '',
           status: 'draft',
           createdBy: ME.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           updatedBy: ME.email, updatedAt: firebase.firestore.FieldValue.serverTimestamp()

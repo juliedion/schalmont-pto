@@ -60,7 +60,7 @@ const OWNER_EMAIL = 'julie@schalmontpto.com';
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.firestore();
-const storage = firebase.storage();
+// (No firebase.storage() -- the site is on the free Spark plan, which has no Storage.)
 
 /* Holds info about the signed-in person once loaded:
    { uid, email, name, isSuper, schools: ['jefferson', ...] } */
