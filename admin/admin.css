@@ -226,6 +226,21 @@ a.bo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 .pg-body .pg-richtext ul, .pg-body .pg-richtext ol { margin-bottom: 0; }
 .pg-body img { border-radius: 10px; margin: 8px 0; }
 .pg-body .pg-caption { font-size: 12px; color: var(--text-light); margin-top: -6px; }
+/* Click-to-enlarge (js/photo-lightbox.js, #pg-body only -- the real published page,
+   not the editor's own preview). A photo that's already a clickable link (QR code,
+   flyer href) keeps a normal pointer; only a plain photo gets the zoom cursor. */
+#pg-body figure:not(:has(> a)) img { cursor: zoom-in; }
+#pg-lightbox { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; }
+#pg-lightbox.open { display: flex; }
+.pg-lb-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.85); }
+.pg-lb-panel { position: relative; z-index: 1; max-width: 92vw; max-height: 92vh; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.pg-lb-img { max-width: 92vw; max-height: 78vh; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,.4); background: #fff; display: block; }
+.pg-lb-bar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.pg-lb-btn { background: #fff; border: none; border-radius: 8px; padding: 9px 18px; font-size: 14px; font-weight: 700; color: var(--text); cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+.pg-lb-btn:hover { background: var(--light-bg); }
+.pg-lb-close { background: var(--primary); color: #fff; }
+.pg-lb-close:hover { background: var(--primary-dark); }
+body.pg-lb-lock { overflow: hidden; }
 /* The site's global `img { display:block }` reset (css/styles.css) means
    text-align on an ancestor has no effect on an image -- centering a block
    element instead needs auto margins on the image itself. */
