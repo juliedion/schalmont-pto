@@ -1275,7 +1275,7 @@ function initContactPage() {
     const fd = new FormData(form);
     const school = fd.get('school') || '';
     const toContact = (school === 'woestina' || school === 'jefferson')
-      ? 'corrie@jeffersonpto.com'
+      ? 'corrie@schalmontpto.com'
       : 'julie@schalmontpto.com';
     const msg = {
       id: 'm' + Date.now(),
