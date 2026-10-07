@@ -21,15 +21,14 @@
       // A page's routing `school` is only set when it belongs to exactly one school --
       // a page shared by several schools (routed under /pto/...) only has `schools`,
       // an array, so it needs its own query to show up in each of those schools' menus.
+      // A page with no school at all (an all-district page) belongs to every school at
+      // once, so it shows up in every single school's own menu here, not tucked away
+      // under PTO-Wide alone.
       var queries = [
         col.where('school', '==', school).where('showInLeftMenu', '==', true).where('status', '==', 'published').get(),
-        col.where('schools', 'array-contains', school).where('showInLeftMenu', '==', true).where('status', '==', 'published').get()
+        col.where('schools', 'array-contains', school).where('showInLeftMenu', '==', true).where('status', '==', 'published').get(),
+        col.where('school', '==', '').where('showInLeftMenu', '==', true).where('status', '==', 'published').get()
       ];
-      // A page with no school at all has nowhere else to live in this menu -- same
-      // convention as the admin back office, it shows up under PTO-Wide specifically.
-      if (school === 'pto') {
-        queries.push(col.where('school', '==', '').where('showInLeftMenu', '==', true).where('status', '==', 'published').get());
-      }
       Promise.all(queries).then(function (results) {
         var seen = {};
         var prefix = SCHOOL_PREFIX[school] || school;
