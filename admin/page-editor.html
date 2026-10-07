@@ -1144,6 +1144,12 @@
         sz.value = ['sm', 'lg'].includes(cb.size) ? cb.size : 'md';
         sz.onchange = () => { cb.size = sz.value === 'md' ? '' : sz.value; upd(); };
         out.push(sz);
+        const alignSel = document.createElement('select');
+        alignSel.style.cssText = 'width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:12.5px;margin-bottom:4px';
+        alignSel.innerHTML = '<option value="">Left</option><option value="center">Center</option><option value="right">Right</option>';
+        alignSel.value = cb.align || '';
+        alignSel.onchange = () => { cb.align = alignSel.value; upd(); };
+        out.push(alignSel);
         const full = document.createElement('label');
         full.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;margin-bottom:4px';
         full.innerHTML = '<input type="checkbox"> Stretch full width of column';
