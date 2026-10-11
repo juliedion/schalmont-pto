@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="Holiday Catalog Fundraiser — Schalmont Central PTO">
+  <meta property="og:description" content="Browse the holiday catalogs: gifts, chocolates, cookie dough, pies, popcorn, LEGO and more. Sale runs Oct. 23 – Nov. 13, 2026.">
+  <meta property="og:image" content="https://schalmontpto.com/images/holiday/signature-01.jpg">
+  <meta property="og:url" content="https://schalmontpto.com/holiday">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://schalmontpto.com/images/holiday/signature-01.jpg">
+  <meta name="description" content="Schalmont Central PTO Holiday Catalog Fundraiser, Oct. 23 – Nov. 13, 2026. Flip through every catalog online.">
+  <title>Holiday Catalog Fundraiser — Schalmont PTO</title>
+  <link rel="stylesheet" href="/css/styles.css?v=6">
+  <link rel="icon" href="/images/favicon.svg">
+  <style>
+    .hc-wrap { max-width: 1100px; margin: 0 auto; }
+    .hc-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 0 0 26px; }
+    .hc-fact { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; }
+    .hc-fact b { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--primary-light); margin-bottom: 4px; }
+    .hc-fact span { font-size: 17px; font-weight: 800; color: var(--primary-dark); line-height: 1.3; }
+    .hc-fact small { display: block; color: var(--text-light); font-size: 13.5px; margin-top: 3px; }
+
+    /* Catalog picker */
+    .hc-picker { display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px 12px; scroll-snap-type: x proximity; }
+    .hc-pick { flex: 0 0 auto; width: 128px; scroll-snap-align: start; border: 2px solid transparent; background: #fff; border-radius: 12px; padding: 6px; text-align: center; box-shadow: var(--shadow-sm); font-family: inherit; }
+    .hc-pick img { width: 100%; height: 150px; object-fit: cover; object-position: top; border-radius: 8px; display: block; background: #eef2ee; }
+    .hc-pick span { display: block; font-size: 12.5px; font-weight: 800; color: var(--text); margin-top: 6px; line-height: 1.25; }
+    .hc-pick:hover { border-color: var(--primary-light); }
+    .hc-pick[aria-pressed="true"] { border-color: var(--primary); background: #eef7ea; }
+    .hc-pick:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+    /* Page turner */
+    .hc-viewer { background: linear-gradient(135deg, #1a3d24, #295c38); border-radius: 18px; padding: 16px; margin-top: 6px; }
+    .hc-title { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; color: #fff; margin: 0 4px 12px; }
+    .hc-title h2 { color: #fff; font-size: 20px; margin: 0; }
+    .hc-count { font-weight: 800; color: #a5e54a; font-size: 14px; }
+    .hc-stage { position: relative; perspective: 2200px; display: flex; align-items: center; justify-content: center; min-height: 240px; }
+    .hc-page { position: relative; margin: 0 auto; background: #fff; border-radius: 6px; box-shadow: 0 14px 40px rgba(0,0,0,.4); overflow: hidden; transform-origin: center; }
+    .hc-page img { display: block; width: 100%; height: 100%; object-fit: contain; }
+    .hc-page.turn-next { animation: hcNext .45s ease; }
+    .hc-page.turn-prev { animation: hcPrev .45s ease; }
+    @keyframes hcNext { 0% { transform: rotateY(28deg) translateX(40px); opacity: .25; transform-origin: left center; } 100% { transform: none; opacity: 1; } }
+    @keyframes hcPrev { 0% { transform: rotateY(-28deg) translateX(-40px); opacity: .25; transform-origin: right center; } 100% { transform: none; opacity: 1; } }
+    .hc-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 2; width: 48px; height: 48px; border-radius: 50%; border: 0; background: rgba(255,255,255,.95); color: var(--primary-dark); font-size: 26px; line-height: 1; box-shadow: 0 4px 14px rgba(0,0,0,.3); display: grid; place-items: center; }
+    .hc-arrow:hover:not(:disabled) { background: #a5e54a; }
+    .hc-arrow:disabled { opacity: .35; cursor: default; }
+    .hc-arrow:focus-visible { outline: 3px solid #a5e54a; outline-offset: 2px; }
+    .hc-prev { left: 4px; } .hc-next { right: 4px; }
+    .hc-tools { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .hc-tools a, .hc-tools button { font-family: inherit; font-size: 13.5px; font-weight: 700; color: #fff; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.35); border-radius: 999px; padding: 7px 14px; text-decoration: none; }
+    .hc-tools a:hover, .hc-tools button:hover { background: #a5e54a; color: #1a3d24; border-color: #a5e54a; }
+    .hc-thumbs { display: flex; gap: 6px; overflow-x: auto; margin-top: 12px; padding-bottom: 4px; }
+    .hc-thumb { flex: 0 0 auto; height: 64px; border: 2px solid transparent; border-radius: 4px; padding: 0; background: #fff; opacity: .7; }
+    .hc-thumb img { height: 100%; width: auto; display: block; border-radius: 2px; }
+    .hc-thumb[aria-current="true"] { border-color: #a5e54a; opacity: 1; }
+    .hc-thumb:hover { opacity: 1; }
+    .hc-hint { text-align: center; color: rgba(255,255,255,.75); font-size: 13px; margin-top: 8px; }
+
+    .hc-how { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 28px; }
+    .hc-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px; }
+    .hc-card h3 { margin: 0 0 10px; font-size: 18px; color: var(--primary-dark); }
+    .hc-card ol, .hc-card ul { margin: 0; padding-left: 20px; list-style: revert; }
+    .hc-card li { margin: 6px 0; line-height: 1.5; }
+    .hc-flyers { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    @media (max-width: 760px) {
+      .hc-how { grid-template-columns: 1fr; }
+      .hc-viewer { padding: 10px; border-radius: 14px; }
+      .hc-arrow { width: 40px; height: 40px; font-size: 22px; }
+      .hc-thumbs { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) { .hc-page.turn-next, .hc-page.turn-prev { animation: none; } }
+  </style>
+</head>
+<body>
+
+  <div id="sc-header"></div>
+
+  <div class="homepage-layout">
+    <div id="sc-sidenav"></div>
+    <div class="homepage-main">
+
+      <section class="page-hero" style="background:linear-gradient(135deg,#045c28 0%,#087d40 100%)">
+        <div class="container">
+          <h1 style="margin:0">Holiday Catalog Fundraiser</h1>
+          <p style="margin:10px 0 0">Support the Schalmont Central PTO! Every purchase helps bring events and programs to students and teachers across the district.</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container hc-wrap">
+
+          <div class="hc-facts">
+            <div class="hc-fact"><b>Sale dates</b><span>Oct. 23 – Nov. 13, 2026</span><small>Order forms due Nov. 13</small></div>
+            <div class="hc-fact"><b>Pickup</b><span>Mon., Dec. 14, 2026</span><small>4:30 – 7:30 PM, High School Cafeteria</small></div>
+            <div class="hc-fact"><b>Order online</b><span><a href="https://www.profit-raisers.com" target="_blank" rel="noopener">profit-raisers.com ↗</a></span><small>Or the free MyFundR app</small></div>
+          </div>
+
+          <h2 style="font-size:22px;color:var(--primary-dark);margin:0 0 10px">Browse the catalogs</h2>
+          <div class="hc-picker" id="hc-picker" role="group" aria-label="Choose a catalog"></div>
+
+          <div class="hc-viewer" id="hc-viewer">
+            <div class="hc-title">
+              <h2 id="hc-name">Catalog</h2>
+              <span class="hc-count" id="hc-count" aria-live="polite"></span>
+            </div>
+            <div class="hc-stage" id="hc-stage">
+              <button type="button" class="hc-arrow hc-prev" id="hc-prev" aria-label="Previous page">&#8249;</button>
+              <div class="hc-page" id="hc-page"><img id="hc-img" alt=""></div>
+              <button type="button" class="hc-arrow hc-next" id="hc-next" aria-label="Next page">&#8250;</button>
+            </div>
+            <p class="hc-hint">Use the arrows, swipe, or your keyboard's ← → keys to turn pages.</p>
+            <div class="hc-thumbs" id="hc-thumbs" aria-label="Jump to a page"></div>
+            <div class="hc-tools">
+              <a id="hc-open" href="#" target="_blank" rel="noopener">🔍 Open this page full size</a>
+            </div>
+          </div>
+
+          <div class="hc-how">
+            <div class="hc-card">
+              <h3>How you can help</h3>
+              <ul>
+                <li>Show the catalogs to family and friends, and ask parents to take them to work.</li>
+                <li><b>Register online</b> at <a href="https://www.profit-raisers.com" target="_blank" rel="noopener">profit-raisers.com</a> or in the free <b>MyFundR</b> app, so you can send your fundraising link by email, text and social media.</li>
+                <li>Online orders count toward student prizes. They ship to our group and are delivered with your paper order, unless the customer picks a ship-to-home item.</li>
+              </ul>
+            </div>
+            <div class="hc-card">
+              <h3>Paper order forms — remember to:</h3>
+              <ol>
+                <li>Make checks or money orders payable to <b>Schalmont MS PTO</b>.</li>
+                <li><b>Do not collect tax.</b></li>
+                <li>Fill in the top of the order form with your address, email and phone number.</li>
+                <li>Print brochure item codes clearly.</li>
+                <li>Return <b>both parts</b> of the order form by <b>November 13, 2026</b>.</li>
+              </ol>
+              <div class="hc-flyers">
+                <a class="btn btn-primary" style="font-size:13.5px;padding:8px 16px" href="/images/holiday/fall-fundraiser-flyer-2026.jpg" target="_blank" rel="noopener">📄 Fundraiser flyer</a>
+                <a class="btn" style="font-size:13.5px;padding:8px 16px;border:2px solid var(--primary);color:var(--primary);background:#fff" href="/images/holiday/myfundr-app-guide.jpg" target="_blank" rel="noopener">📱 MyFundR app guide</a>
+              </div>
+            </div>
+          </div>
+
+          <p style="text-align:center;margin-top:24px"><a href="/october">← Back to October events</a> &nbsp;·&nbsp; <a href="/fundraisers">All fundraisers</a></p>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <div id="sc-footer"></div>
+
+  <script src="/js/site-chrome.js?v=2"></script>
+  <script>renderSiteChrome();</script>
+  <script>
+  (function () {
+    // Each catalog's pages are images/holiday/<key>-NN.jpg (rendered from the vendor PDFs).
+    // [width, height] per page so the viewer can reserve the right shape (no jumping).
+    var CATALOGS = [
+      { key: 'signature', name: 'Signature Gift Collection', pages: [[1155,1500]].concat(Array(11).fill([1500,974])).concat([[1155,1500]]) },
+      { key: 'cookies',   name: "David's Cookie Dough",      pages: [[1500,971],[1500,971]] },
+      { key: 'pies',      name: 'Pies',                      pages: [[1159,1500],[1500,1159],[1159,1500]] },
+      { key: 'popcorn',   name: '1812 Popcorn',              pages: Array(4).fill([1159,1500]) },
+      { key: 'party',     name: 'Party Time Favorites',      pages: Array(8).fill([1159,1500]) },
+      { key: 'lego',      name: 'LEGO',                      pages: Array(4).fill([1176,1500]) },
+      { key: 'chicobag',  name: 'ChicoBag',                  pages: Array(8).fill([1159,1500]) }
+    ];
+    var picker = document.getElementById('hc-picker'), stage = document.getElementById('hc-stage');
+    var pageEl = document.getElementById('hc-page'), img = document.getElementById('hc-img');
+    var prev = document.getElementById('hc-prev'), next = document.getElementById('hc-next');
+    var thumbs = document.getElementById('hc-thumbs'), count = document.getElementById('hc-count');
+    var cat = CATALOGS[0], idx = 0;
+    function src(c, i) { return '/images/holiday/' + c.key + '-' + String(i + 1).padStart(2, '0') + '.jpg'; }
+
+    picker.innerHTML = CATALOGS.map(function (c, i) {
+      return '<button type="button" class="hc-pick" data-i="' + i + '" aria-pressed="' + (i === 0) + '">' +
+        '<img src="/images/holiday/covers/' + c.key + '.jpg" alt="" loading="lazy" width="116" height="150"><span>' + c.name + '</span></button>';
+    }).join('');
+
+    // Fit the page into the stage: as wide as allowed, but never taller than the window.
+    function size() {
+      var p = cat.pages[idx], avail = stage.clientWidth - (window.innerWidth < 760 ? 0 : 120);
+      var maxH = Math.max(320, window.innerHeight - 190);
+      var w = Math.min(avail, p[0], maxH * p[0] / p[1]);
+      pageEl.style.width = Math.round(w) + 'px';
+      pageEl.style.height = Math.round(w * p[1] / p[0]) + 'px';
+    }
+    function show(i, dir) {
+      idx = Math.max(0, Math.min(cat.pages.length - 1, i));
+      size();
+      img.src = src(cat, idx);
+      img.alt = cat.name + ', page ' + (idx + 1) + ' of ' + cat.pages.length;
+      document.getElementById('hc-open').href = src(cat, idx);
+      count.textContent = 'Page ' + (idx + 1) + ' of ' + cat.pages.length;
+      prev.disabled = idx === 0; next.disabled = idx === cat.pages.length - 1;
+      [].forEach.call(thumbs.children, function (t, k) { if (k === idx) t.setAttribute('aria-current', 'true'); else t.removeAttribute('aria-current'); });
+      if (dir) { pageEl.classList.remove('turn-next', 'turn-prev'); void pageEl.offsetWidth; pageEl.classList.add(dir > 0 ? 'turn-next' : 'turn-prev'); }
+      // Load the next page ahead of time so turning feels instant.
+      if (idx + 1 < cat.pages.length) { var pre = new Image(); pre.src = src(cat, idx + 1); }
+    }
+    function openCatalog(i, scroll) {
+      cat = CATALOGS[i];
+      document.getElementById('hc-name').textContent = cat.name;
+      [].forEach.call(picker.children, function (b, k) { b.setAttribute('aria-pressed', String(k === i)); });
+      thumbs.innerHTML = cat.pages.map(function (_, k) {
+        return '<button type="button" class="hc-thumb" data-p="' + k + '" aria-label="Page ' + (k + 1) + '"><img src="' + src(cat, k) + '" alt="" loading="lazy"></button>';
+      }).join('');
+      show(0);
+      try { history.replaceState(null, '', '#' + cat.key); } catch (_) {}
+      if (scroll) document.getElementById('hc-viewer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    picker.addEventListener('click', function (e) { var b = e.target.closest('.hc-pick'); if (b) openCatalog(+b.dataset.i, true); });
+    thumbs.addEventListener('click', function (e) { var b = e.target.closest('.hc-thumb'); if (b) show(+b.dataset.p, +b.dataset.p > idx ? 1 : -1); });
+    prev.onclick = function () { if (idx > 0) show(idx - 1, -1); };
+    next.onclick = function () { if (idx < cat.pages.length - 1) show(idx + 1, 1); };
+    document.addEventListener('keydown', function (e) {
+      if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+      if (e.key === 'ArrowRight') next.onclick();
+      if (e.key === 'ArrowLeft') prev.onclick();
+    });
+    var x0 = null;
+    stage.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+    stage.addEventListener('touchend', function (e) {
+      if (x0 === null) return;
+      var dx = e.changedTouches[0].clientX - x0; x0 = null;
+      if (dx < -40) next.onclick(); else if (dx > 40) prev.onclick();
+    });
+    // Tap the right or left half of the page to turn it.
+    pageEl.addEventListener('click', function (e) {
+      var r = pageEl.getBoundingClientRect();
+      if (e.clientX - r.left > r.width / 2) next.onclick(); else prev.onclick();
+    });
+    window.addEventListener('resize', size);
+    var start = CATALOGS.map(function (c) { return c.key; }).indexOf(location.hash.slice(1));
+    openCatalog(start < 0 ? 0 : start, false);
+  })();
+  </script>
+</body>
+</html>

@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta property="og:title" content="Schalmont PTO — Coming Up in October">
   <meta property="og:description" content="Tat the Teacher, the Candy Monster, the Capital Project vote, our first fall PTO meeting, the Holiday Catalog fundraiser and Trail of Treats.">
-  <meta property="og:image" content="https://schalmontpto.com/images/flyers/october-2026.jpg">
+  <meta property="og:image" content="https://schalmontpto.com/images/flyers/october-2026.jpg?v=2">
   <meta property="og:url" content="https://schalmontpto.com/october">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://schalmontpto.com/images/flyers/october-2026.jpg">
+  <meta name="twitter:image" content="https://schalmontpto.com/images/flyers/october-2026.jpg?v=2">
   <meta name="description" content="Everything the Schalmont PTO has coming up in October 2026, with links to each event.">
   <title>Coming Up in October — Schalmont PTO</title>
   <link rel="stylesheet" href="/css/styles.css?v=6">
@@ -26,6 +26,13 @@
     }
     .month-flyer a:hover { background: rgba(255,255,255,.12); box-shadow: inset 0 0 0 4px #a5e54a; }
     .month-flyer a:focus-visible { outline: none; box-shadow: inset 0 0 0 5px #1a3d24; background: rgba(165,229,74,.18); }
+    /* A visible "Details →" tag on every event band so it's obvious they're tappable. */
+    .mf-tag {
+      position: absolute; right: 2.2%; bottom: 12%; font-size: clamp(10px, 1.5vw, 13px); font-weight: 800;
+      color: #1a3d24; background: #a5e54a; border-radius: 999px; padding: .35em .85em; line-height: 1;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25); transition: transform .15s ease;
+    }
+    .month-flyer a:hover .mf-tag, .month-flyer a:focus-visible .mf-tag { transform: scale(1.08); background: #fff; }
     .month-flyer-hint { text-align: center; color: var(--text-light); font-size: 14px; margin: 0 0 14px; }
     .month-links { margin: 28px auto 0; max-width: 820px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
     .month-links a {
@@ -55,30 +62,30 @@
       <section class="section">
         <div class="container">
           <div class="month-flyer-wrap">
-            <p class="month-flyer-hint">Tap any event on the flyer for details and sign-ups.</p>
+            <p class="month-flyer-hint">👆 Tap any event box on the flyer (look for the green <b>Details</b> tags) for info and sign-ups.</p>
             <div class="month-flyer">
-              <img src="/images/flyers/october-2026.jpg" width="1102" height="1427"
-                   alt="Schalmont PTO — Coming up in October: Tat the Teacher, Oct 12–16; Feed the Candy Monster and call for volunteers, Oct 7–30; Capital Project vote, Oct 14; First Fall PTO Meeting, Oct 22 at 6 PM in the Middle School Library; Holiday Catalog fundraiser, Oct 23; Trail of Treats, Oct 30, 6–9 PM on the Middle School back fields.">
-              <a href="/pto/tattheteacher" style="top:13.74%;height:14.44%" aria-label="Tat the Teacher, October 12 to 16"></a>
-              <a href="/trail-of-treats-volunteers" style="top:28.52%;height:15.63%" aria-label="Feed the Candy Monster and volunteer for Trail of Treats, October 7 to 30"></a>
-              <a href="https://www.schalmont.org/capital-project/" target="_blank" rel="noopener" style="top:44.57%;height:14.02%" aria-label="Capital Project vote, October 14 (opens the district's capital project information)"></a>
-              <a href="/pto/fall-pto-meeting" style="top:59.01%;height:12.68%" aria-label="First Fall PTO Meeting, October 22 at 6 PM"></a>
-              <a href="/fundraisers" style="top:72.11%;height:11.28%" aria-label="Holiday Catalog fundraiser, October 23"></a>
-              <a href="/trailoftreats" style="top:83.81%;height:13.95%" aria-label="Trail of Treats, October 30, 6 to 9 PM"></a>
+              <img src="/images/flyers/october-2026.jpg?v=2" width="1102" height="1427"
+                   alt="Schalmont PTO — Coming up in October: Tat the Teacher, Oct 12–16; Feed the Candy Monster and call for volunteers, Oct 7–30; Capital Project vote, Thursday Oct 15; First Fall PTO Meeting, Oct 22 at 6 PM in the Middle School Library; Holiday Catalog fundraiser, Oct 23; Trail of Treats, Oct 30, 6–9 PM on the Middle School back fields.">
+              <a href="/pto/tattheteacher" style="top:13.74%;height:14.44%" aria-label="Tat the Teacher, October 12 to 16"><span class="mf-tag" aria-hidden="true">Details →</span></a>
+              <a href="/trail-of-treats-volunteers" style="top:28.52%;height:15.63%" aria-label="Feed the Candy Monster and volunteer for Trail of Treats, October 7 to 30"><span class="mf-tag" style="bottom:3%;right:16%" aria-hidden="true">Details →</span></a>
+              <a href="https://www.schalmont.org/capital-project/" target="_blank" rel="noopener" style="top:44.57%;height:14.02%" aria-label="Capital Project vote, Thursday October 15 (opens the district's capital project information)"><span class="mf-tag" aria-hidden="true">Info ↗</span></a>
+              <a href="/pto/fall-pto-meeting" style="top:59.01%;height:12.68%" aria-label="First Fall PTO Meeting, October 22 at 6 PM"><span class="mf-tag" aria-hidden="true">Details →</span></a>
+              <a href="/holiday" style="top:72.11%;height:11.28%" aria-label="Holiday Catalog fundraiser, October 23"><span class="mf-tag" aria-hidden="true">Details →</span></a>
+              <a href="/trailoftreats" style="top:83.81%;height:13.95%" aria-label="Trail of Treats, October 30, 6 to 9 PM"><span class="mf-tag" aria-hidden="true">Details →</span></a>
             </div>
           </div>
 
           <nav class="month-links" aria-label="October events">
             <a href="/pto/tattheteacher"><span class="d">Oct 12–16</span>Tat the Teacher</a>
             <a href="/trail-of-treats-volunteers"><span class="d">Oct 7–30</span>Feed the Candy Monster &amp; Volunteer</a>
-            <a href="https://www.schalmont.org/capital-project/" target="_blank" rel="noopener"><span class="d">Oct 14</span>Capital Project Vote ↗</a>
+            <a href="https://www.schalmont.org/capital-project/" target="_blank" rel="noopener"><span class="d">Thu Oct 15</span>Capital Project Vote ↗</a>
             <a href="/pto/fall-pto-meeting"><span class="d">Oct 22</span>First Fall PTO Meeting</a>
-            <a href="/fundraisers"><span class="d">Oct 23</span>Holiday Catalog Fundraiser</a>
+            <a href="/holiday"><span class="d">Oct 23</span>Holiday Catalog Fundraiser</a>
             <a href="/trailoftreats"><span class="d">Oct 30</span>Trail of Treats</a>
           </nav>
 
           <div class="month-actions">
-            <a href="/images/flyers/october-2026.png" class="btn" style="border:2px solid var(--primary);color:var(--primary);background:#fff" download>⬇ Download the flyer</a>
+            <a href="/images/flyers/october-2026.png?v=2" class="btn" style="border:2px solid var(--primary);color:var(--primary);background:#fff" download>⬇ Download the flyer</a>
             <a href="/events" class="btn btn-primary">📅 Full calendar</a>
           </div>
         </div>
