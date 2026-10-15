@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch: {}   # lets the daily lunch-menu job deploy its update
 
 jobs:
   deploy:

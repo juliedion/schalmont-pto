@@ -38,11 +38,15 @@
   // Every visit to the homepage or any school page calls this -- cache the result in
   // sessionStorage for a few minutes so browsing several pages in one visit doesn't
   // re-read both collections from Firestore each time.
-  var CACHE_KEY = 'pcalEvents', CACHE_MS = 10 * 60000;
-  function loadEvents() {
+  // loadAll() also keeps the district's own synced entries (school closings, early
+  // release, board meetings) as a separate `district` list -- the homepage's combined
+  // calendar has a District filter; everything else only wants `events`.
+  var CACHE_KEY = 'pcalEvents2', CACHE_MS = 10 * 60000;
+  function loadEvents() { return loadAll().then(function (r) { return r.events; }); }
+  function loadAll() {
     try {
       var cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
-      if (cached && Date.now() - cached.at < CACHE_MS) return Promise.resolve(cached.events);
+      if (cached && Date.now() - cached.at < CACHE_MS) return Promise.resolve(cached);
     } catch (_) { /* sessionStorage blocked or corrupt -- fetch fresh below */ }
 
     var db = firebase.firestore();
@@ -54,6 +58,7 @@
     ]).then(function (results) {
       var eventsSnap = results[0], pagesSnap = results[1];
       var byKey = {};       // title+date -> merged event
+      var district = [];
       var pageByTitle = {}; // title alone -> {href, time, location} (first match wins)
 
       pagesSnap.docs.forEach(function (d) {
@@ -82,7 +87,11 @@
         // The district's own school-closing/early-release entries already have their own
         // District tab (the embedded Google Calendar) -- keep them out of the back-office
         // tabs so they don't show twice, once here and once under School PTO (MS & HS).
-        if (e.category === 'District Calendar' || e.source === 'gcal') return;
+        if (e.category === 'District Calendar' || e.source === 'gcal') {
+          district.push({ title: e.title, date: e.date, endDate: e.endDate && e.endDate > e.date ? e.endDate : '',
+            time: e.time || '', location: e.location || '', school: 'district', href: null });
+          return;
+        }
         var titleKey = e.title.trim().toLowerCase();
         var key = titleKey + '|' + e.date;
         // Link to a page with the same title even if its own event date has drifted from
@@ -100,10 +109,13 @@
       });
 
       var events = Object.keys(byKey).map(function (k) { return byKey[k]; });
-      try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), events: events })); } catch (_) {}
-      return events;
+      var result = { at: Date.now(), events: events, district: district };
+      try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(result)); } catch (_) {}
+      return result;
     });
   }
+
+  window.PTOEventData = { loadAll: loadAll };
 
   function eventsForSchool(events, school) {
     if (school === 'all') return events;

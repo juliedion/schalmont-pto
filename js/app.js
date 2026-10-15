@@ -39,6 +39,7 @@ function initNavToggle() {
   const toggle = $('#nav-toggle');
   const links  = $('.nav-links');
   if (!toggle || !links) return;
+  if (toggle.dataset.bound) return;   // already wired up early (homepage js/home.js)
   toggle.addEventListener('click', () => {
     links.classList.toggle('open');
     toggle.setAttribute('aria-expanded', links.classList.contains('open'));

@@ -10,768 +10,355 @@
   <meta name="twitter:image" content="https://schalmontpto.com/images/Schalmont-PTO-logo.png">
   <title>Schalmont PTO — Parent-Teacher Organization</title>
   <meta name="description" content="The official website of the Schalmont Central Schools Parent-Teacher Organization. Events, directory, spirit shop, and more.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="css/styles.css?v=6">
+  <link rel="stylesheet" href="css/home.css?v=1">
+  <link rel="preload" as="image" href="images/hero-wide/hero-01.jpg" fetchpriority="high">
   <link rel="icon" href="images/favicon.svg">
 </head>
-<body>
+<body class="home2">
+  <a class="hz-skip" href="#main">Skip to main content</a>
 
   <!-- HEADER -->
   <header class="site-header">
-    <nav class="container nav-inner">
-      <a href="index.html" class="nav-brand">
-        <img src="images/logo.png" alt="Schalmont Central PTO" class="nav-logo-img">
+    <nav class="container nav-inner" aria-label="Main">
+      <a href="index.html" class="nav-brand hz-brand" aria-label="Schalmont PTO home">
+        <img src="images/logo-web.png" alt="Schalmont Central PTO" class="nav-logo-img" width="360" height="230">
+        <img src="images/jes-pto-tiger-web.png" alt="Woestina/Jefferson PTO" class="nav-logo-img" width="422" height="300">
       </a>
-      <ul class="nav-links">
+      <ul class="nav-links" id="site-nav-links">
         <li><a href="index.html">Home</a></li>
         <li class="has-dropdown">
-          <a href="schools.html">Schools</a>
+          <a aria-haspopup="true" href="jefferson.html">Woestina/Jefferson PTO</a>
           <ul class="nav-dropdown">
-            <li><a href="woestina.html">🌱 Woestina Pre-K</a></li>
-            <li><a href="jefferson.html">🏫 Jefferson Elementary</a></li>
-            <li><a href="middle-school.html">📚 Middle School</a></li>
-            <li><a href="high-school.html">🎓 High School</a></li>
+            <li><a href="index.html#calendar-jefferson">Events</a></li>
+            <li><a href="jefferson.html#program-grid">Programs</a></li>
+            <li><a href="about.html#jefferson-pto">About</a></li>
+            <li><a href="meetings.html#jefferson-pto">Meetings</a></li>
+            <li><a href="fundraisers.html#jefferson-pto">Shop to Support</a></li>
+            <li><a href="faq.html#jefferson-pto">FAQs</a></li>
+            <li><a href="donate.html">Donate</a></li>
+            <li><a href="volunteer.html">Volunteer</a></li>
           </ul>
         </li>
-        <li><a href="events.html">Events</a></li>
         <li class="has-dropdown">
-          <a href="shop.html">Shop</a>
+          <a aria-haspopup="true" href="about.html#schalmont-central-pto">Schalmont PTO</a>
           <ul class="nav-dropdown">
-            <li><a href="shop.html">👕 Spiritwear</a></li>
-            <li><a href="fundraisers.html">💰 Fundraisers</a></li>
+            <li><a href="index.html#calendar-schalmont">Events</a></li>
+            <li><a href="middle-school.html#program-grid">Programs</a></li>
+            <li><a href="about.html#schalmont-central-pto">About</a></li>
+            <li><a href="meetings.html#schalmont-central-pto">Meetings</a></li>
+            <li><a href="fundraisers.html#schalmont-central-pto">Shop to Support</a></li>
+            <li><a href="faq.html#schalmont-central-pto">FAQs</a></li>
+            <li><a href="donate.html">Donate</a></li>
+            <li><a href="volunteer.html">Volunteer</a></li>
           </ul>
         </li>
-        <li><a href="fundraisers.html">Fundraisers</a></li>
-        <li><a href="yearbooks.html">Yearbook</a></li>
+        <li><a href="shop.html">Shop</a></li>
         <li><a href="directory.html">Directory</a></li>
         <li class="has-dropdown">
-          <a href="contact.html">Contact</a>
+          <a aria-haspopup="true" href="contact.html">Contact</a>
           <ul class="nav-dropdown">
-            <li><a href="about.html">About</a></li>
-            <li><a href="social.html">Social</a></li>
-            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="about.html#what-we-do">What the PTO Does</a></li>
+            <li><a href="fundraisers.html#advertise">Advertise to Support</a></li>
           </ul>
         </li>
-        <li><a href="login.html" class="btn btn-primary" style="padding:6px 16px;font-size:14px;color:#000000" id="nav-login-btn">Login/Register</a></li>
-        
-        <li><a href="https://www.facebook.com/groups/schalmontpto/" target="_blank" rel="noopener" class="nav-social-icon" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a></li>
-        <li><a href="https://www.instagram.com/schalmontpto/" target="_blank" rel="noopener" class="nav-social-icon" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li>
+        <li><a href="login.html" class="nav-login" id="nav-login-btn">Login/Register</a></li>
+        <li class="nav-social-row"><a href="https://www.facebook.com/groups/schalmontpto/" target="_blank" rel="noopener" class="nav-social-icon" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a><a href="https://www.instagram.com/schalmontpto/" target="_blank" rel="noopener" class="nav-social-icon" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li>
+        <li><a href="get-involved.html" class="nav-cta">Get Involved</a></li>
       </ul>
-      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-links">☰</button>
     </nav>
   </header>
 
-  <!-- HERO -->
-  <section class="home-hero" id="hero-slider" style="min-height:615px;display:flex;align-items:flex-start;position:relative">
-    <!-- Slides rendered by JS (full height, right-side images) -->
-    <div id="hero-slides" style="position:absolute;top:0;right:0;bottom:0;left:0;z-index:1"></div>
-    <!-- Prev/Next arrows -->
-    <button id="hero-prev" class="hero-arrow hero-arrow-prev" aria-label="Previous slide">&#8249;</button>
-    <button id="hero-next" class="hero-arrow hero-arrow-next" aria-label="Next slide">&#8250;</button>
+  <main id="main">
+  <div class="hz-top">
 
-    <!-- Content -->
-    <div class="container" style="position:relative;z-index:3">
-      <div class="hero-content">
-        <img src="images/logo.png" alt="Schalmont Central PTO" style="height:110px;width:auto;display:block;margin-bottom:22px;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.35))">
-        <p class="eyebrow">Schalmont Central Schools PTO</p>
-        <h1>Creators of <span>the magic.</span></h1>
-        <p>The Parent-Teacher Organizations (PTO) of Schalmont Central Schools connects families and staff from Woestina, Jefferson Elementary, Schalmont Middle School and Schalmont High School. We support our students, fund enriching programs, and build a stronger community for every Sabre.</p>
-        <div class="hero-actions">
-          <a href="events.html" class="btn btn-primary btn-lg">📅 View Events</a>
-          <a href="#find-your-school" class="btn btn-outline btn-lg">🏫 Find My School</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="homepage-layout">
-
-    <!-- LEFT SIDEBAR -->
-    <aside class="homepage-sidenav">
-      <div class="sidenav-heading">Browse</div>
-      <a href="index.html" class="sidenav-item">Home</a>
-      <a href="events.html" class="sidenav-item">Events Calendar</a>
-
-      <div class="sidenav-heading">Schools</div>
-      <a href="schools.html" class="sidenav-item">All Schools</a>
-
-      <div class="sidenav-group">
-        <button class="sidenav-item sidenav-toggle" data-target="snav-woestina">Woestina Pre-K <span class="sidenav-arrow">&#9660;</span></button>
-        <div class="sidenav-submenu" id="snav-woestina">
-          <a href="woestina.html" class="sidenav-item sub">Overview</a>
-          <a href="woestina.html#yearbook" class="sidenav-item sub">Yearbook</a>
-          <a href="classof2040.html" class="sidenav-item sub">Class of 2040 — Pre-Kindergarten</a>
-        </div>
-      </div>
-
-      <div class="sidenav-group">
-        <button class="sidenav-item sidenav-toggle" data-target="snav-jefferson">Jefferson Elementary <span class="sidenav-arrow">&#9660;</span></button>
-        <div class="sidenav-submenu" id="snav-jefferson">
-          <a href="jefferson.html" class="sidenav-item sub">Overview</a>
-          <a href="jefferson.html#yearbook" class="sidenav-item sub">Yearbook</a>
-          <a href="classof2035.html" class="sidenav-item sub">Class of 2035 — 4th Grade</a>
-          <a href="classof2036.html" class="sidenav-item sub">Class of 2036 — 3rd Grade</a>
-          <a href="classof2037.html" class="sidenav-item sub">Class of 2037 — 2nd Grade</a>
-          <a href="classof2038.html" class="sidenav-item sub">Class of 2038 — 1st Grade</a>
-          <a href="classof2039.html" class="sidenav-item sub">Class of 2039 — Kindergarten</a>
-        </div>
-      </div>
-
-      <div class="sidenav-group">
-        <button class="sidenav-item sidenav-toggle" data-target="snav-middle">Middle School <span class="sidenav-arrow">&#9660;</span></button>
-        <div class="sidenav-submenu" id="snav-middle">
-          <a href="middle-school.html" class="sidenav-item sub">Overview</a>
-          <a href="middle-school.html#yearbook" class="sidenav-item sub">Yearbook</a>
-          <a href="classof2031.html" class="sidenav-item sub">Class of 2031 — 8th Grade</a>
-          <a href="classof2032.html" class="sidenav-item sub">Class of 2032 — 7th Grade</a>
-          <a href="classof2033.html" class="sidenav-item sub">Class of 2033 — 6th Grade</a>
-          <a href="classof2034.html" class="sidenav-item sub">Class of 2034 — 5th Grade</a>
-        </div>
-      </div>
-
-      <div class="sidenav-group">
-        <button class="sidenav-item sidenav-toggle" data-target="snav-high">High School <span class="sidenav-arrow">&#9660;</span></button>
-        <div class="sidenav-submenu" id="snav-high">
-          <a href="high-school.html" class="sidenav-item sub">Overview</a>
-          <a href="high-school.html#yearbook" class="sidenav-item sub">Yearbook</a>
-          <a href="classof2027.html" class="sidenav-item sub">Class of 2027 — Seniors</a>
-          <a href="classof2028.html" class="sidenav-item sub">Class of 2028 — Juniors</a>
-          <a href="classof2029.html" class="sidenav-item sub">Class of 2029 — Sophomores</a>
-          <a href="classof2030.html" class="sidenav-item sub">Class of 2030 — Freshmen</a>
-        </div>
-      </div>
-
-      <div class="sidenav-group">
-        <button class="sidenav-item sidenav-toggle" data-target="snav-pto">PTO-Wide <span class="sidenav-arrow">&#9660;</span></button>
-        <div class="sidenav-submenu" id="snav-pto">
-        </div>
-      </div>
-
-      <div class="sidenav-heading">Resources</div>
-      <a href="directory.html" class="sidenav-item">Directory</a>
-      <a href="donate.html" class="sidenav-item">Donate</a>
-      <a href="events.html" class="sidenav-item">Events</a>
-      <a href="fundraisers.html" class="sidenav-item">Fundraisers</a>
-      <a href="gallery.html" class="sidenav-item">Gallery</a>
-      <a href="schools.html" class="sidenav-item">Schools</a>
-      <a href="family-scouts.html" class="sidenav-item">Scouts</a>
-      <a href="shop.html" class="sidenav-item">Shop</a>
-      <a href="social.html" class="sidenav-item">Social Media</a>
-      <a href="sports.html" class="sidenav-item">Sports</a>
-      <a href="yearbooks.html" class="sidenav-item">Yearbooks</a>
-
-      <div class="sidenav-heading">Connect</div>
-      <a href="about.html" class="sidenav-item">About the PTO</a>
-      <a href="social.html" class="sidenav-item">Social Media Links</a>
-      <a href="contact.html" class="sidenav-item">Contact Us</a>
-      <div class="sidenav-donate-wrap" style="display:flex;flex-direction:column;gap:5px;padding:10px 8px 8px">
-
-      </div>
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <div class="homepage-main">
-
-  <!-- TODAY AT SCHALMONT -->
-  <section id="today-at-schalmont" class="today-widget-section">
-    <div class="container">
-      <div class="today-widget-header">
-        <div>
-          <h2 class="today-widget-title">Today at Schalmont</h2>
-          <span id="today-widget-date" class="today-widget-date"></span>
-        </div>
-        <button class="add-cal-btn" id="add-to-cal-btn">&#128197; Add to My Calendar</button>
-      </div>
-      <div class="today-widget-grid" id="today-widget-grid">
-
-        <!-- Weather Panel -->
-        <div class="today-weather-panel">
-          <div class="today-panel-label">Today's Weather &mdash; Schenectady, NY</div>
-          <div id="weather-loading" style="color:rgba(255,255,255,0.6);font-size:13px">Loading weather...</div>
-          <div id="weather-content" style="display:none">
-            <div class="weather-primary">
-              <div id="weather-icon" class="weather-big-icon"></div>
-              <div>
-                <div id="weather-temp" class="weather-current-temp"></div>
-                <div id="weather-desc" class="weather-desc"></div>
-              </div>
-            </div>
-            <div class="weather-pills">
-              <span class="weather-pill"><span class="pill-label">High</span><span id="weather-high"></span></span>
-              <span class="weather-pill"><span class="pill-label">Low</span><span id="weather-low"></span></span>
-              <span class="weather-pill"><span class="pill-label">Wind</span><span id="weather-wind"></span></span>
-              <span class="weather-pill"><span class="pill-label">Precip</span><span id="weather-precip"></span></span>
-            </div>
-            <div class="weather-hourly-label">Today's Outlook</div>
-            <div id="weather-hourly" class="weather-hourly-row"></div>
-            <div id="weather-alert" class="weather-alert" style="display:none"></div>
-          </div>
-          <div id="weather-error" style="display:none;color:rgba(255,255,255,0.5);font-size:13px">Weather unavailable</div>
-        </div>
-
-        <!-- Events Panel -->
-        <div class="today-events-panel">
-          <div class="today-events-header" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-            <div class="today-panel-label dark">
-              <span id="today-panel-heading">Today's Events &amp; School Schedule</span>
-              <span class="today-cal-legend">
-                <span style="color:#295c38">&#9679; PTO</span>
-                <span style="color:#8bc341">&#9679; Woestina</span>
-                <span style="color:#6bb044">&#9679; Jefferson</span>
-                <span style="color:#087d40">&#9679; Middle</span>
-                <span style="color:#044d2a">&#9679; High</span>
-              </span>
-              <a href="https://www.schalmont.org/district-office-services/food-services/" target="_blank" rel="noopener" class="today-cal-legend" style="text-decoration:none">&#127860; Lunch Menus &rarr;</a>
-            </div>
-            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
-              <button id="today-prev-btn" class="today-nav-btn" aria-label="Previous day" onclick="navigateTodayWidget(-1)" disabled>&#8592; Prev</button>
-              <button id="today-next-btn" class="today-nav-btn active" aria-label="Next day" onclick="navigateTodayWidget(1)">Next &#8594;</button>
-            </div>
-          </div>
-          <!-- Events list (default display) -->
-          <div id="today-events-list" class="today-events-list">
-            <div class="today-events-loading">Loading today&#8217;s schedule&hellip;</div>
-          </div>
-          <!-- Iframe fallback (used only if iCal fetch fails entirely) -->
-          <iframe id="today-events-iframe" class="today-events-iframe" style="display:none" frameborder="0" scrolling="no" title="Today's Events"></iframe>
-        </div>
-
-      </div>
-
-      <!-- Important Dates and Deadlines -->
-      <div style="margin-top:18px;margin-bottom:10px">
-        <h3 style="font-size:15px;font-weight:800;color:var(--primary);margin:0">Important Dates &amp; Deadlines</h3>
-      </div>
-      <div class="today-deadlines-grid">
-
-        <!-- Woestina Pre-K -->
-        <div class="deadline-school-card">
-          <div class="deadline-school-bar">&#127807; Woestina Pre-K</div>
-          <div class="deadline-card-body">
-            <div class="deadline-item" data-expires="2026-09-25">
-              <div class="deadline-title">School Spirit Friday</div>
-              <div class="deadline-date">Sep 25</div>
-            </div>
-            <div class="deadline-item" data-expires="2026-09-27">
-              <div class="deadline-title">DellaVale Farm Day</div>
-              <div class="deadline-date">Sep 27</div>
-            </div>
-            <div class="deadline-item" data-expires="2026-10-02">
-              <div class="deadline-title">Custodian Appreciation Day</div>
-              <div class="deadline-date">Oct 2</div>
-            </div>
-            <div class="deadline-item" data-expires="2026-10-27">
-              <div class="deadline-title">Holiday Food Drive Starts</div>
-              <div class="deadline-date">Oct 27</div>
-            </div>
-            <div style="margin-top:6px"><a href="events.html" class="deadline-link" style="display:inline">See the full calendar &rarr;</a></div>
+    <!-- HERO: rotating approved photos (photo list lives in js/home.js) -->
+    <section class="hz-hero" id="hz-hero" aria-roledescription="carousel" aria-label="Schalmont community photos">
+      <div class="hz-wrap hz-hero-inner">
+        <div class="hz-hero-copy">
+          <p class="hz-eyebrow">Schalmont Central Schools PTO</p>
+          <h1>Supporting Every <span>Sabre's Story.</span></h1>
+          <p class="hz-hero-sub">Your daily hub for letter days, lunch, weather and PTO events at<br class="hz-br"> Woestina, Jefferson, the Middle School and the High School.</p>
+          <div class="hz-hero-actions">
+            <a href="#hz-calendar-section" class="hz-btn hz-btn-lime">📅 See the Calendar</a>
+            <a href="get-involved.html" class="hz-btn hz-btn-ghost">🙌 Get Involved</a>
           </div>
         </div>
-
-        <!-- Jefferson Elementary -->
-        <div class="deadline-school-card">
-          <div class="deadline-school-bar">&#127979; Jefferson Elementary</div>
-          <div class="deadline-card-body">
-            <div class="deadline-item" data-expires="2026-09-16">
-              <div class="deadline-title">First Day Pre-K</div>
-              <div class="deadline-date">Sep 16</div>
-            </div>
-            <div class="deadline-item" data-expires="2026-09-25">
-              <div class="deadline-title">School Spirit Friday</div>
-              <div class="deadline-date">Sep 25</div>
-            </div>
-            <div class="deadline-item" data-expires="2026-09-27">
-              <div class="deadline-title">DellaVale Farm Day</div>
-              <div class="deadline-date">Sep 27</div>
-            </div>
-            <div class="deadline-item" data-expires="2026-09-28">
-              <div class="deadline-title">Fall Bookfair</div>
-              <div class="deadline-date">Sep 28</div>
-            </div>
-            <div class="deadline-item" data-expires="2026-09-28">
-              <div class="deadline-title">K-1 Open House</div>
-              <div class="deadline-date">Sep 28</div>
-            </div>
-            <div class="deadline-item" data-expires="2026-09-29">
-              <div class="deadline-title">2-4 Open House</div>
-              <div class="deadline-date">Sep 29</div>
-            </div>
-            <div style="margin-top:6px"><a href="events.html" class="deadline-link" style="display:inline">See the full calendar &rarr;</a></div>
-          </div>
+        <div class="hz-strip">
+          <div class="hz-slides" id="hz-slides" aria-live="off"></div>
         </div>
+      </div>
+      <div class="hz-hero-ctrl">
+        <button type="button" class="hz-arrow" id="hz-prev" aria-label="Previous photos">&#8249;</button>
+        <div class="hz-dots" id="hz-dots"></div>
+        <button type="button" class="hz-arrow" id="hz-next" aria-label="Next photos">&#8250;</button>
+      </div>
+    </section>
 
-        <!-- Middle School -->
-        <div class="deadline-school-card">
-          <div class="deadline-school-bar">&#128218; Middle School</div>
-          <div class="deadline-card-body">
-            <div class="deadline-item" data-expires="2026-09-23">
-              <div class="deadline-title">Middle School Open House</div>
-              <div class="deadline-date">Sep 23</div>
-            </div>
-            <div class="deadline-item" data-expires="2026-09-27">
-              <div class="deadline-title">Candy Monster Initiative</div>
-              <div class="deadline-date">Sep 27</div>
-            </div>
-            <div class="deadline-item" data-expires="2026-10-13">
-              <div class="deadline-title">Tat the Teacher Sales</div>
-              <div class="deadline-date">Oct 13</div>
-            </div>
-            <div class="deadline-item" data-expires="2026-10-16">
-              <div class="deadline-title">Homecoming</div>
-              <div class="deadline-date">Oct 16</div>
-            </div>
-            <div class="deadline-item" data-expires="2026-10-22">
-              <div class="deadline-title">Fall PTO Meeting</div>
-              <div class="deadline-date">Oct 22</div>
-            </div>
-            <div class="deadline-item" data-expires="2026-10-30">
-              <div class="deadline-title">Trail of Treats</div>
-              <div class="deadline-date">Oct 30</div>
-            </div>
-            <div style="margin-top:6px"><a href="events.html" class="deadline-link" style="display:inline">See the full calendar &rarr;</a></div>
-          </div>
-        </div>
+    <div class="hz-wrap">
+      <!-- DAILY INFORMATION DASHBOARD -->
+      <h2 class="sr-only">Today at Schalmont</h2>
+      <div class="hz-dash">
 
-        <!-- High School -->
-        <div class="deadline-school-card">
-          <div class="deadline-school-bar">&#127891; High School</div>
-          <div class="deadline-card-body">
-            <div class="deadline-item" data-expires="2026-09-27">
-              <div class="deadline-title">Candy Monster Initiative</div>
-              <div class="deadline-date">Sep 27</div>
-            </div>
-            <div class="deadline-item" data-expires="2026-09-30">
-              <div class="deadline-title">High School Open House</div>
-              <div class="deadline-date">Sep 30</div>
-            </div>
-            <div class="deadline-item" data-expires="2026-10-13">
-              <div class="deadline-title">Tat the Teacher Sales</div>
-              <div class="deadline-date">Oct 13</div>
-            </div>
-            <div class="deadline-item" data-expires="2026-10-16">
-              <div class="deadline-title">Homecoming</div>
-              <div class="deadline-date">Oct 16</div>
-            </div>
-            <div class="deadline-item" data-expires="2026-10-22">
-              <div class="deadline-title">Fall PTO Meeting</div>
-              <div class="deadline-date">Oct 22</div>
-            </div>
-            <div class="deadline-item" data-expires="2026-10-30">
-              <div class="deadline-title">Trail of Treats</div>
-              <div class="deadline-date">Oct 30</div>
-            </div>
-            <div style="margin-top:6px"><a href="events.html" class="deadline-link" style="display:inline">See the full calendar &rarr;</a></div>
+        <section class="hz-card hz-card-weather" aria-labelledby="hz-wx-title">
+          <div class="hz-dash-head">
+            <h3 class="hz-card-title" id="hz-wx-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+              Daily Weather
+            </h3>
+            <span class="hz-pill">Rotterdam, NY</span>
           </div>
-        </div>
+          <div id="hz-weather" aria-live="polite">
+            <span class="hz-skel" style="width:60%;height:40px;margin:6px 0 14px"></span>
+            <span class="hz-skel" style="width:100%;height:56px"></span>
+          </div>
+        </section>
+
+        <section class="hz-card hz-card-letters" aria-labelledby="hz-ld-title">
+          <div class="hz-dash-head">
+            <h3 class="hz-card-title" id="hz-ld-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+              Today's Letter Days
+            </h3>
+            <span class="hz-pill is-unknown" id="hz-ld-pill">Loading…</span>
+          </div>
+          <p class="hz-ld-date" id="hz-ld-date"></p>
+          <div id="hz-letters" aria-live="polite">
+            <div class="hz-ld-tiles">
+              <span class="hz-skel" style="height:112px;border-radius:14px"></span>
+              <span class="hz-skel" style="height:112px;border-radius:14px"></span>
+              <span class="hz-skel" style="height:112px;border-radius:14px"></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="hz-card hz-card-lunch" aria-labelledby="hz-lunch-title">
+          <div class="hz-dash-head">
+            <h3 class="hz-card-title" id="hz-lunch-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M7 2v8a2 2 0 0 0 4 0V2M9 10v12M17 2c-2 2-3 5-3 8h3v12"/></svg>
+              School Lunch Menus
+            </h3>
+          </div>
+          <div class="hz-tabs" role="tablist" aria-label="Choose a school" id="hz-lunch-tabs"></div>
+          <div id="hz-lunch-panel" role="tabpanel" style="display:flex;flex-direction:column;flex:1"></div>
+        </section>
 
       </div>
 
-      <div style="margin-top:14px;background:var(--light-bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-        <span style="font-size:14px;color:var(--text-light)">&#127881; Looking for district-wide dates (breaks, early dismissals, holidays)?</span>
-        <a href="https://www.schalmont.org/district-office-services/about-us/calendar/" target="_blank" rel="noopener" class="btn btn-primary" style="padding:8px 18px;font-size:14px">View District Calendar &rarr;</a>
-      </div>
-    </div>
-  </section>
+      <!-- THE TWO PTOs' UPCOMING EVENTS (from the back office calendar) -->
+      <div class="hz-ptos">
+        <section class="hz-card hz-pto" aria-labelledby="hz-jes-title">
+          <div class="hz-pto-head">
+            <div class="hz-pto-logo is-badge"><img src="images/jes-pto-logo-web.png" alt="Jefferson Elementary PTO logo" width="360" height="262"></div>
+            <div>
+              <h2 id="hz-jes-title">Jefferson PTO</h2>
+              <p>Woestina Pre-K &amp; Jefferson Elementary</p>
+            </div>
+          </div>
+          <ul class="hz-events" id="hz-jes-events" aria-live="polite">
+            <li class="hz-event"><span class="hz-skel" style="width:100%;height:44px"></span></li>
+            <li class="hz-event"><span class="hz-skel" style="width:100%;height:44px"></span></li>
+          </ul>
+          <div class="hz-pto-foot">
+            <a href="jefferson.html" class="hz-link">Jefferson PTO page →</a>
+            <a href="#hz-calendar-section" class="hz-btn hz-btn-dark hz-btn-sm" data-cal-filter="jefferson">View Full Calendar</a>
+          </div>
+        </section>
 
-  <!-- ADD TO CALENDAR MODAL -->
-  <div id="add-cal-modal" class="modal-overlay hidden">
-    <div class="modal" style="max-width:480px">
-      <div class="modal-header">
-        <h3>&#128197; Add to My Calendar</h3>
-        <button class="modal-close" id="add-cal-close">&#10005;</button>
-      </div>
-      <div class="modal-body" style="padding:24px">
-        <p style="margin-bottom:16px;color:var(--text-light);font-size:14px">Select the school calendars you want to subscribe to:</p>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
-          <label class="cal-check-label"><input type="checkbox" value="pto" checked> <span style="color:#295c38;font-weight:600">&#9679; Schalmont Central PTO</span></label>
-          <label class="cal-check-label"><input type="checkbox" value="jefferson"> <span style="color:#6bb044;font-weight:600">&#9679; Jefferson Elementary PTO</span></label>
-          <label class="cal-check-label"><input type="checkbox" value="middle"> <span style="color:#087d40;font-weight:600">&#9679; Schalmont Middle School</span></label>
-          <label class="cal-check-label"><input type="checkbox" value="high"> <span style="color:#044d2a;font-weight:600">&#9679; Schalmont High School</span></label>
-        </div>
-        <div id="cal-sub-links" style="display:flex;flex-direction:column;gap:8px"></div>
+        <section class="hz-card hz-pto" aria-labelledby="hz-sc-title">
+          <div class="hz-pto-head">
+            <div class="hz-pto-logo"><img src="images/logo-web.png" alt="Schalmont Central PTO logo" width="360" height="230"></div>
+            <div>
+              <h2 id="hz-sc-title">Schalmont Central PTO</h2>
+              <p>Middle School &amp; High School</p>
+            </div>
+          </div>
+          <ul class="hz-events" id="hz-sc-events" aria-live="polite">
+            <li class="hz-event"><span class="hz-skel" style="width:100%;height:44px"></span></li>
+            <li class="hz-event"><span class="hz-skel" style="width:100%;height:44px"></span></li>
+          </ul>
+          <div class="hz-pto-foot">
+            <a href="about.html" class="hz-link">About the Central PTO →</a>
+            <a href="#hz-calendar-section" class="hz-btn hz-btn-dark hz-btn-sm" data-cal-filter="schalmont">View Full Calendar</a>
+          </div>
+        </section>
       </div>
     </div>
   </div>
 
-  <!-- FIND YOUR SCHOOL -->
-  <section id="find-your-school" class="section-sm" style="background:var(--light-bg)">
-    <div class="container">
-      <div class="section-heading">
-        <h2>Find Your School</h2>
-        <p>Select your child's school to find events, resources, and contacts for your community.</p>
-        <div class="accent-line"></div>
+  <!-- COMBINED CALENDAR -->
+  <section class="hz-section hz-light" id="hz-calendar-section" aria-labelledby="hz-cal-title">
+    <div class="hz-wrap">
+      <div class="hz-section-head">
+        <div>
+          <p class="hz-kicker">One calendar for everything</p>
+          <h2 id="hz-cal-title">PTO &amp; District Calendar</h2>
+          <p>Jefferson PTO, Schalmont Central PTO and district dates together. Tap any event for details.</p>
+        </div>
+        <a href="events.html" class="hz-link">Open the events page →</a>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;max-width:900px;margin:0 auto">
-
-        <!-- Woestina: #8bc341 -->
-        <a href="woestina.html" style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;text-align:center;text-decoration:none;color:var(--text);box-shadow:var(--shadow);transition:all var(--transition);display:block"
-           onmouseover="this.style.boxShadow='var(--shadow-lg)';this.style.transform='translateY(-3px)'"
-           onmouseout="this.style.boxShadow='var(--shadow)';this.style.transform=''">
-          <div style="height:6px;background:#8bc341"></div>
-          <div style="padding:24px 20px">
-            <div style="font-size:38px;margin-bottom:10px">🌱</div>
-            <h3 style="font-size:17px;line-height:1.3;margin-bottom:4px;color:#8bc341">Woestina<br>Pre-K</h3>
-            <p style="font-size:13px;color:var(--text-light);margin-bottom:14px">Ages 3–4</p>
-            <span style="display:inline-block;background:#8bc341;color:#fff;font-size:12px;font-weight:700;padding:6px 14px;border-radius:99px">Learn more →</span>
-          </div>
-        </a>
-
-        <!-- Jefferson: #6bb044 -->
-        <a href="jefferson.html" style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;text-align:center;text-decoration:none;color:var(--text);box-shadow:var(--shadow);transition:all var(--transition);display:block"
-           onmouseover="this.style.boxShadow='var(--shadow-lg)';this.style.transform='translateY(-3px)'"
-           onmouseout="this.style.boxShadow='var(--shadow)';this.style.transform=''">
-          <div style="height:6px;background:#6bb044"></div>
-          <div style="padding:24px 20px">
-            <div style="font-size:38px;margin-bottom:10px">📖</div>
-            <h3 style="font-size:17px;line-height:1.3;margin-bottom:4px;color:#6bb044">Jefferson<br>Elementary</h3>
-            <p style="font-size:13px;color:var(--text-light);margin-bottom:14px">Grades K–4</p>
-            <span style="display:inline-block;background:#6bb044;color:#fff;font-size:12px;font-weight:700;padding:6px 14px;border-radius:99px">Learn more →</span>
-          </div>
-        </a>
-
-        <!-- Middle School: #087d40 -->
-        <a href="middle-school.html" style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;text-align:center;text-decoration:none;color:var(--text);box-shadow:var(--shadow);transition:all var(--transition);display:block"
-           onmouseover="this.style.boxShadow='var(--shadow-lg)';this.style.transform='translateY(-3px)'"
-           onmouseout="this.style.boxShadow='var(--shadow)';this.style.transform=''">
-          <div style="height:6px;background:#087d40"></div>
-          <div style="padding:24px 20px">
-            <div style="font-size:38px;margin-bottom:10px">📚</div>
-            <h3 style="font-size:17px;line-height:1.3;margin-bottom:4px;color:#087d40">Schalmont<br>Middle School</h3>
-            <p style="font-size:13px;color:var(--text-light);margin-bottom:14px">Grades 5–8</p>
-            <span style="display:inline-block;background:#087d40;color:#fff;font-size:12px;font-weight:700;padding:6px 14px;border-radius:99px">Learn more →</span>
-          </div>
-        </a>
-
-        <!-- High School: #044d2a -->
-        <a href="high-school.html" style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;text-align:center;text-decoration:none;color:var(--text);box-shadow:var(--shadow);transition:all var(--transition);display:block"
-           onmouseover="this.style.boxShadow='var(--shadow-lg)';this.style.transform='translateY(-3px)'"
-           onmouseout="this.style.boxShadow='var(--shadow)';this.style.transform=''">
-          <div style="height:6px;background:#044d2a"></div>
-          <div style="padding:24px 20px">
-            <div style="font-size:38px;margin-bottom:10px">🎓</div>
-            <h3 style="font-size:17px;line-height:1.3;margin-bottom:4px;color:#044d2a">Schalmont<br>High School</h3>
-            <p style="font-size:13px;color:var(--text-light);margin-bottom:14px">Grades 9–12</p>
-            <span style="display:inline-block;background:#044d2a;color:#fff;font-size:12px;font-weight:700;padding:6px 14px;border-radius:99px">Learn more →</span>
-          </div>
-        </a>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- COMING UP THIS WEEK -->
-  <section class="section-sm">
-    <div class="container">
-      <div class="section-heading">
-        <h2 id="pweek-heading">Coming up this week!</h2>
-        <p id="pweek-sub">Everything on the calendar across all four schools for the next 7 days.</p>
-        <div class="accent-line"></div>
-      </div>
-      <div class="pweek-toggle" id="pweek-toggle" role="tablist" aria-label="Choose a time range">
-        <button type="button" data-mode="day">Day</button>
-        <button type="button" data-mode="week" class="active">Week</button>
-        <button type="button" data-mode="month">Month</button>
-      </div>
-      <div class="pweek-list" id="pweek-list">
-        <div class="pweek-loading">Loading this week&rsquo;s events&hellip;</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- DIRECTORY SIGNUP AD -->
-  <section class="section-sm" style="background:#f0f8ef">
-    <div class="container">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;background:var(--white);border:2px solid #c8e6c0;border-radius:var(--radius-lg);padding:20px 28px">
-        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-          <span style="font-size:32px">📋</span>
-          <div>
-            <div style="font-size:16px;font-weight:800;color:var(--primary);margin-bottom:4px">Join the Parent &amp; Student Directory</div>
-            <div style="font-size:14px;color:var(--text-light)">Register to connect with other Schalmont families. Free to join — just create an account!</div>
+      <div class="hz-card hz-cal-card">
+        <div class="hz-cal-bar">
+          <div class="hz-filters" role="group" aria-label="Show events from">
+            <button type="button" class="hz-filter" data-f="all" aria-pressed="true">All</button>
+            <button type="button" class="hz-filter" data-f="jefferson" aria-pressed="false"><i style="background:#63E629"></i>Jefferson PTO</button>
+            <button type="button" class="hz-filter" data-f="schalmont" aria-pressed="false"><i style="background:#007A3D"></i>Schalmont Central PTO</button>
+            <button type="button" class="hz-filter" data-f="district" aria-pressed="false"><i style="background:#2F5D8C"></i>District</button>
           </div>
         </div>
-        <a href="directory.html" class="btn btn-primary" style="white-space:nowrap;font-size:14px;padding:10px 22px">Sign Up Free →</a>
+        <div id="hz-calendar">
+          <div class="hz-cal-status" id="hz-cal-status" aria-live="polite">Loading the calendar…</div>
+        </div>
+        <details class="hz-subscribe">
+          <summary>📲 Add school calendars to your phone</summary>
+          <div class="hz-subscribe-grid">
+            <div><b>Jefferson Elementary</b>
+              <a href="https://calendar.google.com/calendar/r?cid=b8ps3245btumu5q6psc3cmvs8c%40group.calendar.google.com" target="_blank" rel="noopener">Google Calendar</a>
+              <a href="https://calendar.google.com/calendar/ical/b8ps3245btumu5q6psc3cmvs8c%40group.calendar.google.com/public/basic.ics">iPhone / Outlook</a></div>
+            <div><b>Schalmont Middle School</b>
+              <a href="https://calendar.google.com/calendar/r?cid=eumk9qp2llrljnfkp64k1dgk5g%40group.calendar.google.com" target="_blank" rel="noopener">Google Calendar</a>
+              <a href="https://calendar.google.com/calendar/ical/eumk9qp2llrljnfkp64k1dgk5g%40group.calendar.google.com/public/basic.ics">iPhone / Outlook</a></div>
+            <div><b>Schalmont High School</b>
+              <a href="https://calendar.google.com/calendar/r?cid=8b7ohsc70vgab6398itc7e73q0%40group.calendar.google.com" target="_blank" rel="noopener">Google Calendar</a>
+              <a href="https://calendar.google.com/calendar/ical/8b7ohsc70vgab6398itc7e73q0%40group.calendar.google.com/public/basic.ics">iPhone / Outlook</a></div>
+            <div><b>District calendar</b>
+              <a href="https://calendar.google.com/calendar/r?cid=9b60l7e14ii7jvaeee0n5q0ghk%40group.calendar.google.com" target="_blank" rel="noopener">Google Calendar</a>
+              <a href="https://calendar.google.com/calendar/ical/9b60l7e14ii7jvaeee0n5q0ghk%40group.calendar.google.com/public/basic.ics">iPhone / Outlook</a></div>
+          </div>
+          <p class="hz-note" style="margin-top:8px">These are the schools' own calendars (letter days, closings and school events). For the full district calendar, see <a class="hz-link" href="https://www.schalmont.org/district-office-services/about-us/calendar/" target="_blank" rel="noopener">schalmont.org</a>.</p>
+        </details>
       </div>
     </div>
   </section>
+
+  <dialog class="hz-dialog" id="hz-event-dialog" aria-labelledby="hz-dlg-title">
+    <div class="hz-dialog-head">
+      <span class="hz-dialog-tag" id="hz-dlg-tag"></span>
+      <h3 id="hz-dlg-title"></h3>
+      <button type="button" class="hz-dialog-x" id="hz-dlg-x" aria-label="Close">&#10005;</button>
+    </div>
+    <div class="hz-dialog-body" id="hz-dlg-body"></div>
+  </dialog>
 
   <!-- QUICK LINKS -->
-  <section class="section-sm" style="background:var(--primary-dark)">
-    <div class="container">
-      <h3 style="color:var(--secondary);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;text-align:center">Quick Links</h3>
-      <div class="quick-nav-grid">
-        <a href="events.html" class="quick-nav-card">
-          <div class="quick-nav-icon">📅</div>
-          <h3>Events Calendar</h3>
-        </a>
-        <a href="directory.html" class="quick-nav-card">
-          <div class="quick-nav-icon">📋</div>
-          <h3>Parent Directory</h3>
-        </a>
-        <a href="shop.html" class="quick-nav-card">
-          <div class="quick-nav-icon">👕</div>
-          <h3>Spirit Shop</h3>
-        </a>
-        <a href="fundraisers.html" class="quick-nav-card">
-          <div class="quick-nav-icon">💰</div>
-          <h3>Fundraisers</h3>
-        </a>
-        <a href="yearbooks.html" class="quick-nav-card">
-          <div class="quick-nav-icon">📚</div>
-          <h3>Yearbook</h3>
-        </a>
-      </div>
+  <section class="hz-section hz-quick" aria-labelledby="hz-quick-title">
+    <div class="hz-wrap">
+      <div class="hz-section-head"><div><p class="hz-kicker">Jump right in</p><h2 id="hz-quick-title">Quick Links</h2></div></div>
+      <nav class="hz-quick-grid" aria-label="Quick links">
+        <a class="hz-q" href="events.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4M8 13h3M8 17h6"/></svg>Full Calendar</a>
+        <a class="hz-q" href="volunteer.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.3-9.2C1.4 8.4 3.6 5 7 5c2 0 3.4 1.1 5 3 1.6-1.9 3-3 5-3 3.4 0 5.6 3.4 4.3 6.8C19.5 16.4 12 21 12 21z"/></svg>Volunteer</a>
+        <a class="hz-q" href="fundraisers.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .9-3 2.2 0 3 6 1.6 6 4.6 0 1.3-1.3 2.2-3 2.2-1.5 0-2.6-.6-3.1-1.6M12 6v2M12 16v2"/></svg>Fundraisers</a>
+        <a class="hz-q" href="shop.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 3 3 6l2 4 2-1v12h10V9l2 1 2-4-5-3c0 2-1.8 3-4 3S8 5 8 3z"/></svg>Spiritwear Shoppe</a>
+        <a class="hz-q" href="gallery.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="15" rx="3"/><circle cx="9" cy="10.5" r="1.8"/><path d="m21 16-5-5-8 9"/></svg>Photo Gallery</a>
+        <a class="hz-q" href="contact.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>Contact Us</a>
+      </nav>
     </div>
   </section>
 
-  <!-- SCHOOL CALENDARS -->
-  <section class="section">
-    <div class="container">
-
-      <!-- Section heading — centered, same style as Find Your School -->
-      <div class="section-heading">
-        <h2>This Month at Schalmont Schools</h2>
-        <p>Select a calendar to view upcoming events for each school.</p>
-        <div class="accent-line"></div>
-      </div>
-      <div style="text-align:center;margin-bottom:32px">
-        <a href="events.html" class="btn btn-primary">📅 PTO Events Page →</a>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:0">
-
-        <!-- LEFT: calendar (now full width) -->
-        <div style="display:flex;flex-direction:column">
-
-          <!-- Tabs -->
-          <div style="margin-bottom:16px">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-light);margin-bottom:6px;text-align:center">Sort by</div>
-            <div style="display:flex;gap:5px;flex-wrap:nowrap;justify-content:center;overflow-x:auto">
-              <button class="cal-tab-btn active" style="--tab-color:var(--primary)" onclick="window.showCalTab('all',this)">All Events</button>
-              <button class="cal-tab-btn" style="--tab-color:#8bc341" onclick="window.showCalTab('woestina',this)">Woestina PTO</button>
-              <button class="cal-tab-btn" style="--tab-color:#6bb044" onclick="window.showCalTab('jefferson',this)">Jefferson PTO</button>
-              <button class="cal-tab-btn" style="--tab-color:#087d40" onclick="window.showCalTab('schalmont',this)">Schalmont PTO (MS &amp; HS)</button>
-              <button class="cal-tab-btn" style="--tab-color:#039BE5" onclick="window.showCalTab('district',this)">District</button>
-            </div>
-          </div>
-
-          <!-- Calendar panels — the school-tab panels are a live month view pulled
-               straight from the back office's own calendar data (see
-               js/public-calendar.js); District stays a Google Calendar embed since
-               it's the district's own calendar, not back-office data. -->
-          <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
-            <div class="cal-panel" id="cal-panel-all">
-              <div class="pcal-cal" data-school="all"></div>
-            </div>
-            <div class="cal-panel" id="cal-panel-woestina" style="display:none">
-              <div class="pcal-cal" data-school="woestina"></div>
-            </div>
-            <div class="cal-panel" id="cal-panel-jefferson" style="display:none">
-              <div class="pcal-cal" data-school="jefferson"></div>
-            </div>
-            <div class="cal-panel" id="cal-panel-schalmont" style="display:none">
-              <div class="pcal-cal" data-school="schalmont"></div>
-            </div>
-            <div class="cal-panel" id="cal-panel-district" style="display:none">
-              <iframe src="https://calendar.google.com/calendar/embed?src=9b60l7e14ii7jvaeee0n5q0ghk%40group.calendar.google.com&ctz=America%2FNew_York" style="border:0;width:100%;height:600px;display:block" frameborder="0" scrolling="no" loading="lazy"></iframe>
-            </div>
-          </div>
+  <!-- COMMUNITY MOMENTS -->
+  <section class="hz-section" aria-labelledby="hz-moments-title">
+    <div class="hz-wrap">
+      <div class="hz-section-head">
+        <div><p class="hz-kicker">From our schools</p><h2 id="hz-moments-title">Community Moments</h2></div>
+        <div class="hz-moments-ctrl">
+          <a href="gallery.html" class="hz-link" style="margin-right:6px">View the full gallery →</a>
+          <button type="button" class="hz-round" id="hz-m-prev" aria-label="Scroll photos left">&#8249;</button>
+          <button type="button" class="hz-round" id="hz-m-next" aria-label="Scroll photos right">&#8250;</button>
         </div>
-
+      </div>
+      <div>
+        <div class="hz-track" id="hz-track" tabindex="0" aria-label="Community photos — use the arrow keys to scroll"></div>
       </div>
     </div>
   </section>
 
-  <!-- DIRECTORY CTA -->
-  <section class="section-sm" style="background:var(--primary-dark);color:white">
-    <div class="container">
-      <div style="display:grid;grid-template-columns:1fr auto;align-items:center;gap:32px">
+  <!-- FIND YOUR SCHOOL -->
+  <section class="hz-section hz-light" id="find-your-school" aria-labelledby="hz-schools-title">
+    <div class="hz-wrap">
+      <div class="hz-section-head"><div><p class="hz-kicker">Our schools</p><h2 id="hz-schools-title">Find Your School</h2><p>Events, resources and contacts for each school community.</p></div></div>
+      <div class="hz-schools">
+        <div class="hz-school" style="--sc:#8bc341"><a href="woestina.html"><b>Woestina Pre-K</b><span>Ages 3–4</span><em>Visit page →</em></a>
+          <nav class="hz-classes" aria-label="Woestina class pages"><a href="classof2040.html">Class of 2040 · Pre-K</a></nav></div>
+        <div class="hz-school" style="--sc:#6bb044"><a href="jefferson.html"><b>Jefferson Elementary</b><span>Grades K–4</span><em>Visit page →</em></a>
+          <nav class="hz-classes" aria-label="Jefferson class pages"><a href="classof2039.html">2039 · K</a><a href="classof2038.html">2038 · 1st</a><a href="classof2037.html">2037 · 2nd</a><a href="classof2036.html">2036 · 3rd</a><a href="classof2035.html">2035 · 4th</a></nav></div>
+        <div class="hz-school" style="--sc:#087d40"><a href="middle-school.html"><b>Schalmont Middle School</b><span>Grades 5–8</span><em>Visit page →</em></a>
+          <nav class="hz-classes" aria-label="Middle School class pages"><a href="classof2034.html">2034 · 5th</a><a href="classof2033.html">2033 · 6th</a><a href="classof2032.html">2032 · 7th</a><a href="classof2031.html">2031 · 8th</a></nav></div>
+        <div class="hz-school" style="--sc:#044d2a"><a href="high-school.html"><b>Schalmont High School</b><span>Grades 9–12</span><em>Visit page →</em></a>
+          <nav class="hz-classes" aria-label="High School class pages"><a href="classof2030.html">2030 · Fr</a><a href="classof2029.html">2029 · So</a><a href="classof2028.html">2028 · Jr</a><a href="classof2027.html">2027 · Sr</a></nav></div>
+      </div>
+      <p class="hz-more-links">More: <a href="donate.html">Donate</a> · <a href="family-scouts.html">Scouts</a> · <a href="sports.html">Sports</a> · <a href="yearbooks.html">Yearbooks</a> · <a href="directory.html">Parent Directory</a> · <a href="schools.html">All schools</a></p>
+    </div>
+  </section>
+
+  <!-- YEARBOOKS -->
+  <section class="hz-section hz-light" style="padding-top:0" aria-labelledby="hz-yb-title">
+    <div class="hz-wrap">
+      <div class="hz-section-head"><div><p class="hz-kicker">Preserve the memories</p><h2 id="hz-yb-title">Yearbooks &amp; Photo Submissions</h2><p>Order your child's yearbook and send in photos to be featured.</p></div><a href="yearbook-upload.html" class="hz-btn hz-btn-dark hz-btn-sm">📸 Submit yearbook photos</a></div>
+      <div class="hz-grid4">
+        <div class="hz-card hz-mini"><h3>Woestina Pre-K</h3><p>Upload photos for this year's Woestina yearbook.</p><a class="hz-link" href="woestina.html#yearbook">Yearbook page →</a></div>
+        <div class="hz-card hz-mini"><h3>Jefferson Elementary</h3><p>Order the yearbook and upload photos for this year's book.</p><a class="hz-link" href="yearbook-jefferson.html">Yearbook page →</a></div>
+        <div class="hz-card hz-mini"><h3>Middle School</h3><p>Order the yearbook and upload photos for this year's book.</p><a class="hz-link" href="yearbook-middle.html">Yearbook page →</a></div>
+        <div class="hz-card hz-mini"><h3>High School</h3><p>Order now — limited quantities. Upload your photos too.</p><a class="hz-link" href="yearbook-high.html">Yearbook page →</a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STAY CONNECTED: directory + social -->
+  <section class="hz-section" aria-labelledby="hz-connect-title">
+    <div class="hz-wrap" style="display:grid;gap:16px">
+      <div class="hz-band">
         <div>
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--secondary);margin-bottom:8px">Stay Connected</div>
-          <h2 style="font-size:clamp(20px,2.5vw,28px);color:white;margin-bottom:10px">Join the Schalmont Parent Directory</h2>
-          <p style="color:rgba(255,255,255,0.78);line-height:1.7;margin:0;max-width:580px">Connect with other Schalmont families! Add your contact info to the parent directory so you can coordinate carpools, playdates, and school activities with families across all four schools.</p>
+          <h2 id="hz-connect-title">Join the Schalmont Parent Directory</h2>
+          <p>Connect with other Schalmont families for carpools, playdates and class news. Free for member families.</p>
         </div>
-        <div style="flex-shrink:0">
-          <a href="directory.html" class="btn" style="background:var(--secondary);color:var(--primary-dark);font-weight:700;text-decoration:none;white-space:nowrap">Get Connected &rarr;</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- YEARBOOKS & PHOTO UPLOAD -->
-  <section class="section-sm">
-    <div class="container">
-      <div style="text-align:center;margin-bottom:32px">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--primary-light);margin-bottom:8px">Preserve the Memories</div>
-        <h2 style="font-size:clamp(22px,3vw,32px)">Yearbooks &amp; Photo Submissions</h2>
-        <p style="color:var(--text-light);max-width:620px;margin:12px auto 0;line-height:1.7">Order your child's yearbook and submit photos to be featured — don't miss the deadlines!</p>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px">
-        <!-- Woestina Pre-K -->
-        <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column">
-          <div style="background:#8bc341;padding:22px 24px">
-            <div style="color:white;font-weight:800;font-size:17px">&#127807; Woestina Pre-K Yearbook</div>
-            <div style="color:rgba(255,255,255,0.8);font-size:13px;margin-top:5px">Photo upload info</div>
-          </div>
-          <div style="padding:20px 24px;display:flex;flex-direction:column;gap:12px;flex:1">
-            <p style="color:var(--text-light);font-size:14px;line-height:1.7;margin:0">Upload your Woestina Pre-K photos to be featured in this year's yearbook.</p>
-            <div style="display:flex;flex-direction:column;gap:10px;margin-top:auto">
-              <a href="woestina.html#yearbook" class="btn btn-primary" style="text-align:center;text-decoration:none">View Yearbook Page &rarr;</a>
-            </div>
-          </div>
-        </div>
-        <!-- Jefferson Elementary -->
-        <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column">
-          <div style="background:#6bb044;padding:22px 24px">
-            <div style="color:white;font-weight:800;font-size:17px">&#127979; Jefferson Elementary Yearbook</div>
-            <div style="color:rgba(255,255,255,0.8);font-size:13px;margin-top:5px">Order &amp; photo upload info</div>
-          </div>
-          <div style="padding:20px 24px;display:flex;flex-direction:column;gap:12px;flex:1">
-            <p style="color:var(--text-light);font-size:14px;line-height:1.7;margin:0">Order your Jefferson Elementary yearbook and upload your photos to be featured in this year's book.</p>
-            <div style="display:flex;flex-direction:column;gap:10px;margin-top:auto">
-              <a href="yearbook-jefferson.html" class="btn btn-primary" style="text-align:center;text-decoration:none">View Yearbook Page &rarr;</a>
-            </div>
-          </div>
-        </div>
-        <!-- Middle School -->
-        <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column">
-          <div style="background:#087d40;padding:22px 24px">
-            <div style="color:white;font-weight:800;font-size:17px">&#128218; Middle School Yearbook</div>
-            <div style="color:rgba(255,255,255,0.8);font-size:13px;margin-top:5px">&#128197; Order deadline: March 31, 2026</div>
-          </div>
-          <div style="padding:20px 24px;display:flex;flex-direction:column;gap:12px;flex:1">
-            <p style="color:var(--text-light);font-size:14px;line-height:1.7;margin:0">Order your Middle School yearbook and upload your photos to be featured in this year's book.</p>
-            <div style="display:flex;flex-direction:column;gap:10px;margin-top:auto">
-              <a href="yearbook-middle.html" class="btn btn-primary" style="text-align:center;text-decoration:none">View Yearbook Page &rarr;</a>
-            </div>
-          </div>
-        </div>
-        <!-- High School -->
-        <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column">
-          <div style="background:#044d2a;padding:22px 24px">
-            <div style="color:white;font-weight:800;font-size:17px">&#127891; High School Yearbook</div>
-            <div style="color:rgba(255,255,255,0.8);font-size:13px;margin-top:5px">Order now — limited quantities</div>
-          </div>
-          <div style="padding:20px 24px;display:flex;flex-direction:column;gap:12px;flex:1">
-            <p style="color:var(--text-light);font-size:14px;line-height:1.7;margin:0">Order your Schalmont High School yearbook and upload your photos to be featured in this year's book.</p>
-            <div style="display:flex;flex-direction:column;gap:10px;margin-top:auto">
-              <a href="yearbook-high.html" class="btn btn-primary" style="text-align:center;text-decoration:none">View Yearbook Page &rarr;</a>
-            </div>
-          </div>
+        <div class="hz-band-actions">
+          <a href="directory.html" class="hz-btn hz-btn-lime">Sign Up Free →</a>
         </div>
       </div>
-    </div>
-  </section>
-
-
-  <!-- SOCIAL MEDIA PROMO -->
-  <section class="section-sm" style="background:linear-gradient(135deg,#1877F2 0%,#833AB4 100%)">
-    <div class="container text-center">
-      <div style="color:rgba(255,255,255,0.75);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Stay in the Loop</div>
-      <h2 style="color:white;font-size:clamp(22px,3vw,32px);margin-bottom:14px">Follow Us on Social Media</h2>
-      <p style="color:rgba(255,255,255,0.88);max-width:580px;margin:0 auto 28px;line-height:1.8;font-size:15px">Get real-time news, event photos, and announcements. Join class parent groups and stay connected with your school community.</p>
-      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
-        <a href="https://www.facebook.com/groups/jeffersonelementarypto" target="_blank" rel="noopener" class="btn" style="background:#fff;color:#1877F2;font-weight:700;text-decoration:none">&#128216; Jefferson PTO on Facebook</a>
-        <a href="https://www.facebook.com/groups/schalmontpto/" target="_blank" rel="noopener" class="btn" style="background:#fff;color:#1877F2;font-weight:700;text-decoration:none">&#128216; Schalmont PTO on Facebook</a>
-        <a href="https://www.instagram.com/schalmontpto/" target="_blank" rel="noopener" class="btn" style="background:#fff;color:#833AB4;font-weight:700;text-decoration:none">&#128247; @schalmontpto</a>
-        <a href="social.html" class="btn" style="background:rgba(255,255,255,0.18);color:white;border:1px solid rgba(255,255,255,0.4);text-decoration:none">All Social Links &rarr;</a>
-      </div>
-
-      <div style="margin-top:36px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:700px;margin-left:auto;margin-right:auto">
-        <div style="background:#fff;border-radius:var(--radius-lg);padding:18px;text-align:center">
-          <div id="fb-root"></div>
-          <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v19.0"></script>
-          <div class="fb-group" data-href="https://www.facebook.com/groups/jeffersonelementarypto" data-width="300" data-show-social-context="true" data-show-metadata="true"></div>
-          <a href="https://www.facebook.com/groups/jeffersonelementarypto" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;font-size:13px;font-weight:700;color:#1877F2;text-decoration:none">View Jefferson PTO Posts &rarr;</a>
-        </div>
-        <div style="background:#fff;border-radius:var(--radius-lg);padding:18px;text-align:center">
-          <div class="fb-group" data-href="https://www.facebook.com/groups/schalmontpto" data-width="300" data-show-social-context="true" data-show-metadata="true"></div>
-          <a href="https://www.facebook.com/groups/schalmontpto/" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;font-size:13px;font-weight:700;color:#1877F2;text-decoration:none">View Schalmont PTO Posts &rarr;</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- MEET OUR TEAMS -->
-  <section class="section-sm" style="background:var(--light-bg)">
-    <div class="container">
-      <div class="hp-two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center">
+      <div class="hz-card" style="padding:20px 22px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
         <div>
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--primary-light);margin-bottom:8px">Who We Are</div>
-          <h2 style="font-size:clamp(22px,3vw,32px);margin-bottom:14px">Meet Our PTO Teams</h2>
-          <p style="color:var(--text-light);line-height:1.8;margin-bottom:24px">Our volunteer board members work hard to make Schalmont schools the best they can be for every student. Meet the dedicated people behind the events, fundraisers, and programs you love.</p>
-          <a href="about.html" class="btn btn-primary" style="text-decoration:none">Meet the Team &rarr;</a>
+          <h3 style="margin:0 0 4px;font-size:18px;color:var(--hz-forest)">Follow us for news &amp; photos</h3>
+          <p class="hz-note" style="margin:0;font-size:14px">Real-time announcements, event photos and class parent groups.</p>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-          <a href="about.html#meet-our-teams" style="background:var(--white);border-radius:var(--radius-lg);padding:22px 16px;text-align:center;border:2px solid #8bc341;text-decoration:none;display:block;transition:all var(--transition)" onmouseover="this.style.boxShadow='var(--shadow-lg)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='';this.style.transform=''">
-            <div style="font-size:36px;margin-bottom:10px">&#127807;</div>
-            <div style="font-weight:800;font-size:14px;color:#8bc341;margin-bottom:4px">Woestina PTO</div>
-            <div style="font-size:12px;color:var(--text-light)">Pre-Kindergarten</div>
-          </a>
-          <a href="about.html#meet-our-teams" style="background:var(--white);border-radius:var(--radius-lg);padding:22px 16px;text-align:center;border:2px solid #6bb044;text-decoration:none;display:block;transition:all var(--transition)" onmouseover="this.style.boxShadow='var(--shadow-lg)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='';this.style.transform=''">
-            <div style="font-size:36px;margin-bottom:10px">&#127979;</div>
-            <div style="font-weight:800;font-size:14px;color:#6bb044;margin-bottom:4px">Jefferson PTO</div>
-            <div style="font-size:12px;color:var(--text-light)">Grades K–4</div>
-          </a>
-          <a href="about.html#meet-our-teams" style="background:var(--white);border-radius:var(--radius-lg);padding:22px 16px;text-align:center;border:2px solid #087d40;text-decoration:none;display:block;transition:all var(--transition)" onmouseover="this.style.boxShadow='var(--shadow-lg)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='';this.style.transform=''">
-            <div style="font-size:36px;margin-bottom:10px">&#128218;</div>
-            <div style="font-weight:800;font-size:14px;color:#087d40;margin-bottom:4px">Middle School PTO</div>
-            <div style="font-size:12px;color:var(--text-light)">Grades 5–8</div>
-          </a>
-          <a href="about.html#meet-our-teams" style="background:var(--white);border-radius:var(--radius-lg);padding:22px 16px;text-align:center;border:2px solid #044d2a;text-decoration:none;display:block;transition:all var(--transition)" onmouseover="this.style.boxShadow='var(--shadow-lg)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='';this.style.transform=''">
-            <div style="font-size:36px;margin-bottom:10px">&#127891;</div>
-            <div style="font-weight:800;font-size:14px;color:#044d2a;margin-bottom:4px">High School PTO</div>
-            <div style="font-size:12px;color:var(--text-light)">Grades 9–12</div>
-          </a>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <a class="hz-btn hz-btn-dark hz-btn-sm" href="https://www.facebook.com/groups/jeffersonelementarypto" target="_blank" rel="noopener">Jefferson PTO on Facebook</a>
+          <a class="hz-btn hz-btn-dark hz-btn-sm" href="https://www.facebook.com/groups/schalmontpto/" target="_blank" rel="noopener">Schalmont PTO on Facebook</a>
+          <a class="hz-btn hz-btn-dark hz-btn-sm" href="https://www.instagram.com/schalmontpto/" target="_blank" rel="noopener">@schalmontpto on Instagram</a>
+          <a class="hz-link" style="align-self:center;margin-left:4px" href="social.html">All social links →</a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- MISSION STRIP -->
-  <section class="section-sm" style="background:linear-gradient(135deg,var(--primary),var(--primary-light));color:var(--white)">
-    <div class="container text-center" style="max-width:800px">
-      <h2 style="color:var(--white);font-size:clamp(20px,3vw,28px);margin-bottom:14px">Our Mission</h2>
-      <p style="font-size:clamp(14px,2vw,17px);opacity:0.92;line-height:1.8">
-        The PTOs of Schalmont are dedicated to supporting the educational experience of all students in the Schalmont Central School District by fostering partnerships between parents, teachers, and the community — building a supportive and enriching environment for every Sabre to thrive.
-      </p>
-      <div style="margin-top:28px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
-        <a href="about.html" class="btn btn-primary">Learn More About Us</a>
+  <!-- WHO WE ARE -->
+  <section class="hz-section hz-light" aria-labelledby="hz-about-title">
+    <div class="hz-wrap">
+      <div class="hz-section-head">
+        <div>
+          <p class="hz-kicker">Who we are</p>
+          <h2 id="hz-about-title">Meet Our PTO Teams</h2>
+          <p style="max-width:760px">The PTOs of Schalmont support the educational experience of every student in the Schalmont Central School District by building partnerships between parents, teachers and the community.</p>
+        </div>
+        <a href="about.html" class="hz-btn hz-btn-dark hz-btn-sm">Meet the Team →</a>
+      </div>
+      <div class="hz-stats hz-card" style="padding:6px">
+        <div class="hz-stat"><b>2,000+</b><span>Student families</span></div>
+        <div class="hz-stat"><b>300+</b><span>Teachers &amp; staff</span></div>
+        <div class="hz-stat"><b>20+</b><span>Events per year</span></div>
+        <div class="hz-stat"><b>200+</b><span>Volunteers</span></div>
+        <div class="hz-stat"><b>$50k+</b><span>Raised for schools</span></div>
       </div>
     </div>
   </section>
+  </main>
 
-    </div><!-- /.homepage-main -->
-  </div><!-- /.homepage-layout -->
+  <!-- Homepage dashboard: runs immediately; event panels wait for Firebase below -->
+  <script src="js/home.js?v=1"></script>
 
-  <!-- STATS -->
-  <section class="section-sm">
-    <div class="container">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:24px;max-width:1100px;margin:0 auto;justify-items:center">
-        <div class="stat-box" style="width:100%">
-          <span class="stat-num">2,000+</span>
-          <div class="stat-label">Student Families</div>
-        </div>
-        <div class="stat-box" style="width:100%">
-          <span class="stat-num">300+</span>
-          <div class="stat-label">Teachers &amp; Staff</div>
-        </div>
-        <div class="stat-box" style="width:100%">
-          <span class="stat-num">20+</span>
-          <div class="stat-label">Events Per Year</div>
-        </div>
-        <div class="stat-box" style="width:100%">
-          <span class="stat-num">200+</span>
-          <div class="stat-label">Volunteers</div>
-        </div>
-        <div class="stat-box" style="width:100%">
-          <span class="stat-num">$50k+</span>
-          <div class="stat-label">Raised for Schools</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- COMMUNITY PARTNERS -->
   <section class="partners-section">
     <div class="partners-section-header">
       <div style="color:rgba(255,255,255,0.45);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px">Thank You to Our Sponsors</div>
@@ -895,407 +482,13 @@
     </div>
   </footer>
 
-  <!-- Firebase SDKs -->
+  <!-- Firebase (back office events) + the site's shared scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
-  <script src="js/public-calendar.js?v=2"></script>
-  <script>
-  // ── Today at Schalmont (Homepage) ─────────────────────────────────────────
-  (function() {
-    // ── CONFIGURATION ───────────────────────────────────────────────────────
-    // To label today's events by school (e.g. "D Day - Jefferson"), add a
-    // Google Calendar API key below. Get one free:
-    //   1. Go to console.cloud.google.com
-    //   2. Enable the "Google Calendar API"
-    //   3. Credentials → Create API Key
-    //   4. Restrict it to "Google Calendar API" + your website's HTTP referrer
-    var GCAL_API_KEY = '';  // ← paste your API key here
-
-    var CAL_IDS = {
-      pto:      'c_2ccf0495db5e7ffcf4129ac6965b5cbe82ec743a13050f3aeecc9a18c84a53f5@group.calendar.google.com',
-      jefferson:'b8ps3245btumu5q6psc3cmvs8c@group.calendar.google.com',
-      middle:   'eumk9qp2llrljnfkp64k1dgk5g@group.calendar.google.com',
-      high:     '8b7ohsc70vgab6398itc7e73q0@group.calendar.google.com'
-    };
-    var CAL_LABELS = { pto:'Schalmont PTO', jefferson:'Jefferson Elementary', middle:'Middle School', high:'High School' };
-    var CAL_COLORS = { pto:'#295c38', jefferson:'#6bb044', middle:'#087d40', high:'#044d2a' };
-
-    // Map school-day labels in event titles to the correct school
-    function getDayLabelInfo(title) {
-      if (/\bE[\s-]?Day\b/i.test(title)) return { label: 'Jefferson Elementary', color: '#6bb044' };
-      if (/\bC[\s-]?Day\b/i.test(title)) return { label: 'Middle &amp; High School', color: '#087d40' };
-      return null;
-    }
-    var WMO_ICONS = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',77:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',85:'🌨️',86:'❄️',95:'⛈️',96:'⛈️',99:'⛈️'};
-    var WMO_DESCS = {0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',48:'Freezing fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',77:'Snow grains',80:'Showers',81:'Rain showers',82:'Violent showers',85:'Snow showers',86:'Heavy snow showers',95:'Thunderstorm',96:'Thunderstorm with hail',99:'Thunderstorm with hail'};
-
-    // Date setup — Eastern time with day navigation
-    var now = new Date();
-    var etTodayStr = now.toLocaleDateString('en-CA',{timeZone:'America/New_York'});
-    var dayOffset  = 0;
-
-    function getNextDayStr(s) {
-      var d = new Date(s+'T12:00:00'); d.setDate(d.getDate()+1);
-      return d.toLocaleDateString('en-CA');
-    }
-    function getViewDateStr(offset) {
-      var d = new Date(etTodayStr+'T12:00:00'); d.setDate(d.getDate()+offset);
-      return d.toLocaleDateString('en-CA');
-    }
-    var etStr  = etTodayStr;
-    var etStr2 = getNextDayStr(etStr);
-
-    function updateWidgetHeader(offset) {
-      var ds = getViewDateStr(offset);
-      var d  = new Date(ds+'T12:00:00');
-      var long = d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
-      var titleEl = document.querySelector('.today-widget-title');
-      var dateEl  = document.getElementById('today-widget-date');
-      var label   = offset===0?'Today':d.toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'});
-      if (titleEl) titleEl.textContent = label+' at Schalmont';
-      if (dateEl)  dateEl.textContent  = long;
-      var panelHeading = document.getElementById('today-panel-heading');
-      if (panelHeading) panelHeading.textContent = (offset===0 ? "Today's" : d.toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'}))+' Events & School Schedule';
-      var prevBtn = document.getElementById('today-prev-btn');
-      var nextBtn = document.getElementById('today-next-btn');
-      if (prevBtn) {
-        prevBtn.disabled = (offset<=0);
-        prevBtn.disabled = (offset<=0);
-      }
-      if (nextBtn) { nextBtn.disabled = (offset>=7); }
-    }
-    window.navigateTodayWidget = function(delta) {
-      dayOffset = Math.max(0, Math.min(7, dayOffset+delta));
-      etStr  = getViewDateStr(dayOffset);
-      etStr2 = getNextDayStr(etStr);
-      updateWidgetHeader(dayOffset);
-      if (GCAL_API_KEY) { loadCalendarAPI(); } else { loadICSEvents(); }
-    };
-    updateWidgetHeader(0);
-
-    // Detect EST vs EDT offset
-    function getETOffset() {
-      var y=now.getFullYear();
-      var ds=new Date(y,2,8); while(ds.getDay()!==0)ds.setDate(ds.getDate()+1);
-      var de=new Date(y,10,1); while(de.getDay()!==0)de.setDate(de.getDate()+1);
-      return (now>=ds&&now<de)?'-04:00':'-05:00';
-    }
-
-    // Format event start time
-    function formatTime(ev) {
-      if (ev.start.date) return 'All day';
-      return new Date(ev.start.dateTime).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true,timeZone:'America/New_York'});
-    }
-
-    // Render the custom labeled event list
-    function renderEventList(allEvents) {
-      var listEl = document.getElementById('today-events-list');
-      if (!listEl) return;
-      if (!allEvents.length) {
-        listEl.innerHTML = '<div class="today-events-empty">No events scheduled for today.</div>';
-        return;
-      }
-      // Sort: all-day first, then by start time
-      allEvents.sort(function(a,b) {
-        var ad=!!a.ev.start.date, bd=!!b.ev.start.date;
-        if (ad&&!bd) return -1; if (!ad&&bd) return 1; if (ad&&bd) return 0;
-        return new Date(a.ev.start.dateTime)-new Date(b.ev.start.dateTime);
-      });
-      var html = '';
-      allEvents.forEach(function(item) {
-        if (item.key === 'middle' && /pto meeting/i.test(item.ev.summary)) return;
-        var ev=item.ev, k=item.key;
-        var rawTitle = ev.summary||'(No title)';
-        var title = rawTitle.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        var dayInfo = getDayLabelInfo(rawTitle);
-        var color = dayInfo ? dayInfo.color : CAL_COLORS[k];
-        var label = dayInfo ? dayInfo.label : CAL_LABELS[k];
-        html += '<div class="today-event-item">';
-        html += '<span class="today-event-dot" style="background:'+color+'"></span>';
-        html += '<div class="today-event-body">';
-        html += '<div class="today-event-title">'+title+'</div>';
-        html += '<div class="today-event-meta"><span class="today-event-time">'+formatTime(ev)+'</span>&nbsp;&middot;&nbsp;<span class="today-event-school" style="color:'+color+'">'+label+'</span></div>';
-        html += '</div></div>';
-      });
-      listEl.innerHTML = html;
-    }
-
-    // Fetch events from Google Calendar API
-    function loadCalendarAPI() {
-      var listEl = document.getElementById('today-events-list');
-      if (!listEl) return;
-      listEl.innerHTML = '<div class="today-events-loading">Loading events...</div>';
-      var offset = getETOffset();
-      var timeMin = etStr+'T00:00:00'+offset;
-      var timeMax = etStr2+'T00:00:00'+offset;
-      var keys = Object.keys(CAL_IDS), allEvents = [], pending = keys.length;
-      keys.forEach(function(key) {
-        var cid = encodeURIComponent(CAL_IDS[key]);
-        var url = 'https://www.googleapis.com/calendar/v3/calendars/'+cid+'/events'
-          +'?key='+GCAL_API_KEY
-          +'&timeMin='+encodeURIComponent(timeMin)
-          +'&timeMax='+encodeURIComponent(timeMax)
-          +'&singleEvents=true&orderBy=startTime&maxResults=20';
-        fetch(url).then(function(r){return r.json();}).then(function(data){
-          if (data.items) data.items.forEach(function(ev){allEvents.push({ev:ev,key:key});});
-          if (--pending===0) renderEventList(allEvents);
-        }).catch(function(){ if (--pending===0) renderEventList(allEvents); });
-      });
-    }
-
-    // Parse an iCal feed string for today-only events
-    function parseICSForToday(raw) {
-      var text = raw.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
-      text = text.replace(/\n[ \t]/g,''); // unfold
-      var events = [];
-      var re = /BEGIN:VEVENT([\s\S]*?)END:VEVENT/g;
-      var m;
-      while ((m = re.exec(text)) !== null) {
-        var block = m[1];
-        var getVal = function(prop) {
-          var r = new RegExp('(?:^|\n)'+prop+'(?:;[^\n:]*)?:([^\n]*)','i');
-          var v = block.match(r);
-          return v ? v[1].trim() : '';
-        };
-        var summary  = getVal('SUMMARY');
-        var dtstart  = getVal('DTSTART');
-        if (!summary || !dtstart) continue;
-
-        var isAllDay = /^\d{8}$/.test(dtstart);
-        var eventDate = '';
-        if (isAllDay) {
-          eventDate = dtstart.substr(0,4)+'-'+dtstart.substr(4,2)+'-'+dtstart.substr(6,2);
-        } else if (/^\d{8}T\d{6}Z$/.test(dtstart)) {
-          var d = new Date(dtstart.substr(0,4)+'-'+dtstart.substr(4,2)+'-'+dtstart.substr(6,2)
-            +'T'+dtstart.substr(9,2)+':'+dtstart.substr(11,2)+':'+dtstart.substr(13,2)+'Z');
-          eventDate = d.toLocaleDateString('en-CA',{timeZone:'America/New_York'});
-        } else if (/^\d{8}T\d{6}$/.test(dtstart)) {
-          eventDate = dtstart.substr(0,4)+'-'+dtstart.substr(4,2)+'-'+dtstart.substr(6,2);
-        }
-        if (eventDate !== etStr) continue;
-
-        var startMs = 0;
-        if (!isAllDay) {
-          try {
-            if (/Z$/.test(dtstart)) {
-              startMs = new Date(dtstart.substr(0,4)+'-'+dtstart.substr(4,2)+'-'+dtstart.substr(6,2)
-                +'T'+dtstart.substr(9,2)+':'+dtstart.substr(11,2)+':'+dtstart.substr(13,2)+'Z').getTime();
-            } else {
-              startMs = new Date(dtstart.substr(0,4)+'-'+dtstart.substr(4,2)+'-'+dtstart.substr(6,2)
-                +'T'+dtstart.substr(9,2)+':'+dtstart.substr(11,2)+':'+dtstart.substr(13,2)).getTime();
-            }
-          } catch(e) {}
-        }
-        var timeStr = 'All day';
-        if (!isAllDay && startMs) {
-          timeStr = new Date(startMs).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true,timeZone:'America/New_York'});
-        }
-        events.push({
-          summary: summary.replace(/\\n/g,' ').replace(/\\,/g,',').replace(/\\;/g,';').replace(/\\\\/g,'\\'),
-          isAllDay: isAllDay, startMs: startMs, timeStr: timeStr
-        });
-      }
-      return events;
-    }
-
-    // Render event list from fetched iCal data (letter-day schedule entries are excluded)
-    function renderCustomEvents(allEvents) {
-      var listEl = document.getElementById('today-events-list');
-      if (!listEl) return;
-
-      if (!allEvents.length) {
-        listEl.innerHTML = '<div class="today-events-empty">No events scheduled for today.<br><a href="events.html" style="color:var(--primary);font-weight:600">View full calendar &rarr;</a></div>';
-        return;
-      }
-
-      // Sort: all-day first, then by start time
-      allEvents.sort(function(a,b) {
-        if (a.ev.isAllDay && !b.ev.isAllDay) return -1;
-        if (!a.ev.isAllDay && b.ev.isAllDay) return 1;
-        return a.ev.startMs - b.ev.startMs;
-      });
-
-      // Exclude letter-day schedule entries (e.g. "A Day", "B Day") from the list
-      var letterDayRe = /\b([A-E])\s*[-\u2013]?\s*Day\b/i;
-      var regularEvents = allEvents.filter(function(item) {
-        return !letterDayRe.test(item.ev.summary);
-      });
-
-      // Render regular events
-      if (!regularEvents.length) {
-        listEl.innerHTML = '<div class="today-events-empty" style="padding:16px">No other events today.</div>';
-      } else {
-        var html = '';
-        regularEvents.forEach(function(item) {
-          var color = CAL_COLORS[item.key];
-          var label = CAL_LABELS[item.key];
-          var info  = getDayLabelInfo(item.ev.summary);
-          if (info) { color = info.color; label = info.label; }
-          if (/casino night/i.test(item.ev.summary)) { item._manualLink = 'casinoroyale.html'; }
-          var safeTitle = item.ev.summary.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-          var titleHtml = item._manualLink ? '<a href="'+item._manualLink+'" style="color:inherit;text-decoration:none;font-weight:700">'+safeTitle+'</a>' : safeTitle;
-          html += '<div class="today-event-item">'
-            +'<span class="today-event-dot" style="background:'+color+'"></span>'
-            +'<div class="today-event-body">'
-            +'<div class="today-event-title">'+titleHtml+'</div>'
-            +'<div class="today-event-meta">';
-          if (item.ev.timeStr !== 'All day') html += '<span class="today-event-time">'+item.ev.timeStr+'</span> &middot; ';
-          html += '<span class="today-event-school" style="color:'+color+'">'+label+'</span>'
-            +'</div></div></div>';
-        });
-        listEl.innerHTML = html;
-      }
-    }
-
-    // Fetch iCal feeds via local PHP proxy, parse today-only, render custom layout
-    function loadICSEvents() {
-      if (GCAL_API_KEY) return; // API path handles it
-      var listEl   = document.getElementById('today-events-list');
-      var iframeEl = document.getElementById('today-events-iframe');
-      listEl.style.display = 'block';
-      iframeEl.style.display = 'none';
-      listEl.innerHTML = '<div class="today-events-loading">Loading today\'s schedule&hellip;</div>';
-
-      var keys = Object.keys(CAL_IDS);
-      var allEvents = [], pending = keys.length, failed = 0;
-
-      keys.forEach(function(key) {
-        var icsUrl = 'https://calendar.google.com/calendar/ical/'+encodeURIComponent(CAL_IDS[key])+'/public/basic.ics';
-        var proxy  = '/ical-proxy.php?url='+encodeURIComponent(icsUrl);
-        fetch(proxy, {cache:'no-store'})
-          .then(function(r){ return r.text(); })
-          .then(function(text){
-            if (text && text.indexOf('BEGIN:VCALENDAR') !== -1) {
-              parseICSForToday(text).forEach(function(ev){ allEvents.push({ev:ev,key:key}); });
-            }
-            if (--pending === 0) renderCustomEvents(allEvents);
-          })
-          .catch(function(){
-            failed++;
-            if (--pending === 0) {
-              if (failed === keys.length) {
-                // All failed — fall back to iframe
-                listEl.style.display = 'none';
-                iframeEl.style.display = 'block';
-                var _tp=etStr.replace(/-/g,''),_tp2=etStr2.replace(/-/g,''); var src = 'https://calendar.google.com/calendar/embed?mode=AGENDA&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York&dates='+_tp+'%2F'+_tp2;
-                Object.values(CAL_IDS).forEach(function(id){ src += '&src='+encodeURIComponent(id); });
-                iframeEl.src = src;
-              } else {
-                renderCustomEvents(allEvents);
-              }
-            }
-          });
-      });
-    }
-
-    // Show events: if API key set → Google Calendar API; else → iCal feeds (fallback: iframe)
-    var iframeEl = document.getElementById('today-events-iframe');
-    var listEl   = document.getElementById('today-events-list');
-    if (GCAL_API_KEY) {
-      if (iframeEl) iframeEl.style.display = 'none';
-      if (listEl)   { listEl.style.display = 'block'; loadCalendarAPI(); }
-    } else {
-      loadICSEvents();
-    }
-
-    // Weather — Open-Meteo
-    fetch('https://api.open-meteo.com/v1/forecast?latitude=42.7765&longitude=-73.9278&current=temperature_2m,precipitation,wind_speed_10m,weather_code&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FNew_York&forecast_days=1')
-      .then(function(r){return r.json();})
-      .then(function(data){
-        var cur=data.current, day=data.daily, hourly=data.hourly;
-        var code=cur.weather_code;
-        document.getElementById('weather-icon').textContent = WMO_ICONS[code]||'🌡️';
-        document.getElementById('weather-temp').textContent = Math.round(cur.temperature_2m)+'°F';
-        document.getElementById('weather-desc').textContent = WMO_DESCS[code]||'Current conditions';
-        document.getElementById('weather-high').textContent = Math.round(day.temperature_2m_max[0])+'°F';
-        document.getElementById('weather-low').textContent  = Math.round(day.temperature_2m_min[0])+'°F';
-        document.getElementById('weather-wind').textContent = Math.round(cur.wind_speed_10m)+' mph';
-        document.getElementById('weather-precip').textContent = cur.precipitation.toFixed(2)+'"';
-        var hourlyEl = document.getElementById('weather-hourly');
-        if (hourlyEl && hourly) {
-          var nowHr = new Date().getHours(), html = '';
-          for (var i=nowHr; i<Math.min(nowHr+8,24); i++) {
-            var t=hourly.temperature_2m[i], c=hourly.weather_code[i];
-            var hr = i===0?'12am':i<12?i+'am':i===12?'12pm':(i-12)+'pm';
-            html += '<div class="hourly-slot"><div class="hourly-time">'+hr+'</div><div class="hourly-icon">'+(WMO_ICONS[c]||'🌡️')+'</div><div class="hourly-temp">'+Math.round(t)+'°</div></div>';
-          }
-          hourlyEl.innerHTML = html;
-        }
-        document.getElementById('weather-loading').style.display='none';
-        document.getElementById('weather-content').style.display='block';
-      })
-      .catch(function(){
-        document.getElementById('weather-loading').style.display='none';
-        document.getElementById('weather-error').style.display='block';
-      });
-
-    // NWS Alerts
-    fetch('https://api.weather.gov/alerts/active?point=42.7765,-73.9278',{headers:{'User-Agent':'SchalmontPTO/1.0'}})
-      .then(function(r){return r.json();})
-      .then(function(data){
-        var alertEl=document.getElementById('weather-alert');
-        if (alertEl && data.features && data.features.length>0) {
-          var a=data.features[0].properties;
-          alertEl.innerHTML='⚠️ <strong>'+a.event+'</strong>: '+a.headline;
-          alertEl.style.display='block';
-        }
-      }).catch(function(){});
-
-    // Responsive grid
-    var grid = document.getElementById('today-widget-grid');
-    function resizeGrid(){ if(grid) grid.style.gridTemplateColumns = window.innerWidth<720?'1fr':'260px 1fr'; }
-    resizeGrid();
-    window.addEventListener('resize', resizeGrid);
-
-    // Add to Calendar modal
-    var btn = document.getElementById('add-to-cal-btn');
-    var modal = document.getElementById('add-cal-modal');
-    var closeBtn = document.getElementById('add-cal-close');
-    if (btn && modal) {
-      btn.addEventListener('click', function(){ modal.classList.remove('hidden'); buildCalLinks(); });
-      closeBtn.addEventListener('click', function(){ modal.classList.add('hidden'); });
-      modal.addEventListener('click', function(e){ if(e.target===modal) modal.classList.add('hidden'); });
-      var checks = modal.querySelectorAll('input[type=checkbox]');
-      checks.forEach(function(c){ c.addEventListener('change', buildCalLinks); });
-    }
-
-    function buildCalLinks() {
-      var names={pto:'Schalmont Central PTO',jefferson:'Jefferson Elementary PTO',middle:'Schalmont Middle School',high:'Schalmont High School'};
-      var colors={pto:'#295c38',jefferson:'#6bb044',middle:'#087d40',high:'#044d2a'};
-      var linksEl=document.getElementById('cal-sub-links');
-      if (!linksEl) return;
-      var modal=document.getElementById('add-cal-modal');
-      var checks=modal.querySelectorAll('input[type=checkbox]');
-      var selected=Array.from(checks).filter(function(c){return c.checked;}).map(function(c){return c.value;});
-      if (selected.length===0){linksEl.innerHTML='<p style="color:var(--text-light);font-size:13px">Select at least one calendar above.</p>';return;}
-      var html='';
-      selected.forEach(function(key){
-        var id=CAL_IDS[key], enc=encodeURIComponent(id);
-        html+='<div style="border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:6px">';
-        html+='<div style="font-weight:700;color:'+colors[key]+';font-size:14px;margin-bottom:8px">&#9679; '+names[key]+'</div>';
-        html+='<div style="display:flex;gap:8px;flex-wrap:wrap">';
-        html+='<a href="https://calendar.google.com/calendar/r?cid='+enc+'" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="font-size:13px;padding:6px 14px">Google Calendar</a>';
-        html+='<a href="https://calendar.google.com/calendar/ical/'+enc+'/public/basic.ics" class="btn btn-sm" style="font-size:13px;padding:6px 14px;border:1.5px solid var(--border);border-radius:var(--radius);color:var(--text)">iCal / Outlook</a>';
-        html+='</div></div>';
-      });
-      linksEl.innerHTML=html;
-    }
-  })();
-  </script>
-
-  <script>
-  // Auto-remove past deadline items
-  (function() {
-    var today = new Date().toLocaleDateString('en-CA', {timeZone:'America/New_York'});
-    document.querySelectorAll('.deadline-item[data-expires]').forEach(function(el) {
-      if (el.dataset.expires < today) el.remove();
-    });
-  })();
-  </script>
-  <script src="js/page-menu.js?v=3"></script>
+  <script src="js/public-calendar.js?v=3"></script>
 </body>
 </html>
