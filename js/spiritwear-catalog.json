@@ -118,11 +118,21 @@
     "amounts": [10, 25, 50, 100],
     "image": "images/spiritwear/giftcard.webp",
     "emailHandle": "gift-card",
-    "printedHandle": "printed-gift-card"
+    "printedHandle": "printed-gift-card",
+    "printedDelivery": ["school", "home", "ship"]
   },
+  "couponBook": {
+    "name": "SaveAround Coupon Book",
+    "price": 25,
+    "shopifyHandle": "coupon-book",
+    "offers": 313,
+    "locations": 220
+  },
+  "schools": ["Woestina Pre-K", "Jefferson Elementary", "Schalmont Middle School", "Schalmont High School"],
   "designGroups": [
     { "id": "gd", "name": "Sabre Designs" },
-    { "id": "ss", "name": "Simple Sabres" }
+    { "id": "ss", "name": "Simple Sabres" },
+    { "id": "sg", "name": "More Sabre Designs" }
   ],
   "designs": [
     { "id": "gd-001", "name": "Schalmont Sabres Tiger" },
@@ -190,6 +200,42 @@
     { "id": "ss-013", "name": "Sabre Nation Block" },
     { "id": "ss-014", "name": "Schalmont Rotterdam NY" },
     { "id": "ss-015", "name": "Sabres Tiger Stripes" },
-    { "id": "ss-016", "name": "Simple Sabres" }
+    { "id": "ss-016", "name": "Simple Sabres" },
+    { "id": "sg-001", "name": "Claim Your Territory" },
+    { "id": "sg-002", "name": "Green & White Forever (Heart)" },
+    { "id": "sg-003", "name": "Green Blooded" },
+    { "id": "sg-004", "name": "Green Runs Deep (Forest)" },
+    { "id": "sg-005", "name": "Heavy on the Sabre Pride" },
+    { "id": "sg-006", "name": "Heavy on the Sabre Pride (Classic)" },
+    { "id": "sg-007", "name": "Home of the Sabres (Roundel)" },
+    { "id": "sg-008", "name": "Homegrown Sabre" },
+    { "id": "sg-009", "name": "House Built on Pride" },
+    { "id": "sg-010", "name": "House of Green" },
+    { "id": "sg-011", "name": "In My Middle School Era" },
+    { "id": "sg-012", "name": "Keep Shining Positive" },
+    { "id": "sg-013", "name": "Our House, Our Rules" },
+    { "id": "sg-014", "name": "Own This Town" },
+    { "id": "sg-015", "name": "Power of the Paw" },
+    { "id": "sg-016", "name": "Pride Lives Here" },
+    { "id": "sg-017", "name": "Roar Together (Tiger)" },
+    { "id": "sg-018", "name": "Roots Run Green" },
+    { "id": "sg-019", "name": "Run with the Sabres" },
+    { "id": "sg-020", "name": "Sabre Nation SMS" },
+    { "id": "sg-021", "name": "Schalmont Middle School Smiley" },
+    { "id": "sg-022", "name": "Schalmont Pride Runs in the Family" },
+    { "id": "sg-023", "name": "Schalmont Sabres Arch" },
+    { "id": "sg-024", "name": "Schalmont Sabres Block" },
+    { "id": "sg-025", "name": "Schalmont Sabres Bow Monogram" },
+    { "id": "sg-026", "name": "Schalmont Sabres Classic" },
+    { "id": "sg-027", "name": "Schalmont Sabres Collegiate" },
+    { "id": "sg-028", "name": "Schalmont Sabres High School" },
+    { "id": "sg-029", "name": "Schalmont Sabres Modern" },
+    { "id": "sg-030", "name": "Schalmont Sabres Retro" },
+    { "id": "sg-031", "name": "Schalmont Sabres Rotterdam, NY" },
+    { "id": "sg-032", "name": "Schalmont Sabres Speed" },
+    { "id": "sg-033", "name": "Schalmont Sabres Swords" },
+    { "id": "sg-034", "name": "Schalmont Sabres Varsity" },
+    { "id": "sg-035", "name": "The Sabre Way" },
+    { "id": "sg-036", "name": "Unleash the Pride" }
   ]
 }

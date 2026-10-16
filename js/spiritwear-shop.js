@@ -1,19 +1,27 @@
 /* ============================================================
-   PTO Spirit Wear + Gift Cards — shop page builder
+   PTO Spiritwear Shoppe — shirt builder, gift cards, coupon book
    ------------------------------------------------------------
-   Everything editable (items, prices, sizes, colors, designs,
-   front logos, gift card amounts, Shopify connection) lives in
-   js/spiritwear-catalog.json. This file only draws the page.
+   One script for three pages that share one order (saved in the
+   browser, so it follows the visitor between pages):
+     shop.html        shirt builder        (#sw-panel-shirt)
+     giftcards.html   gift cards           (#sw-panel-gift)
+     couponbook.html  SaveAround book      (#sw-panel-coupon)
+   Each page has the "Your Order" card (#sw-cart-list …) and only
+   the panel(s) it needs; this script wires up whatever is there.
 
-   Checkout runs through Shopify: the order built here becomes a
-   Shopify cart (Storefront API), with every choice attached to
-   its line — Size, Color, Design, Front/Back, Front logo, gift
-   card recipient — so Shopify's checkout, order page and
-   confirmation email show the full order. Store setup steps:
-   SPIRITWEAR_SHOPIFY_SETUP.md.
+   Everything editable (items, prices, sizes, colors, designs,
+   front logos, gift card amounts, coupon book, Shopify connection)
+   lives in js/spiritwear-catalog.json.
+
+   Checkout runs through Shopify: the order becomes a Shopify cart
+   (Storefront API) with every choice attached to its line — Size,
+   Color, Design, Front/Back, Front logo, gift card recipient,
+   delivery — so Shopify's checkout, order page and confirmation
+   email show the full order. Setup: SPIRITWEAR_SHOPIFY_SETUP.md.
 
    Images live in images/spiritwear/:
      blanks/<shirt>-<color>-<front|back>.webp   product photos
+     blanks/<shirt>-generic-front.webp          color-neutral, for step 1
      designs/<dark|light>/<id>.webp (+ designs/thumbs/...)   designs, outlined for dark or light fabric
      logos/<id>.png                              small front logos
    ============================================================ */
@@ -23,7 +31,7 @@
 
   let SW;
   try {
-    SW = await (await fetch('js/spiritwear-catalog.json?v=5', { cache: 'no-cache' })).json();
+    SW = await (await fetch('js/spiritwear-catalog.json?v=6', { cache: 'no-cache' })).json();
   } catch (e) {
     root.style.display = 'none';
     return;
@@ -34,6 +42,7 @@
   const PENDING_KEY = 'sw-pending-checkout';
   const IMG = 'images/spiritwear/';
   const $ = (sel) => root.querySelector(sel);
+  const has = { shirt: !!$('#sw-panel-shirt'), gift: !!$('#sw-panel-gift'), coupon: !!$('#sw-panel-coupon') };
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const money = (n) => '$' + n.toFixed(2).replace(/\.00$/, '');
   const byId = (list, id) => list.find((x) => x.id === id);
@@ -47,11 +56,25 @@
     set(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   };
 
+  // How printed gift cards and coupon books get to people. Labels differ a little per item.
+  const DELIVERY = {
+    gift: {
+      school: ['🏫 Deliver to school', 'We’ll send it home with your student.'],
+      home: ['🏠 Deliver to a home', 'Local delivery around the Schalmont / Albany area.'],
+      ship: ['🎁 Ship it wrapped', 'Mailed fully gift-wrapped and addressed.']
+    },
+    coupon: {
+      school: ['🏫 Send home with my student', 'We’ll deliver it to your student at school.'],
+      home: ['🏠 Local home delivery', 'Dropped off around the Schalmont / Albany area.'],
+      ship: ['📦 Ship it', 'Mailed to the address you enter at checkout.']
+    }
+  };
+  const DELIVERY_NAMES = { school: 'Deliver to school', home: 'Local home delivery', ship: 'Ship it' };
+
   const state = {
-    tab: location.hash === '#giftcards' ? 'gift' : 'shirt',
     shirt: SW.shirts[0].id,
     size: null,
-    color: SW.colors[0].id,
+    color: null,      // picked in step 2
     design: SW.designs[0].id,
     placement: 'back',
     logo: 'none',
@@ -62,18 +85,21 @@
     group: 'all',
     search: ''
   };
-  const gift = { amount: SW.giftCards.amounts[1] || SW.giftCards.amounts[0], kind: 'email', sendTo: 'me', ship: 'local' };
+  const gift = { amount: SW.giftCards.amounts[1] || SW.giftCards.amounts[0], kind: 'print', sendTo: 'me', ship: 'school' };
+  const coupon = { qty: 1, ship: 'school' };
 
-  // Drop anything saved from an older version of the menu.
-  let cart = (store.get(CART_KEY) || []).map((i) => ({ type: 'shirt', ...i })).filter((i) => {
-    if (i.type === 'gift') return SW.giftCards.amounts.includes(i.amount) && (i.kind === 'email' || i.kind === 'print');
+  // Drop anything saved from an older version of the menu (and update old delivery names).
+  let cart = (store.get(CART_KEY) || []).map((i) => ({ type: 'shirt', ...i })).map((i) =>
+    (i.type === 'gift' && i.ship === 'local' ? { ...i, ship: 'home' } : i)).filter((i) => {
+    if (i.type === 'gift') return SW.giftCards.amounts.includes(i.amount) && (i.kind === 'email' || (i.kind === 'print' && DELIVERY.gift[i.ship]));
+    if (i.type === 'coupon') return !!SW.couponBook && !!DELIVERY.coupon[i.ship];
     const shirt = byId(SW.shirts, i.shirt);
     return shirt && shirtColors(shirt).includes(i.color) && shirtSizes(shirt).includes(i.size) &&
       byId(SW.designs, i.design) && byId(SW.placements, i.placement) && byId(SW.frontLogos, i.logo);
   });
   const saveCart = () => store.set(CART_KEY, cart);
 
-  const unitPrice = (i) => (i.type === 'gift' ? i.amount : byId(SW.shirts, i.shirt).price);
+  const unitPrice = (i) => (i.type === 'gift' ? i.amount : i.type === 'coupon' ? SW.couponBook.price : byId(SW.shirts, i.shirt).price);
 
   /* ---------- Shopify (Storefront API) ---------- */
   const shop = SW.shopify || {};
@@ -94,6 +120,7 @@
   async function loadProducts() {
     if (products) return products;
     const handles = [...SW.shirts.map((s) => s.shopifyHandle), SW.giftCards.emailHandle, SW.giftCards.printedHandle];
+    if (SW.couponBook) handles.push(SW.couponBook.shopifyHandle);
     const fields = handles.map((h, n) => `p${n}: product(handle: ${JSON.stringify(h)}) {
       title variants(first: 100) { nodes { id availableForSale price { amount } selectedOptions { name value } } } }`).join('\n');
     const data = await sf(`query { ${fields} }`);
@@ -132,6 +159,10 @@
   function cartLine(i) {
     const attrs = [];
     const add = (key, value) => { if (value) attrs.push({ key, value: String(value) }); };
+    const addDelivery = () => {
+      add('Delivery', DELIVERY_NAMES[i.ship]);
+      if (i.ship === 'school') { add('Student', i.student); add('School', i.school); add('Teacher', i.teacher); }
+    };
     let variant;
     if (i.type === 'gift') {
       variant = giftVariant(i);
@@ -145,8 +176,12 @@
         add('To', i.toName);
         add('From', i.fromName);
         add('Message', i.message);
-        add('Delivery preference', i.ship === 'local' ? 'Local delivery' : 'Ship it');
+        addDelivery();
+        if (i.ship === 'ship') add('Gift wrap', 'Wrapped and addressed');
       }
+    } else if (i.type === 'coupon') {
+      variant = product(SW.couponBook.shopifyHandle, SW.couponBook.name).variants.nodes[0];
+      addDelivery();
     } else {
       variant = shirtVariant(i);
       const d = byId(SW.designs, i.design);
@@ -157,7 +192,7 @@
       add('Print version', tone(i.color) === 'dark' ? 'Dark fabric (white outline)' : 'Light fabric (dark outline)');
       if (i.placement === 'back') add('Front logo', byId(SW.frontLogos, i.logo).name);
     }
-    if (!variant.availableForSale) throw new Error('Something in your order is sold out right now. Please remove it and try again.');
+    if (!variant || !variant.availableForSale) throw new Error('Something in your order is sold out right now. Please remove it and try again.');
     return { merchandiseId: variant.id, quantity: i.qty, attributes: attrs };
   }
 
@@ -172,7 +207,7 @@
       const lines = cart.map(cartLine);
       const data = await sf(`mutation ($input: CartInput!) {
         cartCreate(input: $input) { cart { id checkoutUrl } userErrors { message } } }`,
-        { input: { lines, attributes: [{ key: 'Ordered from', value: 'schalmontpto.com/shop' }] } });
+        { input: { lines, attributes: [{ key: 'Ordered from', value: 'schalmontpto.com' }] } });
       const r = data.cartCreate;
       if (r.userErrors.length || !r.cart) throw new Error(r.userErrors.map((e) => e.message).join(' ') || 'Checkout could not start.');
       store.set(PENDING_KEY, { id: r.cart.id, at: Date.now() });
@@ -198,7 +233,8 @@
         cart = [];
         saveCart();
         renderCart();
-        $('#sw-thanks').hidden = false;
+        const thanks = $('#sw-thanks');
+        if (thanks) thanks.hidden = false;
       }
     } catch (e) { /* try again next visit */ }
   }
@@ -206,8 +242,10 @@
   /* ---------- Mockup: product photo with the design laid on top ---------- */
   const box = ([l, t, w, h]) => `left:${l}%;top:${t}%;width:${w}%;height:${h}%`;
   // Every design comes in a dark-fabric (white outline) and light-fabric (dark outline) version.
-  const tone = (colorId) => byId(SW.colors, colorId).tone || 'dark';
+  const tone = (colorId) => (colorId && byId(SW.colors, colorId).tone) || 'dark';
   const designSrc = (id, colorId, thumb) => `${IMG}designs/${thumb ? 'thumbs/' : ''}${tone(colorId)}/${id}.webp`;
+  // Until a color is picked, previews use the shirt's first color.
+  const shownColor = () => state.color || shirtColors(byId(SW.shirts, state.shirt))[0];
 
   function mockup(item, side, cls) {
     const shirt = byId(SW.shirts, item.shirt);
@@ -226,9 +264,17 @@
   function renderShirts() {
     $('#sw-shirts').innerHTML = SW.shirts.map((s) => `
       <button type="button" class="sw-opt${s.id === state.shirt ? ' is-on' : ''}" data-pick="shirt" data-id="${s.id}" aria-pressed="${s.id === state.shirt}">
-        <img src="${IMG}blanks/${s.id}-${shirtColors(s).includes(state.color) ? state.color : shirtColors(s)[0]}-front.webp" alt="" loading="lazy">
+        <img src="${IMG}blanks/${s.id}-generic-front.webp" alt="" loading="lazy">
         <span class="sw-opt-name">${esc(s.name)}</span>
         <span class="sw-opt-price">${money(s.price)}</span>
+      </button>`).join('');
+  }
+
+  function renderColors() {
+    const allowed = shirtColors(byId(SW.shirts, state.shirt));
+    $('#sw-colors').innerHTML = SW.colors.filter((c) => allowed.includes(c.id)).map((c) => `
+      <button type="button" class="sw-swatch${c.id === state.color ? ' is-on' : ''}" data-pick="color" data-id="${c.id}" aria-pressed="${c.id === state.color}">
+        <span style="background:${c.hex}"></span>${esc(c.name)}
       </button>`).join('');
   }
 
@@ -245,14 +291,6 @@
       </div>`).join('');
   }
 
-  function renderColors() {
-    const allowed = shirtColors(byId(SW.shirts, state.shirt));
-    $('#sw-colors').innerHTML = SW.colors.filter((c) => allowed.includes(c.id)).map((c) => `
-      <button type="button" class="sw-swatch${c.id === state.color ? ' is-on' : ''}" data-pick="color" data-id="${c.id}" aria-pressed="${c.id === state.color}">
-        <span style="background:${c.hex}"></span>${esc(c.name)}
-      </button>`).join('');
-  }
-
   function renderDesignFilters() {
     const groups = [{ id: 'all', name: 'All' }, ...SW.designGroups];
     $('#sw-design-tabs').innerHTML = groups.map((g) =>
@@ -264,10 +302,10 @@
     const list = SW.designs.filter((d) =>
       (state.group === 'all' || d.group === state.group) &&
       (!q || d.name.toLowerCase().includes(q) || d.number.toLowerCase().includes(q)));
-    $('#sw-designs').style.setProperty('--sw-tile', byId(SW.colors, state.color).hex);
+    $('#sw-designs').style.setProperty('--sw-tile', byId(SW.colors, shownColor()).hex);
     $('#sw-designs').innerHTML = list.length ? list.map((d) => `
       <button type="button" class="sw-design${d.id === state.design ? ' is-on' : ''}" data-pick="design" data-id="${d.id}" aria-pressed="${d.id === state.design}">
-        <span class="sw-design-img"><img src="${designSrc(d.id, state.color, true)}" alt="" loading="lazy"></span>
+        <span class="sw-design-img"><img src="${designSrc(d.id, shownColor(), true)}" alt="" loading="lazy"></span>
         <span class="sw-design-num">#${esc(d.number)}</span>
         <span class="sw-design-name">${esc(d.name)}</span>
       </button>`).join('') : '<p class="sw-empty">No designs match your search.</p>';
@@ -276,7 +314,7 @@
   function renderPlacements() {
     $('#sw-placements').innerHTML = SW.placements.map((p) => `
       <button type="button" class="sw-place${p.id === state.placement ? ' is-on' : ''}" data-pick="placement" data-id="${p.id}" aria-pressed="${p.id === state.placement}">
-        ${mockup({ ...state, placement: p.id, logo: 'none' }, p.id, 'sw-mock-xs')}
+        ${mockup({ ...state, color: shownColor(), placement: p.id, logo: 'none' }, p.id, 'sw-mock-xs')}
         <span>${esc(p.name)}</span>
       </button>`).join('');
   }
@@ -305,26 +343,53 @@
   function renderPreview() {
     const shirt = byId(SW.shirts, state.shirt);
     const design = byId(SW.designs, state.design);
-    $('#sw-preview').innerHTML = mockup(state, state.side, 'sw-mock-lg');
+    $('#sw-preview').innerHTML = mockup({ ...state, color: shownColor() }, state.side, 'sw-mock-lg');
     root.querySelectorAll('[data-side]').forEach((b) => {
       b.classList.toggle('is-on', b.dataset.side === state.side);
       b.setAttribute('aria-pressed', b.dataset.side === state.side);
     });
+    const need = (txt) => `<span style="color:var(--warning)">${txt}</span>`;
     $('#sw-summary').innerHTML =
-      `<strong>${esc(shirt.name)}</strong> · ${esc(byId(SW.colors, state.color).name)} · ` +
-      (state.size ? esc(state.size) : '<span style="color:var(--warning)">Pick a size</span>') +
+      `<strong>${esc(shirt.name)}</strong> · ` +
+      (state.color ? esc(byId(SW.colors, state.color).name) : need('Pick a color')) + ' · ' +
+      (state.size ? esc(state.size) : need('Pick a size')) +
       `<br>${state.placement === 'front' ? 'Front' : 'Back'}: #${esc(design.number)} ${esc(design.name)}` +
       (state.placement === 'back' ? `<br>Front: ${esc(byId(SW.frontLogos, state.logo).name)}` : '');
     $('#sw-price').textContent = money(shirt.price * state.qty);
     $('#sw-qty').value = state.qty;
-    $('#sw-add').disabled = !state.size;
+    $('#sw-add').disabled = !state.size || !state.color;
+  }
+
+  /* ---------- Delivery picker (printed gift cards, coupon books) ---------- */
+  function renderDelivery(kind, model) {
+    const wrap = $(`.sw-delivery[data-for="${kind}"]`);
+    if (!wrap) return;
+    const opts = DELIVERY[kind];
+    wrap.querySelector('.sw-delivery-opts').innerHTML = Object.keys(opts).map((k) => `
+      <button type="button" class="sw-gc-kind${model.ship === k ? ' is-on' : ''}" data-ship="${kind}" data-val="${k}" aria-pressed="${model.ship === k}">
+        <strong>${opts[k][0]}</strong><span>${opts[k][1]}</span>
+      </button>`).join('');
+    wrap.querySelector('.sw-school-fields').hidden = model.ship !== 'school';
+    wrap.querySelector('.sw-hint').textContent = model.ship === 'school'
+      ? 'Tell us who to give it to — no address needed.'
+      : 'You’ll enter the address at checkout.';
+  }
+
+  function readSchoolFields(kind) {
+    const wrap = $(`.sw-delivery[data-for="${kind}"]`);
+    const v = (n) => wrap.querySelector(`[name="${n}"]`).value.trim();
+    return { student: v('student'), school: v('school'), teacher: v('teacher') };
+  }
+
+  function schoolOptions() {
+    return '<option value="">Choose a school…</option>' + (SW.schools || []).map((s) => `<option>${esc(s)}</option>`).join('');
   }
 
   /* ---------- Gift cards ---------- */
   function renderGift() {
     $('#sw-gc-amounts').innerHTML = SW.giftCards.amounts.map((a) =>
       `<button type="button" class="sw-size sw-gc-amount${a === gift.amount ? ' is-on' : ''}" data-gift="amount" data-val="${a}" aria-pressed="${a === gift.amount}">${money(a)}</button>`).join('');
-    root.querySelectorAll('[data-gift="kind"], [data-gift="sendTo"], [data-gift="ship"]').forEach((b) => {
+    root.querySelectorAll('[data-gift="kind"], [data-gift="sendTo"]').forEach((b) => {
       const on = gift[b.dataset.gift] === b.dataset.val;
       b.classList.toggle('is-on', on);
       b.setAttribute('aria-pressed', on);
@@ -333,11 +398,18 @@
     $('#sw-gc-print').hidden = gift.kind !== 'print';
     $('#sw-gc-recipient').hidden = !(gift.kind === 'email' && gift.sendTo === 'them');
     $('#sw-gc-price').textContent = money(gift.amount);
+    renderDelivery('gift', gift);
+  }
+
+  function showError(sel, msg) {
+    const err = $(sel);
+    err.textContent = msg;
+    err.hidden = !msg;
+    return !msg;
   }
 
   function addGift() {
     const val = (id) => $(id).value.trim();
-    const err = $('#sw-gc-error');
     const item = { type: 'gift', amount: gift.amount, kind: gift.kind, qty: 1 };
     if (gift.kind === 'email') {
       item.sendTo = gift.sendTo;
@@ -345,28 +417,60 @@
         item.toName = val('#sw-gc-to-name');
         item.toEmail = val('#sw-gc-to-email');
         item.message = val('#sw-gc-message');
-        if (!item.toName || !isEmail(item.toEmail)) { err.textContent = 'Please add the recipient’s name and a valid email address.'; err.hidden = false; return; }
+        if (!item.toName || !isEmail(item.toEmail)) return showError('#sw-gc-error', 'Please add the recipient’s name and a valid email address.');
       }
     } else {
       item.toName = val('#sw-gc-p-to');
       item.fromName = val('#sw-gc-p-from');
       item.message = val('#sw-gc-p-message');
       item.ship = gift.ship;
-      if (!item.toName || !item.fromName) { err.textContent = 'Please fill in who the card is to and from.'; err.hidden = false; return; }
+      if (!item.toName || !item.fromName) return showError('#sw-gc-error', 'Please fill in who the card is to and from.');
+      if (gift.ship === 'school') {
+        Object.assign(item, readSchoolFields('gift'));
+        if (!item.student || !item.school) return showError('#sw-gc-error', 'Please add the student’s name and school so we can deliver it.');
+      }
     }
-    err.hidden = true;
+    showError('#sw-gc-error', '');
     cart.push(item);
     saveCart();
     renderCart();
-    root.querySelectorAll('#sw-panel-gift input, #sw-panel-gift textarea').forEach((f) => { f.value = ''; });
+    root.querySelectorAll('#sw-panel-gift input, #sw-panel-gift textarea, #sw-panel-gift select').forEach((f) => { f.value = ''; });
     flash('#sw-gc-added');
   }
 
+  /* ---------- Coupon book ---------- */
+  function renderCoupon() {
+    $('#sw-cb-qty').value = coupon.qty;
+    $('#sw-cb-price').textContent = money(SW.couponBook.price * coupon.qty);
+    renderDelivery('coupon', coupon);
+  }
+
+  function addCoupon() {
+    const item = { type: 'coupon', qty: coupon.qty, ship: coupon.ship };
+    if (coupon.ship === 'school') {
+      Object.assign(item, readSchoolFields('coupon'));
+      if (!item.student || !item.school) return showError('#sw-cb-error', 'Please add the student’s name and school so we can deliver it.');
+    }
+    showError('#sw-cb-error', '');
+    cart.push(item);
+    coupon.qty = 1;
+    saveCart();
+    renderCart();
+    renderCoupon();
+    flash('#sw-cb-added');
+  }
+
   /* ---------- Order (cart) ---------- */
+  function deliveryText(i) {
+    if (i.ship === 'school') return `Deliver to ${i.student} at ${i.school}${i.teacher ? ` (${i.teacher})` : ''}`;
+    return i.ship === 'home' ? 'Local home delivery' : (i.type === 'gift' ? 'Shipped, wrapped & addressed' : 'Shipped');
+  }
+
   function describe(i) {
+    if (i.type === 'coupon') return deliveryText(i);
     if (i.type === 'gift') {
       if (i.kind === 'email') return i.sendTo === 'them' ? `Emailed to ${i.toName} (${i.toEmail})` : 'Emailed to you';
-      return `To ${i.toName}, from ${i.fromName} · ${i.ship === 'local' ? 'Local delivery' : 'Shipped'}`;
+      return `To ${i.toName}, from ${i.fromName} · ${deliveryText(i)}`;
     }
     const d = byId(SW.designs, i.design);
     const base = `${i.size} · ${byId(SW.colors, i.color).name} · #${d.number} ${d.name}`;
@@ -375,7 +479,13 @@
 
   const itemName = (i) => (i.type === 'gift'
     ? `${i.kind === 'email' ? 'Emailed' : 'Printed'} Gift Card — ${money(i.amount)}`
-    : byId(SW.shirts, i.shirt).name);
+    : i.type === 'coupon' ? SW.couponBook.name : byId(SW.shirts, i.shirt).name);
+
+  function itemThumb(i) {
+    if (i.type === 'gift') return `<img class="sw-cart-gc" src="${esc(SW.giftCards.image)}" alt="">`;
+    if (i.type === 'coupon') return '<span class="sw-cart-cb" aria-hidden="true">🎟️</span>';
+    return mockup(i, i.placement, 'sw-mock-sm');
+  }
 
   function renderCart() {
     const count = cart.reduce((n, i) => n + i.qty, 0);
@@ -383,9 +493,9 @@
     $('#sw-cart-count').textContent = count ? `(${count})` : '';
     $('#sw-cart-total').textContent = money(total);
     $('#sw-cart-list').innerHTML = !cart.length
-      ? '<p class="sw-empty">Your order is empty. Build a shirt or pick a gift card and tap “Add to Order.”</p>'
+      ? '<p class="sw-empty">Your order is empty. Add something and it will show up here.</p>'
       : cart.map((i, idx) => `<div class="sw-cart-item">
-          ${i.type === 'gift' ? `<img class="sw-cart-gc" src="${esc(SW.giftCards.image)}" alt="">` : mockup(i, i.placement, 'sw-mock-sm')}
+          ${itemThumb(i)}
           <div class="sw-cart-info">
             <div class="sw-cart-name">${esc(itemName(i))}</div>
             <div class="sw-cart-meta">${esc(describe(i))}</div>
@@ -411,26 +521,20 @@
     el._t = setTimeout(() => { el.hidden = true; }, 1800);
   }
 
-  function renderTab() {
-    root.classList.toggle('is-gift', state.tab === 'gift');
-    $('#sw-panel-shirt').hidden = state.tab !== 'shirt';
-    $('#sw-panel-gift').hidden = state.tab !== 'gift';
-    root.querySelectorAll('[data-tab]').forEach((b) => {
-      b.classList.toggle('is-on', b.dataset.tab === state.tab);
-      b.setAttribute('aria-selected', b.dataset.tab === state.tab);
-    });
-  }
-
-  function renderAll() {
-    renderTab(); renderShirts(); renderSizes(); renderColors(); renderDesignFilters(); renderDesigns();
-    renderPlacements(); renderLogos(); renderPreview(); renderGift(); renderCart();
+  function renderShirtBuilder() {
+    renderShirts(); renderColors(); renderSizes(); renderDesignFilters(); renderDesigns();
+    renderPlacements(); renderLogos(); renderPreview();
   }
 
   /* ---------- Events ---------- */
   root.addEventListener('click', (e) => {
     const t = (sel) => e.target.closest(sel);
     let el;
-    if ((el = t('[data-tab]'))) { state.tab = el.dataset.tab; renderTab(); return; }
+    if ((el = t('[data-ship]'))) {
+      (el.dataset.ship === 'gift' ? gift : coupon).ship = el.dataset.val;
+      renderDelivery(el.dataset.ship, el.dataset.ship === 'gift' ? gift : coupon);
+      return;
+    }
     if ((el = t('[data-gift]'))) {
       const k = el.dataset.gift;
       gift[k] = k === 'amount' ? +el.dataset.val : el.dataset.val;
@@ -464,17 +568,16 @@
         state.logo = 'none';
         state.logoNote = true;
       }
-      if (key === 'shirt') {
-        const shirt = byId(SW.shirts, state.shirt);
-        if (!shirtColors(shirt).includes(state.color)) state.color = shirtColors(shirt)[0];
-        if (state.size && !shirtSizes(shirt).includes(state.size)) state.size = null;
-        renderSizes(); renderColors(); renderDesigns();
-      }
       if (key === 'design' || key === 'placement') state.side = state.placement;
       if (key === 'logo') state.side = state.logo === 'none' ? 'back' : 'front';
-      if (key === 'shirt') { renderShirts(); renderPlacements(); }
+      if (key === 'shirt') {
+        const shirt = byId(SW.shirts, state.shirt);
+        if (state.color && !shirtColors(shirt).includes(state.color)) state.color = null;
+        if (state.size && !shirtSizes(shirt).includes(state.size)) state.size = null;
+        renderShirts(); renderColors(); renderSizes(); renderDesigns(); renderPlacements();
+      }
       if (key === 'size') renderSizes();
-      if (key === 'color') { renderShirts(); renderColors(); renderDesigns(); renderPlacements(); }
+      if (key === 'color') { renderColors(); renderDesigns(); renderPlacements(); }
       if (key === 'design') { renderDesigns(); renderPlacements(); }
       if (key === 'placement') renderPlacements();
       renderLogos();
@@ -493,32 +596,42 @@
     }
   });
 
-  $('#sw-design-search').addEventListener('input', (e) => { state.search = e.target.value; renderDesigns(); });
-  $('#sw-qty').addEventListener('input', (e) => {
-    state.qty = Math.max(1, Math.min(50, parseInt(e.target.value, 10) || 1));
-    renderPreview();
-  });
+  root.querySelectorAll('.sw-delivery select[name="school"]').forEach((s) => { s.innerHTML = schoolOptions(); });
 
-  $('#sw-add').addEventListener('click', () => {
-    if (!state.size) return;
-    const keys = ['shirt', 'size', 'color', 'design', 'placement', 'logo'];
-    const match = cart.find((i) => i.type === 'shirt' && keys.every((k) => i[k] === state[k]));
-    if (match) match.qty = Math.min(50, match.qty + state.qty);
-    else cart.push({ type: 'shirt', ...Object.fromEntries(keys.map((k) => [k, state[k]])), qty: state.qty });
-    state.qty = 1;
-    saveCart();
-    renderCart();
-    renderPreview();
-    flash('#sw-added');
-  });
-
-  $('#sw-gc-add').addEventListener('click', addGift);
+  if (has.shirt) {
+    $('#sw-design-search').addEventListener('input', (e) => { state.search = e.target.value; renderDesigns(); });
+    $('#sw-qty').addEventListener('input', (e) => {
+      state.qty = Math.max(1, Math.min(50, parseInt(e.target.value, 10) || 1));
+      renderPreview();
+    });
+    $('#sw-add').addEventListener('click', () => {
+      if (!state.size || !state.color) return;
+      const keys = ['shirt', 'size', 'color', 'design', 'placement', 'logo'];
+      const match = cart.find((i) => i.type === 'shirt' && keys.every((k) => i[k] === state[k]));
+      if (match) match.qty = Math.min(50, match.qty + state.qty);
+      else cart.push({ type: 'shirt', ...Object.fromEntries(keys.map((k) => [k, state[k]])), qty: state.qty });
+      state.qty = 1;
+      saveCart();
+      renderCart();
+      renderPreview();
+      flash('#sw-added');
+    });
+    renderShirtBuilder();
+  }
+  if (has.gift) {
+    $('#sw-gc-add').addEventListener('click', addGift);
+    renderGift();
+  }
+  if (has.coupon) {
+    $('#sw-cb-qty').addEventListener('input', (e) => {
+      coupon.qty = Math.max(1, Math.min(20, parseInt(e.target.value, 10) || 1));
+      $('#sw-cb-price').textContent = money(SW.couponBook.price * coupon.qty);
+    });
+    $('#sw-cb-add').addEventListener('click', addCoupon);
+    renderCoupon();
+  }
   $('#sw-checkout').addEventListener('click', checkout);
-  window.addEventListener('hashchange', () => {
-    if (location.hash === '#giftcards') { state.tab = 'gift'; renderTab(); }
-  });
-
-  renderAll();
+  renderCart();
 
   if (shopReady) {
     checkPendingCheckout();
@@ -528,8 +641,10 @@
         const p = products[s.shopifyHandle];
         if (p && p.variants.nodes.length) s.price = Math.min(...p.variants.nodes.map((v) => parseFloat(v.price.amount)));
       });
-      renderShirts();
-      renderPreview();
+      const cb = SW.couponBook && products[SW.couponBook.shopifyHandle];
+      if (cb && cb.variants.nodes.length) SW.couponBook.price = parseFloat(cb.variants.nodes[0].price.amount);
+      if (has.shirt) { renderShirts(); renderPreview(); }
+      if (has.coupon) renderCoupon();
       renderCart();
     }).catch(() => {});
   }

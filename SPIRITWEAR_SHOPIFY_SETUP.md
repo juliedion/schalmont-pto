@@ -1,14 +1,15 @@
-# Spirit Wear + Gift Cards — Shopify setup
+# Spirit Wear, Gift Cards + Coupon Books — Shopify setup
 
-The shop page (`/shop`) builds the order on our site, then hands it to Shopify for
-payment. Every choice rides along on its order line, so Shopify's checkout, the
+Three pages share one order: `/shop` (shirt builder), `/giftcards` and `/couponbook`.
+The order is built on our site, then handed to Shopify for payment. Every choice rides along on its order line, so Shopify's checkout, the
 order in Shopify admin, and the customer's confirmation email all show it:
 
 | Item | What Shopify shows on the line |
 |---|---|
 | Shirt | Size, Color, Design (e.g. `#GD-047 No Fear, Just Pride`), Design placement, Print version (dark or light fabric), Front logo |
 | Emailed gift card to someone else | Recipient name, Recipient email, Message |
-| Printed gift card | To, From, Message, Delivery preference |
+| Printed gift card | To, From, Message, Delivery (Deliver to school, Local home delivery, Ship it), Student, School and Teacher for school delivery, Gift wrap when shipped |
+| Coupon book | Delivery, plus Student, School and Teacher for school delivery |
 
 Until the store is connected (step 6), the page works but the Checkout button says
 "Online checkout opens soon."
@@ -79,12 +80,24 @@ When one sells:
    from the order.
 3. Deliver or ship it.
 
+## 4b. Coupon book
+
+A regular product, handle **`coupon-book`**, priced **$25**, with **"This is a physical
+product"** checked. The page lists 313 offers at 220 locations. Those numbers are in
+`couponbook.html` and `js/spiritwear-catalog.json`; update both if SaveAround changes them.
+
 ## 5. Shipping and local delivery
 
 *Settings → Shipping and delivery:*
 - Add shipping rates for shipped orders.
-- Turn on **Local delivery** (set your delivery zip codes or radius). Turn on
-  **Local pickup** too if families can pick up at school.
+- Turn on **Local delivery** (set your delivery zip codes or radius). This covers
+  "Local home delivery."
+- Turn on **Local pickup** with a location named something like **"Deliver to school
+  (sent home with student)"**. For "Deliver to school," the buyer picks this at
+  checkout. The student, school and teacher come through on the order line.
+- "Ship it" on a printed gift card means it goes out gift-wrapped and addressed.
+  The order line says "Gift wrap: Wrapped and addressed."
+
 
 The buyer picks the method at checkout. The site also records their preference
 on printed cards.
