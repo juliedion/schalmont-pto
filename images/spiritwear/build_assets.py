@@ -58,3 +58,45 @@ print('logos done')
 gc = Image.open(os.path.join(SRC, 'Giftcards', 'Schalmont Spiritwear Gift Card.png')).convert('RGBA')
 fit(gc, 1000).save(os.path.join(OUT, 'giftcard.webp'), 'WEBP', quality=85, method=6)
 print('gift card done')
+
+# Colors with no Gildan photo: tint the white photos (multiply keeps the folds and shading).
+# Heather gray gets a fine speckle so it reads as heathered cotton.
+import random
+from PIL import ImageChops
+TINTS = {'brightgreen': ((34, 177, 76), False), 'heather': ((178, 178, 176), True)}
+# Extra colors only the adult Paragon 220 performance hoodie comes in.
+PERF_TINTS = {'mediumgray': ((128, 130, 133), False), 'olive': ((96, 104, 62), False)}
+for pid in prods:
+    for side in ('front', 'back'):
+        white = Image.open(os.path.join(OUT, 'blanks', f'{pid}-white-{side}.webp')).convert('RGBA')
+        rgb, alpha = white.convert('RGB'), white.getchannel('A')
+        for cid, (tint, speckle) in {**TINTS, **(PERF_TINTS if pid == 'perf' else {})}.items():
+            out = ImageChops.multiply(rgb, Image.new('RGB', rgb.size, tint))
+            if speckle:
+                rnd = random.Random(7)
+                noise = Image.frombytes('L', rgb.size, bytes(rnd.randint(214, 255) for _ in range(rgb.size[0] * rgb.size[1])))
+                out = ImageChops.multiply(out, Image.merge('RGB', (noise, noise, noise)))
+            out.putalpha(alpha)
+            out.save(os.path.join(OUT, 'blanks', f'{pid}-{cid}-{side}.webp'), 'WEBP', quality=82, method=6)
+print('tinted colors done')
+
+# Youth Performance Hoodie (Team 365 TT41Y). Until real TT41Y photos are added to
+# Product Image Blanks/Team365_TT41Y_Youth/ as TT41Y_<Color>_<Front|Back>.png (Color =
+# White, Black, Sport_Forest, Sport_Graphite, Sport_Silver), stand in with the Paragon
+# performance hoodie photos, tinting the white ones for the Sport colors.
+TT = os.path.join(SRC, 'Product Image Blanks', 'Team365_TT41Y_Youth')
+SPORT = {'white': 'White', 'black': 'Black', 'sportforest': 'Sport_Forest', 'sportgraphite': 'Sport_Graphite', 'sportsilver': 'Sport_Silver'}
+SPORT_TINT = {'sportforest': (40, 78, 56), 'sportgraphite': (82, 86, 92), 'sportsilver': (190, 193, 197)}
+for cid, cname in SPORT.items():
+    for side in ('front', 'back'):
+        real = os.path.join(TT, f'TT41Y_{cname}_{side.title()}.png')
+        if os.path.exists(real):
+            im = fit(Image.open(real).convert('RGBA'), 900)
+        elif cid in ('white', 'black'):
+            im = Image.open(os.path.join(OUT, 'blanks', f'perf-{cid}-{side}.webp')).convert('RGBA')
+        else:
+            white = Image.open(os.path.join(OUT, 'blanks', f'perf-white-{side}.webp')).convert('RGBA')
+            im = ImageChops.multiply(white.convert('RGB'), Image.new('RGB', white.size, SPORT_TINT[cid]))
+            im.putalpha(white.getchannel('A'))
+        im.save(os.path.join(OUT, 'blanks', f'perfyouth-{cid}-{side}.webp'), 'WEBP', quality=82, method=6)
+print('youth performance hoodie done')

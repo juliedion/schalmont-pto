@@ -13,7 +13,8 @@
       "shopifyHandle": "short-sleeve-tee",
       "back": [27, 21, 46, 34],
       "front": [29, 24, 42, 30],
-      "chest": [55, 24, 15, 9]
+      "chest": [55, 24, 15, 9],
+      "colors": ["black", "white", "green", "brightgreen", "heather"]
     },
     {
       "id": "long",
@@ -22,7 +23,8 @@
       "shopifyHandle": "long-sleeve-tee",
       "back": [30, 20, 40, 32],
       "front": [31, 23, 38, 28],
-      "chest": [55, 22, 14, 8]
+      "chest": [55, 22, 14, 8],
+      "colors": ["black", "white", "green", "brightgreen", "heather"]
     },
     {
       "id": "hoodie",
@@ -31,7 +33,8 @@
       "shopifyHandle": "hoodie",
       "back": [29, 30, 42, 30],
       "front": [31, 29, 38, 21],
-      "chest": [55, 33, 14, 8]
+      "chest": [55, 33, 14, 8],
+      "colors": ["black", "white", "green", "brightgreen", "heather"]
     },
     {
       "id": "crew",
@@ -40,16 +43,30 @@
       "shopifyHandle": "crewneck",
       "back": [29, 21, 42, 32],
       "front": [30, 24, 40, 28],
-      "chest": [55, 23, 14, 8]
+      "chest": [55, 23, 14, 8],
+      "colors": ["black", "white", "green", "brightgreen", "heather"]
     },
     {
       "id": "perf",
-      "name": "Performance Hooded Tee",
+      "name": "Performance Hooded Tee (Adult)",
       "price": 20,
       "shopifyHandle": "performance-hooded-tee",
       "back": [31, 27, 38, 30],
       "front": [32, 27, 36, 26],
-      "chest": [55, 28, 13, 8]
+      "chest": [55, 28, 13, 8],
+      "colors": ["white", "black", "heather", "mediumgray", "olive"],
+      "sizeGroups": ["Adult"]
+    },
+    {
+      "id": "perfyouth",
+      "name": "Performance Hooded Tee (Youth)",
+      "price": 20,
+      "shopifyHandle": "youth-performance-hooded-tee",
+      "back": [31, 27, 38, 30],
+      "front": [32, 27, 36, 26],
+      "chest": [55, 28, 13, 8],
+      "colors": ["white", "black", "sportforest", "sportgraphite", "sportsilver"],
+      "sizeGroups": ["Youth"]
     }
   ],
   "placements": [
@@ -67,21 +84,16 @@
     }
   ],
   "colors": [
-    {
-      "id": "black",
-      "name": "Black",
-      "hex": "#1c1c1c"
-    },
-    {
-      "id": "white",
-      "name": "White",
-      "hex": "#ffffff"
-    },
-    {
-      "id": "green",
-      "name": "Dark Green",
-      "hex": "#21402c"
-    }
+    { "id": "black", "name": "Black", "hex": "#1c1c1c" },
+    { "id": "white", "name": "White", "hex": "#ffffff" },
+    { "id": "green", "name": "Dark Green", "hex": "#21402c" },
+    { "id": "brightgreen", "name": "Bright Green", "hex": "#22b14c" },
+    { "id": "heather", "name": "Heather Gray", "hex": "#b2b2b0" },
+    { "id": "mediumgray", "name": "Medium Gray", "hex": "#808285" },
+    { "id": "olive", "name": "Olive Green", "hex": "#60683e" },
+    { "id": "sportforest", "name": "Sport Forest", "hex": "#284e38" },
+    { "id": "sportgraphite", "name": "Sport Graphite", "hex": "#52565c" },
+    { "id": "sportsilver", "name": "Sport Silver", "hex": "#bec1c5" }
   ],
   "frontLogos": [
     {

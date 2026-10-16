@@ -23,7 +23,7 @@
 
   let SW;
   try {
-    SW = await (await fetch('js/spiritwear-catalog.json?v=3', { cache: 'no-cache' })).json();
+    SW = await (await fetch('js/spiritwear-catalog.json?v=4', { cache: 'no-cache' })).json();
   } catch (e) {
     root.style.display = 'none';
     return;
@@ -37,7 +37,10 @@
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const money = (n) => '$' + n.toFixed(2).replace(/\.00$/, '');
   const byId = (list, id) => list.find((x) => x.id === id);
-  const sizeIds = SW.sizes.flatMap((g) => g.options.map((o) => g.group + ' ' + o));
+  // Each item can limit its colors and size groups (e.g. a youth-only hoodie).
+  const shirtColors = (s) => s.colors || SW.colors.map((c) => c.id);
+  const shirtGroups = (s) => SW.sizes.filter((g) => !s.sizeGroups || s.sizeGroups.includes(g.group));
+  const shirtSizes = (s) => shirtGroups(s).flatMap((g) => g.options.map((o) => g.group + ' ' + o));
   const isEmail = (s) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
   const store = {
     get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
@@ -52,6 +55,8 @@
     design: SW.designs[0].id,
     placement: 'back',
     logo: 'none',
+    logoWarn: null,   // logo they tried to add while the design is on the front
+    logoNote: false,  // true right after moving the design to the front removed their logo
     qty: 1,
     side: 'back',
     group: 'all',
@@ -62,8 +67,9 @@
   // Drop anything saved from an older version of the menu.
   let cart = (store.get(CART_KEY) || []).map((i) => ({ type: 'shirt', ...i })).filter((i) => {
     if (i.type === 'gift') return SW.giftCards.amounts.includes(i.amount) && (i.kind === 'email' || i.kind === 'print');
-    return byId(SW.shirts, i.shirt) && byId(SW.colors, i.color) && byId(SW.designs, i.design) &&
-      byId(SW.placements, i.placement) && byId(SW.frontLogos, i.logo) && sizeIds.includes(i.size);
+    const shirt = byId(SW.shirts, i.shirt);
+    return shirt && shirtColors(shirt).includes(i.color) && shirtSizes(shirt).includes(i.size) &&
+      byId(SW.designs, i.design) && byId(SW.placements, i.placement) && byId(SW.frontLogos, i.logo);
   });
   const saveCart = () => store.set(CART_KEY, cart);
 
@@ -216,14 +222,14 @@
   function renderShirts() {
     $('#sw-shirts').innerHTML = SW.shirts.map((s) => `
       <button type="button" class="sw-opt${s.id === state.shirt ? ' is-on' : ''}" data-pick="shirt" data-id="${s.id}" aria-pressed="${s.id === state.shirt}">
-        <img src="${IMG}blanks/${s.id}-${state.color}-front.webp" alt="" loading="lazy">
+        <img src="${IMG}blanks/${s.id}-${shirtColors(s).includes(state.color) ? state.color : shirtColors(s)[0]}-front.webp" alt="" loading="lazy">
         <span class="sw-opt-name">${esc(s.name)}</span>
         <span class="sw-opt-price">${money(s.price)}</span>
       </button>`).join('');
   }
 
   function renderSizes() {
-    $('#sw-sizes').innerHTML = SW.sizes.map((g) => `
+    $('#sw-sizes').innerHTML = shirtGroups(byId(SW.shirts, state.shirt)).map((g) => `
       <div class="sw-size-group">
         <div class="sw-size-group-label">${esc(g.group)}</div>
         <div class="sw-size-row">
@@ -236,7 +242,8 @@
   }
 
   function renderColors() {
-    $('#sw-colors').innerHTML = SW.colors.map((c) => `
+    const allowed = shirtColors(byId(SW.shirts, state.shirt));
+    $('#sw-colors').innerHTML = SW.colors.filter((c) => allowed.includes(c.id)).map((c) => `
       <button type="button" class="sw-swatch${c.id === state.color ? ' is-on' : ''}" data-pick="color" data-id="${c.id}" aria-pressed="${c.id === state.color}">
         <span style="background:${c.hex}"></span>${esc(c.name)}
       </button>`).join('');
@@ -271,11 +278,21 @@
   }
 
   function renderLogos() {
-    const off = state.placement === 'front';
-    $('#sw-logo-step').classList.toggle('is-off', off);
-    $('#sw-logo-off').hidden = !off;
+    const warn = $('#sw-logo-warn');
+    if (state.logoWarn) {
+      warn.innerHTML = `<strong>⚠️ Your design is already on the front.</strong> There isn't room for a small
+        ${esc(byId(SW.frontLogos, state.logoWarn).name)} logo there too.
+        <div class="sw-warn-actions">
+          <button type="button" class="btn btn-primary" data-warn="move">Move design to the back &amp; add logo</button>
+          <button type="button" class="sw-tab" data-warn="keep">Keep design on the front</button>
+        </div>`;
+    } else if (state.logoNote) {
+      warn.innerHTML = '<strong>⚠️ Front logo removed.</strong> Your design is on the front now, so there isn’t room for a small front logo too.';
+    }
+    warn.hidden = !state.logoWarn && !state.logoNote;
+    warn.classList.toggle('is-note', !state.logoWarn);
     $('#sw-logos').innerHTML = SW.frontLogos.map((l) => `
-      <button type="button" class="sw-logo${l.id === state.logo ? ' is-on' : ''}" data-pick="logo" data-id="${l.id}" aria-pressed="${l.id === state.logo}"${off ? ' disabled' : ''}>
+      <button type="button" class="sw-logo${l.id === state.logo ? ' is-on' : ''}" data-pick="logo" data-id="${l.id}" aria-pressed="${l.id === state.logo}">
         ${l.image ? `<img src="${esc(l.image)}" alt="">` : '<span class="sw-logo-none">✕</span>'}
         <span>${esc(l.name)}</span>
       </button>`).join('');
@@ -416,18 +433,47 @@
       renderGift();
       return;
     }
+    if ((el = t('[data-warn]'))) {
+      if (el.dataset.warn === 'move') {
+        state.placement = 'back';
+        state.logo = state.logoWarn;
+        state.side = 'front';
+        renderPlacements();
+      }
+      state.logoWarn = null;
+      renderLogos();
+      renderPreview();
+      return;
+    }
     if ((el = t('[data-pick]'))) {
       const key = el.dataset.pick;
+      if (key === 'logo' && el.dataset.id !== 'none' && state.placement === 'front') {
+        state.logoWarn = el.dataset.id;
+        state.logoNote = false;
+        renderLogos();
+        return;
+      }
       state[key] = el.dataset.id;
-      if (key === 'placement' && state.placement === 'front') state.logo = 'none';
+      state.logoWarn = null;
+      state.logoNote = false;
+      if (key === 'placement' && state.placement === 'front' && state.logo !== 'none') {
+        state.logo = 'none';
+        state.logoNote = true;
+      }
+      if (key === 'shirt') {
+        const shirt = byId(SW.shirts, state.shirt);
+        if (!shirtColors(shirt).includes(state.color)) state.color = shirtColors(shirt)[0];
+        if (state.size && !shirtSizes(shirt).includes(state.size)) state.size = null;
+        renderSizes(); renderColors(); renderDesigns();
+      }
       if (key === 'design' || key === 'placement') state.side = state.placement;
       if (key === 'logo') state.side = state.logo === 'none' ? 'back' : 'front';
       if (key === 'shirt') { renderShirts(); renderPlacements(); }
       if (key === 'size') renderSizes();
       if (key === 'color') { renderShirts(); renderColors(); renderDesigns(); renderPlacements(); }
       if (key === 'design') { renderDesigns(); renderPlacements(); }
-      if (key === 'placement') { renderPlacements(); renderLogos(); }
-      if (key === 'logo') renderLogos();
+      if (key === 'placement') renderPlacements();
+      renderLogos();
       renderPreview();
       return;
     }

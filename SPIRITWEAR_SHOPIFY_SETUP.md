@@ -23,22 +23,27 @@ Shopify's **Headless** sales channel, which needs a paid plan, not the $5 Starte
 Create one product for each shirt. The **URL handle** must match exactly.
 You'll find it under the product's *Search engine listing* section.
 
-| Product | Handle | Price |
-|---|---|---|
-| Short Sleeve Tee | `short-sleeve-tee` | $10 |
-| Long Sleeve Tee | `long-sleeve-tee` | $15 |
-| Hoodie | `hoodie` | $20 |
-| Crewneck | `crewneck` | $15 |
-| Performance Hooded Tee | `performance-hooded-tee` | $20 |
+| Product | Handle | Price | Sizes | Colors |
+|---|---|---|---|---|
+| Short Sleeve Tee | `short-sleeve-tee` | $10 | Youth + Adult | Black, White, Dark Green, Bright Green, Heather Gray |
+| Long Sleeve Tee | `long-sleeve-tee` | $15 | Youth + Adult | Black, White, Dark Green, Bright Green, Heather Gray |
+| Hoodie | `hoodie` | $20 | Youth + Adult | Black, White, Dark Green, Bright Green, Heather Gray |
+| Crewneck | `crewneck` | $15 | Youth + Adult | Black, White, Dark Green, Bright Green, Heather Gray |
+| Performance Hooded Tee (Adult), Paragon 220 | `performance-hooded-tee` | $20 | Adult only | White, Black, Heather Gray, Medium Gray, Olive Green |
+| Performance Hooded Tee (Youth), Team 365 TT41Y | `youth-performance-hooded-tee` | $20 | Youth only | White, Black, Sport Forest, Sport Graphite, Sport Silver |
 
 Either way works:
 
 - **Simple:** no variants. Size and color come through as line details.
 - **With variants:** add options named exactly **Size** and **Color**. This lets Shopify
-  track and report by size. Use these values, spelled the same:
+  track and report by size. Use these values, spelled the same, and only the ones that
+  product offers:
   - Size: `Youth XS`, `Youth S`, `Youth M`, `Youth L`, `Youth XL`, `Adult S`, `Adult M`,
     `Adult L`, `Adult XL`, `Adult 2XL`, `Adult 3XL`, `Adult 4XL`, `Adult 5XL`
-  - Color: `Black`, `White`, `Dark Green`
+  - Color: the names in the table above, spelled the same.
+
+Each item's colors and sizes are set in `js/spiritwear-catalog.json` (`colors` and
+`sizeGroups` on each shirt).
 
 The site shows the prices it gets from Shopify, so change prices in Shopify.
 If you also update `price` in `js/spiritwear-catalog.json`, the page shows the
