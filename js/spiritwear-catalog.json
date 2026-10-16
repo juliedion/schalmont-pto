@@ -84,16 +84,16 @@
     }
   ],
   "colors": [
-    { "id": "black", "name": "Black", "hex": "#1c1c1c" },
-    { "id": "white", "name": "White", "hex": "#ffffff" },
-    { "id": "green", "name": "Dark Green", "hex": "#21402c" },
-    { "id": "brightgreen", "name": "Bright Green", "hex": "#22b14c" },
-    { "id": "heather", "name": "Heather Gray", "hex": "#b2b2b0" },
-    { "id": "mediumgray", "name": "Medium Gray", "hex": "#808285" },
-    { "id": "olive", "name": "Olive Green", "hex": "#60683e" },
-    { "id": "sportforest", "name": "Sport Forest", "hex": "#284e38" },
-    { "id": "sportgraphite", "name": "Sport Graphite", "hex": "#52565c" },
-    { "id": "sportsilver", "name": "Sport Silver", "hex": "#bec1c5" }
+    { "id": "black", "name": "Black", "hex": "#1c1c1c", "tone": "dark" },
+    { "id": "white", "name": "White", "hex": "#ffffff", "tone": "light" },
+    { "id": "green", "name": "Dark Green", "hex": "#21402c", "tone": "dark" },
+    { "id": "brightgreen", "name": "Bright Green", "hex": "#22b14c", "tone": "dark" },
+    { "id": "heather", "name": "Heather Gray", "hex": "#b2b2b0", "tone": "light" },
+    { "id": "mediumgray", "name": "Medium Gray", "hex": "#808285", "tone": "dark" },
+    { "id": "olive", "name": "Olive Green", "hex": "#60683e", "tone": "dark" },
+    { "id": "sportforest", "name": "Sport Forest", "hex": "#284e38", "tone": "dark" },
+    { "id": "sportgraphite", "name": "Sport Graphite", "hex": "#52565c", "tone": "dark" },
+    { "id": "sportsilver", "name": "Sport Silver", "hex": "#bec1c5", "tone": "light" }
   ],
   "frontLogos": [
     {

@@ -6,7 +6,7 @@ order in Shopify admin, and the customer's confirmation email all show it:
 
 | Item | What Shopify shows on the line |
 |---|---|
-| Shirt | Size, Color, Design (e.g. `#GD-047 No Fear, Just Pride`), Design placement, Front logo |
+| Shirt | Size, Color, Design (e.g. `#GD-047 No Fear, Just Pride`), Design placement, Print version (dark or light fabric), Front logo |
 | Emailed gift card to someone else | Recipient name, Recipient email, Message |
 | Printed gift card | To, From, Message, Delivery preference |
 

@@ -14,7 +14,7 @@
 
    Images live in images/spiritwear/:
      blanks/<shirt>-<color>-<front|back>.webp   product photos
-     designs/<id>.webp + designs/thumbs/<id>.webp   designs
+     designs/<dark|light>/<id>.webp (+ designs/thumbs/...)   designs, outlined for dark or light fabric
      logos/<id>.png                              small front logos
    ============================================================ */
 (async function () {
@@ -23,7 +23,7 @@
 
   let SW;
   try {
-    SW = await (await fetch('js/spiritwear-catalog.json?v=4', { cache: 'no-cache' })).json();
+    SW = await (await fetch('js/spiritwear-catalog.json?v=5', { cache: 'no-cache' })).json();
   } catch (e) {
     root.style.display = 'none';
     return;
@@ -154,6 +154,7 @@
       add('Color', byId(SW.colors, i.color).name);
       add('Design', `#${d.number} ${d.name}`);
       add('Design placement', byId(SW.placements, i.placement).name);
+      add('Print version', tone(i.color) === 'dark' ? 'Dark fabric (white outline)' : 'Light fabric (dark outline)');
       if (i.placement === 'back') add('Front logo', byId(SW.frontLogos, i.logo).name);
     }
     if (!variant.availableForSale) throw new Error('Something in your order is sold out right now. Please remove it and try again.');
@@ -204,13 +205,16 @@
 
   /* ---------- Mockup: product photo with the design laid on top ---------- */
   const box = ([l, t, w, h]) => `left:${l}%;top:${t}%;width:${w}%;height:${h}%`;
+  // Every design comes in a dark-fabric (white outline) and light-fabric (dark outline) version.
+  const tone = (colorId) => byId(SW.colors, colorId).tone || 'dark';
+  const designSrc = (id, colorId, thumb) => `${IMG}designs/${thumb ? 'thumbs/' : ''}${tone(colorId)}/${id}.webp`;
 
   function mockup(item, side, cls) {
     const shirt = byId(SW.shirts, item.shirt);
     let art = '';
     if (side === item.placement) {
       const d = byId(SW.designs, item.design);
-      art = `<img class="sw-art" src="${IMG}designs/${cls === 'sw-mock-lg' ? '' : 'thumbs/'}${d.id}.webp" alt="" style="${box(shirt[side])}">`;
+      art = `<img class="sw-art" src="${designSrc(d.id, item.color, cls !== 'sw-mock-lg')}" alt="" style="${box(shirt[side])}">`;
     } else if (side === 'front') {
       const logo = byId(SW.frontLogos, item.logo);
       if (logo.image) art = `<img class="sw-art" src="${esc(logo.image)}" alt="" style="${box(shirt.chest)}">`;
@@ -263,7 +267,7 @@
     $('#sw-designs').style.setProperty('--sw-tile', byId(SW.colors, state.color).hex);
     $('#sw-designs').innerHTML = list.length ? list.map((d) => `
       <button type="button" class="sw-design${d.id === state.design ? ' is-on' : ''}" data-pick="design" data-id="${d.id}" aria-pressed="${d.id === state.design}">
-        <span class="sw-design-img"><img src="${IMG}designs/thumbs/${d.id}.webp" alt="" loading="lazy"></span>
+        <span class="sw-design-img"><img src="${designSrc(d.id, state.color, true)}" alt="" loading="lazy"></span>
         <span class="sw-design-num">#${esc(d.number)}</span>
         <span class="sw-design-name">${esc(d.name)}</span>
       </button>`).join('') : '<p class="sw-empty">No designs match your search.</p>';

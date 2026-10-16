@@ -9,7 +9,29 @@ for sub in ('designs', 'designs/thumbs', 'blanks', 'logos'):
 def fit(im, size):
     im = im.copy(); im.thumbnail((size, size), Image.LANCZOS); return im
 
-# Designs: transparent PNGs only, trimmed to their content.
+# Designs: transparent PNGs only, trimmed to their content. Each one is saved twice --
+# designs/dark/ with a white outline (for dark fabrics) and designs/light/ with a
+# near-black outline (for light fabrics) -- so the art stands out on every shirt color.
+from PIL import ImageFilter
+OUTLINES = {'dark': (255, 255, 255), 'light': (17, 17, 17)}
+for tone in OUTLINES:
+    os.makedirs(os.path.join(OUT, 'designs', tone), exist_ok=True)
+    os.makedirs(os.path.join(OUT, 'designs/thumbs', tone), exist_ok=True)
+
+def outlined(im, color):
+    w = max(6, round(max(im.size) * 0.012))           # outline thickness, ~1.2% of the art
+    pad = w + 2
+    canvas = Image.new('RGBA', (im.width + 2 * pad, im.height + 2 * pad), (0, 0, 0, 0))
+    canvas.paste(im, (pad, pad), im)
+    mask = canvas.getchannel('A').point(lambda a: 255 if a > 40 else 0)
+    for _ in range(w // 2):
+        mask = mask.filter(ImageFilter.MaxFilter(5))
+    mask = mask.filter(ImageFilter.GaussianBlur(1))
+    out = Image.new('RGBA', canvas.size, color + (0,))
+    out.putalpha(mask)
+    out.alpha_composite(canvas)
+    return out
+
 skip = {'054'}
 n = 0
 for folder, prefix in (('01-General-Designs', 'gd'), ('02-Simple-Sabres', 'ss')):
@@ -18,9 +40,12 @@ for folder, prefix in (('01-General-Designs', 'gd'), ('02-Simple-Sabres', 'ss'))
         im = Image.open(os.path.join(D, folder, f)).convert('RGBA')
         bbox = im.getchannel('A').point(lambda a: 255 if a > 8 else 0).getbbox()
         if bbox: im = im.crop(bbox)
+        im = fit(im, 900)
         key = f'{prefix}-{f[:3]}'
-        fit(im, 900).save(os.path.join(OUT, 'designs', key + '.webp'), 'WEBP', quality=82, method=6)
-        fit(im, 240).save(os.path.join(OUT, 'designs/thumbs', key + '.webp'), 'WEBP', quality=80, method=6)
+        for tone, color in OUTLINES.items():
+            o = outlined(im, color)
+            fit(o, 900).save(os.path.join(OUT, 'designs', tone, key + '.webp'), 'WEBP', quality=82, method=6)
+            fit(o, 240).save(os.path.join(OUT, 'designs/thumbs', tone, key + '.webp'), 'WEBP', quality=80, method=6)
         n += 1
 print('designs', n)
 
