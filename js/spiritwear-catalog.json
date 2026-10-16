@@ -1,0 +1,183 @@
+{
+  "shopify": {
+    "storeDomain": "",
+    "storefrontToken": "",
+    "apiVersion": "2026-07"
+  },
+  "currency": "usd",
+  "shirts": [
+    {
+      "id": "tee",
+      "name": "Short Sleeve Tee",
+      "price": 10,
+      "shopifyHandle": "short-sleeve-tee",
+      "back": [27, 21, 46, 34],
+      "front": [29, 24, 42, 30],
+      "chest": [55, 24, 15, 9]
+    },
+    {
+      "id": "long",
+      "name": "Long Sleeve Tee",
+      "price": 15,
+      "shopifyHandle": "long-sleeve-tee",
+      "back": [30, 20, 40, 32],
+      "front": [31, 23, 38, 28],
+      "chest": [55, 22, 14, 8]
+    },
+    {
+      "id": "hoodie",
+      "name": "Hoodie",
+      "price": 20,
+      "shopifyHandle": "hoodie",
+      "back": [29, 30, 42, 30],
+      "front": [31, 29, 38, 21],
+      "chest": [55, 33, 14, 8]
+    },
+    {
+      "id": "crew",
+      "name": "Crewneck",
+      "price": 15,
+      "shopifyHandle": "crewneck",
+      "back": [29, 21, 42, 32],
+      "front": [30, 24, 40, 28],
+      "chest": [55, 23, 14, 8]
+    },
+    {
+      "id": "perf",
+      "name": "Performance Hooded Tee",
+      "price": 20,
+      "shopifyHandle": "performance-hooded-tee",
+      "back": [31, 27, 38, 30],
+      "front": [32, 27, 36, 26],
+      "chest": [55, 28, 13, 8]
+    }
+  ],
+  "placements": [
+    { "id": "back", "name": "Back" },
+    { "id": "front", "name": "Front" }
+  ],
+  "sizes": [
+    {
+      "group": "Youth",
+      "options": ["XS", "S", "M", "L", "XL"]
+    },
+    {
+      "group": "Adult",
+      "options": ["S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL"]
+    }
+  ],
+  "colors": [
+    {
+      "id": "black",
+      "name": "Black",
+      "hex": "#1c1c1c"
+    },
+    {
+      "id": "white",
+      "name": "White",
+      "hex": "#ffffff"
+    },
+    {
+      "id": "green",
+      "name": "Dark Green",
+      "hex": "#21402c"
+    }
+  ],
+  "frontLogos": [
+    {
+      "id": "none",
+      "name": "No front logo",
+      "price": 0
+    },
+    {
+      "id": "shield",
+      "name": "Shield",
+      "price": 0,
+      "image": "images/spiritwear/logos/shield.png"
+    },
+    {
+      "id": "sabres",
+      "name": "SABRES",
+      "price": 0,
+      "image": "images/spiritwear/logos/sabres.png"
+    }
+  ],
+  "giftCards": {
+    "amounts": [10, 25, 50, 100],
+    "image": "images/spiritwear/giftcard.webp",
+    "emailHandle": "gift-card",
+    "printedHandle": "printed-gift-card"
+  },
+  "designGroups": [
+    { "id": "gd", "name": "Sabre Designs" },
+    { "id": "ss", "name": "Simple Sabres" }
+  ],
+  "designs": [
+    { "id": "gd-001", "name": "Schalmont Sabres Tiger" },
+    { "id": "gd-002", "name": "Sabre Pride Crest" },
+    { "id": "gd-003", "name": "Green Runs Deep" },
+    { "id": "gd-004", "name": "This Is Our House" },
+    { "id": "gd-005", "name": "Stay Wild" },
+    { "id": "gd-006", "name": "Sabre Strong" },
+    { "id": "gd-007", "name": "Rooted in Green" },
+    { "id": "gd-008", "name": "Built Different" },
+    { "id": "gd-009", "name": "Fear the Sabre" },
+    { "id": "gd-010", "name": "Green Means Go" },
+    { "id": "gd-011", "name": "Forever a Sabre" },
+    { "id": "gd-012", "name": "Sabre Nation" },
+    { "id": "gd-013", "name": "Defend the Den" },
+    { "id": "gd-014", "name": "Together We Roar" },
+    { "id": "gd-015", "name": "Home of the Sabres" },
+    { "id": "gd-016", "name": "Green & White Forever" },
+    { "id": "gd-017", "name": "Born to Roar" },
+    { "id": "gd-018", "name": "Schalmont Tradition" },
+    { "id": "gd-019", "name": "Pride Runs Deep" },
+    { "id": "gd-020", "name": "Unleash the Sabre" },
+    { "id": "gd-021", "name": "One District, One Pride" },
+    { "id": "gd-022", "name": "All In for Schalmont" },
+    { "id": "gd-023", "name": "Sabre Spirit" },
+    { "id": "gd-024", "name": "Rotterdam Proud" },
+    { "id": "gd-025", "name": "We Are Schalmont" },
+    { "id": "gd-026", "name": "Roar Together" },
+    { "id": "gd-027", "name": "Sabre Mode" },
+    { "id": "gd-028", "name": "Raise the Standard" },
+    { "id": "gd-029", "name": "Strength in the Stripes" },
+    { "id": "gd-030", "name": "Own the Moment" },
+    { "id": "gd-031", "name": "Heart of a Sabre" },
+    { "id": "gd-032", "name": "Driven by Pride" },
+    { "id": "gd-033", "name": "Schalmont United" },
+    { "id": "gd-034", "name": "Keep It Green" },
+    { "id": "gd-035", "name": "Made for the Moment" },
+    { "id": "gd-036", "name": "Green & Bold" },
+    { "id": "gd-037", "name": "The Sabre Standard" },
+    { "id": "gd-038", "name": "Always Schalmont" },
+    { "id": "gd-039", "name": "Pride. Power. Purpose." },
+    { "id": "gd-040", "name": "Legendary Starts Here" },
+    { "id": "gd-041", "name": "Sabres Flag" },
+    { "id": "gd-045", "name": "Green Means Go (Stadium)" },
+    { "id": "gd-046", "name": "Heart of a Sabre (Heart)" },
+    { "id": "gd-047", "name": "No Fear, Just Pride" },
+    { "id": "gd-048", "name": "No Place Like Home" },
+    { "id": "gd-049", "name": "Sabre Pride Runs Deep" },
+    { "id": "gd-050", "name": "Sabre Energy" },
+    { "id": "gd-051", "name": "Stay Wild (Claws)" },
+    { "id": "gd-052", "name": "This Is Our House (Stadium)" },
+    { "id": "gd-053", "name": "This Is Our Town" },
+    { "id": "ss-001", "name": "Schalmont Sabres Script" },
+    { "id": "ss-002", "name": "Green Chrome Block" },
+    { "id": "ss-003", "name": "Extruded Block" },
+    { "id": "ss-004", "name": "Schalmont Sabres Stacked" },
+    { "id": "ss-005", "name": "S Monogram Sabres" },
+    { "id": "ss-006", "name": "Sabre Pride Wordmark" },
+    { "id": "ss-007", "name": "Schalmont Sabres Round Seal" },
+    { "id": "ss-008", "name": "Green & White Forever Block" },
+    { "id": "ss-009", "name": "Schalmont Sabres Rectangle" },
+    { "id": "ss-010", "name": "Sabres Crossed Sabres" },
+    { "id": "ss-011", "name": "Schalmont S Monogram" },
+    { "id": "ss-012", "name": "We Are Schalmont Block" },
+    { "id": "ss-013", "name": "Sabre Nation Block" },
+    { "id": "ss-014", "name": "Schalmont Rotterdam NY" },
+    { "id": "ss-015", "name": "Sabres Tiger Stripes" },
+    { "id": "ss-016", "name": "Simple Sabres" }
+  ]
+}
