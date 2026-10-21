@@ -38,15 +38,22 @@
   // Every visit to the homepage or any school page calls this -- cache the result in
   // sessionStorage for a few minutes so browsing several pages in one visit doesn't
   // re-read both collections from Firestore each time.
-  var CACHE_KEY = 'pcalEvents', CACHE_MS = 10 * 60000;
-  function loadEvents() {
+  // loadAll() also keeps the district's own synced entries (school closings, early
+  // release, board meetings) as a separate `district` list -- the homepage's combined
+  // calendar has a District filter; everything else only wants `events`.
+  var CACHE_KEY = 'pcalEvents4', CACHE_MS = 10 * 60000;
+  function loadEvents() { return loadAll().then(function (r) { return r.events; }); }
+  function loadAll() {
     try {
       var cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
-      if (cached && Date.now() - cached.at < CACHE_MS) return Promise.resolve(cached.events);
+      if (cached && Date.now() - cached.at < CACHE_MS) return Promise.resolve(cached);
     } catch (_) { /* sessionStorage blocked or corrupt -- fetch fresh below */ }
 
     var db = firebase.firestore();
     var BOOKKEEPING = { meta_deleted: true, meta_gcal: true };
+    // Entries kept off the public site even if they're still in the back office. Oct 2026:
+    // Trail of Treats is Oct 30 -- these three Oct 24 entries were left over from an old date.
+    var HIDDEN = { '0t1QgIFraoqVJNL295br': true, 'LrD6Y9DJTgjgFaIPGmTz': true, 'sheet_2026_10_24_trail_of_treats': true };
 
     return Promise.all([
       db.collection('pto_events').where('status', 'in', ['planned', 'confirmed', 'done']).get(),
@@ -54,6 +61,7 @@
     ]).then(function (results) {
       var eventsSnap = results[0], pagesSnap = results[1];
       var byKey = {};       // title+date -> merged event
+      var district = [];
       var pageByTitle = {}; // title alone -> {href, time, location} (first match wins)
 
       pagesSnap.docs.forEach(function (d) {
@@ -76,13 +84,17 @@
       });
 
       eventsSnap.docs.forEach(function (d) {
-        if (BOOKKEEPING[d.id] || d.id.indexOf('__') === 0) return;
+        if (BOOKKEEPING[d.id] || HIDDEN[d.id] || d.id.indexOf('__') === 0) return;
         var e = d.data();
         if (!e.title || !e.date) return;
         // The district's own school-closing/early-release entries already have their own
         // District tab (the embedded Google Calendar) -- keep them out of the back-office
         // tabs so they don't show twice, once here and once under School PTO (MS & HS).
-        if (e.category === 'District Calendar' || e.source === 'gcal') return;
+        if (e.category === 'District Calendar' || e.source === 'gcal') {
+          district.push({ title: e.title, date: e.date, endDate: e.endDate && e.endDate > e.date ? e.endDate : '',
+            time: e.time || '', location: e.location || '', school: 'district', href: null });
+          return;
+        }
         var titleKey = e.title.trim().toLowerCase();
         var key = titleKey + '|' + e.date;
         // Link to a page with the same title even if its own event date has drifted from
@@ -99,11 +111,123 @@
         };
       });
 
-      var events = Object.keys(byKey).map(function (k) { return byKey[k]; });
-      try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), events: events })); } catch (_) {}
-      return events;
+      var merged = mergeDuplicates(Object.keys(byKey).map(function (k) { return byKey[k]; }), district);
+      var result = { at: Date.now(), events: merged.events, district: merged.district };
+      try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(result)); } catch (_) {}
+      return result;
     });
   }
+
+  /* ---------- One event, one entry ----------
+     The same event often reaches the site more than once: a web page AND a planning-sheet
+     row with slightly different wording ("2026 1st Annual Schalmont PTO Brawl for the Ball"
+     vs "Brawl for the Ball"), the same row on two school tabs, or a PTO event the district
+     also lists ("Trunk or Treat at Jefferson"). Two entries are treated as one event when
+     they're on the same day, their titles match once filler words are ignored, they aren't
+     for different schools, and their start times are within an hour. The copy with the
+     most detail wins (a page link, a time, a place). The district's multi-day items
+     ("No School - Holiday Recess" on four separate days) become one date range. */
+  var FILLER = ' a an and the of for at to on in with by all our your annual pto ptos schalmont sabres school schools ' +
+    'central district students families family their elementary middle high jes ms hs jefferson woestina welcome begins tentative ';
+  var GENERIC = ' meeting day night week event ';
+  function titleTokens(t) {
+    t = String(t || '').toLowerCase().replace(/&amp;/g, '&')
+      .replace(/\b(19|20)\d\d(?!\d)/g, ' ')                   // "2026", even glued on: "2026Trail"
+      .replace(/\b\d+(st|nd|rd|th)\s+annual\b/g, ' ')           // "1st Annual"
+      .replace(/bookfair/g, 'book fair')
+      .replace(/\b(\d+)(st|nd|rd|th)\b/g, '$1')                 // "4th" → "4"
+      .replace(/\bgrades?\s*(pre-?k|k|\d+)\s*[-–]\s*(\d+)\b/g, ' ') // "Grades 6-8" (a school tag, see below)
+      .replace(/\b(pre-?k|k|\d)\s*[-–]\s*\d+\b/g, ' ');         // "K-1", "2-4"
+    return t.replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter(function (w) {
+      return w && FILLER.indexOf(' ' + w + ' ') < 0 && w !== 'grade' && w !== 'grades';
+    }).map(function (w) { return w === 'min' ? 'minute' : w.length > 3 && /[^s]s$/.test(w) ? w.slice(0, -1) : w; });   // "retakes" → "retake"
+  }
+  // Which school an entry is about, from its title or else its school field ('' = any).
+  // The school field only separates the two PTOs: the planning sheet files the same
+  // Schalmont Central PTO row under the Middle School tab AND the High School tab, so
+  // those count as one ('sc', compatible with both 'ms' and 'hs').
+  function tagsClash(a, b) { return !!(a && b && a !== b && !(a === 'sc' && b !== 'jes') && !(b === 'sc' && a !== 'jes')); }
+  function schoolTag(e) {
+    var t = ' ' + String(e.title || '').toLowerCase() + ' ';
+    if (/\b(jes|jefferson|elementary|woestina|pre-?k)\b|\b(k|1|2)\s*[-–]\s*[1-4]\b/.test(t)) return 'jes';
+    if (/\b(middle|ms)\b|\b[5-6]\s*[-–]\s*8\b/.test(t)) return 'ms';
+    if (/\b(high|hs|regents|prom|senior)\b|\b9\s*[-–]\s*12\b/.test(t)) return 'hs';
+    return { woestina: 'jes', jefferson: 'jes', middle: 'sc', high: 'sc' }[e.school] || '';
+  }
+  function minutes(hm) { var p = String(hm || '').split(':'); return p.length < 2 ? null : +p[0] * 60 + +p[1]; }
+  function sameEvent(a, b) {
+    if (a.date !== b.date) return false;
+    if (tagsClash(schoolTag(a), schoolTag(b))) return false;      // JES Book Fair ≠ Middle School Book Fair
+    var ma = minutes(a.time), mb = minutes(b.time);
+    if (ma != null && mb != null && Math.abs(ma - mb) > 60) return false;  // Volunteer Crew 12:00 ≠ the event at 6:00
+    var x = titleTokens(a.title), y = titleTokens(b.title);
+    if (!x.length || !y.length) return false;
+    var small = x.length <= y.length ? x : y, big = small === x ? y : x;
+    var inBig = small.every(function (w) { return big.indexOf(w) >= 0; });
+    if (!inBig) return false;
+    if (small.length === big.length) return true;
+    // "PTO Meeting" must not swallow "BOE Meeting": a shorter title only counts if it has
+    // a real word of its own, not just "meeting"/"day".
+    return small.some(function (w) { return GENERIC.indexOf(' ' + w + ' ') < 0; });
+  }
+  function detail(e) { return (e.href ? 4 : 0) + (e.time ? 2 : 0) + (e.location ? 1 : 0) + (e.school !== 'district' && e.school !== 'pto' ? 0.5 : 0); }
+  function combine(keep, other) {
+    var best = detail(other) > detail(keep) ? other : keep, rest = best === keep ? other : keep;
+    return {
+      title: (best.href ? best : (keep.school === 'district' ? other : keep)).title,
+      date: keep.date, endDate: best.endDate || rest.endDate || '',
+      time: best.time || rest.time, location: best.location || rest.location,
+      // Stay with the PTO that runs it: a specific school beats PTO-wide beats the district.
+      school: [keep.school, other.school].sort(function (p, q) {
+        var r = function (s) { return s === 'district' ? 2 : s === 'pto' || !s ? 1 : 0; };
+        return r(p) - r(q);
+      })[0],
+      href: best.href || rest.href || null
+    };
+  }
+  function mergeDuplicates(events, district) {
+    var out = [];
+    events.concat(district).forEach(function (e) {
+      for (var i = 0; i < out.length; i++) {
+        if (sameEvent(out[i], e)) { out[i] = combine(out[i], e); return; }
+      }
+      out.push(e);
+    });
+    // Join a district item that repeats on back-to-back days (weekends bridged) into one range.
+    var runs = {}, kept = [];
+    out.sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; }).forEach(function (e) {
+      if (e.school !== 'district' || e.time || e.endDate) { kept.push(e); return; }
+      // Exact title here -- simplified titles would braid "JES Book Fair" into "Middle School Book Fair".
+      var k = String(e.title).trim().toLowerCase(), prev = runs[k];
+      if (prev && bridged(prev.endDate || prev.date, e.date)) { prev.endDate = e.date; return; }
+      runs[k] = e; kept.push(e);
+    });
+    // A district run that repeats a PTO event's days ("Middle School Book Fair", Sep 29–Oct 2,
+    // next to the PTO's own Sep 28–Oct 2 page) is dropped; one that carries on right after a
+    // PTO entry (Kindergarten Screening May 10, then the district's May 11–14) extends it.
+    kept = kept.filter(function (d) {
+      if (d.school !== 'district') return true;
+      var dEnd = d.endDate || d.date;
+      return !kept.some(function (p) {
+        if (p.school === 'district' || !sameEvent({ title: p.title, date: d.date, time: p.time, school: p.school }, d)) return false;
+        var pEnd = p.endDate || p.date;
+        if (p.date <= d.date && pEnd >= dEnd) return true;
+        if (bridged(pEnd, d.date)) { p.endDate = dEnd; return true; }
+        return false;
+      });
+    });
+    return {
+      events: kept.filter(function (e) { return e.school !== 'district'; }),
+      district: kept.filter(function (e) { return e.school === 'district'; })
+    };
+  }
+  // Is `next` the day after `last`, or the Monday after a Friday?
+  function bridged(last, next) {
+    var a = new Date(last + 'T12:00:00Z'), b = new Date(next + 'T12:00:00Z'), gap = Math.round((b - a) / 864e5);
+    return gap === 1 || (gap === 3 && a.getUTCDay() === 5);
+  }
+
+  window.PTOEventData = { loadAll: loadAll, mergeDuplicates: mergeDuplicates };
 
   function eventsForSchool(events, school) {
     if (school === 'all') return events;

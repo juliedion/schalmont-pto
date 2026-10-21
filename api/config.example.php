@@ -140,4 +140,24 @@ return [
 
   // Any random string you make up — must match the ?key= in the cron URL above.
   'reminders_secret_key' => 'REPLACE-WITH-A-RANDOM-STRING',
+
+  /* ============================================================
+     LIVE EDITOR  (Back Office → Edit the website)
+     Edits are saved to GitHub as normal changes, and the usual deploy puts them
+     live about a minute later. To connect it (one time, ~5 minutes):
+
+     1. Sign in to github.com as the account that owns juliedion/schalmont-pto.
+     2. Go to  github.com/settings/personal-access-tokens/new  ("Fine-grained token").
+          • Token name: Schalmont PTO Live Editor
+          • Expiration: 1 year (put a reminder on the calendar to renew it)
+          • Repository access: "Only select repositories" → schalmont-pto
+          • Permissions → Repository permissions → Contents: "Read and write"
+            (leave everything else as "No access")
+        Press "Generate token" and copy it (it starts with github_pat_).
+     3. Paste it on the 'github_token' line in your private config.php on Bluehost.
+        Never put it in this example file -- this one is on GitHub.
+     ============================================================ */
+  'github_token'  => '',
+  'github_repo'   => 'juliedion/schalmont-pto',
+  'github_branch' => 'main',      // the branch the deploy publishes from
 ];

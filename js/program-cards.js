@@ -842,6 +842,28 @@ const PROGRAM_CARDS_DEFAULTS = {
   ]
 };
 
+/* Cards kept here in the site code instead of the back office -- for something that needs to
+   be up before anyone can add it in the back office. They merge in with that school's
+   back-office cards, sort by date like everything else, and drop off once they end.
+   `desc` is HTML. */
+const PROGRAM_CARDS_EXTRA = {
+  "middle": [
+    {
+      "id": "ms-spirit-week-2026",
+      "icon": "💚",
+      "title": "Middle School Spirit Week",
+      "eventDate": "2026-10-26",
+      "eventEndDate": "2026-10-30",
+      "badgeType": "active",
+      "badgeText": "Spirit Week",
+      "desc": "<strong>Mon:</strong> Night In vs. Night Out (cozy or fancy)<br><strong>Tue:</strong> Tourist Day (dress like a traveler)<br><strong>Wed:</strong> Beach vs. Boots (summer or western)<br><strong>Thu:</strong> Team Together (sports apparel)<br><strong>Fri:</strong> Famous Dynamic Duo (favorite character pair; no masks, school appropriate)",
+      "actions": [
+        { "label": "See the Spirit Week flyer →", "href": "images/flyers/ms-spirit-week-2026.jpg", "cls": "btn btn-primary" }
+      ]
+    }
+  ]
+};
+
 (function () {
   function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
 
@@ -852,14 +874,41 @@ const PROGRAM_CARDS_DEFAULTS = {
       '>' + esc(a.label) + '</a>';
   }
 
+  // "Fri, Oct 23 · 5:00 PM" / "Oct 5 – Oct 16" / "Now through Mon, Nov 30" -- the year only
+  // when it isn't this year.
+  var TODAY = (function () { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); })();
+  function fmtDay(ymd, withWeekday) {
+    var d = new Date(ymd + 'T12:00:00');
+    var o = { month: 'short', day: 'numeric' };
+    if (withWeekday) o.weekday = 'short';
+    if (ymd.slice(0, 4) !== TODAY.slice(0, 4)) o.year = 'numeric';
+    return d.toLocaleDateString('en-US', o);
+  }
+  function fmtTime(hm) {
+    var p = String(hm || '').split(':');
+    if (p.length < 2) return '';
+    var h = +p[0];
+    return (h % 12 || 12) + ':' + p[1] + ' ' + (h >= 12 ? 'PM' : 'AM');
+  }
+  function dateLabel(c) {
+    if (!c.date) return '';
+    var t = fmtTime(c.time);
+    if (c.end && c.end > c.date) {
+      return c.date <= TODAY ? 'Now through ' + fmtDay(c.end, true) : fmtDay(c.date) + ' – ' + fmtDay(c.end);
+    }
+    return (c.date === TODAY ? 'Today' : fmtDay(c.date, true)) + (t ? ' · ' + t : '');
+  }
+
   function cardHTML(c) {
-    var badge = c.badgeType
-      ? '<span class="program-badge ' + esc(c.badgeType) + '">' + esc(c.badgeText || '') + '</span>' : '';
+    var badge = c.badgeType && c.badgeText   // an empty badge would show as a blank sliver
+      ? '<span class="program-badge ' + esc(c.badgeType) + '">' + esc(c.badgeText) + '</span>' : '';
     var actions = (c.actions || []).map(actionHTML).join('');
+    var when = dateLabel(c);
     return '<div class="program-card"' + (c.id ? ' id="' + esc(c.id) + '"' : '') + '>' +
       '<div class="program-card-header"><div class="program-card-icon" aria-hidden="true">' + (c.icon || '') + '</div>' +
       '<h3 class="program-card-title">' + (c.title || '') + '</h3></div>' +
-      '<div class="program-card-body">' + badge +
+      '<div class="program-card-body">' +
+      (when ? '<p class="program-card-date"><span aria-hidden="true">📅</span> ' + esc(when) + '</p>' : '') + badge +
       '<p class="program-card-desc">' + (c.desc || '') + '</p>' +
       '<div class="program-card-actions" style="display:flex;flex-direction:column;gap:8px">' + actions + '</div>' +
       '</div></div>';
@@ -869,36 +918,89 @@ const PROGRAM_CARDS_DEFAULTS = {
     el.innerHTML = cards.length ? cards.map(cardHTML).join('') : '';
   }
 
-  // Homepage cards show what's current and coming up, soonest first. Past events drop off
-  // the page entirely (the page itself can stay live/published as a record — it just
-  // doesn't get a card). Cards with no date (ongoing programs/clubs) sort after dated ones,
-  // in their manually-set `order`.
+  // What's current and coming up, soonest first, each with its date. An event stays until it
+  // ENDS (a month-long fundraiser shows "Now through …"), then drops off -- the page itself can
+  // stay published as a record. Cards with no date (ongoing programs/clubs) come after the
+  // dated ones, in their manually-set `order`.
   function sortAndFilter(cards) {
-    var today = new Date().toISOString().slice(0, 10);
     return cards
-      .filter(function (c) { return !c.archived && c.badgeType !== 'past' && !(c.eventDate && c.eventDate < today); })
+      .filter(function (c) {
+        if (c.archived) return false;
+        if (c.date) return (c.end && c.end > c.date ? c.end : c.date) >= TODAY;
+        return c.badgeType !== 'past';
+      })
       .sort(function (a, b) {
-        if (a.eventDate && b.eventDate) return a.eventDate < b.eventDate ? -1 : a.eventDate > b.eventDate ? 1 : 0;
-        if (a.eventDate !== b.eventDate) return a.eventDate ? -1 : 1;
+        if (a.date && b.date) return a.date < b.date ? -1 : a.date > b.date ? 1 : (a.time || '') < (b.time || '') ? -1 : 1;
+        if (a.date !== b.date) return a.date ? -1 : 1;
         return (a.order || 0) - (b.order || 0);
       });
   }
 
+  // A card's date comes from its event page when it has one (the card only copied the date
+  // when the page was published, so the page is the up-to-date source).
+  function withDates(card, page) {
+    var c = {}, k;
+    for (k in card) c[k] = card[k];
+    c.date = (page && page.eventDate) || card.eventDate || '';
+    c.end = (page && page.eventEndDate) || card.eventEndDate || '';
+    c.time = (page && page.eventTime) || card.eventTime || '';
+    return c;
+  }
+  function pageSchools(p) {
+    if (Array.isArray(p.schools) && p.schools.length) return p.schools;
+    return p.school ? [p.school] : [];
+  }
+
   function loadInto(el) {
     var school = el.dataset.school;
-    var fallback = sortAndFilter((PROGRAM_CARDS_DEFAULTS[school] || []).slice());
+    var extra = (PROGRAM_CARDS_EXTRA[school] || []).map(function (c) { return withDates(c, null); });
+    var fallback = sortAndFilter((PROGRAM_CARDS_DEFAULTS[school] || []).map(function (c) { return withDates(c, null); }).concat(extra));
     render(el, fallback);   // instant, no flash of empty content
     try {
       if (!window.firebase || !firebase.apps || !firebase.apps.length) return;
-      firebase.firestore().collection('program_cards').where('school', '==', school).get()
-        .then(function (snap) {
-          if (snap.empty) return;   // keep the fallback shown
-          var cards = sortAndFilter(snap.docs.map(function (d) { return d.data(); }));
-          render(el, cards);
-        })
-        .catch(function () { /* keep the fallback shown */ });
+      var db = firebase.firestore();
+      Promise.all([
+        db.collection('program_cards').where('school', '==', school).get(),
+        // Events shared by several schools are filed as PTO-wide cards -- pick up the ones whose
+        // page is for this school (or for every school).
+        db.collection('program_cards').where('school', '==', 'pto').get(),
+        db.collection('pages').where('status', '==', 'published').get().catch(function () { return null; })
+      ]).then(function (r) {
+        var pages = null;
+        if (r[2]) { pages = {}; r[2].docs.forEach(function (d) { pages[d.id] = d.data(); }); }
+        var seen = {}, cards = [];
+        r[0].docs.concat(r[1].docs).forEach(function (d) {
+          var c = d.data(), fromPto = c.school === 'pto' && school !== 'pto';
+          var page = c.pageId && pages ? pages[c.pageId] : null;
+          // A card for a page that isn't published would lead nowhere -- leave it off.
+          if (c.pageId && pages && !page) return;
+          if (fromPto) {
+            var sc = page ? pageSchools(page) : [];
+            if (sc.length && sc.indexOf(school) < 0 && sc.indexOf('pto') < 0) return;
+          }
+          // Same event filed under this school AND PTO-wide: show it once.
+          var key = c.pageId || String(c.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+          if (seen[key]) return;
+          seen[key] = 1;
+          cards.push(withDates(c, page));
+        });
+        if (!cards.length && r[0].empty) return;   // nothing set up yet -- keep the fallback shown
+        extra.forEach(function (c) {   // a back-office card with the same title takes over from the site-kept one
+          var key = String(c.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+          if (!cards.some(function (x) { return String(x.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '') === key; })) cards.push(c);
+        });
+        render(el, sortAndFilter(cards));
+      }).catch(function () { /* keep the fallback shown */ });
     } catch (e) { /* keep the fallback shown */ }
   }
+
+  // The date line on each card.
+  (function () {
+    var st = document.createElement('style');
+    st.textContent = '.program-card-date{display:inline-flex;align-items:center;gap:6px;margin:0 0 10px;padding:5px 10px;' +
+      'border-radius:8px;background:#eef7e6;color:#1a3d24;font-size:13.5px;font-weight:700;line-height:1.3}';
+    document.head.appendChild(st);
+  })();
 
   document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.program-grid[data-school]').forEach(loadInto);

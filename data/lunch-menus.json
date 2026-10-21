@@ -1,0 +1,856 @@
+{
+ "source": "https://www.schalmont.org/district-office-services/food-services/",
+ "schools": {
+  "woestina": {
+   "months": {
+    "2026-10": {
+     "pdf": "https://www.schalmont.org/wp-content/uploads/2026/09/Woestina_Lunch_Oct_2026.pdf",
+     "ok": true,
+     "days": {
+      "2026-10-01": {
+       "items": [
+        "Mac & Cheese",
+        "Whole Grain Bread Stick",
+        "Steamed Broccoli",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-10-02": {
+       "items": [
+        "Mozzarella Sticks",
+        "Marinara Dipping Sauce",
+        "Green Beans",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-10-05": {
+       "items": [
+        "Chicken Nuggets",
+        "BBQ Dipping Sauce",
+        "Whole Grain Dinner Roll",
+        "Seasoned Corn",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-10-06": {
+       "items": [
+        "Taco Salad",
+        "Tostitos Chips",
+        "Lettuce",
+        "Salsa",
+        "Sour Cream & Cheese",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-10-07": {
+       "items": [
+        "French Bread Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-10-08": {
+       "items": [
+        "Bosco Sticks",
+        "Marinara Dipping Sauce",
+        "Glazed Carrots",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-10-09": {
+       "items": [],
+       "notes": [
+        "No School",
+        "Staff Development Day"
+       ]
+      },
+      "2026-10-12": {
+       "items": [],
+       "notes": [
+        "No School",
+        "Columbus Day",
+        "National School Lunch Week",
+        "October 12–16, 2026"
+       ]
+      },
+      "2026-10-13": {
+       "items": [
+        "Chicken Popcorn",
+        "BBQ Dipping Sauce",
+        "WG Pretzel",
+        "Fresh Carrots w/LF Ranch Dip",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-10-14": {
+       "items": [
+        "Personal Pan Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-10-15": {
+       "items": [
+        "Fish Sticks",
+        "Smile Fries",
+        "Tarter Sauce",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-10-16": {
+       "items": [
+        "Chicken & Cheese Quesadilla",
+        "Refried Beans",
+        "Salsa",
+        "Sour Cream",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-10-19": {
+       "items": [
+        "Chicken Tender",
+        "BBQ Dipping Sauce",
+        "Whole Grain Bread Stick",
+        "Fresh Carrots w LF Ranch Dip",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-10-20": {
+       "items": [
+        "French Toast Sticks",
+        "Syrup",
+        "Crispy Potato Tots",
+        "Turkey Sausage Patty",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-10-21": {
+       "items": [
+        "Homemade Cheese Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-10-22": {
+       "items": [],
+       "notes": [
+        "No Lunch",
+        "Early Dismissal",
+        "Grades Pre K – 5 Grade",
+        "Breakfast Only!"
+       ]
+      },
+      "2026-10-23": {
+       "items": [],
+       "notes": [
+        "No School",
+        "Dellavalle Farm Class Trip"
+       ]
+      },
+      "2026-10-26": {
+       "items": [
+        "Chicken Nuggets",
+        "BBQ Dipping Sauce",
+        "Whole Grain Cheese its",
+        "Seasoned Corn",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-10-27": {
+       "items": [
+        "Big Daddy’s Cheese Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-10-28": {
+       "items": [],
+       "notes": [
+        "No School",
+        "Grades Pre K – 5 Grade"
+       ]
+      },
+      "2026-10-29": {
+       "items": [
+        "Orange Asian Chicken",
+        "Brown Rice",
+        "Steamed Broccoli",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-10-30": {
+       "items": [
+        "French Fry Boat",
+        "Topped with Meat & Cheese Sauce",
+        "Fresh Veggie w/LF Ranch Dip",
+        "Fruit"
+       ],
+       "notes": []
+      }
+     }
+    }
+   }
+  },
+  "jefferson": {
+   "months": {
+    "2026-10": {
+     "pdf": "https://www.schalmont.org/wp-content/uploads/2026/09/JES_MS_Lunch_Menu_Oct_2026.pdf",
+     "ok": true,
+     "days": {
+      "2026-10-01": {
+       "items": [
+        "Mac & Cheese",
+        "Whole Grain Bread Stick",
+        "Steamed Broccoli",
+        "Fresh Cukes Coins w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-02": {
+       "items": [
+        "Roasted Chicken",
+        "WG Corn Bread",
+        "Green Beans",
+        "Fresh Veggies w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-05": {
+       "items": [
+        "Chicken Tenders",
+        "BBQ Dipping Sauce",
+        "Whole Grain Dinner Roll",
+        "Corn",
+        "Fresh Carrots w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-06": {
+       "items": [
+        "Waffles",
+        "Sausage Patty",
+        "Syrup",
+        "Hash Brown",
+        "Fresh Celery w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-07": {
+       "items": [
+        "French Bread Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-08": {
+       "items": [
+        "Krispy Chicken Sandwich",
+        "Whole Grain Roll",
+        "Lettuce, Sliced Tomato",
+        "Dill Pickles",
+        "Pepper Sticks w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-09": {
+       "items": [],
+       "notes": [
+        "No School",
+        "Staff Development Day"
+       ]
+      },
+      "2026-10-12": {
+       "items": [],
+       "notes": [
+        "No School",
+        "Columbus Day",
+        "National School Lunch Week",
+        "October 12-16,2026",
+        "Join Us for Lunch ",
+        "Cafeteria Circus: The Show Starts at Lunch"
+       ]
+      },
+      "2026-10-13": {
+       "items": [
+        "Popcorn Chicken",
+        "BBQ Dipping Sauce",
+        "WG Circus Pretzel",
+        "Seasoned Mixed Veggies",
+        "Colorful Carnival Veggies w/LF Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-14": {
+       "items": [
+        "Big Top",
+        "Daddy’s Cheese Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-15": {
+       "items": [
+        "Toasted Cheese Sandwich or Toasted Ham & Cheese Sandwich",
+        "Tomato Soup w/ WG Crackers",
+        "Colorful Carnival Veggies w/LF Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-16": {
+       "items": [
+        "BBQ Pulled Chicken Sandwich",
+        "Baked Beans",
+        "Fresh Coleslaw",
+        "Colorful Carnival Veggies w/LF Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-19": {
+       "items": [
+        "Chicken Nuggets",
+        "BBQ Dipping Sauce",
+        "Whole Grain Bread Stick",
+        "Garlic Green Beans",
+        "Fresh Carrots w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-20": {
+       "items": [
+        "Warm WG Bagel",
+        "Cream Cheese & Butter",
+        "Side of (2 Slice) Turkey Bacon",
+        "Maple Glazed Carrots",
+        "Fresh Celery w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-21": {
+       "items": [
+        "Homemade Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-22": {
+       "items": [
+        "Cheeseburger on WG Roll",
+        "Seasoned Spiral Fries",
+        "Pepper Sticks w/LF Ranch Dip"
+       ],
+       "notes": [
+        "Early Dismissal",
+        "Grades Pre K - 5 Grade"
+       ]
+      },
+      "2026-10-23": {
+       "items": [
+        "Mozzarella Sticks",
+        "Marinara Dipping Sauce",
+        "Corn",
+        "Fresh Veggies w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-26": {
+       "items": [
+        "Chicken Tenders",
+        "BBQ Dipping Sauce",
+        "Whole Grain Cheez it’s",
+        "Steamed Carrots",
+        "Fresh Carrots w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-27": {
+       "items": [
+        "Bosco Cheese Sticks",
+        "Marinara Dipping Sauce",
+        "Seasoned Corn",
+        "Fresh Celery w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-28": {
+       "items": [
+        "Asst. Pizza Day!",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": [
+        "No School",
+        "Grades Pre K - 5 Grade"
+       ]
+      },
+      "2026-10-29": {
+       "items": [
+        "General Tso Chicken",
+        "Brown Rice",
+        "Steamed Broccoli",
+        "Fresh Cukes Coins w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-30": {
+       "items": [
+        "French Fry Boat",
+        "Topped with Meat",
+        "Cheese Sauce",
+        "Fresh Veggies w/LF Ranch Dip"
+       ],
+       "notes": []
+      }
+     }
+    }
+   }
+  },
+  "middle": {
+   "months": {
+    "2026-10": {
+     "pdf": "https://www.schalmont.org/wp-content/uploads/2026/09/JES_MS_Lunch_Menu_Oct_2026.pdf",
+     "ok": true,
+     "days": {
+      "2026-10-01": {
+       "items": [
+        "Mac & Cheese",
+        "Whole Grain Bread Stick",
+        "Steamed Broccoli",
+        "Fresh Cukes Coins w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-02": {
+       "items": [
+        "Roasted Chicken",
+        "WG Corn Bread",
+        "Green Beans",
+        "Fresh Veggies w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-05": {
+       "items": [
+        "Chicken Tenders",
+        "BBQ Dipping Sauce",
+        "Whole Grain Dinner Roll",
+        "Corn",
+        "Fresh Carrots w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-06": {
+       "items": [
+        "Waffles",
+        "Sausage Patty",
+        "Syrup",
+        "Hash Brown",
+        "Fresh Celery w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-07": {
+       "items": [
+        "French Bread Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-08": {
+       "items": [
+        "Krispy Chicken Sandwich",
+        "Whole Grain Roll",
+        "Lettuce, Sliced Tomato",
+        "Dill Pickles",
+        "Pepper Sticks w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-09": {
+       "items": [],
+       "notes": [
+        "No School",
+        "Staff Development Day"
+       ]
+      },
+      "2026-10-12": {
+       "items": [],
+       "notes": [
+        "No School",
+        "Columbus Day",
+        "National School Lunch Week",
+        "October 12-16,2026",
+        "Join Us for Lunch ",
+        "Cafeteria Circus: The Show Starts at Lunch"
+       ]
+      },
+      "2026-10-13": {
+       "items": [
+        "Popcorn Chicken",
+        "BBQ Dipping Sauce",
+        "WG Circus Pretzel",
+        "Seasoned Mixed Veggies",
+        "Colorful Carnival Veggies w/LF Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-14": {
+       "items": [
+        "Big Top",
+        "Daddy’s Cheese Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-15": {
+       "items": [
+        "Toasted Cheese Sandwich or Toasted Ham & Cheese Sandwich",
+        "Tomato Soup w/ WG Crackers",
+        "Colorful Carnival Veggies w/LF Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-16": {
+       "items": [
+        "BBQ Pulled Chicken Sandwich",
+        "Baked Beans",
+        "Fresh Coleslaw",
+        "Colorful Carnival Veggies w/LF Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-19": {
+       "items": [
+        "Chicken Nuggets",
+        "BBQ Dipping Sauce",
+        "Whole Grain Bread Stick",
+        "Garlic Green Beans",
+        "Fresh Carrots w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-20": {
+       "items": [
+        "Warm WG Bagel",
+        "Cream Cheese & Butter",
+        "Side of (2 Slice) Turkey Bacon",
+        "Maple Glazed Carrots",
+        "Fresh Celery w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-21": {
+       "items": [
+        "Homemade Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-22": {
+       "items": [
+        "Cheeseburger on WG Roll",
+        "Seasoned Spiral Fries",
+        "Pepper Sticks w/LF Ranch Dip"
+       ],
+       "notes": [
+        "Early Dismissal",
+        "Grades Pre K - 5 Grade"
+       ]
+      },
+      "2026-10-23": {
+       "items": [
+        "Mozzarella Sticks",
+        "Marinara Dipping Sauce",
+        "Corn",
+        "Fresh Veggies w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-26": {
+       "items": [
+        "Chicken Tenders",
+        "BBQ Dipping Sauce",
+        "Whole Grain Cheez it’s",
+        "Steamed Carrots",
+        "Fresh Carrots w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-27": {
+       "items": [
+        "Bosco Cheese Sticks",
+        "Marinara Dipping Sauce",
+        "Seasoned Corn",
+        "Fresh Celery w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-28": {
+       "items": [
+        "Asst. Pizza Day!",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": [
+        "No School",
+        "Grades Pre K - 5 Grade"
+       ]
+      },
+      "2026-10-29": {
+       "items": [
+        "General Tso Chicken",
+        "Brown Rice",
+        "Steamed Broccoli",
+        "Fresh Cukes Coins w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-30": {
+       "items": [
+        "French Fry Boat",
+        "Topped with Meat",
+        "Cheese Sauce",
+        "Fresh Veggies w/LF Ranch Dip"
+       ],
+       "notes": []
+      }
+     }
+    }
+   }
+  },
+  "high": {
+   "months": {
+    "2026-10": {
+     "pdf": "https://www.schalmont.org/wp-content/uploads/2026/09/HS_Lunch_Menu_Oct_2026.pdf",
+     "ok": true,
+     "days": {
+      "2026-10-01": {
+       "items": [
+        "Mac & Cheese",
+        "Whole Grain Bread Stick",
+        "Steamed Broccoli",
+        "Fresh Cuke’s Coins w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-02": {
+       "items": [
+        "Mozzarella Sticks",
+        "Marinara Dipping Sauce",
+        "Seasoned Carrots",
+        "Fresh Veggies w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-05": {
+       "items": [
+        "Chicken Tenders",
+        "BBQ Dipping Sauce",
+        "Whole Grain Cheez it’s",
+        "Corn",
+        "Fresh Carrots w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-06": {
+       "items": [
+        "Waffles",
+        "Sausage Patty",
+        "Syrup",
+        "Tatar Tots",
+        "Fresh Celery w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-07": {
+       "items": [
+        "French Bread Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-08": {
+       "items": [
+        "Krispy Chicken Sandwich",
+        "Whole Grain Roll",
+        "Lettuce, Sliced Tomato",
+        "Dill Pickles",
+        "Pepper Sticks w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-09": {
+       "items": [],
+       "notes": [
+        "No School",
+        "Staff Development Day"
+       ]
+      },
+      "2026-10-12": {
+       "items": [],
+       "notes": [
+        "No School",
+        "Columbus Day",
+        "National School Lunch Week",
+        "October 12-16,2026",
+        "Join Us for Lunch ",
+        "Cafeteria Circus: The Show Starts at Lunch"
+       ]
+      },
+      "2026-10-13": {
+       "items": [
+        "Boneless Chicken Wings",
+        "Buffalo or BBQ Dipping Sauce",
+        "WG Circus Pretzel",
+        "Ring Toss Spiral Fries",
+        "Fresh Celery & Carrots w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-14": {
+       "items": [
+        "Big Top",
+        "Daddy’s Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-15": {
+       "items": [
+        "Toasted Cheese Sandwich or Toasted Ham & Cheese Sandwich",
+        "Tomato Soup w/ Crackers",
+        "Colorful Carnival Veggies w/LF Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-16": {
+       "items": [
+        "Buffalo Pulled Chicken Sandwich",
+        "Baked Beans",
+        "Fresh Coleslaw",
+        "Colorful Carnival Veggies w/LF Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-19": {
+       "items": [
+        "Chicken Nuggets",
+        "BBQ Dipping Sauce",
+        "Whole Grain Dinner Roll",
+        "Seasoned Mixed Veggie",
+        "Fresh Carrots w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-20": {
+       "items": [
+        "Build Your Burrito or Bowl",
+        "Beef or Chicken",
+        "Lettuce, Salsa",
+        "Sour Cream & Cheese",
+        "Brown Rice & Black Beans",
+        "Fresh Celery w/ LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-21": {
+       "items": [
+        "Homemade Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-22": {
+       "items": [
+        "Pizza Crunchers",
+        "Marinara Dipping Sauce",
+        "Green Beans",
+        "Pepper Sticks w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-23": {
+       "items": [
+        "Roasted Chicken",
+        "WG Corn Bread",
+        "Buttery Corn",
+        "Fresh Veggies w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-26": {
+       "items": [
+        "Chicken Tenders",
+        "BBQ Dipping Sauce",
+        "Whole Grain Pretzel",
+        "Warm Glazed Carrots",
+        "Fresh Carrots w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-27": {
+       "items": [
+        "Bosco Cheese Sticks",
+        "Marinara Dipping Sauce",
+        "Seasoned Corn",
+        "Fresh Celery w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-28": {
+       "items": [
+        "Stuffed Crust Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-29": {
+       "items": [
+        "General Tso Chicken",
+        "Brown Rice",
+        "Steamed Broccoli",
+        "Fresh Cuke’s Coins w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-10-30": {
+       "items": [
+        "French Fry Boat",
+        "Topped with Meat",
+        "Cheese Sauce",
+        "Fresh Veggies w/LF Ranch Dip"
+       ],
+       "notes": []
+      }
+     }
+    }
+   }
+  }
+ },
+ "generated": "2026-10-12T20:38:10-04:00"
+}

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch: {}   # lets the daily lunch-menu job deploy its update
 
 jobs:
   deploy:
@@ -11,6 +12,11 @@ jobs:
     steps:
       - name: Checkout files
         uses: actions/checkout@v4
+
+      # The homepage search box reads data/search-index.json; rebuild it from the pages
+      # being deployed so new and edited pages are searchable right away.
+      - name: Build the homepage search index
+        run: python3 tools/build_search_index.py
 
       - name: Deploy to Bluehost via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5

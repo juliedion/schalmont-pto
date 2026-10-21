@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pages &amp; Site Map — PTO Back Office</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="admin.css?v=7">
+  <link rel="icon" href="../images/favicon.svg">
+</head>
+<body>
+  <div id="bo-loading">Loading your website…</div>
+  <div id="bo-shell"></div>
+
+  <main id="bo-main" style="display:none">
+    <header class="bo-pagehead">
+      <div>
+        <p class="bo-eyebrow" id="site-scope"></p>
+        <h1 class="bo-h1">Your website</h1>
+        <p class="bo-lead">Every page on schalmontpto.com in one place: the pages you build here, what feeds the
+          homepage, and the site's built-in pages.</p>
+      </div>
+      <div class="bo-pagehead-actions">
+        <a class="bo-btn ghost" href="../index.html" target="_blank" rel="noopener">View live site ↗</a>
+        <button type="button" class="bo-btn" id="new-page">＋ New page</button>
+      </div>
+    </header>
+
+    <div class="bo-stats" id="stats" aria-live="polite"></div>
+
+    <div class="bo-segtabs" role="tablist" aria-label="Parts of the website">
+      <button type="button" role="tab" id="tab-pages" aria-controls="pane-pages" aria-selected="true">Pages you manage</button>
+      <button type="button" role="tab" id="tab-home" aria-controls="pane-home" aria-selected="false">Homepage</button>
+      <button type="button" role="tab" id="tab-built" aria-controls="pane-built" aria-selected="false">Built-in pages</button>
+    </div>
+
+    <!-- 1. Pages built in the back office -->
+    <section class="bo-pane" id="pane-pages" role="tabpanel" aria-labelledby="tab-pages">
+      <div class="bo-toolbar">
+        <label class="bo-search">
+          <span class="sr-only">Search pages</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+          <input type="search" id="q" placeholder="Search pages…" autocomplete="off">
+        </label>
+        <div class="bo-chips" id="school-chips" role="group" aria-label="Filter by school"></div>
+        <select id="status" aria-label="Filter by status">
+          <option value="all">Live &amp; drafts</option>
+          <option value="published">Live only</option>
+          <option value="draft">Drafts only</option>
+        </select>
+      </div>
+      <div class="bo-table" id="page-list"><p class="bo-empty">Loading pages…</p></div>
+      <div id="past-list"></div>
+      <p class="bo-footnote" id="arrange-note"></p>
+    </section>
+
+    <!-- 2. What feeds each homepage section -->
+    <section class="bo-pane" id="pane-home" role="tabpanel" aria-labelledby="tab-home" hidden>
+      <p class="bo-lead" style="margin-bottom:18px">The homepage, top to bottom. Most of it updates itself;
+        the parts marked <span class="bo-src manage">You manage</span> change when you update the back office.</p>
+      <ol class="bo-homemap" id="homemap"></ol>
+    </section>
+
+    <!-- 3. Pages that are part of the site's design -->
+    <section class="bo-pane" id="pane-built" role="tabpanel" aria-labelledby="tab-built" hidden>
+      <div class="bo-callout">
+        <b>These pages are part of the website's design.</b> Officers can change words, links and pictures on any of
+        them with <em>Edit on page</em>; changes are live about a minute after you publish. Everyone else can press
+        <em>Request a change</em>, which goes straight to Julie with the page's name and link.
+      </div>
+      <div class="bo-toolbar">
+        <label class="bo-search">
+          <span class="sr-only">Search built-in pages</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+          <input type="search" id="bq" placeholder="Search built-in pages…" autocomplete="off">
+        </label>
+      </div>
+      <div id="built-list"><p class="bo-empty">Loading…</p></div>
+    </section>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="admin-core.js?v=7"></script>
+  <script>
+    const SITE = 'schalmontpto.com';
+    const TYPE_LABEL = { events: 'Event / program', clubs: 'Event / program', programs: 'Event / program', spiritwear: 'Spiritwear',
+      fundraising: 'Fundraiser', facilities: 'Building & facilities', ideas: 'Other' };
+    let pages = [], built = [], W = 'all', schoolFilter = 'all';
+
+    requireAdmin((me) => {
+      W = workingSchool();
+      schoolFilter = W;
+      document.getElementById('site-scope').textContent = W === ALL ? 'Whole website · all schools' : SCHOOLS[W];
+      document.getElementById('new-page').onclick = () => newWebPage('events', W === ALL ? undefined : W);
+      initTabs();
+      buildChips();
+      ['q', 'status'].forEach(id => document.getElementById(id).addEventListener('input', renderPages));
+      document.getElementById('bq').addEventListener('input', renderBuilt);
+      loadPages();
+      renderHomeMap();
+      loadBuilt();
+    });
+
+    /* ---------- tabs ---------- */
+    function initTabs() {
+      const tabs = [...document.querySelectorAll('.bo-segtabs [role=tab]')];
+      const show = (t) => {
+        tabs.forEach(b => {
+          const on = b === t;
+          b.setAttribute('aria-selected', on ? 'true' : 'false');
+          b.tabIndex = on ? 0 : -1;
+          document.getElementById(b.getAttribute('aria-controls')).hidden = !on;
+        });
+        history.replaceState(null, '', '#' + t.id.slice(4));
+      };
+      tabs.forEach((b, i) => {
+        b.onclick = () => show(b);
+        b.onkeydown = (e) => {
+          if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+          const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+          n.focus(); show(n);
+        };
+      });
+      const start = tabs.find(b => '#' + b.id.slice(4) === location.hash);
+      if (start) show(start);
+    }
+
+    /* ---------- pages you manage ---------- */
+    function buildChips() {
+      const opts = (ME.isSuper ? ['all'] : []).concat(manageableSchools());
+      const box = document.getElementById('school-chips');
+      box.innerHTML = opts.map(s => `<label class="bo-chip"><input type="radio" name="sf" value="${s}"${s === schoolFilter ? ' checked' : ''}>
+        <span>${esc(s === 'all' ? 'All schools' : SCHOOLS[s].replace(' (all schools)', ''))}</span></label>`).join('');
+      box.addEventListener('change', e => { schoolFilter = e.target.value; renderPages(); });
+    }
+    async function loadPages() {
+      const list = document.getElementById('page-list');
+      try {
+        let docs;
+        if (ME.isSuper) {
+          docs = (await db.collection('pages').get()).docs;
+        } else {
+          // Only ask for schools this person runs, so Firestore's rules allow every row.
+          const snaps = await Promise.all(manageableSchools().flatMap(s => [
+            db.collection('pages').where('school', '==', s).get(),
+            db.collection('pages').where('schools', 'array-contains', s).get()
+          ]));
+          docs = snaps.flatMap(x => x.docs);
+        }
+        const byId = {};
+        docs.forEach(d => byId[d.id] = { id: d.id, ...d.data() });
+        pages = Object.values(byId);
+        renderStats();
+        renderPages();
+      } catch (e) {
+        list.innerHTML = `<p class="bo-empty">Couldn't load pages (${esc(e.message)}).</p>`;
+      }
+    }
+    const stamp = p => { const t = p.updatedAt || p.createdAt; return t && t.toMillis ? t.toMillis() : 0; };
+    function inScope(p) { return schoolFilter === 'all' || pageSchools(p).includes(schoolFilter) || (schoolFilter === 'pto' && !pageSchools(p).length); }
+    function renderStats() {
+      const mine = pages.filter(inScope);   // counts follow the school filter
+      const live = mine.filter(p => p.status === 'published').length;
+      const today = toYMD(new Date());
+      const soon = mine.filter(p => p.status === 'published' && p.eventDate && p.eventDate >= today && p.eventDate <= addDays(today, 30)).length;
+      document.getElementById('stats').innerHTML = [
+        [live, 'Live pages'], [mine.length - live, 'Drafts'], [soon, 'Live events in the next 30 days'], [built.length || '—', 'Built-in pages']
+      ].map(([n, l]) => `<div class="bo-stat"><b>${n}</b><span>${l}</span></div>`).join('');
+    }
+    function renderPages() {
+      const q = document.getElementById('q').value.trim().toLowerCase();
+      const st = document.getElementById('status').value;
+      const today = toYMD(new Date());
+      const isPast = p => !!p.eventDate && ((p.eventEndDate && p.eventEndDate > p.eventDate ? p.eventEndDate : p.eventDate) < today);
+      const all = pages.filter(p => inScope(p) &&
+          (st === 'all' || (st === 'published' ? p.status === 'published' : p.status !== 'published')) &&
+          (!q || (p.title || '').toLowerCase().includes(q) || (p.slug || '').includes(q)));
+      // Past events go to their own grayed-out group at the bottom.
+      const rows = all.filter(p => !isPast(p)).sort((a, b) => (a.status === 'published') - (b.status === 'published') || stamp(b) - stamp(a));
+      const pastRows = all.filter(isPast).sort((a, b) => (a.eventDate < b.eventDate ? 1 : -1));
+      renderStats();
+      const row = (p, past) => {
+          const live = p.status === 'published';
+          const path = pagePath(routingSchool(pageSchools(p)), p.slug);
+          const schools = pageSchools(p);
+          return `<div class="bo-tr${past ? ' is-past' : ''}">
+            <span class="bo-td-main"><a class="bo-tlink" href="page-editor.html?id=${p.id}">${esc(p.title || 'Untitled page')}</a>
+              <small>${esc(SITE + '/' + path)} · ${esc(TYPE_LABEL[p.category] || 'Page')}${p.eventDate ? ' · ' + esc(prettyYMD(p.eventDate)) : ''}</small></span>
+            <span class="bo-td-schools">${schools.length ? schools.map(s => `<i class="bo-tag t-${s}">${esc(SCHOOLS[s].replace(' (all schools)', ''))}</i>`).join('') : '<i class="bo-tag">No school</i>'}</span>
+            <span><span class="bo-pill ${past ? 'past' : live ? 'live' : 'draft'}">${past ? 'Past' : live ? 'Live' : 'Draft'}</span></span>
+            <span class="bo-td-when">${esc(fmtDate(p.updatedAt || p.createdAt))}</span>
+            <span class="bo-td-actions">${live ? `<a class="bo-btn ghost sm" href="/${path}" target="_blank" rel="noopener" aria-label="View ${esc(p.title)}">View</a>` : ''}
+              <a class="bo-btn sm" href="page-editor.html?id=${p.id}" aria-label="Edit ${esc(p.title)}">Edit</a></span>
+          </div>`;
+      };
+      const pastHtml = pastRows.length ? `<details class="bo-past"><summary>Past events <span>${pastRows.length}</span></summary>
+        <p class="bo-past-note">These events are over. They stay here so you can reuse or update them for next year.</p>
+        <div class="bo-table">${pastRows.map(p => row(p, true)).join('')}</div></details>` : '';
+      const list = document.getElementById('page-list');
+      list.innerHTML = rows.length ? `
+        <div class="bo-tr bo-th" aria-hidden="true"><span>Page</span><span>School</span><span>Status</span><span>Last edited</span><span></span></div>` +
+        rows.map(p => row(p, false)).join('')
+        : `<p class="bo-empty">${pages.length ? 'No pages match.' : 'No pages yet.'} Press <strong>＋ New page</strong> to make one.</p>`;
+      document.getElementById('past-list').innerHTML = pastHtml;
+      document.getElementById('arrange-note').innerHTML = schoolFilter !== 'all'
+        ? `Want to change the order of ${esc(SCHOOLS[schoolFilter])}'s event cards on its school page? <a href="school.html?s=${schoolFilter}&tab=pages">Arrange cards →</a>`
+        : 'Tip: pick a school above to arrange the order of its event cards.';
+    }
+
+    /* ---------- homepage map ---------- */
+    function renderHomeMap() {
+      const mail = (what) => 'mailto:julie@schalmontpto.com?subject=' + encodeURIComponent('Homepage change: ' + what) +
+        '&body=' + encodeURIComponent('Hi Julie,\n\nCould we change the "' + what + '" part of the homepage?\n\nWhat I\'d like changed:\n\n');
+      const SECTIONS = [
+        ['Search box & photo slider', 'The search finds every page automatically. The slider shows 31 approved school photos.', 'design', ['Send Julie a photo', mail('Photo slider')]],
+        ['Today at Schalmont', 'Letter days, lunch menus and weather. Read every morning from the district\'s calendars, menus and the weather service.', 'auto', null],
+        ['School apps for parents', 'ParentSquare (school code 28782), the Parent Portal and Schoology.', 'design', ['Request a change', mail('School apps for parents')]],
+        ['Coming up from your PTOs', 'The next events for each PTO, straight from the back-office Calendar and published event pages.', 'manage', ['Open the calendar', scopedHref('calendar', W)]],
+        ['Find your school', 'Links to each school\'s page and class pages.', 'design', ['Request a change', mail('Find your school')]],
+        ['I want to…', 'Shortcut links to the most-used pages.', 'design', ['Request a change', mail('I want to shortcuts')]],
+        ['PTO & district calendar', 'Every PTO event plus the district\'s own calendar, with a filter for each PTO.', 'manage', ['Open the calendar', scopedHref('calendar', W)]],
+        ['Parent directory & social links', 'Sign-up for the family directory and the PTO\'s Facebook and Instagram.', 'design', ['Request a change', mail('Directory & social')]],
+        ['Community moments', 'A scrolling strip of school photos.', 'design', ['Send Julie a photo', mail('Community moments')]],
+        ['Meet our PTO teams & sponsors', 'PTO stats, the community-partner logo strip and the footer.', 'design', ['Request a change', mail('Teams & sponsors')]]
+      ];
+      const SRC = { auto: ['auto', 'Updates itself'], manage: ['manage', 'You manage'], design: ['design', 'Part of the design'] };
+      document.getElementById('homemap').innerHTML = SECTIONS.map(([t, d, src, act], i) => `
+        <li class="bo-homemap-item">
+          <span class="bo-homemap-n" aria-hidden="true">${i + 1}</span>
+          <div class="bo-homemap-main"><b>${esc(t)}</b><p>${esc(d)}</p></div>
+          <span class="bo-src ${SRC[src][0]}">${SRC[src][1]}</span>
+          ${src === 'design' && ME.isSuper ? '<a class="bo-btn ghost sm" href="live-edit.html?page=index.html">Edit on page</a>'
+            : act ? `<a class="bo-btn ${src === 'manage' ? '' : 'ghost'} sm" href="${act[1]}">${esc(act[0])}</a>` : '<span class="bo-homemap-spacer"></span>'}
+        </li>`).join('');
+    }
+
+    /* ---------- built-in pages (from the site's search index) ---------- */
+    const GROUPS = [
+      ['School pages', u => /^(woestina|jefferson|middle-school|high-school|schools)\.html$/.test(u)],
+      ['Class pages', u => /^classof\d+\.html$/.test(u)],
+      ['Yearbooks', u => /^yearbook/.test(u)],
+      ['Fundraisers & shopping', u => /^(fundraisers|holiday|chocolate|shop|box-tops|school-banking|namelabels|donate)/.test(u)],
+      ['Information', u => /^(about|contact|faq|meetings|volunteer|get-involved|directory|social|events|picture-days|school-supplies|incoming-kindergarten|sports|area-events|gallery|login|signup|scholarships)/.test(u)],
+      ['Events & programs', () => true]
+    ];
+    async function loadBuilt() {
+      try {
+        const d = await (await fetch('../data/search-index.json')).json();
+        built = (d.pages || []).map(p => ({ title: p.t, url: p.u, desc: p.d }));
+        renderStats();
+        renderBuilt();
+      } catch (e) {
+        document.getElementById('built-list').innerHTML = '<p class="bo-empty">Couldn\'t load the page list.</p>';
+      }
+    }
+    function renderBuilt() {
+      const q = document.getElementById('bq').value.trim().toLowerCase();
+      const items = built.filter(p => !q || p.title.toLowerCase().includes(q) || p.url.includes(q));
+      const used = new Set();
+      const html = GROUPS.map(([name, test]) => {
+        const g = items.filter(p => !used.has(p.url) && test(p.url));
+        g.forEach(p => used.add(p.url));
+        if (!g.length) return '';
+        return `<section class="bo-built-group"><h2>${esc(name)} <span>${g.length}</span></h2><div class="bo-built-grid">` +
+          g.sort((a, b) => a.title.localeCompare(b.title)).map(p => {
+            const link = 'https://' + SITE + '/' + p.url.replace(/\.html$/, '');
+            const mail = 'mailto:julie@schalmontpto.com?subject=' + encodeURIComponent('Website change: ' + p.title) +
+              '&body=' + encodeURIComponent('Hi Julie,\n\nPage: ' + p.title + '\n' + link + '\n\nWhat needs to change:\n\n');
+            return `<div class="bo-built"><b>${esc(p.title)}</b><small>${esc(SITE + '/' + p.url.replace(/\.html$/, ''))}</small>
+              <span class="bo-built-actions">${ME.isSuper && p.url !== 'p.html' ? `<a href="live-edit.html?page=${encodeURIComponent(p.url)}">Edit on page</a>` : ''}<a href="../${esc(p.url)}" target="_blank" rel="noopener">View ↗</a>${ME.isSuper ? '' : `<a href="${mail}">Request a change</a>`}</span></div>`;
+          }).join('') + '</div></section>';
+      }).join('');
+      document.getElementById('built-list').innerHTML = html || '<p class="bo-empty">No built-in pages match.</p>';
+    }
+  </script>
+</body>
+</html>

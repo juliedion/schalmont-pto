@@ -42,13 +42,21 @@
             // A shared page is routed under /pto/..., not this school's own prefix; a
             // page with no school at all publishes with no prefix segment whatsoever.
             var pagePrefix = noSchoolAtAll ? '' : ((Array.isArray(p.schools) && p.schools.length > 1) ? 'pto' : prefix);
+            if (!submenu.querySelector('.sn-sublabel')) {
+              var lbl = document.createElement('div');
+              lbl.className = 'sn-sublabel';
+              lbl.textContent = 'Event pages';
+              submenu.appendChild(lbl);
+            }
             var a = document.createElement('a');
             a.href = pagePrefix ? '/' + pagePrefix + '/' + p.slug : '/' + p.slug;
-            a.className = 'sidenav-item sub';
+            a.className = 'sn-subitem';
             a.textContent = p.title || 'Untitled';
             submenu.appendChild(a);
           });
         });
+        var nav = submenu.closest('.sn');
+        if (nav) nav.dispatchEvent(new Event('sn:links'));   // js/menus.js re-highlights the current page
       }).catch(function () { /* rules not published yet, or offline — leave menu as-is */ });
     } catch (e) { /* firestore not loaded on this page — leave menu as-is */ }
   }

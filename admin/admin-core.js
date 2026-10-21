@@ -203,91 +203,197 @@ async function changePasswordNow() {
 }
 
 /* ------------------------------------------------------------
-   The shared dark sidebar + top bar.
+   "Working on" scope
+   Officers start on ALL = the whole website (every school at once); anyone can narrow
+   to one school with the "Working on" picker. The choice is remembered (localStorage)
+   and sidebar links carry it as ?s=<school>. Opening a link that already names a
+   school (e.g. a bookmarked ?s=high) switches the picker to match.
+   ------------------------------------------------------------ */
+const ALL = 'all';
+function scopeLabel(s) { return s === ALL ? 'Whole website' : (SCHOOLS[s] || s); }
+function scopeOptions() { return (ME && ME.isSuper ? [ALL] : []).concat(manageableSchools()); }
+function workingSchool() {
+  const opts = scopeOptions();
+  const fromUrl = getParam('s');
+  if (fromUrl && opts.includes(fromUrl)) {
+    try { localStorage.setItem('boSchool', fromUrl); } catch (_) {}
+    return fromUrl;
+  }
+  let saved = null;
+  try { saved = localStorage.getItem('boSchool'); } catch (_) {}
+  if (saved && opts.includes(saved)) return saved;
+  return opts[0] || 'pto';
+}
+// Screens whose content depends on ?s= -- switching scope there reloads with the new one.
+const SCHOOL_SCOPED_PAGES = ['school.html', 'section.html', 'signups.html', 'fundraising.html', 'yearbook.html', 'calendar.html', 'site.html'];
+function switchWorkingSchool(s) {
+  try { localStorage.setItem('boSchool', s); } catch (_) {}
+  const path = window.location.pathname.split('/').pop() || 'index.html';
+  const u = new URL(window.location.href);
+  if (SCHOOL_SCOPED_PAGES.includes(path) && !getParam('id')) {
+    if (s === ALL && path === 'school.html') { window.location.href = 'site.html'; return; }   // a workspace is always one school
+    if (s === ALL) u.searchParams.delete('s'); else u.searchParams.set('s', s);
+    window.location.href = u.toString();
+  } else {
+    renderShell();
+    document.dispatchEvent(new CustomEvent('bo:school', { detail: s }));   // Home re-loads its lists
+  }
+}
+/* Where each sidebar item goes for the current scope (whole website vs one school). */
+function scopedHref(item, W) {
+  const all = W === ALL, q = all ? '' : '?s=' + W;
+  switch (item) {
+    case 'site':     return 'site.html' + q;
+    case 'events':   return 'section.html?cat=events' + (all ? '' : '&s=' + W);
+    case 'calendar': return all ? 'calendar.html' : 'school.html?s=' + W + '&tab=calendar';
+    case 'signups':  return 'signups.html' + q;
+    case 'files':    return 'school.html?s=' + (all ? 'pto' : W) + '&tab=files';
+    case 'fundraising': return 'fundraising.html' + q;
+    case 'yearbook': return 'yearbook.html' + q;
+    case 'ideas':    return 'school.html?s=' + (all ? 'pto' : W) + '&tab=ideas';
+  }
+  return 'index.html';
+}
+
+/* Line icons for the sidebar (24×24, drawn with the current text colour). */
+const BO_ICON = (() => {
+  const i = d => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  return {
+    home: i('<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/>'),
+    site: i('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><circle cx="6.5" cy="6.5" r=".6" fill="currentColor"/><circle cx="9" cy="6.5" r=".6" fill="currentColor"/>'),
+    events: i('<path d="M12 3l2.5 5.2 5.5.8-4 3.9.9 5.6L12 15.8 7.1 18.5 8 12.9 4 9l5.5-.8z"/>'),
+    calendar: i('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'),
+    signups: i('<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 11h6M9 15h4"/>'),
+    files: i('<rect x="3" y="5" width="18" height="15" rx="2"/><circle cx="9" cy="10.5" r="1.8"/><path d="m21 16-5-5-8 9"/>'),
+    fundraising: i('<circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .9-3 2.2 0 3 6 1.6 6 4.6 0 1.3-1.3 2.2-3 2.2-1.5 0-2.6-.6-3.1-1.6M12 6v2M12 16v2"/>'),
+    yearbook: i('<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>'),
+    meetings: i('<circle cx="8" cy="9" r="3"/><circle cx="16.5" cy="9.5" r="2.5"/><path d="M2.5 19c.6-3 2.9-5 5.5-5s4.9 2 5.5 5M14 14.3c2.6-.4 5.6 1.2 6.5 4.7"/>'),
+    ideas: i('<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/>'),
+    tools: i('<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'),
+    guides: i('<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/>'),
+    assistant: i('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/>'),
+    people: i('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.7-3.6 3.4-6 6.5-6s5.8 2.4 6.5 6"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.5c1.6.9 2.7 2.9 3 5.5"/>'),
+    approve: i('<path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>'),
+    external: i('<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>'),
+    menu: i('<path d="M4 7h16M4 12h16M4 17h16"/>'),
+    plus: i('<path d="M12 5v14M5 12h14"/>'),
+    edit: i('<path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>')
+  };
+})();
+
+/* ------------------------------------------------------------
+   The shared sidebar.
    Any page that includes a <div id="bo-shell"></div> gets it.
+   Grouped by what volunteers come here to do, not by database
+   structure: update the website, or run the PTO.
    ------------------------------------------------------------ */
 function renderShell() {
   const shell = document.getElementById('bo-shell');
   if (!shell || !ME) return;
 
-  const path = window.location.pathname.split('/').pop();
+  const path = window.location.pathname.split('/').pop() || 'index.html';
+  const tab = getParam('tab') || (path === 'school.html' ? 'calendar' : '');
   const cat = getParam('cat');
-  // The school we're currently working inside, if any (school.html, section.html?s=,
-  // calendar/fundraising/yearbook?s=, page-editor of a single-school page…).
-  const ctxSchool = getParam('s');
-  const inSchool = ctxSchool && SCHOOLS[ctxSchool] && canManage(ctxSchool);
+  const W = workingSchool();
+  const opts = scopeOptions();
+  // A one-line hint for each item, shown on hover, so new volunteers know what's where.
+  const HINT = {
+    home: 'Your dashboard: drafts, to-dos and what\'s coming up', site: 'Add or change pages on the website',
+    events: 'Event and program pages, by school', files: 'Photos and documents to use on pages',
+    calendar: 'Every PTO event, with flyer and reminder dates', meetings: 'PTO meeting dates, agendas and notes',
+    ideas: 'Ideas and to-dos for future events', signups: 'Volunteer shifts and sign-up sheets',
+    fundraising: 'Fundraisers and their trackers', yearbook: 'Photos families sent in for the yearbook',
+    people: 'Who can use the back office', approve: 'Approve new parent-directory families',
+    guides: 'Step-by-step help for every part of the back office', assistant: 'Ask a question in plain English',
+    tools: 'Orders, requests and one-time setup tools', edit: 'Click and type on any page of the website, then publish'
+  };
   const link = (href, label, icon, active) =>
-    `<a href="${href}" class="bo-navlink${active ? ' active' : ''}">
-       <span class="bo-navicon">${icon}</span>${label}</a>`;
+    `<a href="${href}" class="bo-navlink${active ? ' active' : ''}" title="${HINT[icon] || ''}"${active ? ' aria-current="page"' : ''}>
+       <span class="bo-navicon">${BO_ICON[icon]}</span><span>${label}</span></a>`;
+  const initials = String(ME.name || ME.email || '?').split(/[\s@.]+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
 
-  // Each school's own brand color (matches the public site) tints its "sections" group
-  // in the sidebar, so it's obviously distinct from the schools list above it.
-  const SCHOOL_TINT = { woestina: '#8bc341', jefferson: '#6bb044', middle: '#087d40', high: '#044d2a', pto: '#295c38' };
-
-  // Section links only make sense inside a school — scope each one with ?s=<school>.
-  // Three link shapes: a school-workspace sub-tab (?tab=), a page-category listing
-  // (?cat=), or a standalone tool page (fundraising.html, yearbook.html) with no query.
-  const currentTab = getParam('tab') || 'calendar';
-  const sectionLinksFor = (school) => SECTIONS.map(s => {
-    const base = s.href.split('?')[0];
-    let scoped, active;
-    if (s.tab) {
-      scoped = base + '?s=' + school + '&tab=' + s.tab;
-      active = path === base && ctxSchool === school && currentTab === s.tab;
-    } else if (s.href.includes('?cat=')) {
-      scoped = s.href + '&s=' + school;
-      active = path === 'section.html' && ctxSchool === school && cat === s.cat;
-    } else {
-      scoped = base + '?s=' + school;
-      active = path === base && ctxSchool === school;
-    }
-    return link(scoped, s.label, s.icon, active);
-  }).join('');
-
-  // Every school in the sidebar is its own accordion: the school button opens its
-  // workspace overview (like every other nav link) AND toggles its sections open right
-  // underneath it, so you can jump straight to e.g. Calendar without landing on the
-  // overview first. Whichever school you're currently inside starts pre-opened.
-  const mySchools = (ME.isSuper ? Object.keys(SCHOOLS) : (ME.schools || []));
-  const schoolGroups = mySchools.map(s => {
-    const isOpen = ctxSchool === s;
-    return `
-    <div class="bo-school-group">
-      <a href="school.html?s=${s}" class="bo-navlink bo-school-toggle${isOpen ? ' open' : ''}" data-school-target="bosec-${s}">
-        <span class="bo-school-toggle-label"><span class="bo-navicon">🏫</span>${esc(SCHOOLS[s])}</span>
-        <span class="bo-navarrow">&#9660;</span>
-      </a>
-      <div class="bo-school-sections${isOpen ? ' open' : ''}" id="bosec-${s}"
-           style="background:${SCHOOL_TINT[s] || 'transparent'}">
-        ${sectionLinksFor(s)}
-      </div>
-    </div>`;
-  }).join('');
+  const picker = opts.length > 1
+    ? `<label class="bo-working">
+         <span class="bo-working-lbl">Working on</span>
+         <select id="bo-working-select" aria-label="What are you working on?">
+           ${opts.map(s => `<option value="${s}"${s === W ? ' selected' : ''}>${esc(s === ALL ? 'Whole website (all schools)' : SCHOOLS[s])}</option>`).join('')}
+         </select>
+       </label>`
+    : `<div class="bo-working"><span class="bo-working-lbl">Working on</span><strong>${esc(scopeLabel(W))}</strong></div>`;
 
   shell.innerHTML = `
-    <aside class="bo-sidebar">
-      <a href="index.html" class="bo-brand">
-        <img src="../images/logo.png" alt=""> <span>PTO Back Office</span>
-      </a>
-      <nav class="bo-nav">
-        ${link('index.html', 'Home', '🏠', path === 'index.html')}
-        <div class="bo-navgroup-label">Schools</div>
-        ${schoolGroups}
-        <div class="bo-navgroup-label">More</div>
-        ${link('meetings.html', 'Meetings', '🗓️', path === 'meetings.html')}
-        ${link('tat-teacher-orders.html', 'Tat the Teacher Orders', '🐯', path === 'tat-teacher-orders.html')}
-        ${link('help.html', 'Help &amp; How-To', '📖', path === 'help.html')}
-        ${ME.isSuper ? link('directory.html', 'Directory Sign-Ups', '✅', path === 'directory.html') : ''}
-        ${ME.isSuper ? link('people.html', 'People &amp; Roles', '👥', path === 'people.html') : ''}
-        ${link('roadmap.html', 'Feature Roadmap', '🛠️', path === 'roadmap.html')}
-      </nav>
-      <div class="bo-sidebar-foot">
-        <div class="bo-me">${esc(ME.name)}</div>
-        <a href="#" onclick="changePasswordNow();return false;">Change password</a> ·
-        <a href="../index.html">View website ↗</a> ·
-        <a href="#" onclick="signOutNow();return false;">Sign out</a>
+    <aside class="bo-sidebar" id="bo-sidebar">
+      <div class="bo-topbar">
+        <a href="index.html" class="bo-brand">
+          <span class="bo-brand-mark"><img src="../images/logo.png" alt=""></span>
+          <span class="bo-brand-text"><b>Back Office</b><small>Schalmont PTO</small></span>
+        </a>
+        <button type="button" class="bo-menu-btn" id="bo-menu-btn" aria-expanded="false" aria-controls="bo-drawer">${BO_ICON.menu}<span>Menu</span></button>
+      </div>
+      <div class="bo-drawer" id="bo-drawer">
+        ${picker}
+        <div class="bo-create">
+          <button type="button" class="bo-create-btn" id="bo-create-btn" aria-expanded="false" aria-controls="bo-create-menu">${BO_ICON.plus}<span>Create new</span></button>
+          <div class="bo-create-menu" id="bo-create-menu" hidden>
+            <button type="button" data-create="page">${BO_ICON.site}<span><b>Web page</b><small>An event, program or info page</small></span></button>
+            <a href="${scopedHref('signups', W)}${W === ALL ? '?' : '&'}new=1">${BO_ICON.signups}<span><b>Sign-up sheet</b><small>Volunteer shifts or items to bring</small></span></a>
+            <a href="calendar.html?new=1${W === ALL ? '' : '&s=' + W}">${BO_ICON.calendar}<span><b>Calendar event</b><small>Add a date to the PTO calendar</small></span></a>
+          </div>
+        </div>
+        <nav class="bo-nav" aria-label="Back office">
+          ${link('index.html', 'Home', 'home', path === 'index.html')}
+
+          <div class="bo-navgroup-label">Website</div>
+          ${link(scopedHref('site', W), 'Website pages', 'site', path === 'site.html' || (path === 'school.html' && tab === 'pages'))}
+          ${ME.isSuper ? link('live-edit.html', 'Edit the website', 'edit', path === 'live-edit.html') : ''}
+          ${link(scopedHref('events', W), 'Events &amp; programs', 'events', path === 'section.html' && cat === 'events')}
+          ${link(scopedHref('files', W), 'Photos &amp; files', 'files', path === 'school.html' && (tab === 'files' || tab === 'photos'))}
+
+          <div class="bo-navgroup-label">Planning</div>
+          ${link(scopedHref('calendar', W), 'Calendar', 'calendar', (path === 'school.html' && tab === 'calendar') || path === 'calendar.html')}
+          ${link('meetings.html', 'Meetings', 'meetings', path === 'meetings.html')}
+          ${link(scopedHref('ideas', W), 'Idea board', 'ideas', path === 'school.html' && tab === 'ideas')}
+
+          <div class="bo-navgroup-label">Sign-ups &amp; money</div>
+          ${link(scopedHref('signups', W), 'Sign-up sheets', 'signups', path === 'signups.html')}
+          ${link(scopedHref('fundraising', W), 'Fundraisers', 'fundraising', path === 'fundraising.html')}
+          ${link(scopedHref('yearbook', W), 'Yearbook photos', 'yearbook', path === 'yearbook.html')}
+
+          ${ME.isSuper ? `
+          <div class="bo-navgroup-label">Officers</div>
+          ${link('people.html', 'People &amp; roles', 'people', path === 'people.html')}
+          ${link('directory.html', 'Directory sign-ups', 'approve', path === 'directory.html')}` : ''}
+        </nav>
+        <nav class="bo-nav bo-nav-minor" aria-label="Help and more">
+          ${link('help.html', 'How-to guides', 'guides', path === 'help.html')}
+          ${link('assistant.html', 'Ask the assistant', 'assistant', path === 'assistant.html')}
+          ${link('tools.html', 'More tools', 'tools', ['tools.html', 'tat-teacher-orders.html', 'chocolate-requests.html', 'roadmap.html'].includes(path) || (path === 'section.html' && cat && cat !== 'events'))}
+        </nav>
+        <div class="bo-sidebar-foot">
+          <a class="bo-viewsite" href="../index.html" target="_blank" rel="noopener">View the live website ${BO_ICON.external}</a>
+          <div class="bo-me">
+            <span class="bo-avatar" aria-hidden="true">${esc(initials)}</span>
+            <span class="bo-me-text"><b>${esc(ME.name)}</b>
+              <span><a href="#" onclick="changePasswordNow();return false;">Password</a> · <a href="#" onclick="signOutNow();return false;">Sign out</a></span></span>
+          </div>
+        </div>
       </div>
     </aside>`;
+
+  const cBtn = document.getElementById('bo-create-btn'), cMenu = document.getElementById('bo-create-menu');
+  const setCreate = (open) => { cMenu.hidden = !open; cBtn.setAttribute('aria-expanded', open ? 'true' : 'false'); };
+  cBtn.addEventListener('click', (e) => { e.stopPropagation(); setCreate(cMenu.hidden); });
+  cMenu.querySelector('[data-create="page"]').addEventListener('click', () => { setCreate(false); newWebPage('events', W === ALL ? undefined : W); });
+  document.addEventListener('click', (e) => { if (!cMenu.hidden && !cMenu.contains(e.target)) setCreate(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !cMenu.hidden) { setCreate(false); cBtn.focus(); } });
+  const sel = document.getElementById('bo-working-select');
+  if (sel) sel.addEventListener('change', () => switchWorkingSchool(sel.value));
+  const btn = document.getElementById('bo-menu-btn'), sidebar = document.getElementById('bo-sidebar');
+  btn.addEventListener('click', () => {
+    const open = sidebar.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.querySelector('span').textContent = open ? 'Close' : 'Menu';
+  });
 
   document.body.classList.add('bo-has-shell');
   renderHelpWidget();
@@ -360,60 +466,54 @@ const NWP_TYPES = [
 ];
 
 function newWebPage(cat, presetSchool, presetDate) {
-  const sec = sectionByCat(cat);
-  const singular = (sec && sec.singular) || 'Web';
   const opts = manageableSchools();
-  const preset = new Set(
-    presetSchool && opts.includes(presetSchool) ? [presetSchool] : []
-  );
+  // Start with the school you're working on ticked (or the one the caller passed in).
+  const first = presetSchool && opts.includes(presetSchool) ? presetSchool : (ME ? workingSchool() : '');
   const checks = opts.map(s =>
-    `<label><input type="checkbox" class="nwp-school" value="${s}" ${preset.has(s) ? 'checked' : ''}> ${esc(SCHOOLS[s])}</label>`
+    `<label class="bo-chip"><input type="checkbox" class="nwp-school" value="${s}" ${s === first ? 'checked' : ''}><span>${esc(SCHOOLS[s])}</span></label>`
   ).join('');
   // Deliberately never pre-selects a type (even when a section like Fundraising passed
   // one in) -- the admin has to actively choose Event/Program/Club/etc. every time.
-  const typeOpts = '<option value="" disabled selected>Select a type…</option>' +
-    NWP_TYPES.map(t => `<option value="${t.cat}">${esc(t.label)}</option>`).join('');
+  const typeChips = NWP_TYPES.map(t =>
+    `<label class="bo-chip"><input type="radio" name="nwp-type" value="${t.cat}"><span>${esc(t.label)}</span></label>`
+  ).join('');
 
   const back = document.createElement('div');
   back.className = 'bo-modal-back';
   back.innerHTML = `
-    <div class="bo-modal">
+    <div class="bo-modal" role="dialog" aria-modal="true" aria-labelledby="nwp-h">
       <button type="button" class="bo-modal-x" id="nwp-x" aria-label="Cancel">✕</button>
-      <h2>Add a new ${esc(singular)} web page</h2>
-      ${presetDate ? `<p style="font-size:12.5px;color:var(--text-light);margin:-4px 0 12px">
-        Event date set to <strong>${esc(new Date(presetDate + 'T00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }))}</strong>
-        from the calendar — change it later in the page editor if needed.</p>` : ''}
-      ${sec && sec.sheet ? `
-      <div class="bo-notice">
-        <strong>Heads up:</strong> a web page lives on the website, but it does <em>not</em>
-        add itself to the planning spreadsheet. After you create the page, also add this
-        ${esc(singular).toLowerCase()} to the master planning sheet so the calendar, flyer
-        dates, and reminders stay in sync.
-        <a href="${PLANNING_SHEET_URL}" target="_blank" rel="noopener">Open the planning spreadsheet ↗</a>
-      </div>` : ''}
-      <label class="bo-modal-lbl">Which school(s) is this for? <span style="font-weight:400;color:var(--text-light)">— tick every one it belongs to, or leave blank</span></label>
-      <div class="bo-modal-checklist">${checks}</div>
-      <p style="font-size:12px;color:var(--text-light);margin:0 0 8px">
-        Tick more than one (including just "PTO-wide" on its own) and the page gets a shared
-        address at <code>schalmontpto.com/pto/&hellip;</code>. Leave every box unticked and it
-        publishes with no prefix at all, <code>schalmontpto.com/&hellip;</code>.
-      </p>
-      <label class="bo-modal-lbl">What kind of page is this?</label>
-      <select id="nwp-type">${typeOpts}</select>
-      <label class="bo-modal-lbl">Working title <span style="font-weight:400;color:var(--text-light)">— you can change it later</span></label>
-      <input type="text" id="nwp-title" placeholder="e.g. Fall Fun Run 2026">
-      <label class="bo-modal-lbl">Where should this show up?</label>
-      <p style="font-size:12px;color:var(--text-light);margin:0 0 6px">
-        Every page gets a landing-page card automatically once you publish it — no need to
-        pick that here. You can turn it off, or fine-tune the card, from the page editor.
-      </p>
-      <div class="bo-modal-checklist">
-        <label><input type="checkbox" id="nwp-topmenu"> Show in the top menu</label>
-        <label><input type="checkbox" id="nwp-leftmenu" checked> Show in the left (Browse) menu</label>
+      <h2 id="nwp-h">Create a new web page</h2>
+      <p class="bo-modal-sub">It starts as a private draft with a ready-made layout. Nobody sees it until you press <strong>Publish</strong>.</p>
+      ${presetDate ? `<p class="bo-modal-sub">Event date: <strong>${esc(new Date(presetDate + 'T00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }))}</strong> (from the calendar).</p>` : ''}
+
+      <label class="bo-modal-lbl" for="nwp-title">1. What's the page called?</label>
+      <input type="text" id="nwp-title" placeholder="e.g. Fall Fun Run 2026" autocomplete="off">
+
+      <div class="bo-modal-lbl" id="nwp-type-lbl">2. What kind of page is it?</div>
+      <div class="bo-chips" role="radiogroup" aria-labelledby="nwp-type-lbl">${typeChips}</div>
+      <div class="bo-notice" id="nwp-sheet" hidden>
+        <strong>One more step after this:</strong> add it to the
+        <a href="${PLANNING_SHEET_URL}" target="_blank" rel="noopener">planning spreadsheet ↗</a>
+        too, so it shows on the calendar with flyer and reminder dates.
       </div>
-      <p id="nwp-hint" style="font-size:12px;color:var(--text-light);margin:8px 0 0">
-        Choose a type and enter a title to continue.
-      </p>
+
+      <div class="bo-modal-lbl" id="nwp-school-lbl">3. Which school is it for? <span class="bo-modal-opt">Tick more than one if it's shared.</span></div>
+      <div class="bo-chips" role="group" aria-labelledby="nwp-school-lbl">${checks}</div>
+
+      <details class="bo-modal-more">
+        <summary>More options</summary>
+        <div class="bo-modal-checklist">
+          <label><input type="checkbox" id="nwp-topmenu"> Show in the website's top menu</label>
+          <label><input type="checkbox" id="nwp-leftmenu" checked> Show in the left (Browse) menu</label>
+        </div>
+        <p class="bo-modal-sub">Its web address: one school → <code>schalmontpto.com/&lt;school&gt;/&hellip;</code>;
+          several schools or PTO-wide → <code>schalmontpto.com/pto/&hellip;</code>; no school ticked →
+          <code>schalmontpto.com/&hellip;</code>. Every published page also gets a card on its
+          school's page automatically (you can turn that off in the editor).</p>
+      </details>
+
+      <p id="nwp-hint" class="bo-modal-sub" style="margin-top:12px">Add a name and pick a kind of page to continue.</p>
       <div class="bo-modal-actions">
         <button class="bo-btn ghost sm" id="nwp-cancel">Cancel</button>
         <button class="bo-btn sm" id="nwp-go" disabled>Create &amp; start building →</button>
@@ -429,21 +529,26 @@ function newWebPage(cat, presetSchool, presetDate) {
   // Gate the "Create" button on: at least one school ticked, a type chosen, AND a title entered.
   const goBtn = back.querySelector('#nwp-go');
   const hint  = back.querySelector('#nwp-hint');
+  const chosenType = () => (back.querySelector('input[name="nwp-type"]:checked') || {}).value || '';
   const revalidate = () => {
-    const hasType   = back.querySelector('#nwp-type').value !== '';
+    const t = chosenType();
+    const hasType   = t !== '';
+    const sec = sectionByCat(t);
+    back.querySelector('#nwp-sheet').hidden = !(sec && sec.sheet);
     const hasTitle  = back.querySelector('#nwp-title').value.trim().length > 0;
     goBtn.disabled = !(hasType && hasTitle);
     hint.style.display = goBtn.disabled ? '' : 'none';
   };
   back.querySelectorAll('.nwp-school').forEach(c => c.addEventListener('change', revalidate));
-  back.querySelector('#nwp-type').addEventListener('change', revalidate);
+  back.querySelectorAll('input[name="nwp-type"]').forEach(r => r.addEventListener('change', revalidate));
+  back.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
   back.querySelector('#nwp-title').addEventListener('input', revalidate);
   revalidate();
 
   goBtn.onclick = async () => {
     const schools = [...back.querySelectorAll('.nwp-school:checked')].map(c => c.value);
     const title = back.querySelector('#nwp-title').value.trim();
-    const chosenCat = back.querySelector('#nwp-type').value;
+    const chosenCat = chosenType();
     const showInTopMenu = back.querySelector('#nwp-topmenu').checked;
     const showInLeftMenu = back.querySelector('#nwp-leftmenu').checked;
     if (!title) { toast('Give it a working title', 'error'); return; }

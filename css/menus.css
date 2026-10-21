@@ -1,0 +1,149 @@
+/* ============================================================
+   Site menus: the top navigation (.sh) and the left sidebar (.sn).
+   Markup: tools/build_chrome.py · behaviour: js/menus.js
+   ============================================================ */
+
+/* ---------- Top navigation ---------- */
+.sh { position: sticky; top: 0; z-index: 1000; background: linear-gradient(90deg, #002F20 0%, #003a27 55%, #004D32 100%); box-shadow: 0 2px 14px rgba(0, 0, 0, .28); }
+.sh-inner { max-width: 1360px; margin: 0 auto; padding: 0 22px; height: 84px; display: flex; align-items: center; gap: 20px; position: relative; }
+.sh-brand { display: flex; align-items: center; gap: 12px; flex-shrink: 0; text-decoration: none; }
+.sh-brand img { height: 58px; width: auto; display: block; }
+.sh-brand img + img { padding-left: 12px; border-left: 1px solid rgba(255, 255, 255, .22); box-sizing: content-box; }
+.sh-menu { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 14px; min-width: 0; }
+.sh-list { display: flex; align-items: center; gap: 2px; list-style: none; margin: 0; padding: 0; }
+.sh-list > li { position: relative; }
+.sh-top {
+  display: inline-flex; align-items: center; gap: 6px; padding: 10px 13px; border: 0; border-radius: 10px; background: none;
+  font: inherit; font-size: 15px; font-weight: 700; color: rgba(255, 255, 255, .92); text-decoration: none; cursor: pointer; white-space: nowrap;
+}
+.sh-top:hover, .sh-has.is-open > .sh-top, .sh-top.is-current { background: rgba(255, 255, 255, .09); color: #a3ff45; }
+.sh-chev { opacity: .8; transition: transform .18s ease; }
+.sh-has.is-open .sh-chev { transform: rotate(180deg); }
+.sh-drop {
+  display: none; position: absolute; top: calc(100% + 10px); left: 0; z-index: 10; min-width: 236px; padding: 8px;
+  background: #fff; border-radius: 14px; box-shadow: 0 18px 44px rgba(0, 20, 12, .28);
+}
+.sh-drop::before { content: ""; position: absolute; left: 0; right: 0; top: -12px; height: 12px; }   /* hover bridge */
+.sh-has.is-open > .sh-drop { display: block; }
+.sh-drop a { display: block; padding: 9px 12px; border-radius: 9px; font-size: 14.5px; font-weight: 600; color: #12261a; text-decoration: none; }
+.sh-drop a:hover { background: #eef5ef; color: #0f3d22; }
+.sh-drop a[aria-current="page"] { background: #e2f3d5; }
+.sh-drop-schools { width: 470px; display: none; }
+.sh-has.is-open > .sh-drop-schools { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.sh-school { display: flex !important; align-items: center; gap: 10px; padding: 10px 12px !important; }
+.sh-school b { display: block; font-size: 14.5px; }
+.sh-school small { display: block; font-size: 12px; font-weight: 500; color: #5d6f63; }
+.sh-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--sc, #6bb044); flex-shrink: 0; }
+.sh-all { grid-column: 1 / -1; border-top: 1px solid #e3e9e4; border-radius: 0 0 9px 9px !important; margin-top: 4px; color: #1d6b34 !important; font-weight: 800 !important; }
+.sh-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.sh-icon { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; color: #fff; background: rgba(255, 255, 255, .1); }
+.sh-icon:hover { background: rgba(255, 255, 255, .2); }
+.sh-login { color: #fff !important; font-size: 14px; font-weight: 700; text-decoration: none; padding: 7px 14px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .45); white-space: nowrap; }
+.sh-login:hover { border-color: #a3ff45; color: #a3ff45 !important; }
+/* styles.css forces #nav-login-btn to black -- an id rule, so beat it with id + class */
+.sh #nav-login-btn.sh-login { color: #fff !important; }
+.sh #nav-login-btn.sh-login:hover { color: #a3ff45 !important; }
+.sh-social { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; }
+.sh-cta { background: #a3ff45; color: #002F20 !important; font-weight: 800; font-size: 14.5px; padding: 9px 18px; border-radius: 999px; text-decoration: none; white-space: nowrap; transition: transform .15s ease, box-shadow .2s ease; }
+.sh-cta:hover { background: #b8ff6e; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(99, 230, 41, .35); }
+.sh-toggle { display: none; margin-left: auto; align-items: center; gap: 7px; padding: 9px 14px; border: 0; border-radius: 999px; background: #a3ff45; color: #002F20; font: inherit; font-weight: 800; font-size: 14px; cursor: pointer; }
+.sh :focus-visible { outline: 3px solid #a3ff45; outline-offset: 2px; }
+.sh-drop :focus-visible { outline-color: #2f7a3f; }
+
+/* Hover opens menus on a desktop with a mouse; clicks work everywhere. */
+@media (min-width: 1181px) and (hover: hover) {
+  .sh-has:hover > .sh-drop { display: block; }
+  .sh-has:hover > .sh-drop-schools { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+}
+@media (max-width: 1320px) { .sh-social { display: none; } }
+/* Tablets & phones: a Menu button opens the whole menu as a panel */
+@media (max-width: 1180px) {
+  .sh-toggle { display: inline-flex; }
+  .sh-menu {
+    display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 10px;
+    background: #002F20; padding: 12px 18px 20px; max-height: calc(100vh - 84px); overflow-y: auto; box-shadow: 0 14px 28px rgba(0, 0, 0, .35);
+  }
+  .sh.menu-open .sh-menu { display: flex; }
+  .sh-list { flex-direction: column; align-items: stretch; }
+  .sh-top { width: 100%; justify-content: space-between; padding: 12px 10px; font-size: 16px; }
+  .sh-drop, .sh-drop-schools { position: static; width: auto; min-width: 0; box-shadow: none; background: rgba(255, 255, 255, .06); margin: 2px 0 8px; }
+  .sh-has.is-open > .sh-drop-schools { grid-template-columns: 1fr; }
+  .sh-drop a { color: #fff; }
+  .sh-drop a:hover { background: rgba(255, 255, 255, .1); color: #a3ff45; }
+  .sh-school small { color: rgba(255, 255, 255, .65); }
+  .sh-all { border-top-color: rgba(255, 255, 255, .15); color: #a3ff45 !important; }
+  .sh-actions { flex-wrap: wrap; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, .12); }
+  .sh-social { display: grid; }
+}
+@media (max-width: 600px) {
+  .sh-inner { height: 70px; padding: 0 14px; gap: 10px; }
+  .sh-brand img { height: 44px; }
+  .sh-brand { gap: 9px; }
+  .sh-brand img + img { padding-left: 9px; }
+  .sh-menu { max-height: calc(100vh - 70px); }
+}
+
+/* ---------- Left sidebar ---------- */
+.homepage-layout { grid-template-columns: 248px 1fr; }
+.homepage-layout.has-adrail { grid-template-columns: 248px 1fr 200px; }
+@media (max-width: 1100px) { .homepage-layout.has-adrail { grid-template-columns: 248px 1fr; } }
+@media (max-width: 900px) { .homepage-layout, .homepage-layout.has-adrail { grid-template-columns: 1fr; } }
+
+.sn {
+  padding: 18px 14px 28px; background: #fbfcfb; border-right: 1px solid #e3e9e4;
+  display: flex; flex-direction: column; gap: 2px; font-family: inherit;
+}
+.sn-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* search */
+.sn-search { position: relative; margin: 0 0 12px; }
+.sn-search svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: #5d6f63; pointer-events: none; }
+.sn-search input {
+  width: 100%; font: inherit; font-size: 14px; padding: 9px 12px 9px 34px; border-radius: 10px;
+  border: 1px solid #dbe4dd; background: #fff; color: #12261a;
+}
+.sn-search input:focus { outline: none; border-color: #4f9a62; box-shadow: 0 0 0 3px rgba(165, 229, 74, .35); }
+
+/* group labels */
+.sn-label { font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #6b7d71; padding: 16px 10px 6px; }
+
+/* top-level links */
+.sn-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 9px;
+  font-size: 15px; font-weight: 600; color: #1d3326; text-decoration: none; transition: background .15s, color .15s;
+}
+.sn-item svg { color: #4f6a58; flex-shrink: 0; }
+.sn-item:hover { background: #eef5ef; color: #0f3d22; }
+.sn-item.sn-plain { font-weight: 500; font-size: 14.5px; padding: 6px 10px; }
+.sn a[aria-current="page"] { background: #e2f3d5; color: #0f3d22; font-weight: 700; box-shadow: inset 3px 0 0 #6bb044; }
+
+/* schools */
+.sn-school { border-radius: 11px; }
+.sn-school.is-open { background: #fff; box-shadow: 0 1px 2px rgba(16, 42, 27, .06), 0 2px 10px rgba(16, 42, 27, .05); margin: 2px 0; }
+.sn-school-btn {
+  width: 100%; display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 0; background: none;
+  border-radius: 10px; cursor: pointer; text-align: left; font: inherit; color: #1d3326;
+}
+.sn-school-btn:hover { background: #eef5ef; }
+.sn-school.is-open .sn-school-btn:hover { background: none; }
+.sn-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--sc, #6bb044); flex-shrink: 0; box-shadow: 0 0 0 3px color-mix(in srgb, var(--sc, #6bb044) 22%, transparent); }
+.sn-school-name { flex: 1; display: flex; flex-direction: column; font-size: 15px; font-weight: 700; line-height: 1.2; }
+.sn-school-name small { font-size: 12px; font-weight: 500; color: #6b7d71; }
+.sn-chev { color: #6b7d71; transition: transform .18s ease; flex-shrink: 0; }
+.sn-school.is-open .sn-chev { transform: rotate(90deg); }
+.sn-sub { padding: 2px 8px 10px 30px; }
+.sn-sub[hidden] { display: none; }
+.sn .sn-sub:not([hidden]) { display: block; }   /* the old .sidenav-submenu rule hides it otherwise */
+.sn-subitem { display: block; padding: 5px 8px; border-radius: 7px; font-size: 14px; color: #2b4434; text-decoration: none; line-height: 1.35; }
+.sn-subitem:hover { background: #eef5ef; color: #0f3d22; }
+.sn-classes { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; padding: 8px 8px 2px; }
+.sn-classes span { width: 100%; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #6b7d71; }
+.sn-classes a {
+  font-size: 12.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; text-decoration: none;
+  background: #eef3ef; color: #1d3326; border: 1px solid transparent;
+}
+.sn-classes a:hover { background: #e2f3d5; border-color: #b9dca0; }
+.sn-classes a[aria-current="page"] { background: #1a3d24; color: #fff; box-shadow: none; }
+.sn-sublabel { font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #6b7d71; padding: 10px 8px 3px; }
+.sn :focus-visible { outline: 3px solid #a5e54a; outline-offset: 1px; }
+.sn .sn-sub { border-left: 0; background: none; margin: 0; }   /* drop the old .sidenav-submenu look */
