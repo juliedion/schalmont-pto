@@ -88,6 +88,9 @@
 .homepage-layout.has-adrail { grid-template-columns: 248px 1fr 200px; }
 @media (max-width: 1100px) { .homepage-layout.has-adrail { grid-template-columns: 248px 1fr; } }
 @media (max-width: 900px) { .homepage-layout, .homepage-layout.has-adrail { grid-template-columns: 1fr; } }
+/* Phones/tablets use the header's Menu button; without this, .sn's display:flex beats styles.css's
+   display:none and the sticky sidebar covers the page as you scroll. */
+@media (max-width: 900px) { .homepage-sidenav.sn { display: none; } }
 
 .sn {
   padding: 18px 14px 28px; background: #fbfcfb; border-right: 1px solid #e3e9e4;
