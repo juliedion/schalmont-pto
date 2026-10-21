@@ -33,6 +33,9 @@ def outlined(im, color):
     return out
 
 skip = {'054'}
+# Designs whose light-fabric version is the plain art, no dark outline (e.g. the distressed
+# flag, where an outline traces every rough edge in black).
+PLAIN_ON_LIGHT = {'gd-041'}
 n = 0
 for folder, prefix in (('01-General-Designs', 'gd'), ('02-Simple-Sabres', 'ss')):
     for f in sorted(os.listdir(os.path.join(D, folder))):
@@ -43,7 +46,7 @@ for folder, prefix in (('01-General-Designs', 'gd'), ('02-Simple-Sabres', 'ss'))
         im = fit(im, 900)
         key = f'{prefix}-{f[:3]}'
         for tone, color in OUTLINES.items():
-            o = outlined(im, color)
+            o = im if tone == 'light' and key in PLAIN_ON_LIGHT else outlined(im, color)
             fit(o, 900).save(os.path.join(OUT, 'designs', tone, key + '.webp'), 'WEBP', quality=82, method=6)
             fit(o, 240).save(os.path.join(OUT, 'designs/thumbs', tone, key + '.webp'), 'WEBP', quality=80, method=6)
         n += 1
