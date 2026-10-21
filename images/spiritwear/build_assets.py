@@ -10,10 +10,11 @@ def fit(im, size):
     im = im.copy(); im.thumbnail((size, size), Image.LANCZOS); return im
 
 # Designs: transparent PNGs only, trimmed to their content. Each one is saved twice --
-# designs/dark/ with a white outline (for dark fabrics) and designs/light/ with a
-# near-black outline (for light fabrics) -- so the art stands out on every shirt color.
+# designs/dark/ (for dark fabrics) is the plain art with its greens brightened, and designs/light/ (for light
+# fabrics) gets a thin near-black outline so the art stands out on pale shirts.
+# (The dark versions used to get a white outline too; it was taken off.)
 from PIL import ImageFilter
-OUTLINES = {'dark': (255, 255, 255), 'light': (17, 17, 17)}
+OUTLINES = {'dark': None, 'light': (17, 17, 17)}   # None = no outline
 for tone in OUTLINES:
     os.makedirs(os.path.join(OUT, 'designs', tone), exist_ok=True)
     os.makedirs(os.path.join(OUT, 'designs/thumbs', tone), exist_ok=True)
@@ -32,21 +33,74 @@ def outlined(im, color):
     out.alpha_composite(canvas)
     return out
 
+import numpy as np
+from PIL import ImageDraw
+def clear_outer_white(im, lo_min=246):
+    """Make opaque near-white areas that touch the art's transparent outside transparent too."""
+    a = np.asarray(im.convert('RGBA')).astype(np.float32)
+    rgb, alpha = a[..., :3], a[..., 3]
+    lo = rgb.min(axis=2)
+    open_px = (alpha < 16) | ((lo >= lo_min) & (alpha >= 16))
+    h, w = alpha.shape
+    pad = np.full((h + 2, w + 2), 255, np.uint8); pad[1:-1, 1:-1] = np.where(open_px, 255, 0)   # 1px open border so the outside is connected
+    marker = Image.fromarray(pad).copy()
+    ImageDraw.floodfill(marker, (0, 0), 128, thresh=0)
+    reach = (np.asarray(marker) == 128)[1:-1, 1:-1]
+    gone = reach & (alpha >= 16)
+    # soften the new edge: pixels next to removed white that are still light fade out
+    near = np.asarray(Image.fromarray((gone * 255).astype(np.uint8)).filter(ImageFilter.MaxFilter(3))) > 0
+    band = near & ~gone & (alpha >= 16)
+    new_a = alpha.copy()
+    new_a[gone] = 0
+    new_a[band] = np.minimum(alpha[band], np.clip((255 - lo[band]) * 3.0, 0, 255))
+    out = np.dstack([rgb, new_a]).astype(np.uint8)
+    return Image.fromarray(out)
+
+def brighten_greens(im, gain=1.7, lift=0.14):
+    """Brighten green areas (for dark fabrics) without touching whites, silvers or blacks' hue."""
+    rgba = im.convert('RGBA')
+    hsv = np.asarray(rgba.convert('RGB').convert('HSV')).astype(np.float32) / 255.0
+    h, s, v = hsv[..., 0] * 360, hsv[..., 1], hsv[..., 2]
+    # how "green" each pixel is: hue between ~75° and ~175°, with real color in it
+    hue_w = np.clip(1 - np.abs(h - 125) / 50, 0, 1)
+    sat_w = np.clip((s - 0.15) / 0.25, 0, 1)
+    wgt = hue_w * sat_w
+    v2 = np.clip(v * (1 + (gain - 1) * wgt) + lift * wgt * (1 - v), 0, 1)
+    s2 = np.clip(s * (1 + 0.08 * wgt), 0, 1)
+    out = np.dstack([hsv[..., 0], s2, v2]) * 255
+    rgb = Image.fromarray(out.astype(np.uint8), 'HSV').convert('RGB')
+    rgb.putalpha(rgba.getchannel('A'))
+    return rgb
+
+def white_ink(im):
+    """Flat dark-ink art -> white ink for dark shirts: darker pixels become solid white,
+    light/white areas inside the art become see-through (the shirt shows through)."""
+    a = np.asarray(im.convert('RGBA')).astype(np.float32)
+    lum = a[..., :3] @ np.array([0.299, 0.587, 0.114], np.float32)
+    ink = np.clip((215 - lum) / 120, 0, 1) * a[..., 3]
+    out = np.dstack([np.full(lum.shape, 255, np.float32)] * 3 + [ink]).astype(np.uint8)
+    return Image.fromarray(out)
+
+# Designs with opaque white baked in around/under the art; it's made transparent first.
+CLEAR_WHITE = {'gd-009', 'gd-039'}
+
 skip = {'054'}
 # Designs whose light-fabric version is the plain art, no dark outline (e.g. the distressed
 # flag, where an outline traces every rough edge in black).
-PLAIN_ON_LIGHT = {'gd-041'}
+PLAIN_ON_LIGHT = {'gd-041', 'gd-039'}
 n = 0
 for folder, prefix in (('01-General-Designs', 'gd'), ('02-Simple-Sabres', 'ss')):
     for f in sorted(os.listdir(os.path.join(D, folder))):
         if not f.lower().endswith('.png') or f[:3] in skip: continue
+        key = f'{prefix}-{f[:3]}'
         im = Image.open(os.path.join(D, folder, f)).convert('RGBA')
+        if key in CLEAR_WHITE: im = clear_outer_white(im)
         bbox = im.getchannel('A').point(lambda a: 255 if a > 8 else 0).getbbox()
         if bbox: im = im.crop(bbox)
         im = fit(im, 900)
-        key = f'{prefix}-{f[:3]}'
         for tone, color in OUTLINES.items():
-            o = im if tone == 'light' and key in PLAIN_ON_LIGHT else outlined(im, color)
+            o = im if color is None or (tone == 'light' and key in PLAIN_ON_LIGHT) else outlined(im, color)
+            if tone == 'dark': o = brighten_greens(o)   # greens pop more on dark shirts
             fit(o, 900).save(os.path.join(OUT, 'designs', tone, key + '.webp'), 'WEBP', quality=82, method=6)
             fit(o, 240).save(os.path.join(OUT, 'designs/thumbs', tone, key + '.webp'), 'WEBP', quality=80, method=6)
         n += 1
@@ -150,6 +204,7 @@ GENERIC_NEW = [
 
 # Flat dark-ink designs with thin lettering were drawn for light shirts already; a dark
 # outline would fill in the gaps between their letters, so their light version has none.
+# On dark shirts they'd disappear, so their dark version is printed in white ink instead.
 NO_LIGHT_OUTLINE = {
     'In_My_Middle_School_Era', 'Sabre_Nation_SMS', 'Schalmont_Middle_School_Smiley',
     'Schalmont_Sabres_Bow_Monogram', 'Schalmont_Sabres_Modern', 'Schalmont_Sabres_Rotterdam_NY',
@@ -185,7 +240,11 @@ for n, name in enumerate(GENERIC_NEW, 1):
     im = fit(remove_white_background(Image.open(os.path.join(GENERIC, name + '.jpg'))), 900)
     key = f'sg-{n:03d}'
     for tone, color in OUTLINES.items():
-        o = im if tone == 'light' and name in NO_LIGHT_OUTLINE else outlined(im, color)
+        if tone == 'dark' and name in NO_LIGHT_OUTLINE:
+            o = white_ink(im)
+        else:
+            o = im if color is None or (tone == 'light' and name in NO_LIGHT_OUTLINE) else outlined(im, color)
+            if tone == 'dark': o = brighten_greens(o)
         fit(o, 900).save(os.path.join(OUT, 'designs', tone, key + '.webp'), 'WEBP', quality=82, method=6)
         fit(o, 240).save(os.path.join(OUT, 'designs/thumbs', tone, key + '.webp'), 'WEBP', quality=80, method=6)
 print('generic designs', len(GENERIC_NEW))

@@ -6,7 +6,7 @@ order in Shopify admin, and the customer's confirmation email all show it:
 
 | Item | What Shopify shows on the line |
 |---|---|
-| Shirt | Size, Color, Design (e.g. `#GD-047 No Fear, Just Pride`), Design placement, Print version (dark or light fabric), Front logo |
+| Shirt | Size (plus a Size note for Adult XS), Color, Design (e.g. `#GD-047 No Fear, Just Pride`), Design placement, Print version (dark or light fabric), Front logo |
 | Emailed gift card to someone else | Recipient name, Recipient email, Message |
 | Printed gift card | To, From, Message, Delivery (Deliver to school, Local home delivery, Ship it), Student, School and Teacher for school delivery, Gift wrap when shipped |
 | Coupon book | Delivery, plus Student, School and Teacher for school delivery |
@@ -39,7 +39,7 @@ Either way works:
 - **With variants:** add options named exactly **Size** and **Color**. This lets Shopify
   track and report by size. Use these values, spelled the same, and only the ones that
   product offers:
-  - Size: `Youth XS`, `Youth S`, `Youth M`, `Youth L`, `Youth XL`, `Adult S`, `Adult M`,
+  - Size: `Youth XS`, `Youth S`, `Youth M`, `Youth L`, `Youth XL`, `Adult XS`, `Adult S`, `Adult M`,
     `Adult L`, `Adult XL`, `Adult 2XL`, `Adult 3XL`, `Adult 4XL`, `Adult 5XL`
   - Color: the names in the table above, spelled the same.
 
