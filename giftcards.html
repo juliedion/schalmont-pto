@@ -11,7 +11,7 @@
   <title>Gift Cards — Schalmont PTO</title>
   <meta name="description" content="Schalmont Spiritwear Shoppe gift cards — delivered to school, to a local home, or shipped wrapped and addressed. Perfect for the hard-to-shop-for Sabres fan in the Albany area.">
   <link rel="stylesheet" href="css/styles.css?v=5">
-  <link rel="stylesheet" href="css/spiritwear.css?v=5">
+  <link rel="stylesheet" href="css/spiritwear.css?v=6">
   <link rel="icon" href="images/favicon.svg">
   <link rel="stylesheet" href="css/menus.css?v=2">
 </head>
@@ -136,6 +136,8 @@
   <!-- GIFT CARDS (menu in js/spiritwear-catalog.json, logic in js/spiritwear-shop.js) -->
   <section class="section" id="sw-builder">
     <div class="container">
+      <div class="sw-preview-bar" id="sw-preview-bar" hidden>👀 <strong>Preview mode</strong> — only people with this link see ordering. Everyone else sees “Coming Soon.” <a href="giftcards.html">Exit preview</a></div>
+
       <div class="sw-thanks" id="sw-thanks" hidden>🎉 Thank you! Your order went through. Check your email for your confirmation.</div>
 
       <div class="sw-page-intro">
@@ -321,7 +323,7 @@
   <script src="js/app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="js/page-menu.js?v=3"></script>
-  <script src="js/spiritwear-shop.js?v=8"></script>
+  <script src="js/spiritwear-shop.js?v=10"></script>
   <script src="js/menus.js?v=1"></script>
 </body>
 </html>

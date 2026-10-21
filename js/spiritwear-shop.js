@@ -31,7 +31,7 @@
 
   let SW;
   try {
-    SW = await (await fetch('js/spiritwear-catalog.json?v=8', { cache: 'no-cache' })).json();
+    SW = await (await fetch('js/spiritwear-catalog.json?v=10', { cache: 'no-cache' })).json();
   } catch (e) {
     return;   // the "Coming Soon" notice stays up
   }
@@ -595,15 +595,26 @@
   }
 
   /* ---------- Coming Soon switch ---------- */
-  // "comingSoon": true in the catalog keeps the ordering steps hidden on all three pages
-  // (the shop page shows the design catalog instead).
-  if (SW.comingSoon) {
-    if ($('#sw-catalog')) initCatalog();
+  // "comingSoon": true in the catalog keeps the ordering steps hidden on all three pages.
+  // "designCatalog": true also shows the design catalog on the Coming Soon shop page.
+  // Add ?preview to the address (e.g. /shop?preview) to see and test the real pages anyway.
+  const preview = SW.comingSoon && new URLSearchParams(location.search).has('preview');
+  if (preview) {
+    const bar = $('#sw-preview-bar');
+    if (bar) bar.hidden = false;
+    // Keep ?preview on links between the shop, gift card and coupon book pages.
+    document.querySelectorAll('a[href$="shop.html"], a[href$="giftcards.html"], a[href$="couponbook.html"]').forEach((a) => {
+      if (!a.closest('#sw-preview-bar')) a.href = a.getAttribute('href') + '?preview';
+    });
+  }
+  if (SW.comingSoon && !preview) {
+    if (SW.designCatalog && $('#sw-catalog')) initCatalog();
     return;
   }
   $('#sw-soon').hidden = true;
   $('#sw-live').hidden = false;
   document.querySelectorAll('[data-soon]').forEach((el) => el.remove());
+  document.querySelectorAll('[data-live]').forEach((el) => { el.hidden = false; });
 
   /* ---------- Events ---------- */
   root.addEventListener('click', (e) => {

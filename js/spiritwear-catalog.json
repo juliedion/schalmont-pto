@@ -1,5 +1,6 @@
 {
   "comingSoon": true,
+  "designCatalog": false,
   "shopify": {
     "storeDomain": "",
     "storefrontToken": "",

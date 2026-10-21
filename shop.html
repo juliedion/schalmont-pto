@@ -11,7 +11,7 @@
   <title>Spirit Shop — Schalmont PTO</title>
   <meta name="description" content="Build your own Schalmont Sabres spirit shirt — pick the shirt, color, size and one of 100+ designs. Proceeds support the Schalmont PTO.">
   <link rel="stylesheet" href="css/styles.css?v=5">
-  <link rel="stylesheet" href="css/spiritwear.css?v=5">
+  <link rel="stylesheet" href="css/spiritwear.css?v=6">
   <link rel="icon" href="images/favicon.svg">
   <link rel="stylesheet" href="css/menus.css?v=2">
 </head>
@@ -136,24 +136,29 @@
   <section class="page-hero">
     <div class="container">
       <h1>👕 Spirit Shop</h1>
-      <p>Show your Schalmont Sabres pride! Build your own PTO spirit shirt, or send a <a href="giftcards.html" style="color:inherit;text-decoration:underline">Spiritwear gift card</a>.</p>
+      <!-- data-soon shows while the store is Coming Soon; data-live replaces it once it's open (js/spiritwear-shop.js) -->
+      <p data-soon>Coming soon!</p>
+      <p data-live hidden>Show your Schalmont Sabres pride! Build your own PTO spirit shirt, or send a <a href="giftcards.html" style="color:inherit;text-decoration:underline">Spiritwear gift card</a>.</p>
     </div>
   </section>
 
   <!-- PTO SPIRIT WEAR BUILDER (menu in js/spiritwear-catalog.json, logic in js/spiritwear-shop.js; gift cards and coupon books have their own pages) -->
   <section class="section" id="sw-builder">
     <div class="container">
-      <h2 style="font-size:24px;margin-bottom:6px">Build Your Sabres Shirt</h2>
-      <p style="color:var(--text-light);font-size:14px;margin-bottom:18px">Special pop-up pricing for Schalmont families! Pick your shirt, color, size and design, add it to your order, then check out securely. Proceeds support the Schalmont PTO.</p>
+      <div data-live hidden>
+        <h2 style="font-size:24px;margin-bottom:6px">Build Your Sabres Shirt</h2>
+        <p style="color:var(--text-light);font-size:14px;margin-bottom:18px">Special pop-up pricing for Schalmont families! Pick your shirt, color, size and design, add it to your order, then check out securely. Proceeds support the Schalmont PTO.</p>
+      </div>
+
+      <div class="sw-preview-bar" id="sw-preview-bar" hidden>👀 <strong>Preview mode</strong> — only people with this link see the shop. Everyone else sees “Coming Soon.” <a href="shop.html">Exit preview</a></div>
 
       <div class="sw-thanks" id="sw-thanks" hidden>🎉 Thank you! Your order went through. Check your email for your confirmation — we'll contact you with a final design and delivery date.</div>
 
       <!-- Shown while "comingSoon" is true in js/spiritwear-catalog.json; js/spiritwear-shop.js swaps in the ordering steps when it's false -->
       <div class="sw-soon" id="sw-soon">
         <span class="sw-soon-badge">Coming Soon</span>
-        <h3>Our Sabres shirt builder is almost ready!</h3>
-        <p>Soon you’ll be able to pick from 6 shirt styles, 10 colors and over 100 Sabres designs, see a preview, and order online.</p>
-        <p>In the meantime, <a href="#sw-catalog">browse every design below</a> and write its number on your paper order form. Questions? <a href="contact.html">Contact the PTO</a>.</p>
+        <h3>Our Spirit Shop is coming soon!</h3>
+        <p>Check back soon. Questions? <a href="contact.html">Contact the PTO</a>.</p>
       </div>
 
       <!-- Design catalog: shown while the store is Coming Soon (js/spiritwear-shop.js) -->
@@ -236,7 +241,7 @@
 
 
   <!-- Info Section -->
-  <section class="section" style="padding-top:0">
+  <section class="section" style="padding-top:0" data-live hidden>
     <div class="container">
       <div style="background:var(--light-bg);border-radius:var(--radius-lg);padding:32px">
         <div class="grid-2">
@@ -333,7 +338,7 @@
   <script src="js/app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="js/page-menu.js?v=3"></script>
-  <script src="js/spiritwear-shop.js?v=8"></script>
+  <script src="js/spiritwear-shop.js?v=10"></script>
   <script src="js/menus.js?v=1"></script>
 </body>
 </html>

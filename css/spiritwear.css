@@ -188,3 +188,7 @@
   .sw-cat-num { font-size: 12px; }
   .sw-design-name { font-size: 9px; }
 }
+
+/* Preview mode bar (?preview while the store is Coming Soon) */
+.sw-preview-bar { background: #fff4d6; border: 1px solid #f0c75e; border-radius: var(--radius); padding: 10px 14px; font-size: 14px; margin-bottom: 18px; }
+.sw-preview-bar[hidden] { display: none; }
