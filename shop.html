@@ -11,9 +11,9 @@
   <title>Spirit Shop — Schalmont PTO</title>
   <meta name="description" content="Build your own Schalmont Sabres spirit shirt — pick the shirt, color, size and one of 100+ designs. Proceeds support the Schalmont PTO.">
   <link rel="stylesheet" href="css/styles.css?v=5">
-  <link rel="stylesheet" href="css/spiritwear.css?v=3">
+  <link rel="stylesheet" href="css/spiritwear.css?v=5">
   <link rel="icon" href="images/favicon.svg">
-  <link rel="stylesheet" href="css/menus.css?v=1">
+  <link rel="stylesheet" href="css/menus.css?v=2">
 </head>
 <body>
 
@@ -153,7 +153,35 @@
         <span class="sw-soon-badge">Coming Soon</span>
         <h3>Our Sabres shirt builder is almost ready!</h3>
         <p>Soon you’ll be able to pick from 6 shirt styles, 10 colors and over 100 Sabres designs, see a preview, and order online.</p>
-        <p>Questions in the meantime? <a href="contact.html">Contact the PTO</a>.</p>
+        <p>In the meantime, <a href="#sw-catalog">browse every design below</a> and write its number on your paper order form. Questions? <a href="contact.html">Contact the PTO</a>.</p>
+      </div>
+
+      <!-- Design catalog: shown while the store is Coming Soon (js/spiritwear-shop.js) -->
+      <div class="sw-catalog" id="sw-catalog" hidden>
+        <div class="sw-cat-head">
+          <div>
+            <h3>Browse our designs</h3>
+            <p>Find one you love and write its number (like <strong>#GD-047</strong>) on your order form. Tap a design to see it on a shirt.</p>
+          </div>
+          <button type="button" class="btn btn-blue" id="sw-cat-print">🖨️ Print the design list</button>
+        </div>
+        <div class="sw-cat-colors"><span class="sw-cat-label">Preview on:</span><div class="sw-swatches" id="sw-cat-colors"></div></div>
+        <div class="sw-design-tools">
+          <div class="sw-tabs" id="sw-cat-tabs"></div>
+          <input type="search" id="sw-cat-search" placeholder="Search designs or #number" aria-label="Search designs">
+          <span class="sw-cat-count" id="sw-cat-count"></span>
+        </div>
+        <div class="sw-cat-grid" id="sw-cat-grid"></div>
+
+        <div class="sw-cat-modal" id="sw-cat-modal" hidden role="dialog" aria-modal="true" aria-labelledby="sw-cat-modal-name">
+          <div class="sw-cat-modal-box">
+            <button type="button" class="sw-cat-close" aria-label="Close">✕</button>
+            <div id="sw-cat-modal-art"></div>
+            <div class="sw-cat-num" id="sw-cat-modal-num"></div>
+            <h3 id="sw-cat-modal-name"></h3>
+            <p id="sw-cat-modal-note"></p>
+          </div>
+        </div>
       </div>
 
       <div class="sw-layout" id="sw-live" hidden>
@@ -305,7 +333,7 @@
   <script src="js/app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="js/page-menu.js?v=3"></script>
-  <script src="js/spiritwear-shop.js?v=7"></script>
+  <script src="js/spiritwear-shop.js?v=8"></script>
   <script src="js/menus.js?v=1"></script>
 </body>
 </html>

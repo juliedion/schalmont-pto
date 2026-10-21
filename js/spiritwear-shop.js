@@ -31,15 +31,10 @@
 
   let SW;
   try {
-    SW = await (await fetch('js/spiritwear-catalog.json?v=7', { cache: 'no-cache' })).json();
+    SW = await (await fetch('js/spiritwear-catalog.json?v=8', { cache: 'no-cache' })).json();
   } catch (e) {
     return;   // the "Coming Soon" notice stays up
   }
-  // "comingSoon": true in the catalog keeps the ordering steps hidden on all three pages.
-  if (SW.comingSoon) return;
-  document.getElementById('sw-soon').hidden = true;
-  document.getElementById('sw-live').hidden = false;
-  document.querySelectorAll('[data-soon]').forEach((el) => el.remove());
   SW.designs = SW.designs.map((d) => ({ ...d, group: d.id.slice(0, 2), number: d.id.toUpperCase() }));
 
   const CART_KEY = 'sw-cart-v2';
@@ -529,6 +524,86 @@
     renderShirts(); renderColors(); renderSizes(); renderDesignFilters(); renderDesigns();
     renderPlacements(); renderLogos(); renderPreview();
   }
+
+  /* ---------- Design catalog (shop page, while the store is Coming Soon) ---------- */
+  // Lets families browse every design and its number for the paper order form.
+  function initCatalog() {
+    const cat = { color: SW.colors[0].id, group: 'all', search: '' };
+    const wrap = $('#sw-catalog');
+    const modal = $('#sw-cat-modal');
+    // Show a design on a shirt that comes in the chosen color.
+    const shirtFor = (colorId) => SW.shirts.find((s) => shirtColors(s).includes(colorId)) || SW.shirts[0];
+
+    function renderColors() {
+      $('#sw-cat-colors').innerHTML = SW.colors.map((c) => `
+        <button type="button" class="sw-swatch${c.id === cat.color ? ' is-on' : ''}" data-cat-color="${c.id}" aria-pressed="${c.id === cat.color}">
+          <span style="background:${c.hex}"></span>${esc(c.name)}
+        </button>`).join('');
+    }
+    function renderTabs() {
+      $('#sw-cat-tabs').innerHTML = [{ id: 'all', name: 'All' }, ...SW.designGroups].map((g) =>
+        `<button type="button" class="sw-tab${g.id === cat.group ? ' is-on' : ''}" data-cat-group="${g.id}">${esc(g.name)}</button>`).join('');
+    }
+    function renderGrid() {
+      const q = cat.search.trim().toLowerCase();
+      const list = SW.designs.filter((d) => (cat.group === 'all' || d.group === cat.group) &&
+        (!q || d.name.toLowerCase().includes(q) || d.number.toLowerCase().includes(q)));
+      const grid = $('#sw-cat-grid');
+      grid.style.setProperty('--sw-tile', byId(SW.colors, cat.color).hex);
+      $('#sw-cat-count').textContent = `${list.length} design${list.length === 1 ? '' : 's'}`;
+      grid.innerHTML = list.length ? list.map((d) => `
+        <button type="button" class="sw-cat-item" data-cat-design="${d.id}">
+          <span class="sw-design-img"><img src="${designSrc(d.id, cat.color, true)}" alt="" loading="lazy"></span>
+          <span class="sw-cat-num">#${esc(d.number)}</span>
+          <span class="sw-design-name">${esc(d.name)}</span>
+        </button>`).join('') : '<p class="sw-empty">No designs match your search.</p>';
+    }
+    function openDesign(id) {
+      const d = byId(SW.designs, id);
+      const shirt = shirtFor(cat.color);
+      $('#sw-cat-modal-art').innerHTML = mockup({ shirt: shirt.id, color: cat.color, design: id, placement: 'back', logo: 'none' }, 'back', 'sw-mock-lg');
+      $('#sw-cat-modal-num').textContent = `#${d.number}`;
+      $('#sw-cat-modal-name').textContent = d.name;
+      $('#sw-cat-modal-note').textContent = `Shown on the back of a ${byId(SW.colors, cat.color).name} ${shirt.name}.`;
+      modal.hidden = false;
+      document.body.style.overflow = 'hidden';
+      modal.querySelector('.sw-cat-close').focus();
+    }
+    const closeDesign = () => { modal.hidden = true; document.body.style.overflow = ''; };
+
+    wrap.addEventListener('click', (e) => {
+      let el;
+      if ((el = e.target.closest('[data-cat-color]'))) { cat.color = el.dataset.catColor; renderColors(); renderGrid(); }
+      else if ((el = e.target.closest('[data-cat-group]'))) { cat.group = el.dataset.catGroup; renderTabs(); renderGrid(); }
+      else if ((el = e.target.closest('[data-cat-design]'))) openDesign(el.dataset.catDesign);
+    });
+    $('#sw-cat-search').addEventListener('input', (e) => { cat.search = e.target.value; renderGrid(); });
+    $('#sw-cat-print').addEventListener('click', () => {
+      // Print every design on white, so the list is complete and easy to read.
+      Object.assign(cat, { color: 'white', group: 'all', search: '' });
+      $('#sw-cat-search').value = '';
+      renderColors(); renderTabs(); renderGrid();
+      wrap.querySelectorAll('img').forEach((i) => { i.loading = 'eager'; });
+      Promise.all([...wrap.querySelectorAll('img')].map((i) => (i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; }))))
+        .then(() => window.print());
+    });
+    modal.addEventListener('click', (e) => { if (e.target === modal || e.target.closest('.sw-cat-close')) closeDesign(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) closeDesign(); });
+
+    renderColors(); renderTabs(); renderGrid();
+    wrap.hidden = false;
+  }
+
+  /* ---------- Coming Soon switch ---------- */
+  // "comingSoon": true in the catalog keeps the ordering steps hidden on all three pages
+  // (the shop page shows the design catalog instead).
+  if (SW.comingSoon) {
+    if ($('#sw-catalog')) initCatalog();
+    return;
+  }
+  $('#sw-soon').hidden = true;
+  $('#sw-live').hidden = false;
+  document.querySelectorAll('[data-soon]').forEach((el) => el.remove());
 
   /* ---------- Events ---------- */
   root.addEventListener('click', (e) => {
