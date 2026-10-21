@@ -11,7 +11,7 @@
   <title>Gift Cards — Schalmont PTO</title>
   <meta name="description" content="Schalmont Spiritwear Shoppe gift cards — delivered to school, to a local home, or shipped wrapped and addressed. Perfect for the hard-to-shop-for Sabres fan in the Albany area.">
   <link rel="stylesheet" href="css/styles.css?v=5">
-  <link rel="stylesheet" href="css/spiritwear.css?v=1">
+  <link rel="stylesheet" href="css/spiritwear.css?v=3">
   <link rel="icon" href="images/favicon.svg">
   <link rel="stylesheet" href="css/menus.css?v=1">
 </head>
@@ -148,7 +148,15 @@
         <img src="images/spiritwear/giftcard.webp" alt="Schalmont Spiritwear Shoppe gift card">
       </div>
 
-      <div class="sw-layout">
+      <!-- Shown while "comingSoon" is true in js/spiritwear-catalog.json; js/spiritwear-shop.js swaps in the ordering steps when it's false -->
+      <div class="sw-soon" id="sw-soon">
+        <span class="sw-soon-badge">Coming Soon</span>
+        <h3>Online gift card orders are almost ready!</h3>
+        <p>Soon you’ll be able to order printed or emailed Spiritwear gift cards here, delivered to school, to a local home, or shipped wrapped and addressed.</p>
+        <p>Questions in the meantime? <a href="contact.html">Contact the PTO</a>.</p>
+      </div>
+
+      <div class="sw-layout" id="sw-live" hidden>
         <div class="sw-steps" id="sw-panel-gift">
           <div class="sw-step"><h3><span>1</span> Pick an amount</h3><div class="sw-size-row" id="sw-gc-amounts"></div></div>
           <div class="sw-step">
@@ -313,7 +321,7 @@
   <script src="js/app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="js/page-menu.js?v=3"></script>
-  <script src="js/spiritwear-shop.js?v=6"></script>
+  <script src="js/spiritwear-shop.js?v=7"></script>
   <script src="js/menus.js?v=1"></script>
 </body>
 </html>

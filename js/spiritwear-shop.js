@@ -31,11 +31,15 @@
 
   let SW;
   try {
-    SW = await (await fetch('js/spiritwear-catalog.json?v=6', { cache: 'no-cache' })).json();
+    SW = await (await fetch('js/spiritwear-catalog.json?v=7', { cache: 'no-cache' })).json();
   } catch (e) {
-    root.style.display = 'none';
-    return;
+    return;   // the "Coming Soon" notice stays up
   }
+  // "comingSoon": true in the catalog keeps the ordering steps hidden on all three pages.
+  if (SW.comingSoon) return;
+  document.getElementById('sw-soon').hidden = true;
+  document.getElementById('sw-live').hidden = false;
+  document.querySelectorAll('[data-soon]').forEach((el) => el.remove());
   SW.designs = SW.designs.map((d) => ({ ...d, group: d.id.slice(0, 2), number: d.id.toUpperCase() }));
 
   const CART_KEY = 'sw-cart-v2';

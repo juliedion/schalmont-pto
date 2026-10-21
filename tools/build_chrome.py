@@ -44,10 +44,12 @@ GROUPS = [
 # Extra blocks shown at the top of the sidebar on specific pages (below the search box).
 GIFT_CARD_AD = '\n'.join([
     '  <a href="giftcards.html" class="sidenav-gc-ad">',
+    # data-soon: js/spiritwear-shop.js removes this badge once "comingSoon" is false
+    '    <b class="sidenav-gc-soon" data-soon>Coming soon</b>',
     '    <img src="images/spiritwear/giftcard.webp" alt="Schalmont Spiritwear Shoppe gift card">',
     '    <strong>Give the gift of Sabre spirit!</strong>',
     '    <span>Gift cards delivered to school, to a home, or shipped wrapped &amp; addressed.</span>',
-    '    <em>Order a gift card →</em>',
+    '    <em>See gift cards →</em>',
     '  </a>'])
 SIDEBAR_EXTRA = {'shop.html': GIFT_CARD_AD, 'couponbook.html': GIFT_CARD_AD}
 ICON = {

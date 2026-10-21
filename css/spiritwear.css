@@ -146,3 +146,12 @@
 @media (max-width: 560px) {
   .sw-delivery-opts, .sw-cb-offers { grid-template-columns: 1fr; }
 }
+
+/* "Coming Soon" notice (while "comingSoon" is true in js/spiritwear-catalog.json) */
+.sw-soon { max-width: 640px; margin: 8px auto 12px; text-align: center; background: var(--white); border: 2px dashed var(--primary-light); border-radius: var(--radius-xl); padding: 32px 28px; }
+.sw-soon-badge { display: inline-block; background: var(--secondary); color: var(--primary-dark); font-weight: 800; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 16px; border-radius: 99px; margin-bottom: 14px; }
+.sw-soon h3 { font-size: 22px; color: var(--primary-dark); margin-bottom: 10px; }
+.sw-soon p { font-size: 15px; margin-bottom: 8px; }
+.sidenav-gc-ad { position: relative; }
+.sidenav-gc-soon { position: absolute; top: 2px; right: 2px; z-index: 1; background: var(--secondary); color: var(--primary-dark); font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: 99px; box-shadow: var(--shadow-sm); }
+.sw-layout[hidden], .sw-soon[hidden] { display: none; }
