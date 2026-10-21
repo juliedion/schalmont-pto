@@ -354,6 +354,16 @@
       if (entry.items && entry.items.length) html += '<ul class="hz-lunch-items">' + entry.items.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul>';
       return html;
     }
+    // The next day after today (within two weeks) that has a lunch menu, labeled "Tomorrow" or by day.
+    function nextLunch(school) {
+      for (var k = 1; k <= 14; k++) {
+        var d2 = addDays(today, k), x = dayEntry(school, d2);
+        if (x && x.items.length) {
+          return { entry: x, label: k === 1 ? 'Tomorrow' : fmt(d2, k < 7 ? { weekday: 'long' } : { weekday: 'long', month: 'short', day: 'numeric' }) };
+        }
+      }
+      return null;
+    }
     function render() {
       [].forEach.call(tabsEl.children, function (b) {
         var on = b.getAttribute('data-k') === current;
@@ -367,18 +377,16 @@
         html += '<span class="hz-skel" style="width:80%;margin:8px 0"></span><span class="hz-skel" style="width:55%"></span>';
       } else {
         var e = dayEntry(current, today);
+        var next = data ? nextLunch(current) : null;
         if (e && e.items.length) {
           html += '<p class="hz-lunch-when">Today\'s lunch</p>' + list(e);
+          // ...and the next school day's, so families can plan ahead.
+          if (next) html += '<div class="hz-lunch-next"><p class="hz-lunch-when">' + esc(next.label) + '\'s lunch</p>' + list(next.entry) + '</div>';
         } else if (e || e === null || (e === undefined && data && (dow(today) === 0 || dow(today) === 6))) {
           // No lunch today (a day off, or the weekend) -- say why, then show the next menu.
-          var next = null, ne = null;
-          for (var k = 1; k <= 14 && !next; k++) {
-            var d2 = addDays(today, k), x = dayEntry(current, d2);
-            if (x && x.items.length) { next = d2; ne = x; }
-          }
           var why = e && e.notes.length ? e.notes.slice(0, 2).join(' · ') : (dow(today) === 0 || dow(today) === 6 ? 'No school today' : 'No lunch listed today');
           html += '<p class="hz-lunch-note">' + esc(why) + '</p>';
-          if (next) html += '<p class="hz-lunch-when">' + (next === addDays(today, 1) ? 'Tomorrow' : esc(fmt(next, { weekday: 'long', month: 'short', day: 'numeric' }))) + '</p>' + list(ne);
+          if (next) html += '<p class="hz-lunch-when">' + esc(next.label) + '\'s lunch</p>' + list(next.entry);
         } else {
           html += '<p class="hz-lunch-body">Today\'s lunch is on the district\'s monthly menu.</p>';
         }

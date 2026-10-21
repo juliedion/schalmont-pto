@@ -246,6 +246,8 @@
 .home2 .hz-lunch-items li { padding: 2px 0 2px 14px; position: relative; color: var(--hz-ink); }
 .home2 .hz-lunch-items li::before { content: ""; position: absolute; left: 0; top: .62em; width: 6px; height: 6px; border-radius: 50%; background: var(--hz-bright); }
 .home2 .hz-lunch-items li:first-child { font-weight: 800; font-size: 15px; color: var(--hz-forest); }
+.home2 .hz-lunch-next { border-top: 1px solid rgba(0,0,0,.08); padding-top: 10px; margin-top: 2px; }
+.home2 .hz-lunch-next .hz-lunch-items li:first-child { font-size: 14px; }
 .home2 .hz-lunch-note { font-size: 12.5px; font-weight: 800; color: #8a4b00; background: #fff1e0; border-radius: 8px; padding: 6px 10px; margin: 2px 0 8px; }
 
 @media (max-width: 1100px) {
