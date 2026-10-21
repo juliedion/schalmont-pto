@@ -22,7 +22,7 @@
    Images live in images/spiritwear/:
      blanks/<shirt>-<color>-<front|back>.webp   product photos
      blanks/<shirt>-generic-front.webp          color-neutral, for step 1
-     designs/<dark|light>/<id>.webp (+ designs/thumbs/...)   designs, outlined for dark or light fabric
+     designs/<dark|light>/<id>.webp (+ designs/thumbs/...)   designs, prepared for dark or light fabric
      logos/<id>.png                              small front logos
    ============================================================ */
 (async function () {
@@ -31,7 +31,7 @@
 
   let SW;
   try {
-    SW = await (await fetch('js/spiritwear-catalog.json?v=10', { cache: 'no-cache' })).json();
+    SW = await (await fetch('js/spiritwear-catalog.json?v=12', { cache: 'no-cache' })).json();
   } catch (e) {
     return;   // the "Coming Soon" notice stays up
   }
@@ -49,6 +49,11 @@
   const shirtColors = (s) => s.colors || SW.colors.map((c) => c.id);
   const shirtGroups = (s) => SW.sizes.filter((g) => !s.sizeGroups || s.sizeGroups.includes(g.group));
   const shirtSizes = (s) => shirtGroups(s).flatMap((g) => g.options.map((o) => g.group + ' ' + o));
+  // A size's note from the catalog (e.g. "Adult XS requires extra shipping time."), or ''.
+  const sizeNote = (sizeId) => {
+    const g = SW.sizes.find((x) => sizeId && sizeId.startsWith(x.group + ' '));
+    return (g && g.notes && g.notes[sizeId.slice(g.group.length + 1)]) || '';
+  };
   const isEmail = (s) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
   const store = {
     get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
@@ -77,7 +82,6 @@
     design: SW.designs[0].id,
     placement: 'back',
     logo: 'none',
-    logoWarn: null,   // logo they tried to add while the design is on the front
     logoNote: false,  // true right after moving the design to the front removed their logo
     qty: 1,
     side: 'back',
@@ -185,10 +189,11 @@
       variant = shirtVariant(i);
       const d = byId(SW.designs, i.design);
       add('Size', i.size);
+      add('Size note', sizeNote(i.size));
       add('Color', byId(SW.colors, i.color).name);
       add('Design', `#${d.number} ${d.name}`);
       add('Design placement', byId(SW.placements, i.placement).name);
-      add('Print version', tone(i.color) === 'dark' ? 'Dark fabric (white outline)' : 'Light fabric (dark outline)');
+      add('Print version', tone(i.color) === 'dark' ? 'Dark fabric' : 'Light fabric');
       if (i.placement === 'back') add('Front logo', byId(SW.frontLogos, i.logo).name);
     }
     if (!variant || !variant.availableForSale) throw new Error('Something in your order is sold out right now. Please remove it and try again.');
@@ -240,7 +245,7 @@
 
   /* ---------- Mockup: product photo with the design laid on top ---------- */
   const box = ([l, t, w, h]) => `left:${l}%;top:${t}%;width:${w}%;height:${h}%`;
-  // Every design comes in a dark-fabric (white outline) and light-fabric (dark outline) version.
+  // Every design comes in a dark-fabric version (brighter greens, or white ink) and a light-fabric version.
   const tone = (colorId) => (colorId && byId(SW.colors, colorId).tone) || 'dark';
   const designSrc = (id, colorId, thumb) => `${IMG}designs/${thumb ? 'thumbs/' : ''}${tone(colorId)}/${id}.webp`;
   // Until a color is picked, previews use the shirt's first color.
@@ -284,9 +289,11 @@
         <div class="sw-size-row">
           ${g.options.map((o) => {
             const id = g.group + ' ' + o;
-            return `<button type="button" class="sw-size${id === state.size ? ' is-on' : ''}" data-pick="size" data-id="${esc(id)}" aria-pressed="${id === state.size}">${esc(o)}</button>`;
+            const star = g.notes && g.notes[o] ? '*' : '';
+            return `<button type="button" class="sw-size${id === state.size ? ' is-on' : ''}" data-pick="size" data-id="${esc(id)}" aria-pressed="${id === state.size}">${esc(o)}${star}</button>`;
           }).join('')}
         </div>
+        ${g.notes ? Object.values(g.notes).map((n) => `<p class="sw-size-note${sizeNote(state.size) === n ? ' is-on' : ''}">* ${esc(n)}</p>`).join('') : ''}
       </div>`).join('');
   }
 
@@ -316,22 +323,17 @@
         ${mockup({ ...state, color: shownColor(), placement: p.id, logo: 'none' }, p.id, 'sw-mock-xs')}
         <span>${esc(p.name)}</span>
       </button>`).join('');
+    // Small front logos only go with a design on the back.
+    const note = $('#sw-place-note');
+    note.hidden = state.placement !== 'front';
+    note.textContent = state.logoNote
+      ? 'We removed your small front logo. Front logos can only be added when your design is on the back.'
+      : 'Want a small front logo too? Choose Back for your design, and you can add one.';
   }
 
+  // Step 6 only appears when the design is on the back.
   function renderLogos() {
-    const warn = $('#sw-logo-warn');
-    if (state.logoWarn) {
-      warn.innerHTML = `<strong>⚠️ Your design is already on the front.</strong> There isn't room for a small
-        ${esc(byId(SW.frontLogos, state.logoWarn).name)} logo there too.
-        <div class="sw-warn-actions">
-          <button type="button" class="btn btn-primary" data-warn="move">Move design to the back &amp; add logo</button>
-          <button type="button" class="sw-tab" data-warn="keep">Keep design on the front</button>
-        </div>`;
-    } else if (state.logoNote) {
-      warn.innerHTML = '<strong>⚠️ Front logo removed.</strong> Your design is on the front now, so there isn’t room for a small front logo too.';
-    }
-    warn.hidden = !state.logoWarn && !state.logoNote;
-    warn.classList.toggle('is-note', !state.logoWarn);
+    $('#sw-logo-step').hidden = state.placement !== 'back';
     $('#sw-logos').innerHTML = SW.frontLogos.map((l) => `
       <button type="button" class="sw-logo${l.id === state.logo ? ' is-on' : ''}" data-pick="logo" data-id="${l.id}" aria-pressed="${l.id === state.logo}">
         ${l.image ? `<img src="${esc(l.image)}" alt="">` : '<span class="sw-logo-none">✕</span>'}
@@ -351,7 +353,7 @@
     $('#sw-summary').innerHTML =
       `<strong>${esc(shirt.name)}</strong> · ` +
       (state.color ? esc(byId(SW.colors, state.color).name) : need('Pick a color')) + ' · ' +
-      (state.size ? esc(state.size) : need('Pick a size')) +
+      (state.size ? esc(state.size) + (sizeNote(state.size) ? ` <span class="sw-size-flag">(${esc(sizeNote(state.size))})</span>` : '') : need('Pick a size')) +
       `<br>${state.placement === 'front' ? 'Front' : 'Back'}: #${esc(design.number)} ${esc(design.name)}` +
       (state.placement === 'back' ? `<br>Front: ${esc(byId(SW.frontLogos, state.logo).name)}` : '');
     $('#sw-price').textContent = money(shirt.price * state.qty);
@@ -472,7 +474,7 @@
       return `To ${i.toName}, from ${i.fromName} · ${deliveryText(i)}`;
     }
     const d = byId(SW.designs, i.design);
-    const base = `${i.size} · ${byId(SW.colors, i.color).name} · #${d.number} ${d.name}`;
+    const base = `${i.size}${sizeNote(i.size) ? ' (extra shipping time)' : ''} · ${byId(SW.colors, i.color).name} · #${d.number} ${d.name}`;
     return i.placement === 'front' ? `${base} on Front` : `${base} on Back · Front logo: ${byId(SW.frontLogos, i.logo).name}`;
   }
 
@@ -631,28 +633,9 @@
       renderGift();
       return;
     }
-    if ((el = t('[data-warn]'))) {
-      if (el.dataset.warn === 'move') {
-        state.placement = 'back';
-        state.logo = state.logoWarn;
-        state.side = 'front';
-        renderPlacements();
-      }
-      state.logoWarn = null;
-      renderLogos();
-      renderPreview();
-      return;
-    }
     if ((el = t('[data-pick]'))) {
       const key = el.dataset.pick;
-      if (key === 'logo' && el.dataset.id !== 'none' && state.placement === 'front') {
-        state.logoWarn = el.dataset.id;
-        state.logoNote = false;
-        renderLogos();
-        return;
-      }
       state[key] = el.dataset.id;
-      state.logoWarn = null;
       state.logoNote = false;
       if (key === 'placement' && state.placement === 'front' && state.logo !== 'none') {
         state.logo = 'none';
