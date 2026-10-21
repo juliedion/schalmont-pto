@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit the Website — PTO Back Office</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="admin.css?v=7">
+  <link rel="icon" href="../images/favicon.svg">
+  <style>
+    /* Full-screen editor: top bar, settings panel on the left, the real page on the right. */
+    html, body { height: 100%; }
+    body.le-body { margin: 0; background: #e9eeea; overflow: hidden; display: block; }
+    .le { display: flex; flex-direction: column; height: 100vh; }
+    body.le-body #bo-main { max-width: none; padding: 0; margin: 0; }
+    .le-bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #0f2a1b; color: #fff; flex-wrap: wrap; }
+    .le-back { color: rgba(255,255,255,.85); font-weight: 700; font-size: 14px; text-decoration: none; padding: 7px 10px; border-radius: 8px; }
+    .le-back:hover { background: rgba(255,255,255,.1); color: #fff; }
+    .le-bar select { font: inherit; font-size: 14px; font-weight: 700; padding: 8px 10px; border-radius: 9px; border: 1px solid rgba(255,255,255,.2); background: rgba(0,0,0,.25); color: #fff; max-width: 300px; }
+    .le-bar select option { color: #12261a; }
+    .le-seg { display: inline-flex; background: rgba(255,255,255,.08); border-radius: 10px; padding: 3px; gap: 2px; }
+    .le-seg button { border: 0; background: none; color: rgba(255,255,255,.75); font: inherit; font-size: 13px; font-weight: 700; padding: 6px 10px; border-radius: 8px; cursor: pointer; }
+    .le-seg button[aria-pressed="true"], .le-seg button:hover:not(:disabled) { background: rgba(255,255,255,.16); color: #fff; }
+    .le-seg button:disabled { opacity: .35; cursor: default; }
+    .le-spacer { flex: 1; }
+    #le-status { font-size: 13px; color: rgba(255,255,255,.7); white-space: nowrap; }
+    #le-status.dirty { color: #ffd479; font-weight: 700; }
+    .le-bar .bo-btn.ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,.3); }
+    .le-bar .bo-btn.ghost:hover { background: rgba(255,255,255,.1); }
+    #le-publish { background: #a3ff45; color: #0f2a1b; font-weight: 800; }
+    #le-publish:disabled { background: rgba(255,255,255,.15); color: rgba(255,255,255,.5); box-shadow: none; }
+    .le-work { flex: 1; display: flex; min-height: 0; }
+    .le-panel { width: 300px; flex-shrink: 0; background: #fff; border-right: 1px solid #dfe6e1; overflow-y: auto; padding: 18px; }
+    .le-panel h2 { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: #5d6f63; margin: 0 0 10px; }
+    .le-panel p { font-size: 13.5px; color: #4b5d51; line-height: 1.55; margin: 0 0 12px; }
+    .le-kind { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; background: #e3f6e4; color: #1e6b2e; border-radius: 999px; padding: 3px 10px; margin-bottom: 12px; }
+    .le-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; }
+    .le-tool { border: 1px solid #dfe6e1; background: #fff; border-radius: 9px; padding: 7px 10px; font: inherit; font-size: 13px; font-weight: 700; color: #12261a; cursor: pointer; }
+    .le-tool:hover { border-color: #9fbfaa; background: #f4f8f5; }
+    .le-tool.danger { color: #b3261e; }
+    .le-field { margin-bottom: 12px; }
+    .le-field label { display: block; font-size: 12.5px; font-weight: 800; color: #12261a; margin-bottom: 4px; }
+    .le-field input[type=text], .le-field input[type=url], .le-field select { width: 100%; font: inherit; font-size: 14px; padding: 8px 10px; border: 1px solid #dfe6e1; border-radius: 9px; }
+    .le-field .le-check { display: flex; gap: 8px; align-items: center; font-size: 13.5px; font-weight: 600; }
+    .le-img-preview { width: 100%; max-height: 160px; object-fit: contain; background: #f4f7f5; border-radius: 10px; margin-bottom: 10px; }
+    .le-sep { border: 0; border-top: 1px solid #e6ece8; margin: 16px 0; }
+    .le-tips { margin: 0; padding-left: 18px; font-size: 13.5px; color: #4b5d51; line-height: 1.6; }
+    /* The page is drawn at a real device width and scaled to fit (fitFrame), so Desktop shows
+       exactly what visitors on a computer see, even on a smaller laptop screen. */
+    .le-stage { flex: 1; overflow: hidden; display: flex; justify-content: center; padding: 16px; min-width: 0; }
+    .le-frame-wrap { background: #fff; border-radius: 10px; box-shadow: 0 10px 30px rgba(16,42,27,.18); overflow: hidden; position: relative; }
+    #le-frame { border: 0; display: block; transform-origin: 0 0; position: absolute; top: 0; left: 0; }
+    .le-notice { max-width: 560px; margin: 60px auto; background: #fff; border-radius: 16px; padding: 26px 28px; box-shadow: 0 10px 30px rgba(16,42,27,.12); }
+    .le-notice h2 { margin: 0 0 8px; color: #0f2a1b; }
+    .le-notice ol { line-height: 1.7; }
+    .le-history { list-style: none; margin: 0; padding: 0; max-height: 60vh; overflow-y: auto; }
+    .le-history li { display: flex; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid #e6ece8; font-size: 13.5px; }
+    .le-history li:first-child { border-top: 0; }
+    .le-history li div { flex: 1; min-width: 0; }
+    .le-history b { display: block; }
+    .le-history small { color: #5d6f63; }
+    @media (max-width: 900px) { .le-panel { width: 240px; } }
+  </style>
+</head>
+<body class="le-body">
+  <div id="bo-loading">Opening the editor…</div>
+  <div id="bo-shell"></div>
+
+  <main id="bo-main" class="le" style="display:none">
+    <header class="le-bar">
+      <a class="le-back" href="site.html#built">← Back office</a>
+      <label><span class="sr-only">Page to edit</span><select id="le-page"></select></label>
+      <div class="le-seg" role="group" aria-label="Preview size">
+        <button type="button" data-dev="" aria-pressed="true">Desktop</button>
+        <button type="button" data-dev="tablet" aria-pressed="false">Tablet</button>
+        <button type="button" data-dev="phone" aria-pressed="false">Phone</button>
+      </div>
+      <div class="le-seg" role="group" aria-label="Undo and redo">
+        <button type="button" id="le-undo" disabled title="Undo (Ctrl+Z)">↶ Undo</button>
+        <button type="button" id="le-redo" disabled title="Redo (Ctrl+Shift+Z)">↷ Redo</button>
+      </div>
+      <span class="le-spacer"></span>
+      <span id="le-status">Loading…</span>
+      <button type="button" class="bo-btn ghost sm" id="le-history-btn">History</button>
+      <a class="bo-btn ghost sm" id="le-view" target="_blank" rel="noopener">View live ↗</a>
+      <button type="button" class="bo-btn sm" id="le-publish" disabled>Publish</button>
+    </header>
+    <div class="le-work">
+      <aside class="le-panel" id="le-panel" aria-live="polite"></aside>
+      <div class="le-stage"><div class="le-frame-wrap" id="le-wrap"><iframe id="le-frame" title="The page you're editing"></iframe></div></div>
+    </div>
+  </main>
+
+  <script>window.BO_NO_SIDEBAR = true;</script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="admin-core.js?v=7"></script>
+  <script>
+  /* ============================================================
+     Live Editor: edit a real page of the website in place.
+     The page is read from GitHub (api/live-edit.php), shown here with its scripts
+     switched off, edited by clicking, and published back to GitHub as a normal
+     change -- the usual deploy puts it live about a minute later.
+     Parts of a page that are filled in by code (calendars, event cards, letter days,
+     the shared menus on some pages) are marked and can't be edited here.
+     ============================================================ */
+  const API = '../api/live-edit.php';
+  const BLOCKED = ['login.html', 'signup.html', 'pending.html', 'p.html', 'admin-users.html', 'send-blast.html',
+    'cancel-booking.html', 'massage-signup.html', 'raffle-signup.html', 'tat-teacher-order.html'];
+  // Filled in by the page's own code -- shown, but not editable.
+  const DYNAMIC = ['#sc-header', '#sc-sidenav', '#sc-footer', '.program-grid', '.pcal-cal', '#hz-weather', '#hz-letters',
+    '#hz-lunch-tabs', '#hz-lunch-panel', '#hz-jes-events', '#hz-sc-events', '#hz-calendar', '#hz-track', '#hz-slides',
+    '#hz-results', '#hz-dots', '.partners-track'].join(',');
+  const TEXT = 'h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,td,th,dt,dd,label';
+  const FRAME_CSS = `
+    [data-le-hover]{outline:2px dashed #3b82f6 !important;outline-offset:2px;cursor:pointer}
+    [data-le-sel]{outline:3px solid #2563eb !important;outline-offset:2px}
+    [contenteditable="true"]{cursor:text;caret-color:#2563eb}
+    [data-le-dyn]{outline:2px dashed #d4a017 !important;outline-offset:-2px;position:relative;min-height:44px}
+    [data-le-dyn]::before{content:"Filled in automatically";position:absolute;top:6px;right:6px;z-index:5;background:#fff7d6;
+      color:#7a5a00;font:700 11px/1 system-ui,sans-serif;padding:4px 8px;border-radius:6px;pointer-events:none}
+    html{scroll-behavior:auto}`;
+
+  let page = '', sha = '', frame, fdoc, sel = null, hoverEl = null, dirty = false;
+  let undo = [], redo = [], typingTimer = null, startHTML = '';
+  const $ = id => document.getElementById(id);
+
+  requireAdmin(async (me) => {
+    if (!me.isSuper) {
+      $('bo-main').innerHTML = '<div class="le-notice"><h2>Officers only</h2><p>Editing the website itself is for PTO officers. You can still build and edit event pages in the back office.</p><p><a href="index.html">← Back office home</a></p></div>';
+      return;
+    }
+    frame = $('le-frame');
+    await fillPagePicker();
+    $('le-page').onchange = () => switchPage($('le-page').value);
+    document.querySelectorAll('[data-dev]').forEach(b => b.onclick = () => {
+      document.querySelectorAll('[data-dev]').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+      device = b.dataset.dev; fitFrame();
+    });
+    window.addEventListener('resize', fitFrame);
+    fitFrame();
+    $('le-undo').onclick = doUndo;
+    $('le-redo').onclick = doRedo;
+    $('le-publish').onclick = publish;
+    $('le-history-btn').onclick = showHistory;
+    window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+    openPage(getParam('page') || 'index.html');
+  });
+
+  // Desktop 1366px, tablet 820px, phone 390px -- scaled down if the window is smaller.
+  let device = '';
+  function fitFrame() {
+    const stage = document.querySelector('.le-stage'), wrap = $('le-wrap');
+    if (!stage || !frame) return;
+    const W = { '': 1366, tablet: 820, phone: 390 }[device];
+    const availW = stage.clientWidth - 32, availH = stage.clientHeight - 32;
+    const scale = Math.min(1, availW / W);
+    wrap.style.width = Math.round(W * scale) + 'px';
+    wrap.style.height = availH + 'px';
+    frame.style.width = W + 'px';
+    frame.style.height = Math.round(availH / scale) + 'px';
+    frame.style.transform = 'scale(' + scale + ')';
+  }
+  async function token() { return auth.currentUser.getIdToken(); }
+  async function api(params, body) {
+    const t = await token();
+    const r = body
+      ? await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ idToken: t }, body)) })
+      : await fetch(API + '?' + new URLSearchParams(params), { headers: { Authorization: 'Bearer ' + t } });
+    let j = {};
+    try { j = await r.json(); } catch (_) { j = { ok: false, error: 'The server didn\'t answer (' + r.status + ').' }; }
+    return j;
+  }
+
+  async function fillPagePicker() {
+    let list = [];
+    try { list = (await (await fetch('../data/search-index.json')).json()).pages || []; } catch (_) {}
+    const opts = [{ u: 'index.html', t: 'Homepage' }].concat(list.filter(p => !BLOCKED.includes(p.u)).sort((a, b) => a.t.localeCompare(b.t)));
+    $('le-page').innerHTML = opts.map(p => `<option value="${esc(p.u)}">${esc(p.t)}</option>`).join('');
+  }
+  function switchPage(p) {
+    if (dirty && !confirm('You have changes that aren\'t published. Leave them?')) { $('le-page').value = page; return; }
+    openPage(p);
+  }
+
+  /* ---------------- load a page ---------------- */
+  async function openPage(p) {
+    if (BLOCKED.includes(p) || !/^[a-z0-9][a-z0-9-]*\.html$/.test(p)) p = 'index.html';
+    page = p;
+    $('le-page').value = p;
+    history.replaceState(null, '', '?page=' + encodeURIComponent(p));
+    $('le-view').href = '../' + (p === 'index.html' ? '' : p);
+    setStatus('Loading…');
+    $('le-publish').disabled = true;
+    const j = await api({ action: 'source', page: p });
+    if (!j.ok) {
+      if (j.setup) return showSetup();
+      setStatus(j.error || 'Couldn\'t open that page.');
+      toast(j.error || 'Couldn\'t open that page', 'error');
+      return;
+    }
+    sha = j.sha;
+    load(j.html);
+  }
+  function load(html, keepDirty) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    // Switch the page's scripts off while editing; they're switched back on when saving.
+    doc.querySelectorAll('script').forEach(s => {
+      s.setAttribute('data-le-type', s.hasAttribute('type') ? s.getAttribute('type') : '__none');
+      s.setAttribute('type', 'text/le-off');
+    });
+    const base = doc.createElement('base'); base.href = location.origin + '/'; base.setAttribute('data-le', '');
+    const css = doc.createElement('style'); css.textContent = FRAME_CSS; css.setAttribute('data-le', '');
+    doc.head.prepend(base); doc.head.append(css);
+    frame.onload = () => {
+      fdoc = frame.contentDocument;
+      fdoc.querySelectorAll(DYNAMIC).forEach(el => el.setAttribute('data-le-dyn', ''));
+      bindFrame();
+      startHTML = serialize();
+      undo = []; redo = []; sel = null; lastState = bodyState(); syncUndo();
+      setDirty(!!keepDirty);
+      renderPanel();
+    };
+    frame.srcdoc = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+  }
+
+  /* ---------------- clicking & typing on the page ---------------- */
+  function targetFor(node) {
+    if (!node || node.nodeType !== 1) node = node && node.parentElement;
+    if (!node || node.closest('[data-le-dyn]')) return null;
+    return node.closest('img') || node.closest('a') || node.closest(TEXT) || node.closest('section,article,header,footer,nav,aside,div');
+  }
+  function bindFrame() {
+    fdoc.addEventListener('mouseover', e => {
+      const t = targetFor(e.target);
+      if (hoverEl && hoverEl !== t) hoverEl.removeAttribute('data-le-hover');
+      hoverEl = t;
+      if (t && t !== sel) t.setAttribute('data-le-hover', '');
+    });
+    fdoc.addEventListener('mouseleave', () => { if (hoverEl) hoverEl.removeAttribute('data-le-hover'); });
+    fdoc.addEventListener('click', e => {
+      if (e.target.closest('[contenteditable="true"]') && e.target.closest('[contenteditable="true"]') === sel) return;   // placing the cursor
+      e.preventDefault(); e.stopPropagation();
+      if (e.target.closest('[data-le-dyn]')) { toast('That part is filled in automatically, from the back office or the school\'s calendars'); return; }
+      select(targetFor(e.target));
+    }, true);
+    fdoc.addEventListener('submit', e => e.preventDefault(), true);
+    fdoc.addEventListener('input', () => { setDirty(true); clearTimeout(typingTimer); typingTimer = setTimeout(snapshot, 900); });
+    fdoc.addEventListener('paste', e => {   // plain text only -- no stray formatting or code
+      e.preventDefault();
+      fdoc.execCommand('insertText', false, (e.clipboardData || window.clipboardData).getData('text/plain'));
+    });
+    fdoc.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && e.target.isContentEditable && !e.shiftKey && !e.target.matches('li')) { e.preventDefault(); fdoc.execCommand('insertLineBreak'); }
+      keys(e);
+    });
+  }
+  document.addEventListener('keydown', keys);
+  function keys(e) {
+    const mod = e.metaKey || e.ctrlKey;
+    if (mod && e.key.toLowerCase() === 'z') { e.preventDefault(); e.shiftKey ? doRedo() : doUndo(); }
+    if (e.key === 'Escape' && sel) select(null);
+  }
+
+  function select(el) {
+    if (sel) { sel.removeAttribute('data-le-sel'); sel.removeAttribute('contenteditable'); sel.removeAttribute('spellcheck'); }
+    if (sel && el !== sel) snapshot();
+    sel = el && el !== fdoc.body && el !== fdoc.documentElement ? el : null;
+    if (sel) {
+      sel.removeAttribute('data-le-hover');
+      sel.setAttribute('data-le-sel', '');
+      if (isText(sel)) {
+        sel.setAttribute('contenteditable', 'true');
+        sel.setAttribute('spellcheck', 'true');
+        sel.focus();
+      }
+    }
+    renderPanel();
+  }
+  const isText = el => el && (el.matches(TEXT) || (el.matches('a') && !el.querySelector('img,div,section')));
+  function kindOf(el) {
+    if (el.matches('img')) return 'Picture';
+    if (el.matches('a')) return /\bbtn\b|button|cta/.test(el.className) ? 'Button' : 'Link';
+    if (el.matches('h1,h2,h3,h4,h5,h6')) return 'Heading';
+    if (el.matches('li')) return 'List item';
+    if (el.matches(TEXT)) return 'Text';
+    return 'Section';
+  }
+
+  /* ---------------- the settings panel ---------------- */
+  function renderPanel() {
+    const P = $('le-panel');
+    if (!sel) {
+      P.innerHTML = `<h2>How to edit</h2>
+        <ul class="le-tips">
+          <li><b>Click any words</b> to change them. Just start typing.</li>
+          <li><b>Click a picture</b> to replace it.</li>
+          <li><b>Click a button or link</b> to change where it goes.</li>
+          <li>Pick something, then use <b>Move</b>, <b>Copy</b> or <b>Delete</b> here.</li>
+          <li>Areas outlined in <span style="color:#a07800;font-weight:700">yellow</span> fill in automatically (calendars, event cards…).</li>
+          <li>When it looks right, press <b>Publish</b>. It's live in about a minute.</li>
+        </ul>
+        <hr class="le-sep"><p>Made a mistake? <b>Undo</b> (top bar), or open <b>History</b> to bring back any earlier version.</p>`;
+      return;
+    }
+    const kind = kindOf(sel);
+    let html = `<span class="le-kind">${kind}</span>`;
+    if (isText(sel)) {
+      html += `<p>Type right on the page. Select words to make them bold, italic or a link.</p>
+        <div class="le-row">
+          <button class="le-tool" data-cmd="bold"><b>B</b> Bold</button>
+          <button class="le-tool" data-cmd="italic"><i>I</i> Italic</button>
+          <button class="le-tool" data-cmd="link">Link</button>
+          <button class="le-tool" data-cmd="unlink">Unlink</button>
+        </div>`;
+      if (sel.matches('h1,h2,h3,h4,h5,h6,p')) {
+        html += `<div class="le-field"><label for="le-tag">Style</label><select id="le-tag">
+          ${[['h1', 'Page title'], ['h2', 'Big heading'], ['h3', 'Medium heading'], ['h4', 'Small heading'], ['p', 'Paragraph']]
+            .map(([t, l]) => `<option value="${t}"${sel.tagName.toLowerCase() === t ? ' selected' : ''}>${l}</option>`).join('')}</select></div>`;
+      }
+    }
+    if (sel.matches('a')) {
+      html += `<div class="le-field"><label for="le-href">Goes to</label><input type="url" id="le-href" value="${esc(sel.getAttribute('href') || '')}" placeholder="https://… or a page like about.html"></div>
+        <div class="le-field"><label class="le-check"><input type="checkbox" id="le-newtab"${sel.target === '_blank' ? ' checked' : ''}> Open in a new tab</label></div>`;
+    }
+    if (sel.matches('img')) {
+      html += `<img class="le-img-preview" src="${esc(sel.src)}" alt="">
+        <div class="le-row"><label class="le-tool" style="display:inline-flex;align-items:center">Upload a new picture<input type="file" id="le-upload" accept="image/*" hidden></label></div>
+        <div class="le-field"><label for="le-src">Or paste a picture address</label><input type="url" id="le-src" value="${esc(sel.getAttribute('src') || '')}"></div>
+        <div class="le-field"><label for="le-alt">Describe the picture <span style="font-weight:500;color:#5d6f63">(for screen readers)</span></label><input type="text" id="le-alt" value="${esc(sel.getAttribute('alt') || '')}"></div>`;
+    }
+    html += `<hr class="le-sep"><h2>Arrange</h2>
+      <div class="le-row">
+        <button class="le-tool" data-act="up">↑ Move up</button>
+        <button class="le-tool" data-act="down">↓ Move down</button>
+        <button class="le-tool" data-act="copy">⧉ Copy</button>
+        <button class="le-tool danger" data-act="delete">✕ Delete</button>
+        <button class="le-tool" data-act="parent">⤢ Select the area around it</button>
+      </div>
+      <h2>Add below this</h2>
+      <div class="le-row">
+        <button class="le-tool" data-add="h2">Heading</button>
+        <button class="le-tool" data-add="p">Paragraph</button>
+        <button class="le-tool" data-add="btn">Button</button>
+        <button class="le-tool" data-add="img">Picture</button>
+      </div>`;
+    P.innerHTML = html;
+
+    P.querySelectorAll('[data-cmd]').forEach(b => b.onmousedown = e => {
+      e.preventDefault();   // keep the text selection in the page
+      const c = b.dataset.cmd;
+      if (c === 'link') {
+        const url = prompt('Link to (a web address, or a page like about.html):', 'https://');
+        if (!url || /^\s*javascript:/i.test(url)) return;
+        fdoc.execCommand('createLink', false, url.trim());
+      } else fdoc.execCommand(c);
+      setDirty(true); snapshot();
+    });
+    const tag = $('le-tag');
+    if (tag) tag.onchange = () => {
+      const n = fdoc.createElement(tag.value);
+      [...sel.attributes].forEach(a => { if (!/^(data-le|contenteditable|spellcheck)/.test(a.name)) n.setAttribute(a.name, a.value); });
+      n.innerHTML = sel.innerHTML;
+      sel.replaceWith(n); sel = null; select(n); changed();
+    };
+    const href = $('le-href');
+    if (href) href.onchange = () => {
+      const v = href.value.trim();
+      if (/^\s*javascript:/i.test(v)) { toast('That kind of link isn\'t allowed', 'error'); return; }
+      sel.setAttribute('href', v); changed();
+    };
+    const nt = $('le-newtab');
+    if (nt) nt.onchange = () => {
+      if (nt.checked) { sel.target = '_blank'; sel.rel = 'noopener'; } else { sel.removeAttribute('target'); sel.removeAttribute('rel'); }
+      changed();
+    };
+    const src = $('le-src');
+    if (src) src.onchange = () => { sel.setAttribute('src', src.value.trim()); sel.removeAttribute('srcset'); changed(); renderPanel(); };
+    const alt = $('le-alt');
+    if (alt) alt.onchange = () => { sel.setAttribute('alt', alt.value); changed(); };
+    const up = $('le-upload');
+    if (up) up.onchange = () => uploadImage(up.files[0]);
+    P.querySelectorAll('[data-act]').forEach(b => b.onclick = () => arrange(b.dataset.act));
+    P.querySelectorAll('[data-add]').forEach(b => b.onclick = () => addBlock(b.dataset.add));
+  }
+
+  function arrange(act) {
+    const el = sel;
+    if (!el) return;
+    if (act === 'up' && el.previousElementSibling) el.previousElementSibling.before(el);
+    else if (act === 'down' && el.nextElementSibling) el.nextElementSibling.after(el);
+    else if (act === 'copy') {
+      const c = el.cloneNode(true);
+      c.removeAttribute('id'); c.querySelectorAll('[id]').forEach(x => x.removeAttribute('id'));
+      c.removeAttribute('data-le-sel'); c.removeAttribute('contenteditable');
+      el.after(c); select(c);
+    } else if (act === 'delete') {
+      if (!confirm('Delete this ' + kindOf(el).toLowerCase() + '?')) return;
+      select(null); el.remove();
+    } else if (act === 'parent') {
+      const p = el.parentElement;
+      if (p && p !== fdoc.body && !p.closest('[data-le-dyn]')) select(p);
+      return;
+    } else return;
+    if (sel) sel.scrollIntoView({ block: 'nearest' });
+    changed();
+  }
+  function addBlock(kind) {
+    const after = sel || fdoc.querySelector('main, .homepage-main, body');
+    let n;
+    if (kind === 'h2') { n = fdoc.createElement('h2'); n.textContent = 'New heading'; }
+    if (kind === 'p') { n = fdoc.createElement('p'); n.textContent = 'Write something here.'; }
+    if (kind === 'btn') { n = fdoc.createElement('a'); n.className = 'btn btn-primary'; n.href = '#'; n.textContent = 'Button text'; }
+    if (kind === 'img') { n = fdoc.createElement('img'); n.src = 'images/logo.png'; n.alt = ''; n.style.maxWidth = '100%'; }
+    if (sel) sel.after(n); else after.appendChild(n);
+    changed(); select(n);
+    if (kind === 'img') toast('Now upload your picture on the left');
+  }
+  async function uploadImage(file) {
+    if (!file) return;
+    const fd = new FormData();
+    fd.append('image', file); fd.append('school', 'pto'); fd.append('idToken', await token());
+    setStatus('Uploading picture…');
+    try {
+      const j = await (await fetch('../api/upload-image.php', { method: 'POST', body: fd })).json();
+      if (!j.ok) throw new Error(j.error || 'Upload failed');
+      sel.setAttribute('src', j.url); sel.removeAttribute('srcset');
+      changed(); renderPanel();
+      toast('✓ Picture added');
+    } catch (e) { toast('Couldn\'t upload: ' + e.message, 'error'); setDirty(dirty); }
+  }
+
+  /* ---------------- undo / redo ---------------- */
+  function bodyState() {
+    const b = fdoc.body.cloneNode(true);
+    b.querySelectorAll('[data-le-sel],[data-le-hover],[contenteditable]').forEach(x => { x.removeAttribute('data-le-sel'); x.removeAttribute('data-le-hover'); x.removeAttribute('contenteditable'); x.removeAttribute('spellcheck'); });
+    return b.innerHTML;
+  }
+  let lastState = null;
+  function snapshot() {
+    if (!fdoc) return;
+    const s = bodyState();
+    if (lastState === null) { lastState = s; return; }
+    if (s === lastState) return;
+    undo.push(lastState); if (undo.length > 60) undo.shift();
+    lastState = s; redo = [];
+    syncUndo();
+  }
+  function changed() { setDirty(true); snapshot(); }
+  function restore(s) {
+    sel = null;
+    fdoc.body.innerHTML = s;
+    fdoc.querySelectorAll(DYNAMIC).forEach(el => el.setAttribute('data-le-dyn', ''));
+    lastState = s;
+    setDirty(serialize() !== startHTML);
+    renderPanel(); syncUndo();
+  }
+  function doUndo() { if (!undo.length) return; snapshot(); if (!undo.length) return; redo.push(lastState); restore(undo.pop()); }
+  function doRedo() { if (!redo.length) return; undo.push(lastState); restore(redo.pop()); }
+  function syncUndo() { $('le-undo').disabled = !undo.length; $('le-redo').disabled = !redo.length; }
+
+  /* ---------------- saving ---------------- */
+  // The page exactly as it should be saved: editor markings removed, scripts switched back on.
+  function serialize() {
+    const root = fdoc.documentElement.cloneNode(true);
+    root.querySelectorAll('[data-le]').forEach(n => n.remove());
+    root.querySelectorAll('[data-le-sel],[data-le-hover],[data-le-dyn],[contenteditable],[spellcheck]').forEach(x => {
+      ['data-le-sel', 'data-le-hover', 'data-le-dyn', 'contenteditable', 'spellcheck'].forEach(a => x.removeAttribute(a));
+    });
+    root.querySelectorAll('script[data-le-type]').forEach(s => {
+      const t = s.getAttribute('data-le-type');
+      s.removeAttribute('data-le-type');
+      if (t === '__none') s.removeAttribute('type'); else s.setAttribute('type', t);
+    });
+    return '<!DOCTYPE html>\n' + root.outerHTML + '\n';
+  }
+  function setDirty(d) {
+    dirty = d;
+    $('le-publish').disabled = !d;
+    setStatus(d ? '● Changes not published yet' : 'Everything is published');
+    $('le-status').classList.toggle('dirty', d);
+  }
+  function setStatus(t) { $('le-status').textContent = t; }
+
+  async function publish() {
+    if (sel) select(null);
+    const html = serialize();
+    if (html === startHTML) { setDirty(false); toast('Nothing has changed'); return; }
+    if (!confirm('Publish your changes to "' + $('le-page').selectedOptions[0].textContent + '"?\n\nThey\'ll be live on the website in about a minute.')) return;
+    $('le-publish').disabled = true; setStatus('Publishing…');
+    const j = await api(null, { action: 'publish', page, html, sha });
+    if (!j.ok) {
+      setDirty(true);
+      toast(j.error || 'Couldn\'t publish', 'error');
+      if (j.conflict && confirm(j.error + '\n\nReload the page now? (Your unpublished changes will be lost.)')) { dirty = false; openPage(page); }
+      return;
+    }
+    sha = j.sha || sha;
+    startHTML = html;
+    setDirty(false);
+    setStatus('Published ✓ Live in about a minute');
+    toast('✓ Published. The website updates in about a minute.');
+  }
+
+  /* ---------------- history ---------------- */
+  async function showHistory() {
+    const back = document.createElement('div');
+    back.className = 'bo-modal-back';
+    back.innerHTML = `<div class="bo-modal" style="max-width:560px"><button type="button" class="bo-modal-x" aria-label="Close">✕</button>
+      <h2>History of this page</h2><p class="bo-modal-sub">Every published version. Open one to look at it, then press Publish to bring it back.</p>
+      <ul class="le-history"><li>Loading…</li></ul></div>`;
+    document.body.appendChild(back);
+    const close = () => back.remove();
+    back.querySelector('.bo-modal-x').onclick = close;
+    back.onclick = e => { if (e.target === back) close(); };
+    const j = await api({ action: 'history', page });
+    const ul = back.querySelector('.le-history');
+    if (!j.ok) { ul.innerHTML = `<li>${esc(j.error || 'Couldn\'t load the history.')}</li>`; return; }
+    ul.innerHTML = j.versions.map((v, i) => `<li><div><b>${esc(new Date(v.when).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }))}${i === 0 ? ' · current' : ''}</b>
+      <small>${esc(v.who)} · ${esc(v.message)}</small></div>${i === 0 ? '' : `<button class="bo-btn ghost sm" data-ref="${v.sha}">Open</button>`}</li>`).join('') || '<li>No history yet.</li>';
+    ul.querySelectorAll('[data-ref]').forEach(b => b.onclick = async () => {
+      if (dirty && !confirm('Replace your unpublished changes with this older version?')) return;
+      b.disabled = true;
+      const v = await api({ action: 'version', page, ref: b.dataset.ref });
+      if (!v.ok) { toast(v.error || 'Couldn\'t open it', 'error'); b.disabled = false; return; }
+      close();
+      const before = startHTML;
+      load(v.html, true);
+      frame.addEventListener('load', () => { startHTML = before; setDirty(true); toast('Older version loaded. Press Publish to bring it back.'); }, { once: true });
+    });
+  }
+
+  function showSetup() {
+    $('bo-main').querySelector('.le-work').innerHTML = `<div class="le-notice"><h2>One-time setup needed</h2>
+      <p>The Live Editor saves your changes to GitHub, where the website lives. It just needs a key, once:</p>
+      <ol><li>On github.com, create a <b>fine-grained personal access token</b> for the <b>schalmont-pto</b> repository with <b>Contents: Read and write</b>.</li>
+      <li>On Bluehost, open <code>api/config.php</code> and paste it on the <code>'github_token'</code> line.</li></ol>
+      <p>Step-by-step instructions are at the bottom of <code>api/config.example.php</code>.</p>
+      <p><a href="site.html">← Back to the website overview</a></p></div>`;
+    setStatus('Not connected yet');
+  }
+  </script>
+</body>
+</html>

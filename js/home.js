@@ -9,6 +9,8 @@
      • Weather ........ Open-Meteo (free, no key) + weather.gov alerts
      • Letter days .... /api/letter-days.php — the district's own school calendars
      • Lunch menus .... /api/lunch-menus.php — links to the district's monthly PDFs
+     • Site search .... data/search-index.json, built from the pages on every deploy
+                        by tools/build_search_index.py, plus QUICK below and the events
      • PTO events ..... the back office calendar, via js/public-calendar.js
                         (window.PTOEventData.loadAll)
    ============================================================ */
@@ -94,21 +96,24 @@
   };
 
   /* ================= HERO ================= */
-  // Hero photos: images/hero-wide/hero-NN.jpg, the photo part of each homepage hero
-  // artboard (images/hero/mobile/). Same order as HOME_PHOTOS, so the alt text matches.
-  // HERO_FOCUS nudges the crop for photos whose faces sit near the top edge.
-  var HERO_FOCUS = { 1: '0%', 2: '0%', 3: '0%', 4: '0%', 6: '0%', 14: '0%', 16: '5%', 18: '5%', 22: '5%', 26: '8%', 31: '0%' };
+  // Hero photos: images/hero-wide/hero-NN.jpg, the uncut photo from each desktop hero
+  // artboard (images/hero/), same order as HOME_PHOTOS so the alt text matches.
+  // HERO_FOCUS = how far down each photo the crop sits (CSS object-position Y, in %),
+  // worked out from face detection so every face stays in frame with room above the
+  // heads. Adding a photo? Start it at '15%' and check it on a wide screen.
+  var HERO_FOCUS = { 1: 23, 2: 11, 3: 18, 4: 2, 5: 33, 6: 12, 7: 17, 8: 8, 9: 6, 10: 29, 11: 16, 12: 4, 13: 4, 14: 2, 15: 5, 16: 18,
+    17: 32, 18: 26, 19: 19, 20: 9, 21: 11, 22: 17, 23: 16, 24: 6, 25: 8, 26: 19, 27: 18, 28: 5, 29: 15, 30: 21, 31: 14 };
   function heroSrc(i) { return 'images/hero-wide/hero-' + String(i + 1).padStart(2, '0') + '.jpg'; }
   function initHero() {
     var hero = $('#hz-hero'), wrap = $('#hz-slides'), dotsEl = $('#hz-dots');
     if (!hero || !wrap) return;
     wrap.innerHTML = HOME_PHOTOS.map(function (p, i) {
-      var pos = HERO_FOCUS[i + 1] ? ' style="object-position:center ' + HERO_FOCUS[i + 1] + '"' : '';
+      var pos = ' style="object-position:center ' + (HERO_FOCUS[i + 1] != null ? HERO_FOCUS[i + 1] : 15) + '%"';
       // Only the first photo loads up front; each next one loads just before it's shown.
       var attr = i === 0 ? 'src="' + heroSrc(i) + '" fetchpriority="high"' : 'data-src="' + heroSrc(i) + '"';
       return '<div class="hz-slide' + (i === 0 ? ' is-active' : '') + '" role="group" aria-roledescription="slide" aria-label="' +
         (i + 1) + ' of ' + HOME_PHOTOS.length + '"' + (i ? ' aria-hidden="true"' : '') + '>' +
-        '<img ' + attr + pos + ' alt="' + esc(p[1]) + '" width="1143" height="690" decoding="async"></div>';
+        '<img ' + attr + pos + ' alt="' + esc(p[1]) + '" width="700" height="850" decoding="async"></div>';
     }).join('');
     dotsEl.innerHTML = HOME_PHOTOS.map(function (_, i) {
       return '<button type="button" class="hz-dot" aria-label="Show photo ' + (i + 1) + '"' + (i === 0 ? ' aria-current="true"' : '') + '></button>';
@@ -158,14 +163,40 @@
     86: ['❄️', 'Heavy snow showers'], 95: ['⛈️', 'Thunderstorms'], 96: ['⛈️', 'Thunderstorms & hail'], 99: ['⛈️', 'Thunderstorms & hail']
   };
   function wmo(c) { return WMO[c] || ['🌡️', '—']; }
+  // Straight from the browser, used only when our own api/weather.php can't answer
+  // (a local preview with no PHP, or the server having a bad moment). Same shape as
+  // that script's output. Both services allow browser requests and need no key.
+  var WX_LAT = 42.7765, WX_LON = -73.9278;
+  function weatherDirect() {
+    var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + WX_LAT + '&longitude=' + WX_LON +
+      '&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max' +
+      '&temperature_unit=fahrenheit&timezone=America%2FNew_York&forecast_days=5';
+    var alert = getJSON('https://api.weather.gov/alerts/active?point=' + WX_LAT + ',' + WX_LON, 6000)
+      .then(function (a) { return (a.features && a.features[0] && a.features[0].properties.event) || null; })
+      .catch(function () { return null; });
+    return Promise.all([getJSON(url, 10000), alert]).then(function (r) {
+      var o = r[0], dl = o.daily;
+      if (!o.current || !dl || !dl.time || dl.time.length < 5) throw new Error('no weather');
+      return {
+        ok: true, source: 'Open-Meteo', updated: new Date().toISOString(), stale: false, alert: r[1],
+        current: { temp: Math.round(o.current.temperature_2m), code: o.current.weather_code, desc: '' },
+        today: { hi: Math.round(dl.temperature_2m_max[0]), lo: Math.round(dl.temperature_2m_min[0]), pop: dl.precipitation_probability_max[0] },
+        days: [1, 2, 3, 4].map(function (i) {
+          return { date: dl.time[i], hi: Math.round(dl.temperature_2m_max[i]), lo: Math.round(dl.temperature_2m_min[i]), code: dl.weather_code[i], desc: '' };
+        })
+      };
+    });
+  }
   function initWeather() {
     var box = $('#hz-weather');
     if (!box) return;
     var NWS = 'https://forecast.weather.gov/MapClick.php?lat=42.7765&lon=-73.9278';
-    // Served by our own server (Open-Meteo, falling back to the National Weather
-    // Service), cached there -- see api/weather.php.
-    getJSON('/api/weather.php', 12000).then(function (d) {
+    // Normally served by our own server (Open-Meteo, falling back to the National Weather
+    // Service), cached there -- see api/weather.php. If that fails, ask Open-Meteo directly.
+    getJSON('/api/weather.php', 8000).then(function (d) {
       if (!d || !d.ok) throw new Error('no weather');
+      return d;
+    }).catch(weatherDirect).then(function (d) {
       var c = d.current, w = wmo(c.code), desc = c.desc || w[1];
       var days = (d.days || []).slice(0, 4).map(function (x) {
         var ww = wmo(x.code), label = x.desc || ww[1];
@@ -210,49 +241,72 @@
     if (sch.lastLetter && ymd > sch.lastLetter && m >= 6 && m <= 8) return { kind: 'off', reason: 'Summer break' };
     return { kind: 'unknown' };
   }
+  function ldTiles(S, ymd) {
+    return '<div class="hz-ld-tiles">' + LD_SCHOOLS.map(function (s) {
+      var x = ldStatus(S[s.key], ymd), inner;
+      if (x.kind === 'letter') {
+        inner = '<span class="hz-ld-letter">' + esc(x.letter) + '</span><span class="hz-ld-day">Day</span>' +
+          (x.note ? '<span class="hz-ld-warn">⚠ ' + esc(x.note) + '</span>' : '');
+      } else if (x.kind === 'off') {
+        inner = '<span class="hz-ld-msg">No School</span><span class="hz-ld-warn">' + esc(x.reason) + '</span>';
+      } else {
+        inner = '<span class="hz-ld-msg">Not on the<br>school calendar</span>';
+      }
+      var label = s.name + ': ' + (x.kind === 'letter' ? x.letter + ' Day' : x.kind === 'off' ? 'No school, ' + x.reason : 'not on the school calendar');
+      return '<div class="hz-ld-tile ' + s.tile + (x.kind !== 'letter' ? ' is-off' : '') + '" role="group" aria-label="' + esc(label) + '">' +
+        '<span class="hz-ld-school">' + esc(s.name) + '</span>' + inner + '</div>';
+    }).join('') + '</div>';
+  }
+  // Mon–Fri of the week around `ymd`, one row per school -- handy for planning gym/library days.
+  function ldWeek(S, ymd, today) {
+    var mon = addDays(ymd, dow(ymd) === 0 ? 1 : 1 - dow(ymd)), days = [0, 1, 2, 3, 4].map(function (i) { return addDays(mon, i); });
+    var head = '<span></span>' + days.map(function (d) {
+      return '<span class="hz-wk-h' + (d === ymd ? ' is-on' : '') + '">' + fmt(d, { weekday: 'short' }) + '<small>' + ymdDate(d).getUTCDate() + '</small></span>';
+    }).join('');
+    var rows = LD_SCHOOLS.map(function (s) {
+      return '<span class="hz-wk-name">' + esc(s.short) + '</span>' + days.map(function (d) {
+        var x = ldStatus(S[s.key], d);
+        var txt = x.kind === 'letter' ? esc(x.letter) : x.kind === 'off' ? '–' : '?';
+        var tip = fmt(d, { weekday: 'long', month: 'short', day: 'numeric' }) + ': ' + (x.kind === 'letter' ? x.letter + ' Day' : x.kind === 'off' ? 'No school (' + x.reason + ')' : 'not on the school calendar');
+        return '<span class="hz-wk-c ' + s.cls + (x.kind === 'letter' ? '' : ' is-off') + (d === ymd ? ' is-on' : '') + (d < today ? ' is-past' : '') + '" title="' + esc(tip) + '">' + txt + '</span>';
+      }).join('');
+    }).join('');
+    return '<div class="hz-wk" role="table" aria-label="Letter days for the week of ' + esc(fmt(mon, { month: 'long', day: 'numeric' })) + '">' +
+      '<p class="hz-wk-title">This week</p><div class="hz-wk-grid" aria-hidden="true">' + head + rows + '</div></div>';
+  }
   function initLetterDays() {
-    var box = $('#hz-letters'), pill = $('#hz-ld-pill'), dateEl = $('#hz-ld-date');
+    var box = $('#hz-letters'), pill = $('#hz-ld-pill'), dateEl = $('#hz-today-date');
     if (!box) return;
     var today = etYMD();
-    dateEl.textContent = fmt(today, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    if (dateEl) dateEl.textContent = fmt(today, { weekday: 'long', month: 'long', day: 'numeric' });
 
-    getJSON('/api/letter-days.php', 12000).then(function (data) {
+    // The whole year's letter days are a plain file (data/letter-days.json, rebuilt every
+    // morning by tools/letter_days.py), so this card doesn't need PHP. The live
+    // api/letter-days.php is only a backup for if that file is ever missing.
+    getJSON('/data/letter-days.json?d=' + today, 8000).catch(function () {
+      return getJSON('/api/letter-days.php', 12000);
+    }).then(function (data) {
       var S = data.schools || {};
-      var st = LD_SCHOOLS.map(function (s) { return ldStatus(S[s.key], today); });
-      box.innerHTML = '<div class="hz-ld-tiles">' + LD_SCHOOLS.map(function (s, i) {
-        var x = st[i], inner;
-        if (x.kind === 'letter') {
-          inner = '<span class="hz-ld-letter">' + esc(x.letter) + '</span><span class="hz-ld-day">Day</span>' +
-            (x.note ? '<span class="hz-ld-warn">⚠ ' + esc(x.note) + '</span>' : '');
-        } else if (x.kind === 'off') {
-          inner = '<span class="hz-ld-msg">No School</span><span class="hz-ld-warn">' + esc(x.reason) + '</span>';
-        } else {
-          inner = '<span class="hz-ld-msg">Schedule<br>unavailable</span>';
-        }
-        var label = s.name + ': ' + (x.kind === 'letter' ? x.letter + ' Day' : x.kind === 'off' ? 'No school, ' + x.reason : 'schedule unavailable');
-        return '<div class="hz-ld-tile ' + s.tile + (x.kind !== 'letter' ? ' is-off' : '') + '" role="group" aria-label="' + esc(label) + '">' +
-          '<span class="hz-ld-school">' + esc(s.name) + '</span>' + inner + '</div>';
-      }).join('') + '</div>';
-
-      var inSession = st.some(function (x) { return x.kind === 'letter'; });
-      var allOff = st.every(function (x) { return x.kind === 'off'; });
+      var hasLetter = function (d) { return LD_SCHOOLS.some(function (s) { return ldStatus(S[s.key], d).kind === 'letter'; }); };
+      var inSession = hasLetter(today), show = today;
+      // On a day off, the big tiles jump ahead to the next school day -- that's what a
+      // parent checking on Sunday night actually wants to know.
+      if (!inSession) {
+        show = null;
+        for (var k = 1; k <= 45 && !show; k++) if (hasLetter(addDays(today, k))) show = addDays(today, k);
+      }
+      var allOff = LD_SCHOOLS.every(function (s) { return ldStatus(S[s.key], today).kind === 'off'; });
       pill.textContent = inSession ? 'School in session' : allOff ? 'No school today' : 'Check schedule';
       pill.className = 'hz-pill' + (inSession ? '' : allOff ? ' is-off' : ' is-unknown');
 
-      // Next instructional day (the first upcoming date where any school has a letter).
-      var next = null;
-      for (var k = 1; k <= 30 && !next; k++) {
-        var dte = addDays(today, k);
-        if (LD_SCHOOLS.some(function (s) { return ldStatus(S[s.key], dte).kind === 'letter'; })) next = dte;
+      if (!show) {   // summer, or the calendar isn't posted yet
+        box.innerHTML = ldTiles(S, today);
+        return;
       }
-      if (next) {
-        var head = next === addDays(today, 1) ? 'Tomorrow' : 'Next school day · ' + fmt(next, { weekday: 'short', month: 'short', day: 'numeric' });
-        box.insertAdjacentHTML('beforeend', '<div class="hz-ld-next"><b>' + esc(head) + ':</b>' +
-          LD_SCHOOLS.map(function (s) {
-            var x = ldStatus(S[s.key], next);
-            return '<span class="hz-ld-chip ' + s.cls + '" title="' + esc(s.name) + '"><i>' + (x.kind === 'letter' ? esc(x.letter) : '–') + '</i>' + esc(s.short) + '</span>';
-          }).join('') + '</div>');
-      }
+      var label = show === today ? 'Today · ' + fmt(today, { weekday: 'long', month: 'short', day: 'numeric' })
+        : (show === addDays(today, 1) ? 'Tomorrow' : 'Next school day') + ' · ' + fmt(show, { weekday: 'long', month: 'short', day: 'numeric' });
+      box.innerHTML = '<p class="hz-ld-when' + (show === today ? '' : ' is-ahead') + '">' + esc(label) + '</p>' +
+        ldTiles(S, show) + ldWeek(S, show, today);
     }).catch(function () {
       pill.textContent = 'Unavailable'; pill.className = 'hz-pill is-unknown';
       box.innerHTML = '<p class="hz-note" style="margin:4px 0 10px">Letter days couldn\'t be loaded right now.</p>' +
@@ -471,12 +525,23 @@
       }).then(function (events) {
         status.remove();
         var small = window.innerWidth < 640;
+        // A ROLLING calendar: it starts today (each row begins on today's weekday) and
+        // looks ahead -- past dates aren't shown and you can't page back into them. Days
+        // grow to fit every event instead of squeezing them into "+3 more".
+        var calToday = etYMD();
         calendar = new FullCalendar.Calendar(el, {
-          initialView: small ? 'listWeek' : 'dayGridMonth',
-          headerToolbar: { left: 'prev,next today', center: 'title', right: small ? 'listDay,listWeek,listMonth' : 'dayGridMonth,timeGridWeek,timeGridDay' },
-          buttonText: { today: 'Today', month: 'Month', week: 'Week', day: 'Day', listMonth: 'Month', listWeek: 'Week', listDay: 'Day' },
-          views: { listMonth: { buttonText: 'Month' }, listWeek: { buttonText: 'Week' }, listDay: { buttonText: 'Day' } },
-          height: 'auto', dayMaxEvents: 3, fixedWeekCount: false, nowIndicator: true,
+          initialView: small ? 'listUpcoming' : 'rolling5',
+          initialDate: calToday,
+          firstDay: dow(calToday),
+          validRange: { start: calToday },
+          headerToolbar: { left: 'prev,next today', center: 'title', right: small ? 'listUpcoming,listMonth' : 'rolling5,timeGridWeek' },
+          buttonText: { today: 'Today', week: 'Week', listMonth: '30 days' },
+          views: {
+            rolling5: { type: 'dayGrid', duration: { weeks: 5 }, buttonText: 'Next 5 weeks' },
+            listUpcoming: { type: 'list', duration: { days: 14 }, buttonText: '2 weeks' },
+            listMonth: { type: 'list', duration: { days: 30 } }
+          },
+          height: 'auto', dayMaxEvents: false, eventDisplay: 'block', nowIndicator: true,
           slotMinTime: '07:00:00', slotMaxTime: '22:00:00', scrollTime: '08:00:00',
           eventTimeFormat: { hour: 'numeric', minute: '2-digit', meridiem: 'short' },
           noEventsContent: 'Nothing on the calendar for this stretch.',
@@ -486,6 +551,7 @@
             var isList = small;   // phones only ever get the list views
             var rangeStart = info.startStr.slice(0, 10);
             ok(events.filter(function (e) {
+              if ((e.endDate || e.date) < calToday) return false;   // already over
               if (isList && (e.endDate || e.date) < rangeStart) return false;
               return calFilter === 'all' || e.group === calFilter;
             }).map(function (e) {
@@ -542,6 +608,246 @@
       (e.location ? '<div>' + ICON.pin + ' <a class="hz-link" href="' + esc(maps) + '" target="_blank" rel="noopener">' + esc(e.location) + '</a></div>' : '') +
       (e.href ? '<a class="hz-btn hz-btn-lime hz-btn-sm" href="' + esc(e.href) + '">Event details →</a>' : '');
     if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+  }
+
+  /* ================= SITE SEARCH ================= */
+  // Answers that live on THIS page (or on the district's site), with the words parents
+  // actually type. Everything else comes from data/search-index.json and the calendar.
+  var QUICK = [
+    { t: 'Today\'s letter day', d: 'The letter day for Jefferson, the Middle School and the High School', u: '#today', flash: 'hz-card-letters', i: '🔤', k: 'letter day letters rotation special schedule what day is it' },
+    { t: 'Today\'s lunch menu', d: 'What\'s for lunch at each school today, plus the full monthly menus', u: '#hz-lunch', flash: 'hz-card-lunch', i: '🍎', k: 'lunch menu food cafeteria meal hot lunch eat' },
+    { t: 'Weather', d: 'Rotterdam forecast for today and the next few days', u: '#today', flash: 'hz-card-weather', i: '⛅', k: 'weather forecast rain snow cold temperature recess coat' },
+    { t: 'School closings & delays', d: 'Closings and delays are announced by the school district', u: 'https://www.schalmont.org', ext: true, i: '❄️', k: 'snow day closing closed delay delayed cancel cancelled emergency' },
+    { t: 'PTO & district calendar', d: 'Every PTO event and district date in one calendar', u: '#hz-calendar-section', i: '📅', k: 'calendar events dates schedule no school day off holiday break vacation half day early dismissal' },
+    { t: 'Add school calendars to your phone', d: 'Subscribe in Google Calendar, iPhone or Outlook', u: '#hz-subscribe', i: '📲', k: 'subscribe phone iphone android google outlook ical sync calendar app' },
+    { t: 'ParentSquare', d: 'School & teacher messages for every grade. School code: 28782', u: 'https://www.parentsquare.com/signin', ext: true, i: '💬', k: 'parentsquare parent square messages message teacher email announcements notifications app school code sign in login' },
+    { t: 'Parent Portal: progress reports & report cards', d: 'The district\'s eSchoolData parent portal', u: 'https://parentportal-neric.eschooldata.com/SchalmontCSD', ext: true, i: '📊', k: 'report card cards progress reports grades marks eschooldata eschool portal parent portal transcript' },
+    { t: 'Schoology', d: 'Class messages & assignments for the Middle & High School', u: 'https://app.schoology.com/login', ext: true, i: '🎒', k: 'schoology class classes assignments homework teacher messages middle high school login' },
+    { t: 'Order school pictures', d: 'Woestina & Jefferson: iSmile Studios · Middle School: Adirondack (code 26SHLMT) · High School: Upstate Images (code 21714F2627)', u: '#school-pictures', flash: 'hz-pics', i: '📸', k: 'school pictures picture photos portrait portraits order prints retake ismile gotphoto adirondack upstate images code yearbook photo' },
+    { t: 'Yearbook ordering', d: 'Middle School orders open: $25 through Dec. 31, $30 through Apr. 16. Other schools: details coming', u: '#yearbooks', flash: 'hz-yb', i: '📘', k: 'yearbook yearbooks order buy price cost deadline balfour entourage' },
+    { t: 'Schalmont school district website', d: 'Buses, enrollment and anything run by the district', u: 'https://www.schalmont.org', ext: true, i: '🏫', k: 'district bus buses transportation enroll enrollment register registration principal nurse attendance absent' },
+    { t: 'District food services', d: 'Monthly menus and school meal information from the district', u: FOOD_PAGE, ext: true, i: '🥪', k: 'food services meal breakfast nutrition allergy' }
+  ];
+  // A word a parent types → other words the page might use instead.
+  var SYN = {
+    photo: ['picture'], pic: ['picture'], picture: ['photo'], headshot: ['picture'],
+    spiritwear: ['spirit', 'shop'], apparel: ['spirit'], shirt: ['spirit'], tshirt: ['spirit'], hoodie: ['spirit'], merch: ['spirit', 'shop'], clothe: ['spirit'], store: ['shop'],
+    give: ['donate'], donation: ['donate'], help: ['volunteer'], chaperone: ['volunteer'],
+    officer: ['board', 'team'], president: ['board', 'team'], board: ['team'],
+    supplie: ['supply'], supply: ['supplie'],
+    prek: ['woestina', 'pre'], preschool: ['woestina'], elementary: ['jefferson'], ms: ['middle'], hs: ['high'],
+    fundraiser: ['fundrais', 'catalog'], email: ['contact'], question: ['faq', 'contact'], party: ['dance', 'party']
+  };
+  // Words that don't narrow anything down ("pto" and "schalmont" are on every page).
+  var STOPQ = ' a an and are can do does for how i in is it me my of on or the to what when where which who why will with you your pto ptos schalmont sabre sabres ';
+  function norm(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/['’]/g, '').replace(/[^a-z0-9]+/g, ' ').trim(); }
+  function stemW(w) { return w.length > 3 && /[^s]s$/.test(w) ? w.slice(0, -1) : w; }   // "meetings" → "meeting"
+  function field(s) { return ' ' + norm(s).split(' ').map(stemW).join(' ') + ' '; }
+  function escRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+  function initSearch() {
+    var form = $('#hz-search'), input = $('#hz-q'), box = $('#hz-results'), status = $('#hz-search-status');
+    if (!form) return;
+    if (window.innerWidth < 600) input.placeholder = 'Search lunch, picture day…';   // the long hint gets cut off on phones
+    var docs = QUICK.map(function (q) { return { kind: 'quick', t: q.t, d: q.d, u: q.u, ext: q.ext, flash: q.flash, i: q.i, T: field(q.t), H: '', D: field(q.d), K: field(q.k) }; });
+    var indexState = 'idle', events = null, hits = [], active = -1, today = etYMD();
+
+    function loadIndex() {
+      if (indexState !== 'idle') return;
+      indexState = 'loading';
+      getJSON('/data/search-index.json', 10000).then(function (d) {
+        (d.pages || []).forEach(function (p) {
+          docs.push({ kind: 'page', t: p.t, d: p.d || p.h, u: p.u, i: '📄', T: field(p.t), H: field(p.h), D: field(p.d), K: field(p.k) });
+        });
+        (d.faqs || []).forEach(function (f) {
+          // Both PTOs answer "How do I donate?" -- say whose answer this is.
+          docs.push({ kind: 'faq', t: f.q, d: (f.g ? f.g + ': ' : '') + f.a, u: f.u, i: '💬', T: field(f.q), H: '', D: field(f.g + ' ' + f.a), K: '' });
+        });
+        indexState = 'ready';
+        if (input.value.trim()) run();
+      }).catch(function () { indexState = 'idle'; });   // try again on the next keystroke
+      loadEvents().then(function (list) { events = list; if (input.value.trim()) run(); }).catch(function () {});
+    }
+
+    function tokens(q) {
+      var all = norm(q).split(' ').filter(Boolean);
+      var t = all.filter(function (w) { return w.length > 1 && STOPQ.indexOf(' ' + w + ' ') < 0; });
+      return (t.length ? t : all).map(stemW);
+    }
+    function alts(tok) { return [tok].concat(SYN[tok] || []); }
+    function score(doc, toks) {
+      var total = 0;
+      for (var n = 0; n < toks.length; n++) {
+        var best = 0, a = alts(toks[n]);
+        for (var j = 0; j < a.length; j++) {
+          var w = ' ' + a[j], f = j ? 0.8 : 1, s = 0;
+          if (doc.T.indexOf(w + ' ') >= 0) s = 12;
+          else if (doc.T.indexOf(w) >= 0) s = 8;
+          else if (doc.H.indexOf(w) >= 0) s = 5;
+          else if (doc.D.indexOf(w) >= 0) s = 3;
+          else if (doc.K.indexOf(w) >= 0) s = 1.5;
+          best = Math.max(best, s * f);
+        }
+        if (!best) return 0;   // every word has to match something
+        total += best;
+      }
+      return total;
+    }
+    function eventDoc(e) {
+      return { kind: 'event', ev: e, t: e.title, T: field(e.title), H: '', D: field(e.location + ' ' + GROUP_LABEL[e.group] + ' ' + fmt(e.date, { month: 'long' })), K: '' };
+    }
+    // Best n matches; anything far weaker than the best one is noise (a stray keyword), so it's dropped.
+    function top(list, toks, n, phrase) {
+      var ranked = list.map(function (doc) {
+        var s = score(doc, toks);
+        if (s && phrase && doc.T.indexOf(' ' + phrase + ' ') >= 0) s += 10;
+        return { doc: doc, s: s };
+      }).filter(function (x) { return x.s > 0; }).sort(function (a, b) { return b.s - a.s; });
+      var floor = ranked.length ? ranked[0].s * 0.4 : 0;
+      return ranked.filter(function (x) { return x.s >= floor; }).slice(0, n).map(function (x) { return x.doc; });
+    }
+    function mark(text, toks) {
+      var words = [];
+      toks.forEach(function (t) { words = words.concat(alts(t)); });
+      var parts = String(text || '').split(new RegExp('\\b(' + words.map(escRe).join('|') + ')', 'i'));
+      return parts.map(function (p, i) { return i % 2 ? '<mark>' + esc(p) + '</mark>' : esc(p); }).join('');
+    }
+    function clip(s, n) { s = String(s || ''); return s.length > n ? s.slice(0, n).replace(/\s+\S*$/, '') + '…' : s; }
+
+    function run() {
+      var q = input.value.trim(), toks = tokens(q);
+      form.classList.toggle('has-q', !!q);
+      if (!q || !toks.length) { close(); return; }
+      loadIndex();
+      var phrase = toks.join(' ');
+      // Upcoming events, each title once (a monthly "PTO Meeting" shows its next date only).
+      var seenEv = {}, upcoming = (events || []).filter(function (e) { return (e.endDate || e.date) >= today; })
+        .sort(function (a, b) { return a.date < b.date ? -1 : 1; })
+        .filter(function (e) { var k = e.group + normTitle(e.title); if (seenEv[k]) return false; seenEv[k] = 1; return true; })
+        .map(eventDoc);
+      var groups = [
+        ['Quick answers', top(docs.filter(function (d) { return d.kind === 'quick'; }), toks, 3, phrase)],
+        ['Pages', top(docs.filter(function (d) { return d.kind === 'page'; }), toks, 6, phrase)],
+        ['Questions & answers', top(docs.filter(function (d) { return d.kind === 'faq'; }), toks, 3, phrase)],
+        ['Upcoming events', top(upcoming, toks, 4, phrase).sort(function (a, b) { return a.ev.date < b.ev.date ? -1 : 1; })]
+      ];
+      hits = []; active = -1;
+      var html = groups.filter(function (g) { return g[1].length; }).map(function (g) {
+        return '<div class="hz-r-group" role="group" aria-label="' + esc(g[0]) + '"><div class="hz-r-label" aria-hidden="true">' + esc(g[0]) + '</div>' +
+          g[1].map(function (doc) {
+            var n = hits.push(doc) - 1, ico, sub, href;
+            if (doc.kind === 'event') {
+              var e = doc.ev;
+              ico = '<span class="hz-r-ico is-date" aria-hidden="true"><small>' + fmt(e.date, { month: 'short' }) + '</small>' + ymdDate(e.date).getUTCDate() + '</span>';
+              sub = whenText(e, today) + ' · ' + GROUP_LABEL[e.group] + (e.location ? ' · ' + e.location : '');
+              href = e.href || '#hz-calendar-section';
+            } else {
+              ico = '<span class="hz-r-ico" aria-hidden="true">' + doc.i + '</span>';
+              sub = clip(doc.d, 150);
+              href = doc.u;
+            }
+            return '<a class="hz-r" role="option" id="hz-r-' + n + '" data-n="' + n + '" tabindex="-1" aria-selected="false" href="' + esc(href) + '"' +
+              (doc.ext ? ' target="_blank" rel="noopener"' : '') + '>' + ico +
+              '<span class="hz-r-main"><span class="hz-r-t">' + mark(doc.t, toks) + (doc.ext ? ' ↗' : '') + '</span>' +
+              (sub ? '<span class="hz-r-d">' + (doc.kind === 'event' ? esc(sub) : mark(sub, toks)) + '</span>' : '') + '</span></a>';
+          }).join('') + '</div>';
+      }).join('');
+      if (!hits.length) {
+        html = indexState === 'loading' ? '<div class="hz-r-empty">Searching…</div>' :
+          '<div class="hz-r-empty"><b>No matches for “' + esc(q) + '”.</b><br>Try a simpler word like “dance” or “yearbook”, browse the <a href="faq.html">FAQs</a>, or <a href="contact.html">ask the PTO</a> and we\'ll point you in the right direction.</div>';
+      }
+      box.innerHTML = html;
+      box.hidden = false;
+      input.setAttribute('aria-expanded', 'true');
+      input.removeAttribute('aria-activedescendant');
+      status.textContent = hits.length ? hits.length + ' result' + (hits.length === 1 ? '' : 's') + '. Use the up and down arrows to choose.' : (indexState === 'loading' ? '' : 'No results.');
+    }
+    function close() {
+      box.hidden = true; box.innerHTML = ''; hits = []; active = -1;
+      input.setAttribute('aria-expanded', 'false');
+      input.removeAttribute('aria-activedescendant');
+    }
+    function setActive(n) {
+      if (!hits.length) return;
+      active = (n + hits.length) % hits.length;
+      [].forEach.call(box.querySelectorAll('.hz-r'), function (el) { el.setAttribute('aria-selected', +el.getAttribute('data-n') === active ? 'true' : 'false'); });
+      var el = $('#hz-r-' + active);
+      input.setAttribute('aria-activedescendant', el.id);
+      el.scrollIntoView({ block: 'nearest' });
+    }
+    // Returns true when it handled the result itself (an event, or a spot on this page).
+    function choose(doc) {
+      if (!doc) return false;
+      if (doc.kind === 'event') { close(); openEvent(doc.ev); return true; }
+      if (doc.u.charAt(0) === '#') { close(); input.blur(); goTo(doc.u, doc.flash); return true; }
+      return false;
+    }
+    input.addEventListener('input', run);
+    input.addEventListener('focus', function () { loadIndex(); if (input.value.trim()) run(); });
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown') { e.preventDefault(); if (box.hidden) run(); setActive(active + 1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(active - 1); }
+      else if (e.key === 'Escape') { if (!box.hidden) { close(); e.preventDefault(); } }
+    });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (box.hidden) run();
+      var doc = hits[active >= 0 ? active : 0];
+      if (!doc || choose(doc)) return;
+      if (doc.ext) window.open(doc.u, '_blank', 'noopener');
+      else location.href = doc.kind === 'event' ? doc.ev.href : doc.u;
+    });
+    box.addEventListener('mousedown', function (e) { e.preventDefault(); });   // keep focus in the box while clicking
+    box.addEventListener('click', function (e) {
+      var a = e.target.closest('.hz-r');
+      if (a && choose(hits[+a.getAttribute('data-n')])) e.preventDefault();
+    });
+    document.addEventListener('click', function (e) { if (!form.contains(e.target)) close(); });
+    // The top menu's search icon links to index.html#search: jump to the box.
+    function focusFromHash() {
+      if (location.hash !== '#search') return;
+      form.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'center' });
+      input.focus({ preventScroll: true });
+    }
+    window.addEventListener('hashchange', focusFromHash);
+    focusFromHash();
+    // Arriving from another page's sidebar search (index.html?q=…): show those results.
+    var startQ = new URLSearchParams(location.search).get('q');
+    if (startQ) {
+      input.value = startQ.slice(0, 100);
+      input.focus();
+      run();
+    }
+    // "/" jumps to the search box from anywhere on the page.
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+      var t = e.target, tag = t && t.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (t && t.isContentEditable)) return;
+      e.preventDefault();
+      input.focus();
+      input.select();
+    });
+  }
+
+  // Scroll to a spot on this page; a card can pulse once so the eye lands on it.
+  function goTo(hash, flashCls) {
+    var el = $(hash);
+    if (!el) return;
+    if (el.tagName === 'DETAILS') el.open = true;
+    if (hash === '#hz-calendar-section') setFilter('all');
+    el.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
+    var card = flashCls ? $('.' + flashCls) : null;
+    if (card) {
+      card.classList.remove('hz-flash'); void card.offsetWidth; card.classList.add('hz-flash');
+      setTimeout(function () { card.classList.remove('hz-flash'); }, 1700);
+    }
+  }
+  function initJumpLinks() {
+    // The "Popular" chips and "Add school calendars" link scroll within the page.
+    document.querySelectorAll('a[href^="#"][data-flash], a[href="#hz-subscribe"]').forEach(function (a) {
+      a.addEventListener('click', function (e) { e.preventDefault(); goTo(a.getAttribute('href'), a.getAttribute('data-flash')); });
+    });
   }
 
   /* ================= COMMUNITY MOMENTS ================= */
@@ -602,6 +908,8 @@
     initLunch();
     initPanels();
     initCalendar();
+    initSearch();
+    initJumpLinks();
     initMoments();
     var y = $('#hz-year'); if (y) y.textContent = new Date().getFullYear();
   }

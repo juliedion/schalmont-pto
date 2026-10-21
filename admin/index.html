@@ -6,7 +6,7 @@
   <title>PTO Back Office</title>
   <meta name="robots" content="noindex">
   <link rel="stylesheet" href="../css/styles.css?v=6">
-  <link rel="stylesheet" href="admin.css?v=2">
+  <link rel="stylesheet" href="admin.css?v=7">
   <link rel="icon" href="../images/favicon.svg">
 </head>
 <body>
@@ -14,69 +14,72 @@
   <div id="bo-shell"></div>
 
   <main id="bo-main" style="display:none">
-    <h1 class="bo-h1">Welcome, <span id="me-name"></span></h1>
-    <p class="bo-lead">
-      This is the PTO Back Office &mdash; the private area where you plan events, build web
-      pages, share files, and collect sign-ups. Nothing here is visible to the public until
-      <em>you</em> choose to publish it. <strong>Choose a school below to get started</strong>,
-      or pick <strong>PTO-wide</strong> for an event or program that spans every school. Its
-      events, clubs, programs, pages, files, calendar and to-dos all live inside it.
-    </p>
-
-    <div class="bo-tip">
-      <strong>New here?</strong> Start with <a href="help.html">Help &amp; How-To</a> for a
-      plain-English walkthrough. You can't break the live website from this screen &mdash;
-      pages you create stay as private drafts until you press <strong>Publish</strong>.
+    <div class="bo-hello">
+      <div>
+        <h1 class="bo-h1"><span id="hello"></span>, <span id="me-name"></span></h1>
+        <p class="bo-lead">You're working on <strong id="w-school"></strong>. Switch schools any time with
+          <strong>Working on</strong> in the menu.</p>
+      </div>
     </div>
 
-    <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)">Choose a school, or a PTO-wide event</h2>
-    <div class="bo-grid" id="school-cards" style="margin-bottom:34px"></div>
+    <!-- The handful of things volunteers come here to do -->
+    <h2 class="sr-only">What do you want to do?</h2>
+    <div class="bo-actions">
+      <button type="button" class="bo-action primary" id="act-new-page">
+        <span class="bo-action-icon" data-icon="plus" aria-hidden="true"></span>
+        <b>Make a new web page</b>
+        <small>For an event, program or fundraiser. Starts as a private draft.</small>
+      </button>
+      <a class="bo-action" id="act-edit" href="#">
+        <span class="bo-action-icon" data-icon="site" aria-hidden="true"></span>
+        <b>Change a page</b>
+        <small>Update dates, text, photos or buttons on a page that's already up.</small>
+      </a>
+      <a class="bo-action" id="act-signup" href="#">
+        <span class="bo-action-icon" data-icon="signups" aria-hidden="true"></span>
+        <b>Make a sign-up sheet</b>
+        <small>Volunteer shifts, donations or supplies, with spots that fill up.</small>
+      </a>
+      <a class="bo-action" id="act-cal" href="#">
+        <span class="bo-action-icon" data-icon="calendar" aria-hidden="true"></span>
+        <b>Check the calendar</b>
+        <small>See what's planned and add an event or meeting.</small>
+      </a>
+    </div>
 
-    <h2 style="font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)">More</h2>
-    <div class="bo-grid">
-      <a class="bo-card" href="help.html">
-        <span class="bo-cardicon">📖</span>
-        <h3>Help &amp; How-To</h3>
-        <p>Step-by-step guides for every part of the back office, written for
-           non-designers.</p>
-      </a>
-      <a class="bo-card" href="../directory.html">
-        <span class="bo-cardicon">📇</span>
-        <h3>Parent Directory</h3>
-        <p>Browse and search the full family directory &mdash; names, students and
-           contact info shared by member families.</p>
-      </a>
-      <a class="bo-card" href="directory.html" id="directory-card" style="display:none">
-        <span class="bo-cardicon">✅</span>
-        <h3>Directory Sign-Ups</h3>
-        <p>Approve or reject new family sign-ups, with a one-click safety check.
-           (President / officers only.)</p>
-      </a>
-      <a class="bo-card" href="people.html" id="people-card" style="display:none">
-        <span class="bo-cardicon">👥</span>
-        <h3>People &amp; Roles</h3>
-        <p>Add administrators and choose which school(s) each person can manage.
-           (President / owner only.)</p>
-      </a>
-      <a class="bo-card" href="#" id="msbookfair-card" style="display:none">
-        <span class="bo-cardicon">📚</span>
-        <h3>Set up Middle School Book Fair</h3>
-        <p>One-time: creates the sign-up sheet (Mon 9/28 &ndash; Fri 10/2, 9&ndash;11am and 12&ndash;2pm)
-           and a draft page with it embedded. You review and publish.</p>
-      </a>
-      <a class="bo-card" href="#" id="fallpages-card" style="display:none">
-        <span class="bo-cardicon">🍂</span>
-        <h3>Create fall event pages</h3>
-        <p>One-time: makes draft pages for Brawl for the Ball, Tat the Teacher, Homecoming and
-           Light Up Schalmont with Santa, with dates from the tracker. Skips any that already have a page.</p>
-      </a>
-      <a class="bo-card" href="#" id="sidebar-cleanup-card" style="display:none">
-        <span class="bo-cardicon">🧹</span>
-        <h3>Clear event links from sidebars</h3>
-        <p>One-time cleanup: removes every Event/Program page from the schools' left sidebar
-           menus. New events only get added there if you say yes when publishing.
-           (President / owner only.)</p>
-      </a>
+    <div class="bo-dash">
+      <section class="bo-panel-card" aria-labelledby="pages-h">
+        <div class="bo-panel-head">
+          <h2 id="pages-h">Your pages</h2>
+          <a id="pages-all" href="#">See all pages →</a>
+        </div>
+        <p class="bo-summary" id="pages-summary"></p>
+        <ul class="bo-items" id="pages-list"><li class="bo-empty">Loading…</li></ul>
+      </section>
+
+      <div>
+        <section class="bo-panel-card" aria-labelledby="todo-h">
+          <div class="bo-panel-head">
+            <h2 id="todo-h">Promo to-dos this week</h2>
+          </div>
+          <ul class="bo-items" id="todo-list"><li class="bo-empty">Loading…</li></ul>
+        </section>
+        <section class="bo-panel-card" aria-labelledby="soon-h">
+          <div class="bo-panel-head">
+            <h2 id="soon-h">Coming up</h2>
+            <a id="soon-all" href="#">Calendar →</a>
+          </div>
+          <ul class="bo-items" id="soon-list"><li class="bo-empty">Loading…</li></ul>
+        </section>
+      </div>
+    </div>
+
+    <div class="bo-helpbar">
+      <b>Stuck?</b>
+      <a href="help.html">📖 Read a how-to guide</a>
+      <a href="assistant.html">💬 Ask the assistant</a>
+      <a href="mailto:julie@schalmontpto.com?subject=Back%20Office%20help">✉️ Email Julie</a>
+      <span style="color:var(--text-light)">You can't break the live website from here: drafts stay private until you press <strong>Publish</strong>.</span>
     </div>
   </main>
 
@@ -84,133 +87,123 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="../js/firebase-config.js"></script>
-  <script src="admin-core.js"></script>
+  <script src="admin-core.js?v=7"></script>
   <script>
     requireAdmin((me) => {
-      document.getElementById('me-name').textContent = me.name;
-      if (me.isSuper || me.schools.includes('middle')) {
-        const bfCard = document.getElementById('msbookfair-card');
-        bfCard.style.display = '';
-        bfCard.onclick = async (e) => {
-          e.preventDefault();
-          const TITLE = 'Middle School Book Fair';
-          try {
-            // Idempotent: if either piece already exists, don't create a second copy.
-            const [oldSheets, oldPages] = await Promise.all([
-              db.collection('signups').where('title', '==', TITLE + ': Volunteer Sign-Up').get(),
-              db.collection('pages').where('school', '==', 'middle').get()
-            ]);
-            const pageHit = oldPages.docs.find(d => (d.data().title || '').trim().toLowerCase() === TITLE.toLowerCase());
-            if (oldSheets.docs.length || pageHit) {
-              if (pageHit) { toast('Already set up — opening the page'); location.href = 'page-editor.html?id=' + pageHit.id; }
-              else { toast('The sign-up sheet already exists (Sign-Up Sheets) — not creating a second one', 'error'); }
-              return;
-            }
-            if (!confirm('Create the Middle School Book Fair sign-up sheet (10 shifts) and a draft page?')) return;
-
-            const days = [['Mon 9/28', '2026-09-28'], ['Tue 9/29', '2026-09-29'], ['Wed 9/30', '2026-09-30'],
-                          ['Thu 10/1', '2026-10-01'], ['Fri 10/2', '2026-10-02']];
-            const shifts = [['9am–11am', '09:00', '11:00'], ['12pm–2pm', '12:00', '14:00']];
-            const now = firebase.firestore.FieldValue.serverTimestamp();
-
-            const sheetRef = await db.collection('signups').add({
-              title: TITLE + ': Volunteer Sign-Up',
-              intro: 'Help us run the Middle School Book Fair! Pick a shift below.',
-              school: 'middle', status: 'open', askItem: false,
-              contactName: me.name, contactEmail: me.email,
-              createdBy: me.email, createdAt: now, updatedAt: now
-            });
-            let order = 0;
-            for (const [label, date] of days) {
-              for (const [when, start, end] of shifts) {
-                await sheetRef.collection('slots').add({
-                  label: label + ', ' + when, date, start, end, capacity: 0, order: order++, taken: 0
-                });
-              }
-            }
-
-            const pageRef = await db.collection('pages').add({
-              category: 'events', schools: ['middle'], school: 'middle',
-              title: TITLE, slug: slugify(TITLE),
-              showInTopMenu: false, showInLeftMenu: false,
-              eventDate: '2026-09-28', eventEndDate: '2026-10-02', status: 'draft',
-              blocks: [
-                { type: 'paragraph', text: 'The Middle School Book Fair is coming September 28 – October 2! We’re looking for volunteers to help throughout the week. Choose a shift below and sign up. Every hour helps make the fair a success for our students.' },
-                { type: 'heading', level: 2, text: 'Sign up to volunteer' },
-                { type: 'signup', sheetId: sheetRef.id, sheetTitle: TITLE + ': Volunteer Sign-Up', note: '' }
-              ],
-              createdBy: me.email, createdAt: now
-            });
-            toast('✓ Created the sign-up sheet and a draft page');
-            location.href = 'page-editor.html?id=' + pageRef.id;
-          } catch (err) { toast('Could not set it up: ' + err.message, 'error'); }
-        };
-      }
-      if (me.isSuper) {
-        const fpCard = document.getElementById('fallpages-card');
-        fpCard.style.display = '';
-        fpCard.onclick = async (e) => {
-          e.preventDefault();
-          // Dates and times come from the planning tracker; Homecoming is the 10/16
-          // finale day of Homecoming / Tat the Teacher week -- check it before publishing.
-          const SPECS = [
-            { title: 'Brawl for the Ball', date: '2026-11-13', end: '', time: '18:00' },
-            { title: 'Tat the Teacher', date: '2026-10-12', end: '2026-10-16', time: '' },
-            { title: 'Homecoming', date: '2026-10-16', end: '', time: '' },
-            { title: 'Light Up Schalmont with Santa', date: '2026-12-11', end: '', time: '18:00' }
-          ];
-          try {
-            const have = new Set((await db.collection('pages').get()).docs
-              .map(d => (d.data().title || '').trim().toLowerCase()));
-            const todo = SPECS.filter(x => !have.has(x.title.toLowerCase()));
-            if (!todo.length) { toast('All four already have pages'); return; }
-            if (!confirm('Create draft pages for: ' + todo.map(x => x.title).join(', ') + '?')) return;
-            const schools = ['middle', 'high'];
-            for (const x of todo) {
-              await db.collection('pages').add({
-                category: 'events', schools, school: routingSchool(schools),
-                title: x.title, slug: slugify(x.title),
-                showInTopMenu: false, showInLeftMenu: false,
-                eventDate: x.date, eventEndDate: x.end, eventTime: x.time, eventLocation: '',
-                status: 'draft', blocks: [],
-                createdBy: me.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-              });
-            }
-            toast('✓ Created ' + todo.length + ' draft page' + (todo.length === 1 ? '' : 's'));
-            location.href = 'section.html?cat=events&s=middle';
-          } catch (err) { toast('Could not create pages: ' + err.message, 'error'); }
-        };
-        document.getElementById('people-card').style.display = '';
-        document.getElementById('directory-card').style.display = '';
-        document.getElementById('sidebar-cleanup-card').style.display = '';
-        document.getElementById('sidebar-cleanup-card').onclick = async (e) => {
-          e.preventDefault();
-          try {
-            const snap = await db.collection('pages')
-              .where('category', '==', 'events').where('showInLeftMenu', '==', true).get();
-            if (!snap.docs.length) { toast('Already clean — no event pages are in a sidebar'); return; }
-            if (!confirm(`Remove ${snap.docs.length} event page(s) from the school sidebars?`)) return;
-            const batch = db.batch();
-            snap.docs.forEach(d => batch.update(d.ref, { showInLeftMenu: false }));
-            await batch.commit();
-            toast(`✓ Removed ${snap.docs.length} event page(s) from the sidebars`);
-          } catch (err) { toast('Could not clean up: ' + err.message, 'error'); }
-        };
-      }
-
-      document.getElementById('school-cards').innerHTML = Object.keys(SCHOOLS)
-        .filter(s => s !== 'pto' && (me.isSuper || me.schools.includes(s)))
-        .map(s => `
-        <a class="bo-card" href="school.html?s=${s}">
-          <span class="bo-cardicon">🏫</span>
-          <h3>${SCHOOLS[s]}</h3>
-          <p>Events, clubs, programs, pages, files &amp; planning for ${SCHOOLS[s]}.</p>
-        </a>`).join('') +
-        ((me.isSuper || me.schools.includes('pto')) ? `<a class="bo-card" href="school.html?s=pto">
-          <span class="bo-cardicon">🎪</span><h3>PTO-wide</h3>
-          <p>Anything that spans every school.</p>
-        </a>` : '');
+      document.querySelectorAll('[data-icon]').forEach(el => el.innerHTML = BO_ICON[el.dataset.icon] || '');
+      const h = new Date().getHours();
+      document.getElementById('hello').textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+      document.getElementById('me-name').textContent = (me.name || '').split(/[ @]/)[0] || me.name;
+      document.getElementById('act-new-page').onclick = () => newWebPage('events', workingSchool());
+      load(workingSchool());
+      document.addEventListener('bo:school', e => load(e.detail));
     });
+
+    const DAY = 86400000;
+    function shortDate(ymd) { return ymdToDate(ymd).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }); }
+    function when(ts) {
+      if (!ts) return '';
+      const d = ts.toDate ? ts.toDate() : new Date(ts), days = Math.floor((Date.now() - d) / DAY);
+      return days < 1 ? 'today' : days < 2 ? 'yesterday' : days < 7 ? days + ' days ago' : fmtDate(ts);
+    }
+
+    // Everything on Home is about the school picked in "Working on".
+    function load(W) {
+      document.getElementById('w-school').textContent = W === ALL ? 'the whole website (all schools)' : SCHOOLS[W];
+      document.getElementById('act-edit').href = scopedHref('site', W);
+      document.getElementById('pages-all').href = scopedHref('site', W);
+      document.getElementById('act-signup').href = scopedHref('signups', W);
+      document.getElementById('act-cal').href = scopedHref('calendar', W);
+      document.getElementById('soon-all').href = scopedHref('calendar', W);
+      loadPages(W);
+      loadEvents(W);
+    }
+
+    /* ---- Your pages: drafts first, then the most recently edited ---- */
+    async function loadPages(W) {
+      const list = document.getElementById('pages-list'), sum = document.getElementById('pages-summary');
+      try {
+        // Newer pages list every school they belong to; older ones only have `school`.
+        const [a, b] = W === ALL
+          ? [await db.collection('pages').get(), { docs: [] }]   // whole website (officers only)
+          : await Promise.all([
+            db.collection('pages').where('schools', 'array-contains', W).get(),
+            db.collection('pages').where('school', '==', W).get()
+          ]);
+        const byId = {};
+        [...a.docs, ...b.docs].forEach(d => byId[d.id] = { id: d.id, ...d.data() });
+        const pages = Object.values(byId);
+        const stamp = p => { const t = p.updatedAt || p.createdAt; return t && t.toMillis ? t.toMillis() : 0; };
+        const drafts = pages.filter(p => p.status !== 'published').length;
+        sum.innerHTML = pages.length
+          ? `${pages.length} page${pages.length === 1 ? '' : 's'}` + (drafts ? ` · <strong>${drafts} draft${drafts === 1 ? '' : 's'} not published yet</strong>` : ' · all published')
+          : '';
+        pages.sort((x, y) => stamp(y) - stamp(x));
+        const top = pages.slice(0, 7);
+        list.innerHTML = top.length ? top.map(p => {
+          const live = p.status === 'published';
+          const view = live ? `<a class="bo-btn ghost sm" href="/${pagePath(routingSchool(pageSchools(p)), p.slug)}" target="_blank" rel="noopener" aria-label="View ${esc(p.title)} on the website">View</a>` : '';
+          return `<li class="bo-item">
+            <span class="bo-pill ${live ? 'live' : 'draft'}">${live ? 'Live' : 'Draft'}</span>
+            <div class="bo-item-main"><b>${esc(p.title || 'Untitled page')}</b>
+              <span>${W === ALL ? esc(pageSchools(p).map(x => SCHOOLS[x] ? SCHOOLS[x].replace(' (all schools)', '') : x).join(', ') || 'No school') + ' · ' : ''}${p.eventDate ? 'Event ' + esc(shortDate(p.eventDate)) + ' · ' : ''}Edited ${esc(when(p.updatedAt || p.createdAt))}</span></div>
+            ${view}<a class="bo-btn sm" href="page-editor.html?id=${p.id}" aria-label="Edit ${esc(p.title)}">Edit</a>
+          </li>`;
+        }).join('') : `<li class="bo-empty">No pages for ${esc(scopeLabel(W))} yet. Press <strong>Make a new web page</strong> to start one.</li>`;
+      } catch (e) {
+        list.innerHTML = `<li class="bo-empty">Couldn't load pages (${esc(e.message)}).</li>`;
+      }
+    }
+
+    /* ---- Coming up + promo to-dos, from the planning calendar ---- */
+    async function loadEvents(W) {
+      const soon = document.getElementById('soon-list'), todo = document.getElementById('todo-list');
+      const today = toYMD(new Date());
+      try {
+        // One range filter on one field -- no composite index needed (see back-office notes).
+        const snap = await db.collection('pto_events').where('date', '>=', addDays(today, -60)).get();
+        const evs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+          .filter(e => !d_isMeta(e.id) && (W === ALL || (e.school || 'pto') === W || (e.school || 'pto') === 'pto'));
+
+        const upcoming = evs.filter(e => (e.endDate || e.date) >= today && e.date <= addDays(today, 21))
+          .sort((x, y) => (x.date + (x.time || '')).localeCompare(y.date + (y.time || ''))).slice(0, 6);
+        soon.innerHTML = upcoming.length ? upcoming.map(e => {
+          const d = ymdToDate(e.date);
+          return `<li class="bo-item">
+            <span class="bo-item-date" aria-hidden="true"><small>${d.toLocaleDateString('en-US', { month: 'short' })}</small><strong>${d.getDate()}</strong></span>
+            <div class="bo-item-main"><b>${esc(e.title)}</b>
+              <span>${esc(shortDate(e.date))}${e.time ? ' · ' + esc(prettyTime(e.time)) : ''}${(e.school || 'pto') === 'pto' ? ' · District / PTO-wide' : ''}</span></div>
+          </li>`;
+        }).join('') : '<li class="bo-empty">Nothing on the calendar for the next 3 weeks.</li>';
+
+        // Each PTO event carries "backout" promo dates (flyer, first post, reminder…).
+        // Show the ones due in the coming week that nobody has ticked off yet.
+        const horizon = addDays(today, 7), tasks = [];
+        evs.filter(e => e.date >= today).forEach(e => {
+          if (e.source === 'gcal') return;   // district calendar items have no promo plan
+          const promo = computePromo(e.date, e.promo), done = e.promoDone || {};
+          Object.keys(promo).forEach(k => {
+            if (!done[k] && promo[k] && promo[k] >= addDays(today, -3) && promo[k] <= horizon) tasks.push({ e, k, due: promo[k] });
+          });
+        });
+        tasks.sort((x, y) => x.due.localeCompare(y.due));
+        todo.innerHTML = tasks.length ? tasks.slice(0, 6).map(t => {
+          const over = t.due < today;
+          return `<li class="bo-item"><div class="bo-item-main">
+              <b>${esc(PROMO_LABELS[t.k])}: ${esc(t.e.title)}</b>
+              <span class="bo-todo-due${over ? ' over' : ''}">${over ? 'Overdue · was due ' : 'Due '}${esc(t.due === today ? 'today' : shortDate(t.due))}</span>
+            </div><a class="bo-btn ghost sm" href="${scopedHref('calendar', W)}">Open</a></li>`;
+        }).join('') + (tasks.length > 6 ? `<li class="bo-empty">+ ${tasks.length - 6} more on the calendar</li>` : '')
+          : '<li class="bo-empty">🎉 Nothing due this week. Tick tasks off from an event on the calendar.</li>';
+      } catch (e) {
+        soon.innerHTML = todo.innerHTML = `<li class="bo-empty">Couldn't load the calendar (${esc(e.message)}).</li>`;
+      }
+    }
+    function d_isMeta(id) { return id.startsWith('__') || id.startsWith('meta_'); }
+    function prettyTime(hm) {
+      const [h, m] = String(hm).split(':').map(Number);
+      return isNaN(h) ? hm : ((h % 12) || 12) + ':' + String(m || 0).padStart(2, '0') + (h >= 12 ? ' PM' : ' AM');
+    }
   </script>
 </body>
 </html>

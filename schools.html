@@ -12,51 +12,31 @@
   <meta name="description" content="Find your child's school and access events, resources, and contacts for Woestina Pre-K, Jefferson Elementary, Schalmont Middle School, and Schalmont High School.">
   <link rel="stylesheet" href="css/styles.css?v=5">
   <link rel="icon" href="images/favicon.svg">
+  <link rel="stylesheet" href="css/menus.css?v=1">
 </head>
 <body>
 
   <!-- HEADER -->
-  <header class="site-header">
-    <nav class="container nav-inner">
-      <a href="index.html" class="nav-brand">
-        <img src="images/logo.png" alt="Schalmont Central PTO" class="nav-logo-img">
+  <header class="site-header sh">
+    <nav class="sh-inner" aria-label="Main">
+      <a href="index.html" class="sh-brand" aria-label="Schalmont PTO home">
+        <img src="images/logo-web.png" alt="Schalmont Central PTO" width="360" height="230">
+        <img src="images/jes-pto-tiger-web.png" alt="Woestina/Jefferson PTO" width="422" height="300">
       </a>
-      <ul class="nav-links">
-        <li><a href="index.html">Home</a></li>
-        <li class="has-dropdown">
-          <a href="schools.html">Schools</a>
-          <ul class="nav-dropdown">
-            <li><a href="woestina.html">🌱 Woestina Pre-K</a></li>
-            <li><a href="jefferson.html">🏫 Jefferson Elementary</a></li>
-            <li><a href="middle-school.html">📚 Middle School</a></li>
-            <li><a href="high-school.html">🎓 High School</a></li>
-          </ul>
-        </li>
-        <li><a href="events.html">Events</a></li>
-        <li class="has-dropdown">
-          <a href="shop.html">Shop</a>
-          <ul class="nav-dropdown">
-            <li><a href="shop.html">👕 Spiritwear</a></li>
-            <li><a href="fundraisers.html">💰 Fundraisers</a></li>
-          </ul>
-        </li>
-        <li><a href="fundraisers.html">Fundraisers</a></li>
-        <li><a href="yearbooks.html">Yearbook</a></li>
-        <li><a href="directory.html">Directory</a></li>
-        <li class="has-dropdown">
-          <a href="contact.html">Contact</a>
-          <ul class="nav-dropdown">
-            <li><a href="about.html">About</a></li>
-            <li><a href="social.html">Social</a></li>
-            <li><a href="gallery.html">Gallery</a></li>
-          </ul>
-        </li>
-        <li><a href="login.html" class="btn btn-primary" style="padding:6px 16px;font-size:14px;color:#000000" id="nav-login-btn">Login/Register</a></li>
-        
-        <li><a href="https://www.facebook.com/groups/schalmontpto/" target="_blank" rel="noopener" class="nav-social-icon" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a></li>
-        <li><a href="https://www.instagram.com/schalmontpto/" target="_blank" rel="noopener" class="nav-social-icon" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li>
-      </ul>
-      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+      <button type="button" class="sh-toggle" id="sh-toggle" aria-expanded="false" aria-controls="sh-menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menu</span></button>
+      <div class="sh-menu" id="sh-menu">
+        <ul class="sh-list">
+          <li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">Schools<svg class="sh-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="sh-drop sh-drop-schools"><a class="sh-school" href="woestina.html" style="--sc:#8bc341"><span class="sh-dot" aria-hidden="true"></span><span><b>Woestina Pre-K</b><small>Pre-K</small></span></a><a class="sh-school" href="jefferson.html" style="--sc:#6bb044"><span class="sh-dot" aria-hidden="true"></span><span><b>Jefferson Elementary</b><small>Grades K–4</small></span></a><a class="sh-school" href="middle-school.html" style="--sc:#087d40"><span class="sh-dot" aria-hidden="true"></span><span><b>Middle School</b><small>Grades 5–8</small></span></a><a class="sh-school" href="high-school.html" style="--sc:#044d2a"><span class="sh-dot" aria-hidden="true"></span><span><b>High School</b><small>Grades 9–12</small></span></a><a class="sh-all" href="schools.html">All schools →</a></div></li>
+          <li><a class="sh-top" href="events.html">Calendar</a></li>
+          <li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">Families<svg class="sh-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="sh-drop"><a href="picture-days.html">Picture days</a><a href="yearbooks.html">Yearbooks</a><a href="index.html#hz-lunch">Lunch menus</a><a href="directory.html">Parent directory</a><a href="gallery.html">Photo gallery</a><a href="sports.html">Sports</a><a href="family-scouts.html">Scouts</a></div></li><li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">Support<svg class="sh-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="sh-drop"><a href="volunteer.html">Volunteer</a><a href="donate.html">Donate</a><a href="fundraisers.html">Fundraisers</a><a href="shop.html">Spirit shop</a></div></li><li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">About<svg class="sh-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="sh-drop"><a href="about.html">About the PTO</a><a href="about.html#jefferson-pto">Woestina/Jefferson PTO</a><a href="about.html#schalmont-central-pto">Schalmont Central PTO</a><a href="meetings.html">Meetings</a><a href="faq.html">FAQs</a><a href="contact.html">Contact us</a><a href="social.html">Social media</a></div></li>
+        </ul>
+        <div class="sh-actions">
+          <a class="sh-icon" href="index.html#search" aria-label="Search the site"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></a>
+          <a class="sh-login" id="nav-login-btn" href="login.html">Login</a>
+          <a class="sh-social" href="https://www.facebook.com/groups/schalmontpto/" target="_blank" rel="noopener" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a><a class="sh-social" href="https://www.instagram.com/schalmontpto/" target="_blank" rel="noopener" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+          <a class="sh-cta" href="get-involved.html">Get Involved</a>
+        </div>
+      </div>
     </nav>
   </header>
 
@@ -67,86 +47,76 @@
   <div class="homepage-layout">
 
     <!-- LEFT SIDEBAR -->
-    <aside class="homepage-sidenav">
-      <div class="sidenav-heading">Browse</div>
-      <a href="index.html" class="sidenav-item">Home</a>
-      <a href="events.html" class="sidenav-item">Events Calendar</a>
-
-      <div class="sidenav-heading">Schools</div>
-      <a href="schools.html" class="sidenav-item">All Schools</a>
-
-      <div class="sidenav-group">
-        <button class="sidenav-item sidenav-toggle" data-target="snav-woestina">Woestina Pre-K <span class="sidenav-arrow">&#9660;</span></button>
-        <div class="sidenav-submenu" id="snav-woestina">
-          <a href="woestina.html" class="sidenav-item sub">Overview</a>
-          <a href="woestina.html#yearbook" class="sidenav-item sub">Yearbook</a>
-          <a href="classof2040.html" class="sidenav-item sub">Class of 2040 — Pre-Kindergarten</a>
+    <aside class="homepage-sidenav sn" aria-label="Site menu">
+      <form class="sn-search" action="index.html" role="search">
+        <label class="sn-sr" for="sn-q">Search the site</label>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><input id="sn-q" name="q" type="search" placeholder="Search the site" autocomplete="off">
+      </form>
+      <a class="sn-item" href="index.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span>Home</span></a>
+      <a class="sn-item" href="events.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Events calendar</span></a>
+      <div class="sn-label">Schools</div>
+      <div class="sn-school" style="--sc:#8bc341">
+        <button type="button" class="sn-school-btn" aria-expanded="false" aria-controls="snav-woestina">
+          <span class="sn-dot" aria-hidden="true"></span><span class="sn-school-name">Woestina Pre-K<small>Pre-K</small></span><svg class="sn-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+        <div class="sn-sub sidenav-submenu" id="snav-woestina" hidden>
+          <a class="sn-subitem" href="woestina.html">School page</a>
+          <a class="sn-subitem" href="woestina.html#program-grid">Events &amp; programs</a>
+          <a class="sn-subitem" href="woestina.html#yearbook">Yearbook</a>
+          <div class="sn-classes" aria-label="Woestina Pre-K class pages"><span>Classes</span><a href="classof2040.html">Pre-K</a></div>
         </div>
       </div>
-
-      <div class="sidenav-group">
-        <button class="sidenav-item sidenav-toggle" data-target="snav-jefferson">Jefferson Elementary <span class="sidenav-arrow">&#9660;</span></button>
-        <div class="sidenav-submenu" id="snav-jefferson">
-          <a href="jefferson.html" class="sidenav-item sub">Overview</a>
-          <a href="jefferson.html#yearbook" class="sidenav-item sub">Yearbook</a>
-          <a href="classof2035.html" class="sidenav-item sub">Class of 2035 — 4th Grade</a>
-          <a href="classof2036.html" class="sidenav-item sub">Class of 2036 — 3rd Grade</a>
-          <a href="classof2037.html" class="sidenav-item sub">Class of 2037 — 2nd Grade</a>
-          <a href="classof2038.html" class="sidenav-item sub">Class of 2038 — 1st Grade</a>
-          <a href="classof2039.html" class="sidenav-item sub">Class of 2039 — Kindergarten</a>
+      <div class="sn-school" style="--sc:#6bb044">
+        <button type="button" class="sn-school-btn" aria-expanded="false" aria-controls="snav-jefferson">
+          <span class="sn-dot" aria-hidden="true"></span><span class="sn-school-name">Jefferson Elementary<small>Grades K–4</small></span><svg class="sn-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+        <div class="sn-sub sidenav-submenu" id="snav-jefferson" hidden>
+          <a class="sn-subitem" href="jefferson.html">School page</a>
+          <a class="sn-subitem" href="jefferson.html#program-grid">Events &amp; programs</a>
+          <a class="sn-subitem" href="jefferson.html#yearbook">Yearbook</a>
+          <div class="sn-classes" aria-label="Jefferson Elementary class pages"><span>Classes</span><a href="classof2039.html">K</a><a href="classof2038.html">1st</a><a href="classof2037.html">2nd</a><a href="classof2036.html">3rd</a><a href="classof2035.html">4th</a></div>
         </div>
       </div>
-
-      <div class="sidenav-group">
-        <button class="sidenav-item sidenav-toggle" data-target="snav-middle">Middle School <span class="sidenav-arrow">&#9660;</span></button>
-        <div class="sidenav-submenu" id="snav-middle">
-          <a href="middle-school.html" class="sidenav-item sub">Overview</a>
-          <a href="middle-school.html#yearbook" class="sidenav-item sub">Yearbook</a>
-          <a href="classof2031.html" class="sidenav-item sub">Class of 2031 — 8th Grade</a>
-          <a href="classof2032.html" class="sidenav-item sub">Class of 2032 — 7th Grade</a>
-          <a href="classof2033.html" class="sidenav-item sub">Class of 2033 — 6th Grade</a>
-          <a href="classof2034.html" class="sidenav-item sub">Class of 2034 — 5th Grade</a>
+      <div class="sn-school" style="--sc:#087d40">
+        <button type="button" class="sn-school-btn" aria-expanded="false" aria-controls="snav-middle">
+          <span class="sn-dot" aria-hidden="true"></span><span class="sn-school-name">Middle School<small>Grades 5–8</small></span><svg class="sn-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+        <div class="sn-sub sidenav-submenu" id="snav-middle" hidden>
+          <a class="sn-subitem" href="middle-school.html">School page</a>
+          <a class="sn-subitem" href="middle-school.html#program-grid">Events &amp; programs</a>
+          <a class="sn-subitem" href="middle-school.html#yearbook">Yearbook</a>
+          <div class="sn-classes" aria-label="Middle School class pages"><span>Classes</span><a href="classof2034.html">5th</a><a href="classof2033.html">6th</a><a href="classof2032.html">7th</a><a href="classof2031.html">8th</a></div>
         </div>
       </div>
-
-      <div class="sidenav-group">
-        <button class="sidenav-item sidenav-toggle" data-target="snav-high">High School <span class="sidenav-arrow">&#9660;</span></button>
-        <div class="sidenav-submenu" id="snav-high">
-          <a href="high-school.html" class="sidenav-item sub">Overview</a>
-          <a href="high-school.html#yearbook" class="sidenav-item sub">Yearbook</a>
-          <a href="classof2027.html" class="sidenav-item sub">Class of 2027 — Seniors</a>
-          <a href="classof2028.html" class="sidenav-item sub">Class of 2028 — Juniors</a>
-          <a href="classof2029.html" class="sidenav-item sub">Class of 2029 — Sophomores</a>
-          <a href="classof2030.html" class="sidenav-item sub">Class of 2030 — Freshmen</a>
+      <div class="sn-school" style="--sc:#044d2a">
+        <button type="button" class="sn-school-btn" aria-expanded="false" aria-controls="snav-high">
+          <span class="sn-dot" aria-hidden="true"></span><span class="sn-school-name">High School<small>Grades 9–12</small></span><svg class="sn-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+        <div class="sn-sub sidenav-submenu" id="snav-high" hidden>
+          <a class="sn-subitem" href="high-school.html">School page</a>
+          <a class="sn-subitem" href="high-school.html#program-grid">Events &amp; programs</a>
+          <a class="sn-subitem" href="high-school.html#yearbook">Yearbook</a>
+          <div class="sn-classes" aria-label="High School class pages"><span>Classes</span><a href="classof2030.html">Fr</a><a href="classof2029.html">So</a><a href="classof2028.html">Jr</a><a href="classof2027.html">Sr</a></div>
         </div>
       </div>
-
-      <div class="sidenav-group">
-        <button class="sidenav-item sidenav-toggle" data-target="snav-pto">PTO-Wide <span class="sidenav-arrow">&#9660;</span></button>
-        <div class="sidenav-submenu" id="snav-pto">
-        </div>
-      </div>
-
-      <div class="sidenav-heading">Resources</div>
-      <a href="directory.html" class="sidenav-item">Directory</a>
-      <a href="donate.html" class="sidenav-item">Donate</a>
-      <a href="events.html" class="sidenav-item">Events</a>
-      <a href="fundraisers.html" class="sidenav-item">Fundraisers</a>
-      <a href="gallery.html" class="sidenav-item">Gallery</a>
-      <a href="schools.html" class="sidenav-item">Schools</a>
-      <a href="family-scouts.html" class="sidenav-item">Scouts</a>
-      <a href="shop.html" class="sidenav-item">Shop</a>
-      <a href="social.html" class="sidenav-item">Social Media</a>
-      <a href="sports.html" class="sidenav-item">Sports</a>
-      <a href="yearbooks.html" class="sidenav-item">Yearbooks</a>
-
-      <div class="sidenav-heading">Connect</div>
-      <a href="about.html" class="sidenav-item">About the PTO</a>
-      <a href="social.html" class="sidenav-item">Social Media Links</a>
-      <a href="contact.html" class="sidenav-item">Contact Us</a>
-      <div class="sidenav-donate-wrap" style="display:flex;flex-direction:column;gap:5px;padding:10px 8px 8px">
-
-      </div>
+      <div class="sn-label">For families</div>
+      <a class="sn-item sn-plain" href="picture-days.html">Picture days</a>
+      <a class="sn-item sn-plain" href="yearbooks.html">Yearbooks</a>
+      <a class="sn-item sn-plain" href="directory.html">Parent directory</a>
+      <a class="sn-item sn-plain" href="gallery.html">Photo gallery</a>
+      <a class="sn-item sn-plain" href="sports.html">Sports</a>
+      <a class="sn-item sn-plain" href="family-scouts.html">Scouts</a>
+      <div class="sn-label">Get involved</div>
+      <a class="sn-item sn-plain" href="volunteer.html">Volunteer</a>
+      <a class="sn-item sn-plain" href="donate.html">Donate</a>
+      <a class="sn-item sn-plain" href="fundraisers.html">Fundraisers</a>
+      <a class="sn-item sn-plain" href="shop.html">Spirit shop</a>
+      <div class="sn-label">About the PTO</div>
+      <a class="sn-item sn-plain" href="about.html">About us</a>
+      <a class="sn-item sn-plain" href="meetings.html">Meetings</a>
+      <a class="sn-item sn-plain" href="faq.html">FAQs</a>
+      <a class="sn-item sn-plain" href="contact.html">Contact us</a>
+      <a class="sn-item sn-plain" href="social.html">Social media</a>
     </aside>
 
     <!-- MAIN CONTENT -->
@@ -307,5 +277,6 @@
   <script src="js/app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="js/page-menu.js?v=3"></script>
+  <script src="js/menus.js?v=1"></script>
 </body>
 </html>

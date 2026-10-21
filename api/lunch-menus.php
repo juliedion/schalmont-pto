@@ -14,6 +14,8 @@
  *           jefferson: {…}, middle: {…}, high: {…} } }
  */
 
+// A PHP notice or warning printed into the response would break the JSON (and the card).
+ini_set('display_errors', '0');
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: public, max-age=3600');
 date_default_timezone_set('America/New_York');
@@ -91,6 +93,5 @@ function fetch($url) {
   ]);
   $body = curl_exec($ch);
   $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-  curl_close($ch);
   return ($body !== false && $code === 200) ? $body : null;
 }

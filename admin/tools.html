@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>More Tools — PTO Back Office</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="admin.css?v=7">
+  <link rel="icon" href="../images/favicon.svg">
+</head>
+<body>
+  <div id="bo-loading">Loading…</div>
+  <div id="bo-shell"></div>
+
+  <main id="bo-main" style="display:none">
+    <h1 class="bo-h1">More tools</h1>
+    <p class="bo-lead">Things you won't need every day. The everyday tools are in the menu on the left.</p>
+
+    <section class="bo-tools-section">
+      <h2>Other kinds of web pages</h2>
+      <div class="bo-grid" id="cat-cards"></div>
+    </section>
+
+    <section class="bo-tools-section">
+      <h2>Orders &amp; requests</h2>
+      <div class="bo-grid">
+        <a class="bo-card" href="tat-teacher-orders.html">
+          <span class="bo-cardicon">🐯</span><h3>Tat the Teacher orders</h3>
+          <p>See and manage teacher orders for Tat the Teacher.</p>
+        </a>
+        <a class="bo-card" href="chocolate-requests.html">
+          <span class="bo-cardicon">🍫</span><h3>Chocolate bar seller requests</h3>
+          <p>Families asking for chocolate bars to sell.</p>
+        </a>
+        <a class="bo-card" href="../directory.html">
+          <span class="bo-cardicon">📇</span><h3>Parent directory</h3>
+          <p>Browse and search the family directory.</p>
+        </a>
+        <a class="bo-card" href="roadmap.html">
+          <span class="bo-cardicon">🛠️</span><h3>Feature roadmap</h3>
+          <p>What's planned for the back office next.</p>
+        </a>
+      </div>
+    </section>
+
+    <section class="bo-tools-section" id="onetime" hidden>
+      <h2>One-time setup</h2>
+      <p class="bo-lead" style="margin-bottom:12px">Each of these was built for a single job and is safe to run again: it skips anything that already exists.</p>
+      <div class="bo-grid">
+        <a class="bo-card" href="#" id="msbookfair-card" style="display:none">
+          <span class="bo-cardicon">📚</span>
+          <h3>Set up Middle School Book Fair</h3>
+          <p>Creates the sign-up sheet (Mon 9/28 &ndash; Fri 10/2, 9&ndash;11am and 12&ndash;2pm)
+             and a draft page with it embedded. You review and publish.</p>
+        </a>
+        <a class="bo-card" href="#" id="fallpages-card" style="display:none">
+          <span class="bo-cardicon">🍂</span>
+          <h3>Create fall event pages</h3>
+          <p>Makes draft pages for Brawl for the Ball, Tat the Teacher, Homecoming and
+             Light Up Schalmont with Santa. Skips any that already have a page.</p>
+        </a>
+        <a class="bo-card" href="#" id="tot24-card" style="display:none">
+          <span class="bo-cardicon">🎃</span>
+          <h3>Remove the Oct 24 Trail of Treats</h3>
+          <p>Deletes the three leftover October 24 Trail of Treats calendar entries. The real
+             event on October 30 and its volunteer crew are not touched.</p>
+        </a>
+        <a class="bo-card" href="#" id="sidebar-cleanup-card" style="display:none">
+          <span class="bo-cardicon">🧹</span>
+          <h3>Clear event links from sidebars</h3>
+          <p>Removes every Event/Program page from the schools' left sidebar menus.</p>
+        </a>
+      </div>
+      <!-- People & Roles / Directory sign-ups cards used to live here; they're in the menu now. -->
+      <span id="people-card" hidden></span><span id="directory-card" hidden></span>
+    </section>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="admin-core.js?v=7"></script>
+  <script>
+    requireAdmin((me) => {
+      const W = workingSchool();
+      // Page categories that don't get their own menu item (Events & programs does).
+      document.getElementById('cat-cards').innerHTML = ['spiritwear', 'facilities', 'ideas'].map(c => {
+        const s = sectionByCat(c);
+        return `<a class="bo-card" href="${s.href}${W === ALL ? '' : '&s=' + W}"><span class="bo-cardicon">${s.icon}</span><h3>${s.label}</h3>
+          <p>${s.label} pages for ${esc(W === ALL ? 'every school' : SCHOOLS[W])}.</p></a>`;
+      }).join('');
+      if (me.isSuper || me.schools.includes('middle')) document.getElementById('onetime').hidden = false;
+
+      if (me.isSuper || me.schools.includes('middle')) {
+        const bfCard = document.getElementById('msbookfair-card');
+        bfCard.style.display = '';
+        bfCard.onclick = async (e) => {
+          e.preventDefault();
+          const TITLE = 'Middle School Book Fair';
+          try {
+            // Idempotent: if either piece already exists, don't create a second copy.
+            const [oldSheets, oldPages] = await Promise.all([
+              db.collection('signups').where('title', '==', TITLE + ': Volunteer Sign-Up').get(),
+              db.collection('pages').where('school', '==', 'middle').get()
+            ]);
+            const pageHit = oldPages.docs.find(d => (d.data().title || '').trim().toLowerCase() === TITLE.toLowerCase());
+            if (oldSheets.docs.length || pageHit) {
+              if (pageHit) { toast('Already set up — opening the page'); location.href = 'page-editor.html?id=' + pageHit.id; }
+              else { toast('The sign-up sheet already exists (Sign-Up Sheets) — not creating a second one', 'error'); }
+              return;
+            }
+            if (!confirm('Create the Middle School Book Fair sign-up sheet (10 shifts) and a draft page?')) return;
+
+            const days = [['Mon 9/28', '2026-09-28'], ['Tue 9/29', '2026-09-29'], ['Wed 9/30', '2026-09-30'],
+                          ['Thu 10/1', '2026-10-01'], ['Fri 10/2', '2026-10-02']];
+            const shifts = [['9am–11am', '09:00', '11:00'], ['12pm–2pm', '12:00', '14:00']];
+            const now = firebase.firestore.FieldValue.serverTimestamp();
+
+            const sheetRef = await db.collection('signups').add({
+              title: TITLE + ': Volunteer Sign-Up',
+              intro: 'Help us run the Middle School Book Fair! Pick a shift below.',
+              school: 'middle', status: 'open', askItem: false,
+              contactName: me.name, contactEmail: me.email,
+              createdBy: me.email, createdAt: now, updatedAt: now
+            });
+            let order = 0;
+            for (const [label, date] of days) {
+              for (const [when, start, end] of shifts) {
+                await sheetRef.collection('slots').add({
+                  label: label + ', ' + when, date, start, end, capacity: 0, order: order++, taken: 0
+                });
+              }
+            }
+
+            const pageRef = await db.collection('pages').add({
+              category: 'events', schools: ['middle'], school: 'middle',
+              title: TITLE, slug: slugify(TITLE),
+              showInTopMenu: false, showInLeftMenu: false,
+              eventDate: '2026-09-28', eventEndDate: '2026-10-02', status: 'draft',
+              blocks: [
+                { type: 'paragraph', text: 'The Middle School Book Fair is coming September 28 – October 2! We’re looking for volunteers to help throughout the week. Choose a shift below and sign up. Every hour helps make the fair a success for our students.' },
+                { type: 'heading', level: 2, text: 'Sign up to volunteer' },
+                { type: 'signup', sheetId: sheetRef.id, sheetTitle: TITLE + ': Volunteer Sign-Up', note: '' }
+              ],
+              createdBy: me.email, createdAt: now
+            });
+            toast('✓ Created the sign-up sheet and a draft page');
+            location.href = 'page-editor.html?id=' + pageRef.id;
+          } catch (err) { toast('Could not set it up: ' + err.message, 'error'); }
+        };
+      }
+      if (me.isSuper) {
+        const fpCard = document.getElementById('fallpages-card');
+        fpCard.style.display = '';
+        fpCard.onclick = async (e) => {
+          e.preventDefault();
+          // Dates and times come from the planning tracker; Homecoming is the 10/16
+          // finale day of Homecoming / Tat the Teacher week -- check it before publishing.
+          const SPECS = [
+            { title: 'Brawl for the Ball', date: '2026-11-13', end: '', time: '18:00' },
+            { title: 'Tat the Teacher', date: '2026-10-12', end: '2026-10-16', time: '' },
+            { title: 'Homecoming', date: '2026-10-16', end: '', time: '' },
+            { title: 'Light Up Schalmont with Santa', date: '2026-12-11', end: '', time: '18:00' }
+          ];
+          try {
+            const have = new Set((await db.collection('pages').get()).docs
+              .map(d => (d.data().title || '').trim().toLowerCase()));
+            const todo = SPECS.filter(x => !have.has(x.title.toLowerCase()));
+            if (!todo.length) { toast('All four already have pages'); return; }
+            if (!confirm('Create draft pages for: ' + todo.map(x => x.title).join(', ') + '?')) return;
+            const schools = ['middle', 'high'];
+            for (const x of todo) {
+              await db.collection('pages').add({
+                category: 'events', schools, school: routingSchool(schools),
+                title: x.title, slug: slugify(x.title),
+                showInTopMenu: false, showInLeftMenu: false,
+                eventDate: x.date, eventEndDate: x.end, eventTime: x.time, eventLocation: '',
+                status: 'draft', blocks: [],
+                createdBy: me.email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+              });
+            }
+            toast('✓ Created ' + todo.length + ' draft page' + (todo.length === 1 ? '' : 's'));
+            location.href = 'section.html?cat=events&s=middle';
+          } catch (err) { toast('Could not create pages: ' + err.message, 'error'); }
+        };
+        // Oct 2026 cleanup: Trail of Treats is Oct 30. These three Oct 24 entries were left over
+        // from an earlier date (two made by an unpublished draft page, one from an old spreadsheet import).
+        const totCard = document.getElementById('tot24-card');
+        totCard.style.display = '';
+        totCard.onclick = async (e) => {
+          e.preventDefault();
+          const IDS = ['0t1QgIFraoqVJNL295br', 'LrD6Y9DJTgjgFaIPGmTz', 'sheet_2026_10_24_trail_of_treats'];
+          const OLD_PAGE = 'y9CeegeahmYi6wuJV5m0';
+          try {
+            const snaps = await Promise.all(IDS.map(id => db.collection('pto_events').doc(id).get()));
+            const found = snaps.filter(d => d.exists && d.data().date === '2026-10-24');
+            if (!found.length) { toast('Already done: there are no Oct 24 Trail of Treats entries left'); return; }
+            if (!confirm('Delete these Oct 24 calendar entries?\n\n' + found.map(d => '• ' + d.data().title).join('\n') +
+                '\n\nThe Oct 30 Trail of Treats stays.')) return;
+            // Like the calendar's own Delete: a synced row is remembered so a re-import can't bring it back.
+            const synced = found.filter(d => d.data().source === 'sheet' || d.data().source === 'gcal').map(d => d.id);
+            if (synced.length) {
+              await db.collection('pto_events').doc('meta_deleted').set(
+                { ids: firebase.firestore.FieldValue.arrayUnion(...synced) }, { merge: true });
+            }
+            await Promise.all(found.map(d => d.ref.delete()));
+            toast('✓ Removed ' + found.length + ' Oct 24 entr' + (found.length === 1 ? 'y' : 'ies'));
+            // The two page-made entries came from an old, unpublished draft page; offer to remove it
+            // too so nobody republishes it and brings Oct 24 back.
+            const pg = await db.collection('pages').doc(OLD_PAGE).get();
+            if (pg.exists && pg.data().status !== 'published' && pg.data().eventDate === '2026-10-24' &&
+                confirm('Also delete the old unpublished draft page "' + (pg.data().title || 'Untitled') + '" (dated Oct 24)?')) {
+              await pg.ref.delete();
+              toast('✓ Removed the Oct 24 entries and the old draft page');
+            }
+          } catch (err) { toast('Could not remove them: ' + err.message, 'error'); }
+        };
+        document.getElementById('people-card').style.display = '';
+        document.getElementById('directory-card').style.display = '';
+        document.getElementById('sidebar-cleanup-card').style.display = '';
+        document.getElementById('sidebar-cleanup-card').onclick = async (e) => {
+          e.preventDefault();
+          try {
+            const snap = await db.collection('pages')
+              .where('category', '==', 'events').where('showInLeftMenu', '==', true).get();
+            if (!snap.docs.length) { toast('Already clean — no event pages are in a sidebar'); return; }
+            if (!confirm(`Remove ${snap.docs.length} event page(s) from the school sidebars?`)) return;
+            const batch = db.batch();
+            snap.docs.forEach(d => batch.update(d.ref, { showInLeftMenu: false }));
+            await batch.commit();
+            toast(`✓ Removed ${snap.docs.length} event page(s) from the sidebars`);
+          } catch (err) { toast('Could not clean up: ' + err.message, 'error'); }
+        };
+      }
+
+    });
+  </script>
+</body>
+</html>

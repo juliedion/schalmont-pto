@@ -13,96 +13,111 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="css/styles.css?v=6">
-  <link rel="stylesheet" href="css/home.css?v=1">
+  <link rel="stylesheet" href="css/home.css?v=12">
   <link rel="preload" as="image" href="images/hero-wide/hero-01.jpg" fetchpriority="high">
   <link rel="icon" href="images/favicon.svg">
+  <link rel="stylesheet" href="css/menus.css?v=1">
 </head>
 <body class="home2">
   <a class="hz-skip" href="#main">Skip to main content</a>
 
   <!-- HEADER -->
-  <header class="site-header">
-    <nav class="container nav-inner" aria-label="Main">
-      <a href="index.html" class="nav-brand hz-brand" aria-label="Schalmont PTO home">
-        <img src="images/logo-web.png" alt="Schalmont Central PTO" class="nav-logo-img" width="360" height="230">
-        <img src="images/jes-pto-tiger-web.png" alt="Woestina/Jefferson PTO" class="nav-logo-img" width="422" height="300">
+  <header class="site-header sh">
+    <nav class="sh-inner" aria-label="Main">
+      <a href="index.html" class="sh-brand" aria-label="Schalmont PTO home">
+        <img src="images/logo-web.png" alt="Schalmont Central PTO" width="360" height="230">
+        <img src="images/jes-pto-tiger-web.png" alt="Woestina/Jefferson PTO" width="422" height="300">
       </a>
-      <ul class="nav-links" id="site-nav-links">
-        <li><a href="index.html">Home</a></li>
-        <li class="has-dropdown">
-          <a aria-haspopup="true" href="jefferson.html">Woestina/Jefferson PTO</a>
-          <ul class="nav-dropdown">
-            <li><a href="index.html#calendar-jefferson">Events</a></li>
-            <li><a href="jefferson.html#program-grid">Programs</a></li>
-            <li><a href="about.html#jefferson-pto">About</a></li>
-            <li><a href="meetings.html#jefferson-pto">Meetings</a></li>
-            <li><a href="fundraisers.html#jefferson-pto">Shop to Support</a></li>
-            <li><a href="faq.html#jefferson-pto">FAQs</a></li>
-            <li><a href="donate.html">Donate</a></li>
-            <li><a href="volunteer.html">Volunteer</a></li>
-          </ul>
-        </li>
-        <li class="has-dropdown">
-          <a aria-haspopup="true" href="about.html#schalmont-central-pto">Schalmont PTO</a>
-          <ul class="nav-dropdown">
-            <li><a href="index.html#calendar-schalmont">Events</a></li>
-            <li><a href="middle-school.html#program-grid">Programs</a></li>
-            <li><a href="about.html#schalmont-central-pto">About</a></li>
-            <li><a href="meetings.html#schalmont-central-pto">Meetings</a></li>
-            <li><a href="fundraisers.html#schalmont-central-pto">Shop to Support</a></li>
-            <li><a href="faq.html#schalmont-central-pto">FAQs</a></li>
-            <li><a href="donate.html">Donate</a></li>
-            <li><a href="volunteer.html">Volunteer</a></li>
-          </ul>
-        </li>
-        <li><a href="shop.html">Shop</a></li>
-        <li><a href="directory.html">Directory</a></li>
-        <li class="has-dropdown">
-          <a aria-haspopup="true" href="contact.html">Contact</a>
-          <ul class="nav-dropdown">
-            <li><a href="about.html">About Us</a></li>
-            <li><a href="about.html#what-we-do">What the PTO Does</a></li>
-            <li><a href="fundraisers.html#advertise">Advertise to Support</a></li>
-          </ul>
-        </li>
-        <li><a href="login.html" class="nav-login" id="nav-login-btn">Login/Register</a></li>
-        <li class="nav-social-row"><a href="https://www.facebook.com/groups/schalmontpto/" target="_blank" rel="noopener" class="nav-social-icon" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a><a href="https://www.instagram.com/schalmontpto/" target="_blank" rel="noopener" class="nav-social-icon" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li>
-        <li><a href="get-involved.html" class="nav-cta">Get Involved</a></li>
-      </ul>
-      <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-links">☰</button>
+      <button type="button" class="sh-toggle" id="sh-toggle" aria-expanded="false" aria-controls="sh-menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menu</span></button>
+      <div class="sh-menu" id="sh-menu">
+        <ul class="sh-list">
+          <li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">Schools<svg class="sh-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="sh-drop sh-drop-schools"><a class="sh-school" href="woestina.html" style="--sc:#8bc341"><span class="sh-dot" aria-hidden="true"></span><span><b>Woestina Pre-K</b><small>Pre-K</small></span></a><a class="sh-school" href="jefferson.html" style="--sc:#6bb044"><span class="sh-dot" aria-hidden="true"></span><span><b>Jefferson Elementary</b><small>Grades K–4</small></span></a><a class="sh-school" href="middle-school.html" style="--sc:#087d40"><span class="sh-dot" aria-hidden="true"></span><span><b>Middle School</b><small>Grades 5–8</small></span></a><a class="sh-school" href="high-school.html" style="--sc:#044d2a"><span class="sh-dot" aria-hidden="true"></span><span><b>High School</b><small>Grades 9–12</small></span></a><a class="sh-all" href="schools.html">All schools →</a></div></li>
+          <li><a class="sh-top" href="events.html">Calendar</a></li>
+          <li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">Families<svg class="sh-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="sh-drop"><a href="picture-days.html">Picture days</a><a href="yearbooks.html">Yearbooks</a><a href="index.html#hz-lunch">Lunch menus</a><a href="directory.html">Parent directory</a><a href="gallery.html">Photo gallery</a><a href="sports.html">Sports</a><a href="family-scouts.html">Scouts</a></div></li><li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">Support<svg class="sh-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="sh-drop"><a href="volunteer.html">Volunteer</a><a href="donate.html">Donate</a><a href="fundraisers.html">Fundraisers</a><a href="shop.html">Spirit shop</a></div></li><li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">About<svg class="sh-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="sh-drop"><a href="about.html">About the PTO</a><a href="about.html#jefferson-pto">Woestina/Jefferson PTO</a><a href="about.html#schalmont-central-pto">Schalmont Central PTO</a><a href="meetings.html">Meetings</a><a href="faq.html">FAQs</a><a href="contact.html">Contact us</a><a href="social.html">Social media</a></div></li>
+        </ul>
+        <div class="sh-actions">
+          <a class="sh-icon" href="index.html#search" aria-label="Search the site"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></a>
+          <a class="sh-login" id="nav-login-btn" href="login.html">Login</a>
+          <a class="sh-social" href="https://www.facebook.com/groups/schalmontpto/" target="_blank" rel="noopener" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a><a class="sh-social" href="https://www.instagram.com/schalmontpto/" target="_blank" rel="noopener" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+          <a class="sh-cta" href="get-involved.html">Get Involved</a>
+        </div>
+      </div>
     </nav>
   </header>
 
   <main id="main">
   <div class="hz-top">
 
-    <!-- HERO: rotating approved photos (photo list lives in js/home.js) -->
-    <section class="hz-hero" id="hz-hero" aria-roledescription="carousel" aria-label="Schalmont community photos">
+    <!-- HERO: site search over rotating approved photos (photo list lives in js/home.js) -->
+    <section class="hz-hero" id="hz-hero" aria-label="Search the Schalmont PTO website">
       <div class="hz-wrap hz-hero-inner">
         <div class="hz-hero-copy">
           <p class="hz-eyebrow">Schalmont Central Schools PTO</p>
-          <h1>Supporting Every <span>Sabre's Story.</span></h1>
-          <p class="hz-hero-sub">Your daily hub for letter days, lunch, weather and PTO events at<br class="hz-br"> Woestina, Jefferson, the Middle School and the High School.</p>
-          <div class="hz-hero-actions">
-            <a href="#hz-calendar-section" class="hz-btn hz-btn-lime">📅 See the Calendar</a>
-            <a href="get-involved.html" class="hz-btn hz-btn-ghost">🙌 Get Involved</a>
-          </div>
+          <h1>What can we help you <span>find today?</span></h1>
+          <form class="hz-search" id="hz-search" role="search" action="#" autocomplete="off">
+            <label for="hz-q" class="sr-only">Search the PTO website</label>
+            <svg class="hz-search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+            <input id="hz-q" type="search" placeholder="Try “picture day”, “lunch” or “PTO meeting”" role="combobox" aria-expanded="false" aria-controls="hz-results" aria-autocomplete="list" enterkeyhint="search" spellcheck="false">
+            <kbd class="hz-kbd" aria-hidden="true">/</kbd>
+            <div class="hz-results" id="hz-results" role="listbox" aria-label="Search results" hidden></div>
+          </form>
+          <p class="sr-only" id="hz-search-status" aria-live="polite"></p>
+          <nav class="hz-popular" aria-label="Popular with parents">
+            <span>Popular:</span>
+            <a href="#today" data-flash="hz-card-letters">Letter day</a>
+            <a href="#hz-lunch" data-flash="hz-card-lunch">Lunch menu</a>
+            <a href="#school-pictures" data-flash="hz-pics">School pictures</a>
+            <a href="meetings.html">PTO meetings</a>
+            <a href="yearbooks.html">Yearbooks</a>
+            <a href="shop.html">Spiritwear</a>
+          </nav>
         </div>
-        <div class="hz-strip">
+        <div class="hz-strip" aria-roledescription="carousel" aria-label="Schalmont community photos">
           <div class="hz-slides" id="hz-slides" aria-live="off"></div>
         </div>
       </div>
       <div class="hz-hero-ctrl">
-        <button type="button" class="hz-arrow" id="hz-prev" aria-label="Previous photos">&#8249;</button>
+        <button type="button" class="hz-arrow" id="hz-prev" aria-label="Previous photo">&#8249;</button>
         <div class="hz-dots" id="hz-dots"></div>
-        <button type="button" class="hz-arrow" id="hz-next" aria-label="Next photos">&#8250;</button>
+        <button type="button" class="hz-arrow" id="hz-next" aria-label="Next photo">&#8250;</button>
       </div>
     </section>
 
     <div class="hz-wrap">
-      <!-- DAILY INFORMATION DASHBOARD -->
-      <h2 class="sr-only">Today at Schalmont</h2>
+      <!-- DAILY INFORMATION DASHBOARD: letter days, lunch, weather -->
+      <div class="hz-band-head" id="today">
+        <h2>Today at Schalmont <span id="hz-today-date"></span></h2>
+        <a href="#hz-subscribe" class="hz-band-link" id="hz-sub-link">📲 Add school calendars to your phone</a>
+      </div>
       <div class="hz-dash">
+
+        <section class="hz-card hz-card-letters" aria-labelledby="hz-ld-title">
+          <div class="hz-dash-head">
+            <h3 class="hz-card-title" id="hz-ld-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+              Letter Days
+            </h3>
+            <span class="hz-pill is-unknown" id="hz-ld-pill">Loading…</span>
+          </div>
+          <div id="hz-letters" aria-live="polite">
+            <div class="hz-ld-tiles">
+              <span class="hz-skel" style="height:112px;border-radius:14px"></span>
+              <span class="hz-skel" style="height:112px;border-radius:14px"></span>
+              <span class="hz-skel" style="height:112px;border-radius:14px"></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="hz-card hz-card-lunch" id="hz-lunch" aria-labelledby="hz-lunch-title">
+          <div class="hz-dash-head">
+            <h3 class="hz-card-title" id="hz-lunch-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M7 2v8a2 2 0 0 0 4 0V2M9 10v12M17 2c-2 2-3 5-3 8h3v12"/></svg>
+              School Lunch Menus
+            </h3>
+          </div>
+          <div class="hz-tabs" role="tablist" aria-label="Choose a school" id="hz-lunch-tabs"></div>
+          <div id="hz-lunch-panel" role="tabpanel" style="display:flex;flex-direction:column;flex:1"></div>
+        </section>
 
         <section class="hz-card hz-card-weather" aria-labelledby="hz-wx-title">
           <div class="hz-dash-head">
@@ -118,38 +133,49 @@
           </div>
         </section>
 
-        <section class="hz-card hz-card-letters" aria-labelledby="hz-ld-title">
-          <div class="hz-dash-head">
-            <h3 class="hz-card-title" id="hz-ld-title">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
-              Today's Letter Days
-            </h3>
-            <span class="hz-pill is-unknown" id="hz-ld-pill">Loading…</span>
-          </div>
-          <p class="hz-ld-date" id="hz-ld-date"></p>
-          <div id="hz-letters" aria-live="polite">
-            <div class="hz-ld-tiles">
-              <span class="hz-skel" style="height:112px;border-radius:14px"></span>
-              <span class="hz-skel" style="height:112px;border-radius:14px"></span>
-              <span class="hz-skel" style="height:112px;border-radius:14px"></span>
-            </div>
-          </div>
-        </section>
-
-        <section class="hz-card hz-card-lunch" aria-labelledby="hz-lunch-title">
-          <div class="hz-dash-head">
-            <h3 class="hz-card-title" id="hz-lunch-title">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M7 2v8a2 2 0 0 0 4 0V2M9 10v12M17 2c-2 2-3 5-3 8h3v12"/></svg>
-              School Lunch Menus
-            </h3>
-          </div>
-          <div class="hz-tabs" role="tablist" aria-label="Choose a school" id="hz-lunch-tabs"></div>
-          <div id="hz-lunch-panel" role="tabpanel" style="display:flex;flex-direction:column;flex:1"></div>
-        </section>
-
       </div>
 
+      <!-- THE DISTRICT'S PARENT APPS (run by the school district, not the PTO) -->
+      <section class="hz-apps" id="school-apps" aria-labelledby="hz-apps-title">
+        <h2 id="hz-apps-title">School apps for parents <span>Messages, grades, report cards &amp; the district website</span></h2>
+        <div class="hz-apps-grid">
+          <a class="hz-app" href="https://www.parentsquare.com/signin" target="_blank" rel="noopener">
+            <span class="hz-app-icon" aria-hidden="true">💬</span>
+            <span class="hz-app-main">
+              <b>ParentSquare <i aria-hidden="true">↗</i></b>
+              <small>School &amp; teacher messages, all grades</small>
+              <em>School code: <strong>28782</strong></em>
+            </span>
+          </a>
+          <a class="hz-app" href="https://parentportal-neric.eschooldata.com/SchalmontCSD" target="_blank" rel="noopener">
+            <span class="hz-app-icon" aria-hidden="true">📊</span>
+            <span class="hz-app-main">
+              <b>Parent Portal <i aria-hidden="true">↗</i></b>
+              <small>Progress reports &amp; report cards</small>
+            </span>
+          </a>
+          <a class="hz-app" href="https://app.schoology.com/login" target="_blank" rel="noopener">
+            <span class="hz-app-icon" aria-hidden="true">🎒</span>
+            <span class="hz-app-main">
+              <b>Schoology <i aria-hidden="true">↗</i></b>
+              <small>Class messages &amp; assignments, Middle &amp; High School</small>
+            </span>
+          </a>
+          <a class="hz-app" href="https://www.schalmont.org" target="_blank" rel="noopener">
+            <span class="hz-app-icon" aria-hidden="true">🏫</span>
+            <span class="hz-app-main">
+              <b>Schalmont CSD <i aria-hidden="true">↗</i></b>
+              <small>The official district website: news, closings, buses &amp; enrollment</small>
+            </span>
+          </a>
+        </div>
+      </section>
+
       <!-- THE TWO PTOs' UPCOMING EVENTS (from the back office calendar) -->
+      <div class="hz-band-head" id="coming-up">
+        <h2>Coming up from your PTOs</h2>
+        <a href="#hz-calendar-section" class="hz-band-link" data-cal-filter="all">See everything on the calendar →</a>
+      </div>
       <div class="hz-ptos">
         <section class="hz-card hz-pto" aria-labelledby="hz-jes-title">
           <div class="hz-pto-head">
@@ -187,17 +213,151 @@
           </div>
         </section>
       </div>
+
+      <!-- SCHOOL PICTURES: where each school's portrait company takes orders -->
+      <section class="hz-pics" id="school-pictures" aria-labelledby="hz-pics-title">
+        <div class="hz-pics-head">
+          <h2 id="hz-pics-title"><span aria-hidden="true">📸</span> School pictures</h2>
+          <p>Order prints and see your child's photos. Each school uses its own photo company.</p>
+          <a class="hz-pics-more" href="picture-days.html">Picture day dates →</a>
+        </div>
+        <div class="hz-pics-grid">
+          <div class="hz-pic">
+            <span class="hz-pic-school">Woestina Pre-K &amp; Jefferson Elementary</span>
+            <b>iSmile Studios</b>
+            <span class="hz-pic-date">📅 Jefferson retakes: Fri, Nov 6</span>
+            <a class="hz-pic-btn" href="https://ismilestudios.gotphoto.com" target="_blank" rel="noopener">Order photos ↗</a>
+          </div>
+          <div class="hz-pic">
+            <span class="hz-pic-school">Middle School</span>
+            <b>Adirondack School Portraits</b>
+            <span class="hz-pic-date">📅 Retakes: Fri, Nov 20</span>
+            <span class="hz-pic-code">Code: <strong>26SHLMT</strong></span>
+            <a class="hz-pic-btn" href="https://adirondackschoolportraits.com" target="_blank" rel="noopener">Order photos ↗</a>
+          </div>
+          <div class="hz-pic">
+            <span class="hz-pic-school">High School</span>
+            <b>Upstate Images</b>
+            <span class="hz-pic-date">📅 Retakes: Thu, Nov 12</span>
+            <span class="hz-pic-code">Code: <strong>21714F2627</strong></span>
+            <span class="hz-pic-contact">Questions: Mrs. Tracy Pontin<br><a href="mailto:tpontin@schalmont.net">tpontin@schalmont.net</a></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- YEARBOOKS: ordering status per school (details on yearbooks.html) -->
+      <section class="hz-pics hz-yb" id="yearbooks" aria-labelledby="hz-yb-title">
+        <div class="hz-pics-head">
+          <h2 id="hz-yb-title"><span aria-hidden="true">📘</span> Yearbooks</h2>
+          <p>Ordering for each school, plus a place to send in your photos for the yearbook.</p>
+          <a class="hz-pics-more" href="yearbook-upload.html">Send in yearbook photos →</a>
+        </div>
+        <div class="hz-pics-grid hz-yb-grid">
+          <a class="hz-pic hz-yb-card" href="woestina.html#yearbook">
+            <span class="hz-pic-school">Woestina Pre-K</span>
+            <span class="hz-yb-status is-wait">Not yet confirmed</span>
+            <span class="hz-yb-price">Price not announced</span>
+            <span class="hz-pic-btn">Yearbook page →</span>
+          </a>
+          <a class="hz-pic hz-yb-card" href="yearbook-jefferson.html">
+            <span class="hz-pic-school">Jefferson Elementary · K–4</span>
+            <span class="hz-yb-status is-wait">Not yet confirmed</span>
+            <span class="hz-yb-price">Price not announced</span>
+            <span class="hz-pic-btn">Yearbook page →</span>
+          </a>
+          <a class="hz-pic hz-yb-card" href="yearbook-middle.html">
+            <span class="hz-pic-school">Middle School · 5–8</span>
+            <span class="hz-yb-status is-open">Orders open</span>
+            <span class="hz-yb-price"><b>$25</b> through Dec. 31, 2026<br><b>$30</b> through Apr. 16, 2027</span>
+            <span class="hz-yb-how">Order via the link in the morning Schoology announcements</span>
+            <span class="hz-pic-btn">Yearbook page →</span>
+          </a>
+          <a class="hz-pic hz-yb-card" href="yearbook-high.html">
+            <span class="hz-pic-school">High School · 9–12</span>
+            <span class="hz-yb-status is-wait">2027 details coming</span>
+            <span class="hz-yb-price">Price not confirmed</span>
+            <span class="hz-pic-btn">Yearbook page →</span>
+          </a>
+        </div>
+      </section>
+
     </div>
   </div>
 
+  <!-- FIND YOUR SCHOOL -->
+  <section class="hz-section" id="find-your-school" aria-labelledby="hz-schools-title">
+    <div class="hz-wrap">
+      <div class="hz-section-head"><div><p class="hz-kicker">Start with your child's school</p><h2 id="hz-schools-title">Find Your School</h2><p>Events, class pages, yearbooks and contacts for each school.</p></div><a href="schools.html" class="hz-link">All schools →</a></div>
+      <div class="hz-schools">
+        <div class="hz-school" style="--sc:#8bc341"><a href="woestina.html" class="hz-school-main"><b>Woestina Pre-K</b><span>Ages 3–4 · Woestina/Jefferson PTO</span><em>School page →</em></a>
+          <p class="hz-school-links"><a href="woestina.html#yearbook">Yearbook</a><a href="fundraisers-woestina.html">Fundraisers</a></p>
+          <nav class="hz-classes" aria-label="Woestina class pages"><a href="classof2040.html">Class of 2040 · Pre-K</a></nav></div>
+        <div class="hz-school" style="--sc:#6bb044"><a href="jefferson.html" class="hz-school-main"><b>Jefferson Elementary</b><span>Grades K–4 · Woestina/Jefferson PTO</span><em>School page →</em></a>
+          <p class="hz-school-links"><a href="yearbook-jefferson.html">Yearbook</a><a href="school-supplies.html">Supplies</a><a href="fundraisers-jefferson.html">Fundraisers</a></p>
+          <nav class="hz-classes" aria-label="Jefferson class pages"><a href="classof2039.html">K · 2039</a><a href="classof2038.html">1st · 2038</a><a href="classof2037.html">2nd · 2037</a><a href="classof2036.html">3rd · 2036</a><a href="classof2035.html">4th · 2035</a></nav></div>
+        <div class="hz-school" style="--sc:#087d40"><a href="middle-school.html" class="hz-school-main"><b>Schalmont Middle School</b><span>Grades 5–8 · Schalmont Central PTO</span><em>School page →</em></a>
+          <p class="hz-school-links"><a href="yearbook-middle.html">Yearbook</a><a href="book-fairs-middle.html">Book fair</a><a href="fundraisers-middle-school.html">Fundraisers</a></p>
+          <nav class="hz-classes" aria-label="Middle School class pages"><a href="classof2034.html">5th · 2034</a><a href="classof2033.html">6th · 2033</a><a href="classof2032.html">7th · 2032</a><a href="classof2031.html">8th · 2031</a></nav></div>
+        <div class="hz-school" style="--sc:#044d2a"><a href="high-school.html" class="hz-school-main"><b>Schalmont High School</b><span>Grades 9–12 · Schalmont Central PTO</span><em>School page →</em></a>
+          <p class="hz-school-links"><a href="yearbook-high.html">Yearbook</a><a href="sports.html">Sports</a><a href="fundraisers-high-school.html">Fundraisers</a></p>
+          <nav class="hz-classes" aria-label="High School class pages"><a href="classof2030.html">Fr · 2030</a><a href="classof2029.html">So · 2029</a><a href="classof2028.html">Jr · 2028</a><a href="classof2027.html">Sr · 2027</a></nav></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- I WANT TO… (task-based shortcuts) -->
+  <section class="hz-section hz-white hz-tasks-section" aria-labelledby="hz-tasks-title">
+    <div class="hz-wrap">
+      <div class="hz-section-head"><div><p class="hz-kicker">Shortcuts</p><h2 id="hz-tasks-title">I want to…</h2></div></div>
+      <div class="hz-tasks">
+        <nav class="hz-card hz-task" aria-labelledby="hz-t1">
+          <h3 id="hz-t1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Plan ahead</h3>
+          <ul>
+            <li><a href="#hz-calendar-section" data-cal-filter="all">See the PTO &amp; district calendar</a></li>
+            <li><a href="meetings.html">Go to a PTO meeting</a></li>
+            <li><a href="picture-days.html">Check picture days</a></li>
+            <li><a href="area-events.html">Find area family events</a></li>
+          </ul>
+        </nav>
+        <nav class="hz-card hz-task" aria-labelledby="hz-t2">
+          <h3 id="hz-t2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>Shop &amp; order</h3>
+          <ul>
+            <li><a href="shop.html">Spiritwear shop (coming soon)</a></li>
+            <li><a href="yearbooks.html">Order a yearbook</a></li>
+            <li><a href="yearbook-upload.html">Send in yearbook photos</a></li>
+            <li><a href="fundraisers.html">Shop a fundraiser</a></li>
+          </ul>
+        </nav>
+        <nav class="hz-card hz-task" aria-labelledby="hz-t3">
+          <h3 id="hz-t3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.3-9.2C1.4 8.4 3.6 5 7 5c2 0 3.4 1.1 5 3 1.6-1.9 3-3 5-3 3.4 0 5.6 3.4 4.3 6.8C19.5 16.4 12 21 12 21z"/></svg>Help out</h3>
+          <ul>
+            <li><a href="volunteer.html">Sign up to volunteer</a></li>
+            <li><a href="donate.html">Donate to a PTO</a></li>
+            <li><a href="get-involved.html">See ways to get involved</a></li>
+            <li><a href="fundraisers.html#advertise">Sponsor or advertise</a></li>
+          </ul>
+        </nav>
+        <nav class="hz-card hz-task" aria-labelledby="hz-t4">
+          <h3 id="hz-t4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.5v.01"/></svg>Get answers</h3>
+          <ul>
+            <li><a href="faq.html">Read the FAQs</a></li>
+            <li><a href="contact.html">Contact the PTO</a></li>
+            <li><a href="about.html">Meet the PTO board</a></li>
+            <li><a href="https://www.schalmont.org" target="_blank" rel="noopener"><span>Buses, closings &amp; enrollment <span class="hz-ext">· district site ↗</span></span></a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </section>
+
   <!-- COMBINED CALENDAR -->
-  <section class="hz-section hz-light" id="hz-calendar-section" aria-labelledby="hz-cal-title">
+  <section class="hz-section" id="hz-calendar-section" aria-labelledby="hz-cal-title">
     <div class="hz-wrap">
       <div class="hz-section-head">
         <div>
           <p class="hz-kicker">One calendar for everything</p>
           <h2 id="hz-cal-title">PTO &amp; District Calendar</h2>
-          <p>Jefferson PTO, Schalmont Central PTO and district dates together. Tap any event for details.</p>
+          <p>What's coming up over the next five weeks, from both PTOs and the district. Tap any event for details.</p>
         </div>
         <a href="events.html" class="hz-link">Open the events page →</a>
       </div>
@@ -213,7 +373,7 @@
         <div id="hz-calendar">
           <div class="hz-cal-status" id="hz-cal-status" aria-live="polite">Loading the calendar…</div>
         </div>
-        <details class="hz-subscribe">
+        <details class="hz-subscribe" id="hz-subscribe">
           <summary>📲 Add school calendars to your phone</summary>
           <div class="hz-subscribe-grid">
             <div><b>Jefferson Elementary</b>
@@ -244,71 +404,8 @@
     <div class="hz-dialog-body" id="hz-dlg-body"></div>
   </dialog>
 
-  <!-- QUICK LINKS -->
-  <section class="hz-section hz-quick" aria-labelledby="hz-quick-title">
-    <div class="hz-wrap">
-      <div class="hz-section-head"><div><p class="hz-kicker">Jump right in</p><h2 id="hz-quick-title">Quick Links</h2></div></div>
-      <nav class="hz-quick-grid" aria-label="Quick links">
-        <a class="hz-q" href="events.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4M8 13h3M8 17h6"/></svg>Full Calendar</a>
-        <a class="hz-q" href="volunteer.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.3-9.2C1.4 8.4 3.6 5 7 5c2 0 3.4 1.1 5 3 1.6-1.9 3-3 5-3 3.4 0 5.6 3.4 4.3 6.8C19.5 16.4 12 21 12 21z"/></svg>Volunteer</a>
-        <a class="hz-q" href="fundraisers.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .9-3 2.2 0 3 6 1.6 6 4.6 0 1.3-1.3 2.2-3 2.2-1.5 0-2.6-.6-3.1-1.6M12 6v2M12 16v2"/></svg>Fundraisers</a>
-        <a class="hz-q" href="shop.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 3 3 6l2 4 2-1v12h10V9l2 1 2-4-5-3c0 2-1.8 3-4 3S8 5 8 3z"/></svg>Spiritwear Shoppe</a>
-        <a class="hz-q" href="gallery.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="15" rx="3"/><circle cx="9" cy="10.5" r="1.8"/><path d="m21 16-5-5-8 9"/></svg>Photo Gallery</a>
-        <a class="hz-q" href="contact.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>Contact Us</a>
-      </nav>
-    </div>
-  </section>
-
-  <!-- COMMUNITY MOMENTS -->
-  <section class="hz-section" aria-labelledby="hz-moments-title">
-    <div class="hz-wrap">
-      <div class="hz-section-head">
-        <div><p class="hz-kicker">From our schools</p><h2 id="hz-moments-title">Community Moments</h2></div>
-        <div class="hz-moments-ctrl">
-          <a href="gallery.html" class="hz-link" style="margin-right:6px">View the full gallery →</a>
-          <button type="button" class="hz-round" id="hz-m-prev" aria-label="Scroll photos left">&#8249;</button>
-          <button type="button" class="hz-round" id="hz-m-next" aria-label="Scroll photos right">&#8250;</button>
-        </div>
-      </div>
-      <div>
-        <div class="hz-track" id="hz-track" tabindex="0" aria-label="Community photos — use the arrow keys to scroll"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FIND YOUR SCHOOL -->
-  <section class="hz-section hz-light" id="find-your-school" aria-labelledby="hz-schools-title">
-    <div class="hz-wrap">
-      <div class="hz-section-head"><div><p class="hz-kicker">Our schools</p><h2 id="hz-schools-title">Find Your School</h2><p>Events, resources and contacts for each school community.</p></div></div>
-      <div class="hz-schools">
-        <div class="hz-school" style="--sc:#8bc341"><a href="woestina.html"><b>Woestina Pre-K</b><span>Ages 3–4</span><em>Visit page →</em></a>
-          <nav class="hz-classes" aria-label="Woestina class pages"><a href="classof2040.html">Class of 2040 · Pre-K</a></nav></div>
-        <div class="hz-school" style="--sc:#6bb044"><a href="jefferson.html"><b>Jefferson Elementary</b><span>Grades K–4</span><em>Visit page →</em></a>
-          <nav class="hz-classes" aria-label="Jefferson class pages"><a href="classof2039.html">2039 · K</a><a href="classof2038.html">2038 · 1st</a><a href="classof2037.html">2037 · 2nd</a><a href="classof2036.html">2036 · 3rd</a><a href="classof2035.html">2035 · 4th</a></nav></div>
-        <div class="hz-school" style="--sc:#087d40"><a href="middle-school.html"><b>Schalmont Middle School</b><span>Grades 5–8</span><em>Visit page →</em></a>
-          <nav class="hz-classes" aria-label="Middle School class pages"><a href="classof2034.html">2034 · 5th</a><a href="classof2033.html">2033 · 6th</a><a href="classof2032.html">2032 · 7th</a><a href="classof2031.html">2031 · 8th</a></nav></div>
-        <div class="hz-school" style="--sc:#044d2a"><a href="high-school.html"><b>Schalmont High School</b><span>Grades 9–12</span><em>Visit page →</em></a>
-          <nav class="hz-classes" aria-label="High School class pages"><a href="classof2030.html">2030 · Fr</a><a href="classof2029.html">2029 · So</a><a href="classof2028.html">2028 · Jr</a><a href="classof2027.html">2027 · Sr</a></nav></div>
-      </div>
-      <p class="hz-more-links">More: <a href="donate.html">Donate</a> · <a href="family-scouts.html">Scouts</a> · <a href="sports.html">Sports</a> · <a href="yearbooks.html">Yearbooks</a> · <a href="directory.html">Parent Directory</a> · <a href="schools.html">All schools</a></p>
-    </div>
-  </section>
-
-  <!-- YEARBOOKS -->
-  <section class="hz-section hz-light" style="padding-top:0" aria-labelledby="hz-yb-title">
-    <div class="hz-wrap">
-      <div class="hz-section-head"><div><p class="hz-kicker">Preserve the memories</p><h2 id="hz-yb-title">Yearbooks &amp; Photo Submissions</h2><p>Order your child's yearbook and send in photos to be featured.</p></div><a href="yearbook-upload.html" class="hz-btn hz-btn-dark hz-btn-sm">📸 Submit yearbook photos</a></div>
-      <div class="hz-grid4">
-        <div class="hz-card hz-mini"><h3>Woestina Pre-K</h3><p>Upload photos for this year's Woestina yearbook.</p><a class="hz-link" href="woestina.html#yearbook">Yearbook page →</a></div>
-        <div class="hz-card hz-mini"><h3>Jefferson Elementary</h3><p>Order the yearbook and upload photos for this year's book.</p><a class="hz-link" href="yearbook-jefferson.html">Yearbook page →</a></div>
-        <div class="hz-card hz-mini"><h3>Middle School</h3><p>Order the yearbook and upload photos for this year's book.</p><a class="hz-link" href="yearbook-middle.html">Yearbook page →</a></div>
-        <div class="hz-card hz-mini"><h3>High School</h3><p>Order now — limited quantities. Upload your photos too.</p><a class="hz-link" href="yearbook-high.html">Yearbook page →</a></div>
-      </div>
-    </div>
-  </section>
-
   <!-- STAY CONNECTED: directory + social -->
-  <section class="hz-section" aria-labelledby="hz-connect-title">
+  <section class="hz-section hz-white" aria-labelledby="hz-connect-title">
     <div class="hz-wrap" style="display:grid;gap:16px">
       <div class="hz-band">
         <div>
@@ -334,8 +431,25 @@
     </div>
   </section>
 
+  <!-- COMMUNITY MOMENTS -->
+  <section class="hz-section" aria-labelledby="hz-moments-title">
+    <div class="hz-wrap">
+      <div class="hz-section-head">
+        <div><p class="hz-kicker">From our schools</p><h2 id="hz-moments-title">Community Moments</h2></div>
+        <div class="hz-moments-ctrl">
+          <a href="gallery.html" class="hz-link" style="margin-right:6px">View the full gallery →</a>
+          <button type="button" class="hz-round" id="hz-m-prev" aria-label="Scroll photos left">&#8249;</button>
+          <button type="button" class="hz-round" id="hz-m-next" aria-label="Scroll photos right">&#8250;</button>
+        </div>
+      </div>
+      <div>
+        <div class="hz-track" id="hz-track" tabindex="0" aria-label="Community photos — use the arrow keys to scroll"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- WHO WE ARE -->
-  <section class="hz-section hz-light" aria-labelledby="hz-about-title">
+  <section class="hz-section hz-white" aria-labelledby="hz-about-title">
     <div class="hz-wrap">
       <div class="hz-section-head">
         <div>
@@ -357,7 +471,7 @@
   </main>
 
   <!-- Homepage dashboard: runs immediately; event panels wait for Firebase below -->
-  <script src="js/home.js?v=1"></script>
+  <script src="js/home.js?v=11"></script>
 
   <section class="partners-section">
     <div class="partners-section-header">
@@ -489,6 +603,7 @@
   <script src="js/firebase-config.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
-  <script src="js/public-calendar.js?v=3"></script>
+  <script src="js/public-calendar.js?v=5"></script>
+  <script src="js/menus.js?v=1"></script>
 </body>
 </html>

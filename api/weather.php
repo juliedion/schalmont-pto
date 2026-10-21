@@ -13,6 +13,8 @@
  * `code` is a WMO weather code (both sources are mapped to it) so the page has one icon set.
  */
 
+// A PHP notice or warning printed into the response would break the JSON (and the card).
+ini_set('display_errors', '0');
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: public, max-age=600');
 date_default_timezone_set('America/New_York');
@@ -54,7 +56,6 @@ function get_json($url, $timeout = 8) {
   ]);
   $body = curl_exec($ch);
   $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-  curl_close($ch);
   if ($body === false || $code !== 200) return null;
   $j = json_decode($body, true);
   return is_array($j) ? $j : null;
