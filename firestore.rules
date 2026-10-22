@@ -249,11 +249,15 @@ service cloud.firestore {
       // signer's cancel/edit request is checked against — see entries above).
       match /contacts/{eid} {
         allow read: if isAnyAdmin();
-        // Email is required; phone is always optional.
+        // Email is required; phone is always optional. A sheet with "Require a date of
+        // birth" also sends birthdate (YYYY-MM-DD) -- kept here, admin-only, never in the
+        // public entries.
         allow create: if isAnyAdmin() || (
-          request.resource.data.keys().hasOnly(['email','phone','comment'])
+          request.resource.data.keys().hasOnly(['email','phone','comment','birthdate'])
           && request.resource.data.email is string && request.resource.data.email.size() > 0
           && request.resource.data.phone is string
+          && (!('birthdate' in request.resource.data)
+              || (request.resource.data.birthdate is string && request.resource.data.birthdate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')))
         );
         allow update, delete: if isAnyAdmin();
       }

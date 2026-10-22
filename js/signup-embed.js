@@ -24,6 +24,9 @@
 (function (global) {
   var WORK_SCHOOL_OPTIONS = ['Woestina', 'Jefferson', 'Middle School', 'High School', 'District', 'Other'];
   function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+  var DEFAULT_AGE_NOTE = 'Volunteers for this role must be high school juniors, seniors, or adults.';
+  // Today as YYYY-MM-DD in local time (the latest date of birth allowed).
+  function todayYmd() { var t = new Date(); return t.getFullYear() + '-' + ('0' + (t.getMonth() + 1)).slice(-2) + '-' + ('0' + t.getDate()).slice(-2); }
   // The Intro field allows a small safe subset of HTML (bold/italic/underline, a
   // font-size-only span) set via the admin's rich text toolbar -- re-sanitize on the
   // way out too, in case anything ever reaches Firestore without going through that.
@@ -172,6 +175,8 @@
       html += '</div>';
     }
     if (sheet.intro) html += '<div class="pg-su-intro">' + sanitizeIntroHtml(sheet.intro) + '</div>';
+    // A sheet can require a date of birth (e.g. roles limited to older students); say so up front.
+    if (sheet.askBirthdate === true) html += '<div class="pg-su-age">🎂 ' + esc(sheet.ageNote || DEFAULT_AGE_NOTE) + ' A date of birth is required to sign up.</div>';
     if (sheet.imageUrl) {
       var imgMargin = alignMargin(sheet.imageAlign);
       html += '<figure class="pg-su-figure"' + (imgMargin ? ' style="' + imgMargin + '"' : '') + '><img src="' + esc(sheet.imageUrl) + '" alt="' + esc(sheet.imageAlt || '') + '">' +
@@ -204,7 +209,7 @@
         html += '<button type="button" class="pg-su-open">Sign up</button>';
       }
       if (!myEntry && !closed && (!full || (prefill && prefill.slotId === d.id))) {
-        html += formHtml(prefill && prefill.slotId === d.id ? prefill : null, sheet.askItem !== false, sheet.askSchool === true);
+        html += formHtml(prefill && prefill.slotId === d.id ? prefill : null, sheet.askItem !== false, sheet.askSchool === true, sheet.askBirthdate === true);
       }
       html += '</div>';
     });
@@ -229,11 +234,13 @@
     });
   }
 
-  function formHtml(prefill, askItem, askSchool) {
+  function formHtml(prefill, askItem, askSchool, askBirthdate) {
     prefill = prefill || {};
     return '<form class="pg-su-form' + (prefill.open ? ' open' : '') + '">' +
       '<label>Your name</label><input name="name" required maxlength="80" placeholder="First and last name" value="' + esc(prefill.name || '') + '">' +
       '<label>Email</label><input name="email" type="email" required value="' + esc(prefill.email || '') + '">' +
+    (askBirthdate ? '<label>Date of birth</label><input name="birthdate" type="date" required min="1900-01-01" max="' + todayYmd() + '" value="' + esc(prefill.birthdate || '') + '">' +
+      '<div class="pg-su-dob-note">Required for this role. Kept private — only PTO organizers see it.</div>' : '') +
       (askSchool ? '<label>Which school do you work for?</label><select name="workSchool" required>' +
         '<option value="" disabled' + (prefill.workSchool ? '' : ' selected') + '>Select a school…</option>' +
         WORK_SCHOOL_OPTIONS.map(function (o) { return '<option value="' + esc(o) + '"' + (prefill.workSchool === o ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') +
@@ -256,11 +263,15 @@
     var email = form.email.value.trim(), phone = form.phone.value.trim(), comment = form.comment.value.trim();
     var item = form.item ? form.item.value.trim() : '';
     var workSchool = form.workSchool ? form.workSchool.value : '';
+    var birthdate = form.birthdate ? form.birthdate.value : '';
     var msg = form.querySelector('.pg-su-msg');
     if (!name || !email) {
       msg.className = 'pg-su-msg err'; msg.textContent = 'Name and email are required.'; return;
     }
-    if (form.workSchool && !workSchool) {
+    if (form.birthdate && !(/^\d{4}-\d{2}-\d{2}$/.test(birthdate) && birthdate >= '1900-01-01' && birthdate <= todayYmd())) {
+    msg.className = 'pg-su-msg err'; msg.textContent = 'Please enter a valid date of birth.'; return;
+  }
+  if (form.workSchool && !workSchool) {
       msg.className = 'pg-su-msg err'; msg.textContent = 'Please select which school you work for.'; return;
     }
     var btn = form.querySelector('button[type=submit]'); btn.disabled = true;
@@ -283,10 +294,10 @@
         if (workSchool) entryData.workSchool = workSchool;
         tx.set(eref, entryData);
         tx.set(db.collection('signups').doc(id).collection('contacts').doc(eref.id),
-          { email: email, phone: phone, comment: comment });
+          birthdate ? { email: email, phone: phone, comment: comment, birthdate: birthdate } : { email: email, phone: phone, comment: comment });
       });
     }).then(function () {
-      rememberMine(id, { entryId: newEntryId, slotId: slotId, name: name, email: email, phone: phone, comment: comment, item: item, workSchool: workSchool });
+      rememberMine(id, { entryId: newEntryId, slotId: slotId, name: name, email: email, phone: phone, comment: comment, item: item, workSchool: workSchool, birthdate: birthdate });
       msg.className = 'pg-su-msg done'; msg.textContent = '✓ You\'re signed up. Thank you! Check your email for a confirmation.';
       // Best-effort — a confirmation to the signer, plus whoever's watching this sheet.
       // Never blocks or affects the sign-up itself, which is already saved by this point.
@@ -348,7 +359,7 @@
       ]).then(function (res) {
         render(db, el, id, sheet, res[0].docs, res[1].docs, {
           slotId: slotId, open: true,
-          name: priorFields.name, email: priorFields.email, phone: priorFields.phone, comment: priorFields.comment, item: priorFields.item, workSchool: priorFields.workSchool
+          name: priorFields.name, email: priorFields.email, phone: priorFields.phone, comment: priorFields.comment, item: priorFields.item, workSchool: priorFields.workSchool, birthdate: priorFields.birthdate
         });
       });
     });
