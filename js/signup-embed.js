@@ -10,7 +10,7 @@
 
    Call mountSignupEmbeds(db) once after the page's blocks are in
    the DOM (each block that needs it renders a
-   <div class="pg-su-embed" data-signup-id="..."></div>
+   <div class="pg-su-embed" data-signup-id="..."></div>   (or data-signup-slug="...")
    placeholder — see render-blocks.js).
 
    Cancelling/editing your own sign-up: anonymous visitors don't
@@ -367,5 +367,15 @@
 
   global.mountSignupEmbeds = function (db) {
     document.querySelectorAll('.pg-su-embed[data-signup-id]').forEach(function (el) { loadOne(db, el); });
+    // A hand-built page can point at a sheet by its custom address instead of its id:
+    //   <div class="pg-su-embed" data-signup-slug="5th-grade-dance-volunteers">fallback…</div>
+    // Until a sheet with that address exists, the element's own fallback content stays.
+    document.querySelectorAll('.pg-su-embed[data-signup-slug]:not([data-signup-id])').forEach(function (el) {
+      db.collection('signups').where('slug', '==', el.dataset.signupSlug).limit(1).get().then(function (q) {
+        if (q.empty) return;
+        el.dataset.signupId = q.docs[0].id;
+        loadOne(db, el);
+      }).catch(function () { /* keep the fallback */ });
+    });
   };
 })(window);

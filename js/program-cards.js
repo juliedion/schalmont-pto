@@ -554,13 +554,13 @@ const PROGRAM_CARDS_DEFAULTS = {
       "id": "grade5-dance",
       "icon": "💃",
       "title": "5th Grade Dance",
-      "badgeType": "past",
-      "badgeText": "✓ Past Event",
-      "desc": "Thank you to all the 5th graders, parents, and volunteers who made the 5th Grade Dance a wonderful event! Stay tuned for future events.",
+      "badgeType": "active",
+      "badgeText": "Fri, Jan 22",
+      "desc": "Friday, January 22, 7:00–9:00 PM with DJ Ketchup. 5th graders are voting on the theme: Emerald City or Sabre City! Parents, sign up if you're interested in volunteering.",
       "actions": [
         {
-          "label": "Upload Yearbook Photos →",
-          "href": "https://www.dropbox.com/request/n7fxvrd8v7icteedq2sn",
+          "label": "Details & Volunteer →",
+          "href": "5th-grade-dance.html",
           "cls": "btn btn-primary"
         }
       ],
