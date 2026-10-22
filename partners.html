@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="Partner Groups — Schalmont PTO">
+  <meta property="og:image" content="https://schalmontpto.com/images/Schalmont-PTO-logo.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:image" content="https://schalmontpto.com/images/Schalmont-PTO-logo.png">
+  <title>Partner Groups — Schalmont PTO</title>
+  <meta name="description" content="Schalmont groups the PTO partners with: Student Council, Schalmont Athletic Association, Friends of Music, Friends of the Library, Scouts and Girl Scouts.">
+  <link rel="stylesheet" href="css/styles.css?v=5">
+  <link rel="icon" href="images/favicon.svg">
+  <style>
+    .pt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .pt-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 24px; display: flex; flex-direction: column; transition: box-shadow var(--transition), transform var(--transition); }
+    .pt-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+    .pt-icon { width: 56px; height: 56px; border-radius: 16px; background: #eef7ec; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 14px; }
+    .pt-card h3 { font-size: 18px; margin-bottom: 8px; color: var(--primary-dark); }
+    .pt-card p { font-size: 14px; line-height: 1.6; color: var(--text); flex: 1; margin-bottom: 16px; }
+    .pt-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pt-btn { font-size: 13px; padding: 8px 16px; }
+    .pt-note { margin-top: 28px; background: var(--light-bg); border-radius: var(--radius-lg); padding: 20px 24px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; text-align: center; }
+  </style>
+  <link rel="stylesheet" href="css/menus.css?v=2">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header sh">
+    <nav class="sh-inner" aria-label="Main">
+      <a href="index.html" class="sh-brand" aria-label="Schalmont PTO home">
+        <img src="images/logo-web.png" alt="Schalmont Central PTO" width="360" height="230">
+        <img src="images/jes-pto-tiger-web.png" alt="Woestina/Jefferson PTO" width="422" height="300">
+      </a>
+      <button type="button" class="sh-toggle" id="sh-toggle" aria-expanded="false" aria-controls="sh-menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menu</span></button>
+      <div class="sh-menu" id="sh-menu">
+        <ul class="sh-list">
+          <li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">Schools<svg class="sh-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="sh-drop sh-drop-schools"><a class="sh-school" href="woestina.html" style="--sc:#8bc341"><span class="sh-dot" aria-hidden="true"></span><span><b>Woestina Pre-K</b><small>Pre-K</small></span></a><a class="sh-school" href="jefferson.html" style="--sc:#6bb044"><span class="sh-dot" aria-hidden="true"></span><span><b>Jefferson Elementary</b><small>Grades K–4</small></span></a><a class="sh-school" href="middle-school.html" style="--sc:#087d40"><span class="sh-dot" aria-hidden="true"></span><span><b>Middle School</b><small>Grades 5–8</small></span></a><a class="sh-school" href="high-school.html" style="--sc:#044d2a"><span class="sh-dot" aria-hidden="true"></span><span><b>High School</b><small>Grades 9–12</small></span></a><a class="sh-all" href="schools.html">All schools →</a></div></li>
+          <li><a class="sh-top" href="events.html">Calendar</a></li>
+          <li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">Families<svg class="sh-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="sh-drop"><a href="picture-days.html">Picture days</a><a href="yearbooks.html">Yearbooks</a><a href="index.html#hz-lunch">Lunch menus</a><a href="directory.html">Parent directory</a><a href="gallery.html">Photo gallery</a><a href="sports.html">Sports</a><a href="family-scouts.html">Scouts</a></div></li><li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">Support<svg class="sh-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="sh-drop"><a href="volunteer.html">Volunteer</a><a href="donate.html">Donate</a><a href="fundraisers.html">Fundraisers</a><a href="shop.html">Spirit shop</a><a href="giftcards.html">Gift cards</a><a href="couponbook.html">Coupon book</a><a href="partners.html">Partner groups</a></div></li><li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">About<svg class="sh-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="sh-drop"><a href="about.html">About the PTO</a><a href="about.html#jefferson-pto">Woestina/Jefferson PTO</a><a href="about.html#schalmont-central-pto">Schalmont Central PTO</a><a href="meetings.html">Meetings</a><a href="faq.html">FAQs</a><a href="contact.html">Contact us</a><a href="social.html">Social media</a></div></li>
+        </ul>
+        <div class="sh-actions">
+          <a class="sh-icon" href="index.html#search" aria-label="Search the site"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></a>
+          <a class="sh-login" id="nav-login-btn" href="login.html">Login</a>
+          <a class="sh-social" href="https://www.facebook.com/groups/schalmontpto/" target="_blank" rel="noopener" aria-label="Facebook" style="background:#1877F2;color:#fff"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a><a class="sh-social" href="https://www.instagram.com/schalmontpto/" target="_blank" rel="noopener" aria-label="Instagram" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+          <a class="sh-cta" href="get-involved.html">Get Involved</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="homepage-layout">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="homepage-sidenav sn" aria-label="Site menu">
+      <form class="sn-search" action="index.html" role="search">
+        <label class="sn-sr" for="sn-q">Search the site</label>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><input id="sn-q" name="q" type="search" placeholder="Search the site" autocomplete="off">
+      </form>
+      <a class="sn-item" href="index.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span>Home</span></a>
+      <a class="sn-item" href="events.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Events calendar</span></a>
+      <div class="sn-label">Schools</div>
+      <div class="sn-school" style="--sc:#8bc341">
+        <button type="button" class="sn-school-btn" aria-expanded="false" aria-controls="snav-woestina">
+          <span class="sn-dot" aria-hidden="true"></span><span class="sn-school-name">Woestina Pre-K<small>Pre-K</small></span><svg class="sn-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+        <div class="sn-sub sidenav-submenu" id="snav-woestina" hidden>
+          <a class="sn-subitem" href="woestina.html">School page</a>
+          <a class="sn-subitem" href="woestina.html#program-grid">Events &amp; programs</a>
+          <a class="sn-subitem" href="woestina.html#yearbook">Yearbook</a>
+          <div class="sn-classes" aria-label="Woestina Pre-K class pages"><span>Classes</span><a href="classof2040.html">Pre-K</a></div>
+        </div>
+      </div>
+      <div class="sn-school" style="--sc:#6bb044">
+        <button type="button" class="sn-school-btn" aria-expanded="false" aria-controls="snav-jefferson">
+          <span class="sn-dot" aria-hidden="true"></span><span class="sn-school-name">Jefferson Elementary<small>Grades K–4</small></span><svg class="sn-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+        <div class="sn-sub sidenav-submenu" id="snav-jefferson" hidden>
+          <a class="sn-subitem" href="jefferson.html">School page</a>
+          <a class="sn-subitem" href="jefferson.html#program-grid">Events &amp; programs</a>
+          <a class="sn-subitem" href="jefferson.html#yearbook">Yearbook</a>
+          <div class="sn-classes" aria-label="Jefferson Elementary class pages"><span>Classes</span><a href="classof2039.html">K</a><a href="classof2038.html">1st</a><a href="classof2037.html">2nd</a><a href="classof2036.html">3rd</a><a href="classof2035.html">4th</a></div>
+        </div>
+      </div>
+      <div class="sn-school" style="--sc:#087d40">
+        <button type="button" class="sn-school-btn" aria-expanded="false" aria-controls="snav-middle">
+          <span class="sn-dot" aria-hidden="true"></span><span class="sn-school-name">Middle School<small>Grades 5–8</small></span><svg class="sn-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+        <div class="sn-sub sidenav-submenu" id="snav-middle" hidden>
+          <a class="sn-subitem" href="middle-school.html">School page</a>
+          <a class="sn-subitem" href="middle-school.html#program-grid">Events &amp; programs</a>
+          <a class="sn-subitem" href="middle-school.html#yearbook">Yearbook</a>
+          <div class="sn-classes" aria-label="Middle School class pages"><span>Classes</span><a href="classof2034.html">5th</a><a href="classof2033.html">6th</a><a href="classof2032.html">7th</a><a href="classof2031.html">8th</a></div>
+        </div>
+      </div>
+      <div class="sn-school" style="--sc:#044d2a">
+        <button type="button" class="sn-school-btn" aria-expanded="false" aria-controls="snav-high">
+          <span class="sn-dot" aria-hidden="true"></span><span class="sn-school-name">High School<small>Grades 9–12</small></span><svg class="sn-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+        <div class="sn-sub sidenav-submenu" id="snav-high" hidden>
+          <a class="sn-subitem" href="high-school.html">School page</a>
+          <a class="sn-subitem" href="high-school.html#program-grid">Events &amp; programs</a>
+          <a class="sn-subitem" href="high-school.html#yearbook">Yearbook</a>
+          <div class="sn-classes" aria-label="High School class pages"><span>Classes</span><a href="classof2030.html">Fr</a><a href="classof2029.html">So</a><a href="classof2028.html">Jr</a><a href="classof2027.html">Sr</a></div>
+        </div>
+      </div>
+      <div class="sn-label">For families</div>
+      <a class="sn-item sn-plain" href="picture-days.html">Picture days</a>
+      <a class="sn-item sn-plain" href="yearbooks.html">Yearbooks</a>
+      <a class="sn-item sn-plain" href="directory.html">Parent directory</a>
+      <a class="sn-item sn-plain" href="gallery.html">Photo gallery</a>
+      <a class="sn-item sn-plain" href="sports.html">Sports</a>
+      <a class="sn-item sn-plain" href="family-scouts.html">Scouts</a>
+      <div class="sn-label">Get involved</div>
+      <a class="sn-item sn-plain" href="volunteer.html">Volunteer</a>
+      <a class="sn-item sn-plain" href="donate.html">Donate</a>
+      <a class="sn-item sn-plain" href="fundraisers.html">Fundraisers</a>
+      <a class="sn-item sn-plain" href="shop.html">Spirit shop</a>
+      <a class="sn-item sn-plain" href="giftcards.html">Gift cards</a>
+      <a class="sn-item sn-plain" href="couponbook.html">Coupon book</a>
+      <a class="sn-item sn-plain" href="partners.html">Partner groups</a>
+      <div class="sn-label">About the PTO</div>
+      <a class="sn-item sn-plain" href="about.html">About us</a>
+      <a class="sn-item sn-plain" href="meetings.html">Meetings</a>
+      <a class="sn-item sn-plain" href="faq.html">FAQs</a>
+      <a class="sn-item sn-plain" href="contact.html">Contact us</a>
+      <a class="sn-item sn-plain" href="social.html">Social media</a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="homepage-main">
+
+  <!-- PAGE HERO -->
+  <section class="page-hero">
+    <div class="container">
+      <h1>🤝 Our Partner Groups</h1>
+      <p>The PTO works alongside these Schalmont groups to support our students, schools and community.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="pt-grid">
+        <div class="pt-card">
+          <div class="pt-icon">🏛️</div>
+          <h3>Middle School Student Council</h3>
+          <p>Schalmont Middle School students leading the way: representing their peers, serving the community and hosting events like the Annual Veterans Day Celebration.</p>
+          <div class="pt-actions"><a href="student-council.html" class="btn btn-primary pt-btn">Student Council page →</a></div>
+        </div>
+        <div class="pt-card">
+          <div class="pt-icon">🏅</div>
+          <h3>Schalmont Athletic Association</h3>
+          <p>Supports Middle School student-athletes and promotes sportsmanship, school spirit and athletic participation at Schalmont.</p>
+          <div class="pt-actions"><a href="https://www.schalmont.org/middle-school/schalmont-athletic-association/" class="btn btn-primary pt-btn" target="_blank" rel="noopener">Learn more & join ↗</a><a href="sports.html" class="btn btn-blue pt-btn">Sports & athletics</a></div>
+        </div>
+        <div class="pt-card">
+          <div class="pt-icon">🎵</div>
+          <h3>Friends of Music</h3>
+          <p>Parents and families supporting Schalmont's student musicians, concerts and music programs.</p>
+          <div class="pt-actions"><a href="mailto:julie@schalmontpto.com?subject=Friends%20of%20Music" class="btn btn-primary pt-btn">Get connected →</a></div>
+        </div>
+        <div class="pt-card">
+          <div class="pt-icon">📚</div>
+          <h3>Friends of the Library</h3>
+          <p>Supporters of our school libraries and a love of reading across Schalmont.</p>
+          <div class="pt-actions"><a href="mailto:julie@schalmontpto.com?subject=Friends%20of%20the%20Library" class="btn btn-primary pt-btn">Get connected →</a></div>
+        </div>
+        <div class="pt-card">
+          <div class="pt-icon">⚜️</div>
+          <h3>Scouts (Troop 3054)</h3>
+          <p>Schalmont's Scouting troop: adventure, leadership and service for local youth.</p>
+          <div class="pt-actions"><a href="https://www.troop3054.org/" class="btn btn-primary pt-btn" target="_blank" rel="noopener">Visit Troop3054.org ↗</a></div>
+        </div>
+        <div class="pt-card">
+          <div class="pt-icon">🍪</div>
+          <h3>Girl Scouts</h3>
+          <p>Girl Scouts of Northeastern New York, building courage, confidence and character in local girls.</p>
+          <div class="pt-actions"><a href="https://www.girlscoutsneny.org" class="btn btn-primary pt-btn" target="_blank" rel="noopener">Visit GirlScoutsNENY.org ↗</a></div>
+        </div>
+      </div>
+
+      <div class="pt-note">
+        <strong>Are you part of a Schalmont group that partners with the PTO?</strong>
+        <span>We'd love to list you here and help share your events. <a href="contact.html">Contact the PTO</a>.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER AD -->
+  
+  <!-- BOTTOM BANNER AD -->
+  <div class="top-banner-ad">
+    <div class="container">
+      <div class="top-banner-ad-inner">
+        <div class="top-banner-ad-slot" style="padding:0;line-height:0">
+          <a href="https://www.namebubbles.com/?rfsn=8825780.ef49f8" id="banner-ad-img-1" target="_blank" rel="noopener" style="display:block"><img src="images/Ads/Banners/Name-bubbles-Schalmont-leader.jpg" alt="Advertisement" style="width:100%;height:auto;display:block;border-radius:var(--radius)"></a>
+          <a href="https://tinyurl.com/3e4rd8vr" id="banner-ad-img-2" target="_blank" rel="noopener" style="display:none"><img src="images/Ads/Banners/Leaderad-ss-2026.jpg" alt="Advertisement" style="width:100%;height:auto;display:block;border-radius:var(--radius)"></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    </div><!-- /.homepage-main -->
+  </div><!-- /.homepage-layout -->
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-brand" style="margin-bottom:12px">
+            <img src="images/logo.png" alt="Schalmont Central PTO" class="nav-logo-img">
+          </div>
+          <p>Supporting students, connecting families, and building community in the Schalmont Central School District.</p>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap">
+            <a href="login.html" class="btn btn-primary" style="padding:6px 14px;font-size:13px;color:#000000">Login/Register</a>
+            <div class="footer-social-icons" style="margin-top:0">
+              <a href="https://www.facebook.com/groups/schalmontpto/" target="_blank" rel="noopener" class="footer-social-icon" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+              <a href="https://www.instagram.com/schalmontpto/" target="_blank" rel="noopener" class="footer-social-icon" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+            </div>
+          </div>
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
+            <a href="https://woestina-pre-k-pto-donations.cheddarup.com" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-align:center;padding:6px 14px;font-size:13px;color:#000000">Give back: &#127807; Woestina PTO</a>
+            <a href="https://my.cheddarup.com/c/jefferson-pto-donation" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-align:center;padding:6px 14px;font-size:13px;color:#000000">Give back: &#127979; Jefferson PTO</a>
+            <a href="https://schalmont-central-pto.cheddarup.com" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-align:center;padding:6px 14px;font-size:13px;color:#000000">Give back: &#128154; Schalmont PTO</a>
+          </div>
+        </div>
+        <div>
+          <div class="footer-heading">Quick Links</div>
+          <ul class="footer-links">
+            <li><a href="events.html">Events Calendar</a></li>
+            <li><a href="directory.html">Parent Directory</a></li>
+            <li><a href="shop.html">Shop</a></li>
+            <li><a href="fundraisers.html">Fundraisers</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-heading">About & Help</div>
+          <ul class="footer-links">
+            <li><a href="about.html">About the PTO</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="https://www.schalmont.org" target="_blank" rel="noopener">School District Website</a></li>
+          </ul>
+        </div>
+        <div class="footer-ad-col">
+
+          <div class="footer-ad-box" style="padding:0;overflow:hidden;border-radius:var(--radius)">
+            <a href="https://www.namebubbles.com/?rfsn=8825780.ef49f8" id="footer-ad-img-1" target="_blank" rel="noopener" style="display:block"><img src="images/Ads/Square/Name-Bubbles-Schalmont-Ad1-square.jpg" alt="Advertisement" class="footer-ad-img" style="width:100%;display:block"></a>
+            <a href="https://tinyurl.com/3e4rd8vr" id="footer-ad-img-2" target="_blank" rel="noopener" style="display:none"><img src="images/Ads/Square/Squaress-ad2026.jpg" alt="Advertisement" class="footer-ad-img" style="width:100%;display:block"></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Schalmont Parent-Teacher Organization. All rights reserved.</span>
+        <span>Schenectady, NY</span>
+        <span><a href="/admin/" style="color:inherit;font-weight:600;text-decoration:underline">PTO Admin</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="js/page-menu.js?v=3"></script>
+  <script src="js/menus.js?v=1"></script>
+</body>
+</html>
