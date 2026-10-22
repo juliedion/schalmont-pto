@@ -616,11 +616,11 @@ const PROGRAM_CARDS_DEFAULTS = {
     },
     {
       "id": "dance67",
-      "icon": "🎰",
+      "icon": "🌟",
       "title": "6th &amp; 7th Grade Dance",
       "badgeType": "active",
       "badgeText": "Fri, Mar 12",
-      "desc": "Casino Royale Dance! Friday, March 12, 2027, 7:00–9:00 PM with DJ Ketchup. Parents, sign up if you're interested in volunteering.",
+      "desc": "Friday, March 12, 2027, 7:00–9:00 PM with DJ Ketchup. The theme will be chosen by the 6th and 7th grade classes! Parents, sign up if you're interested in volunteering.",
       "actions": [
         {
           "label": "Details & Volunteer →",
@@ -635,8 +635,8 @@ const PROGRAM_CARDS_DEFAULTS = {
       "icon": "🎩",
       "title": "8th Grade Dance",
       "badgeType": "active",
-      "badgeText": "Fri, Jun 11",
-      "desc": "Friday, June 11, 2027, 7:00–9:00 PM. The theme will be chosen by the 8th grade class! Parents, sign up if you're interested in volunteering.",
+      "badgeText": "Jun 11 (tentative)",
+      "desc": "Friday, June 11, 2027 (date tentative), 7:00–9:00 PM. The theme will be chosen by the 8th grade class! Parents, sign up if you're interested in volunteering.",
       "actions": [
         {
           "label": "Details & Volunteer →",
