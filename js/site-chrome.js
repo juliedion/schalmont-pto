@@ -93,7 +93,13 @@
   <a class="sn-item sn-plain" href="/directory.html">Parent directory</a>
   <a class="sn-item sn-plain" href="/gallery.html">Photo gallery</a>
   <a class="sn-item sn-plain" href="/sports.html">Sports</a>
-  <a class="sn-item sn-plain" href="/family-scouts.html">Scouts</a>
+  <div class="sn-label">Schalmont groups</div>
+  <a class="sn-item sn-plain" href="/student-council.html">Student Council</a>
+  <a class="sn-item sn-plain" href="https://www.schalmont.org/middle-school/schalmont-athletic-association/" target="_blank" rel="noopener">Schalmont Athletic Association ↗</a>
+  <a class="sn-item sn-plain" href="https://www.schalmont.org/friends-of-music/" target="_blank" rel="noopener">Friends of Music ↗</a>
+  <a class="sn-item sn-plain" href="https://sites.google.com/schalmont.net/friendsofschalmontlibraries/home" target="_blank" rel="noopener">Friends of the Library ↗</a>
+  <a class="sn-item sn-plain" href="https://www.troop3054.org/" target="_blank" rel="noopener">Scouts ↗</a>
+  <a class="sn-item sn-plain" href="https://www.girlscoutsneny.org" target="_blank" rel="noopener">Girl Scouts ↗</a>
   <div class="sn-label">Get involved</div>
   <a class="sn-item sn-plain" href="/volunteer.html">Volunteer</a>
   <a class="sn-item sn-plain" href="/donate.html">Donate</a>
@@ -101,7 +107,6 @@
   <a class="sn-item sn-plain" href="/shop.html">Spirit shop</a>
   <a class="sn-item sn-plain" href="/giftcards.html">Gift cards</a>
   <a class="sn-item sn-plain" href="/couponbook.html">Coupon book</a>
-  <a class="sn-item sn-plain" href="/partners.html">Partner groups</a>
   <div class="sn-label">About the PTO</div>
   <a class="sn-item sn-plain" href="/about.html">About us</a>
   <a class="sn-item sn-plain" href="/meetings.html">Meetings</a>

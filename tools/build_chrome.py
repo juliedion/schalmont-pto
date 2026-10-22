@@ -34,11 +34,17 @@ SCHOOLS = [
 GROUPS = [
     ('For families', [('Picture days', 'picture-days.html'), ('Yearbooks', 'yearbooks.html'),
                       ('Parent directory', 'directory.html'), ('Photo gallery', 'gallery.html'),
-                      ('Sports', 'sports.html'), ('Scouts', 'family-scouts.html')]),
+                      ('Sports', 'sports.html')]),
+    # Groups the PTO partners with, each listed on its own (full addresses open in a new tab).
+    ('Schalmont groups', [('Student Council', 'student-council.html'),
+                        ('Schalmont Athletic Association', 'https://www.schalmont.org/middle-school/schalmont-athletic-association/'),
+                        ('Friends of Music', 'https://www.schalmont.org/friends-of-music/'),
+                        ('Friends of the Library', 'https://sites.google.com/schalmont.net/friendsofschalmontlibraries/home'),
+                        ('Scouts', 'https://www.troop3054.org/'),
+                        ('Girl Scouts', 'https://www.girlscoutsneny.org')]),
     ('Get involved', [('Volunteer', 'volunteer.html'), ('Donate', 'donate.html'),
                       ('Fundraisers', 'fundraisers.html'), ('Spirit shop', 'shop.html'),
-                      ('Gift cards', 'giftcards.html'), ('Coupon book', 'couponbook.html'),
-                      ('Partner groups', 'partners.html')]),
+                      ('Gift cards', 'giftcards.html'), ('Coupon book', 'couponbook.html')]),
     ('About the PTO', [('About us', 'about.html'), ('Meetings', 'meetings.html'), ('FAQs', 'faq.html'),
                        ('Contact us', 'contact.html'), ('Social media', 'social.html')]),
 ]
@@ -151,7 +157,8 @@ def sidebar(p, extra=''):
             '  </div>']
     for label, links in GROUPS:
         out.append(f'  <div class="sn-label">{e(label)}</div>')
-        out += [f'  <a class="sn-item sn-plain" href="{p}{href}">{e(t)}</a>' for t, href in links]
+        out += [f'  <a class="sn-item sn-plain" href="{href}" target="_blank" rel="noopener">{e(t)} ↗</a>' if href.startswith('http')
+                else f'  <a class="sn-item sn-plain" href="{p}{href}">{e(t)}</a>' for t, href in links]
     out.append('</aside>')
     return '\n'.join(out)
 
