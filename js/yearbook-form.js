@@ -234,6 +234,29 @@
       }
     }
 
+    // ---- the confirmation that replaces the form after a successful send ----
+    var doneBox = document.createElement('div');
+    doneBox.className = 'ybf-done'; doneBox.hidden = true;
+    doneBox.setAttribute('role', 'status'); doneBox.setAttribute('aria-live', 'assertive'); doneBox.tabIndex = -1;
+    root.appendChild(doneBox);
+    function done(n, extraHTML) {
+      show('', '');
+      form.hidden = true;
+      doneBox.innerHTML = '<div class="ybf-done-icon" aria-hidden="true"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>' +
+        '<h3>Thank you! Your photo' + (n === 1 ? ' was' : 's were') + ' sent.</h3>' +
+        '<p>' + n + ' photo' + (n === 1 ? ' is' : 's are') + ' on the way to the yearbook team. We\'ll be in touch if we have any questions.</p>' +
+        (extraHTML || '') +
+        '<button type="button" class="btn btn-primary ybf-again">Send more photos</button>';
+      doneBox.hidden = false;
+      doneBox.querySelector('.ybf-again').onclick = function () {
+        doneBox.hidden = true; form.hidden = false;   // name and email stay filled in for the next batch
+        try { studentBox.querySelector('.ybf-first').focus({ preventScroll: true }); } catch (_) {}
+        root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+      doneBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      try { doneBox.focus({ preventScroll: true }); } catch (_) {}
+    }
+
     // ---- submitting ----
     function post(fd) {
       return fetch('/api/yearbook-upload.php', { method: 'POST', body: fd }).then(function (r) {
@@ -326,11 +349,16 @@
             dirHTML = '<span class="ybf-dir-next">One more step for the parent directory: create your account (it takes a minute).' +
               '<a class="btn btn-primary" href="/directory#register">Register for the parent directory →</a></span>';
           }
-          show(failed ? 'err' : 'ok', 'Thank you! ' + n + ' photo' + (n === 1 ? ' was' : 's were') + ' sent to the yearbook team.' +
-            (failed ? ' ' + failed + ' didn\'t upload (' + bad[0].err + ') and are still listed below; you can try them again.' : ''), dirHTML);
           chosen = bad;
           chosen.forEach(function (it) { it.state = ''; });
-          if (!failed) resetStudents();
+          if (failed) {
+            show('err', 'Thank you! ' + n + ' photo' + (n === 1 ? ' was' : 's were') + ' sent to the yearbook team. ' + failed +
+              ' didn\'t upload (' + bad[0].err + ') and are still listed below; you can try them again.', dirHTML);
+          } else {
+            // All sent: close the form and show a clear confirmation in its place.
+            resetStudents();
+            done(n, dirHTML);
+          }
         });
       }).catch(function (err) {
         show('err', 'Sorry, the photos didn\'t upload: ' + err.message);

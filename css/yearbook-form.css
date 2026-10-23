@@ -71,3 +71,11 @@
   color: var(--primary-dark, #1a3d24); font-weight: 800; font-size: 14.5px; text-decoration: none; line-height: 1.25; transition: border-color .15s ease, background .15s ease, transform .15s ease; }
 .ybf-evbtn:hover, .ybf-evbtn:focus-visible { border-color: var(--primary); background: #f1f8f3; transform: translateY(-1px); outline: none; }
 
+
+/* Confirmation shown in place of the form after a successful send */
+.ybf-done { text-align: center; background: #e9f7ee; border: 2px solid #34a853; border-radius: 16px; padding: 32px 24px; outline: none; }
+.ybf-done[hidden], .ybf form[hidden] { display: none; }
+.ybf-done-icon { width: 64px; height: 64px; margin: 0 auto 12px; border-radius: 50%; background: #2e8b47; display: flex; align-items: center; justify-content: center; }
+.ybf-done h3 { font-size: 22px; color: #14532d; margin-bottom: 8px; }
+.ybf-done p { font-size: 15px; color: #1f4d2c; margin: 0 auto 18px; max-width: 460px; }
+.ybf-done .ybf-dir-next { display: block; margin: 0 auto 18px; max-width: 460px; }
