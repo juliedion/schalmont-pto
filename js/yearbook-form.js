@@ -18,6 +18,17 @@
   var SMALL_PX = 1200;                   // long edge under this may print blurry
   var OTHER = '__other';
 
+  // Temporary troubleshooting notes to api/yearbook-diag.php (steps and errors only, no personal details).
+  var DIAG_V = '14';
+  function diag(step) {
+    try {
+      var body = JSON.stringify({ page: location.pathname, v: DIAG_V, step: String(step).slice(0, 300) });
+      if (navigator.sendBeacon) navigator.sendBeacon('/api/yearbook-diag.php', new Blob([body], { type: 'application/json' }));
+      else fetch('/api/yearbook-diag.php', { method: 'POST', body: body, keepalive: true });
+    } catch (_) {}
+  }
+  window.addEventListener('error', function (e) { diag('JS error: ' + (e.message || '') + ' @' + (e.filename || '').split('/').pop() + ':' + (e.lineno || '')); });
+  window.addEventListener('unhandledrejection', function (e) { diag('Promise error: ' + ((e.reason && e.reason.message) || e.reason)); });
   function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
   function gradeLabel(g) { return g === 'Pre-K' ? 'Pre-K' : g === 'K' ? 'Kindergarten' : g + (g === '1' ? 'st' : g === '2' ? 'nd' : g === '3' ? 'rd' : 'th') + ' grade'; }
   function mb(n) { return n < 1048576 ? Math.max(1, Math.round(n / 1024)) + ' KB' : (n / 1048576).toFixed(n < 10485760 ? 1 : 0) + ' MB'; }
@@ -97,6 +108,8 @@
     var drop = root.querySelector('.ybf-drop'), input = drop.querySelector('input');
     var list = root.querySelector('.ybf-files'), btn = root.querySelector('.ybf-submit');
     var evSel = root.querySelector('select[name=event]'), evOther = root.querySelector('.ybf-other');
+    diag('form shown');
+    btn.addEventListener('click', function () { diag('button clicked (disabled=' + btn.disabled + ')'); });
     var chosen = [], events = {};   // events = {school: [Drive event folder names]}
 
     // ---- students: First / Last / School / Grade, one row each ----
@@ -286,6 +299,7 @@
     }
     form.onsubmit = function (e) {
       e.preventDefault();
+      diag('submit pressed: ' + chosen.length + ' photo(s), ' + studentBox.children.length + ' student row(s)');
       show('', '');
       var f = form.elements;
       var name = f.uploaderName.value.trim(), email = f.uploaderEmail.value.trim();
@@ -317,7 +331,7 @@
         : !name ? [f.uploaderName, 'Please enter your name.']
         : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? [f.uploaderEmail, 'Please enter a valid email address.']
         : !chosen.length ? [drop, 'Please choose at least one photo.'] : null;
-      if (problem) { flag(problem[0], problem[1]); return; }
+      if (problem) { diag('blocked: ' + problem[1]); flag(problem[0], problem[1]); return; }
 
       var batchId = new Date().toISOString().replace(/\D/g, '').slice(0, 14) + '-' + Math.random().toString(36).slice(2, 10);
       var gradesText = gradeVals.map(gradeLabel).join(', ');
@@ -340,8 +354,8 @@
           fd.append('students', students); fd.append('grades', gradesText);
           fd.append('uploaderName', name); fd.append('uploaderEmail', email);
           fd.append('photos[]', it.file);
-          return post(fd).then(function (d) { it.state = 'done'; saved = saved.concat(d.files); render(); })
-            .catch(function (err) { it.state = 'fail'; it.err = err.message; failed++; render(); });
+          return post(fd).then(function (d) { diag('photo ' + nth + ' uploaded (' + mb(it.file.size) + ')'); it.state = 'done'; saved = saved.concat(d.files); render(); })
+            .catch(function (err) { diag('photo ' + nth + ' FAILED (' + mb(it.file.size) + '): ' + err.message); it.state = 'fail'; it.err = err.message; failed++; render(); });
         });
       }, Promise.resolve()).then(function () {
         if (!saved.length) throw new Error((chosen[0] && chosen[0].err) || 'Upload failed');
@@ -379,9 +393,11 @@
             // All sent: close the form and show a clear confirmation in its place.
             resetStudents();
             done(n, dirHTML);
+            diag('confirmation shown');
           }
         });
       }).catch(function (err) {
+        diag('upload error shown: ' + err.message);
         show('err', 'Sorry, the photos didn\'t upload: ' + err.message);
       }).then(function () {
         btn.disabled = false; btn.textContent = 'Submit photos';
