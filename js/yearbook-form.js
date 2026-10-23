@@ -31,6 +31,8 @@
 
   function build(root) {
     var school = root.getAttribute('data-school');
+    // A page with no school of its own (share-photos) can be linked with ?school=jefferson etc.
+    if (!school) { try { school = new URLSearchParams(location.search).get('school') || ''; } catch (_) {} }
     if (!GRADES[school]) school = '';
     var uid = 'ybf-' + (school || 'x');
     root.classList.add('ybf');

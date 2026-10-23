@@ -136,23 +136,25 @@ foreach ($files as $f) {
 }
 
 /* ---- copy to Google Drive (if connected), once per school in the photo ----
+   Done AFTER answering the parent (see the end): the photo is already safe on this
+   server, and copying a big phone photo to Drive takes 20-40 seconds -- the parent
+   shouldn't have to sit on "Uploading…" for that.
    File name: "Students (grades) - who sent it - time.ext", so it sorts and reads well in Drive. */
 $cfg = @include __DIR__ . '/config.php';
 if (!is_array($cfg)) $cfg = [];
 $who = $students !== '' ? $students : $people;
+$jobs = [];
 foreach ($saved as $i => $sv) {
   // The form already puts each student's grade in the names; older submissions send grades separately.
   $nice = trim(mb_substr($who, 0, 110) . ($grades !== '' && strpos($who, '(') === false ? " ($grades)" : '') . ' - ' . $uploader);
-  $links = [];
   foreach ($schools as $sc) {
-    $links[] = to_drive($cfg, $sv['path'], [
+    $jobs[] = [$i, $sv['path'], [
       'school' => $sc, 'eventLabel' => $evLabel, 'eventFolder' => ($sc === $evSchool ? $evFolder : ''),
       'students' => $who, 'grades' => $grades,
       'uploaderName' => $uploader, 'uploaderEmail' => $email, 'original' => $sv['original'], 'batchId' => $batchIn,
       'filename' => $nice . ' - ' . date('Ymd-His') . '-' . substr(md5($sv['url']), 0, 4) . '.' . ($sv['ext'] === 'jpeg' ? 'jpg' : $sv['ext']),
-    ]);
+    ]];
   }
-  $saved[$i]['drive'] = implode(' ', array_filter($links));
   unset($saved[$i]['path'], $saved[$i]['ext']);
 }
 $saved = array_values($saved);
@@ -175,4 +177,29 @@ $prev = file_exists($metaFile) ? json_decode(file_get_contents($metaFile), true)
   'submittedAt' => $prev['submittedAt'] ?? date('c'), 'ip' => $ip,
 ], JSON_PRETTY_PRINT), LOCK_EX);
 
-out(200, ['ok' => true, 'batchId' => $batchId, 'files' => $saved]);
+/* ---- answer the parent now, then copy to Drive ---- */
+ignore_user_abort(true);
+@set_time_limit(300);
+$body = json_encode(['ok' => true, 'batchId' => $batchId, 'files' => $saved, 'drive' => $jobs ? 'sending' : 'off']);
+http_response_code(200);
+header('Content-Length: ' . strlen($body));
+header('Connection: close');
+echo $body;
+if (function_exists('fastcgi_finish_request')) {
+  fastcgi_finish_request();
+} else {
+  while (ob_get_level() > 0) @ob_end_flush();
+  @flush();
+}
+
+$driveLog = [];
+foreach ($jobs as [$i, $path, $fields]) {
+  $link = to_drive($cfg, $path, $fields);
+  $driveLog[] = ['file' => basename($path), 'school' => $fields['school'], 'drive' => $link ?: 'FAILED', 'at' => date('c')];
+}
+if ($driveLog) {   // note what reached Drive in the backup copy, so a failed one can be re-sent by hand
+  $m = json_decode((string)@file_get_contents($metaFile), true) ?: [];
+  $m['drive'] = array_merge($m['drive'] ?? [], $driveLog);
+  @file_put_contents($metaFile, json_encode($m, JSON_PRETTY_PRINT), LOCK_EX);
+}
+exit;

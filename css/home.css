@@ -63,7 +63,9 @@
 
 /* Full-bleed rotating photo behind the headline, fading into forest green on the left. */
 .home2 .hz-hero { height: 300px; background: radial-gradient(900px 340px at 18% 30%, rgba(0, 140, 69, .38), transparent 70%), linear-gradient(110deg, #002F20 0%, #003a27 45%, #004D32 75%, #00663a 100%); }
-.home2 .hz-strip { position: absolute; top: 0; right: 0; bottom: 0; width: min(46%, 600px); z-index: 0; overflow: hidden;
+.home2 .hz-strip { position: absolute; top: 0; right: 0; bottom: 0; z-index: 0; overflow: hidden;
+  /* only the space right of the headline + search (about 700px from the content's left edge), up to 600px */
+  width: min(600px, calc(100% - max(24px, (100% - var(--hz-wrap)) / 2 + 24px) - 730px));
   /* the photo's left edge melts into the green instead of a hard line */
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 18%); mask-image: linear-gradient(90deg, transparent 0%, #000 18%); }
 .home2 .hz-slides { position: absolute; inset: 0; }
@@ -134,19 +136,21 @@
 .home2 .hz-popular a:hover { background: var(--hz-lime); color: var(--hz-forest); box-shadow: none; }
 
 @media (max-width: 900px) {
-  .home2 .hz-hero { height: auto; min-height: 250px; }
-  .home2 .hz-hero-inner { padding-top: 20px; padding-bottom: 60px; }
   .home2 .hz-search { margin-top: 10px; }
   .home2 .hz-search input { height: 52px; font-size: 16px; }   /* 16px+ stops iOS zooming in */
   .home2 .hz-search-icon { top: 16px; }
-  /* Phones/tablets: the photo gets its own uncovered band under the search, so faces show. */
-  .home2 .hz-hero-inner { padding-bottom: 18px; flex-direction: column; align-items: stretch; gap: 0; }
-  .home2 .hz-strip { position: relative; top: auto; right: auto; bottom: auto; width: 100%; height: clamp(220px, 62vw, 400px);
+  .home2 .hz-dots { display: none; }
+}
+/* Tablets and small laptops: the photo gets its own uncovered band under the search, so no
+   face ever sits behind the search box (side by side, they overlap below ~1100px). */
+@media (max-width: 1100px) {
+  .home2 .hz-hero { height: auto; min-height: 250px; }
+  .home2 .hz-hero-inner { padding-top: 20px; padding-bottom: 18px; flex-direction: column; align-items: stretch; gap: 0; }
+  .home2 .hz-strip { position: relative; top: auto; right: auto; bottom: auto; width: 100%; height: clamp(220px, 62vw, 520px);
     margin-top: 16px; border-radius: 16px; -webkit-mask-image: none; mask-image: none; }
   .home2 .hz-hero::after { display: none; }
   .home2 .hz-slide img { object-position: center var(--fm, 30%); }
-  .home2 .hz-hero-ctrl { right: max(26px, calc(16px + 10px)); bottom: 28px; }
-  .home2 .hz-dots { display: none; }
+  .home2 .hz-hero-ctrl { right: 26px; bottom: 28px; }
 }
 
 /* ---------- Generic card + section headings ---------- */

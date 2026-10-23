@@ -111,7 +111,7 @@
         document.getElementById('bo-main').style.padding = '4px 4px 24px';
       }
 
-      const link = 'schalmontpto.com/yearbook-upload';
+      const link = 'schalmontpto.com/share-photos?school=' + school;   // the photo form, with this school picked
       document.getElementById('public-link').textContent = link;
       document.getElementById('copy-link').onclick = () => {
         navigator.clipboard.writeText('https://' + link); toast('Link copied');
