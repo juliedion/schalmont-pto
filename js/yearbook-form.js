@@ -234,6 +234,26 @@
       }
     }
 
+    // ---- a problem with one field: red box + the message right under it, scrolled into view ----
+    function clearFlags() {
+      root.querySelectorAll('.ybf-bad').forEach(function (el) { el.classList.remove('ybf-bad'); });
+      root.querySelectorAll('.ybf-fieldmsg').forEach(function (el) { el.remove(); });
+    }
+    function flag(el, text) {
+      clearFlags();
+      show('err', text);   // also above the Submit button
+      el.classList.add('ybf-bad');
+      var note = document.createElement('div');
+      note.className = 'ybf-fieldmsg'; note.setAttribute('role', 'alert'); note.textContent = '⚠ ' + text;
+      (el.closest('.ybf-student') || el).insertAdjacentElement('afterend', note);
+      try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_) { el.scrollIntoView(); }
+      setTimeout(function () { try { el.focus({ preventScroll: true }); } catch (_) {} }, 350);
+    }
+    form.addEventListener('input', function (e) {
+      var t = e.target.closest && e.target.closest('.ybf-bad');
+      if (t) { t.classList.remove('ybf-bad'); var n = (t.closest('.ybf-student') || t).nextElementSibling; if (n && n.classList.contains('ybf-fieldmsg')) n.remove(); }
+    });
+
     // ---- the confirmation that replaces the form after a successful send ----
     var doneBox = document.createElement('div');
     doneBox.className = 'ybf-done'; doneBox.hidden = true;
@@ -297,12 +317,13 @@
         : !name ? [f.uploaderName, 'Please enter your name.']
         : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? [f.uploaderEmail, 'Please enter a valid email address.']
         : !chosen.length ? [drop, 'Please choose at least one photo.'] : null;
-      if (problem) { show('err', problem[1]); try { problem[0].focus({ preventScroll: true }); } catch (_) { problem[0].focus(); } return; }
+      if (problem) { flag(problem[0], problem[1]); return; }
 
       var batchId = new Date().toISOString().replace(/\D/g, '').slice(0, 14) + '-' + Math.random().toString(36).slice(2, 10);
       var gradesText = gradeVals.map(gradeLabel).join(', ');
       // Photo files live once on the server under the first school; Drive gets a copy for every school.
       var school = schools[0];
+      clearFlags();
       btn.disabled = true; btn.textContent = 'Uploading…';
       chosen.forEach(function (it) { it.state = ''; });
       var saved = [], failed = 0;

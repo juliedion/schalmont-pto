@@ -79,3 +79,8 @@
 .ybf-done h3 { font-size: 22px; color: #14532d; margin-bottom: 8px; }
 .ybf-done p { font-size: 15px; color: #1f4d2c; margin: 0 auto 18px; max-width: 460px; }
 .ybf-done .ybf-dir-next { display: block; margin: 0 auto 18px; max-width: 460px; }
+
+/* A field the parent needs to fix */
+.ybf .ybf-bad { border-color: #d93025 !important; box-shadow: 0 0 0 3px rgba(217, 48, 37, 0.18) !important; background: #fff6f5; }
+.ybf .ybf-drop.ybf-bad { border-style: solid; }
+.ybf-fieldmsg { margin: 6px 0 4px; color: #b3261e; font-size: 14px; font-weight: 700; }
