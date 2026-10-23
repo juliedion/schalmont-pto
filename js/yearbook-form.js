@@ -19,7 +19,7 @@
   var OTHER = '__other';
 
   // Temporary troubleshooting notes to api/yearbook-diag.php (steps and errors only, no personal details).
-  var DIAG_V = '14';
+  var DIAG_V = '15';
   function diag(step) {
     try {
       var body = JSON.stringify({ page: location.pathname, v: DIAG_V, step: String(step).slice(0, 300) });
@@ -144,8 +144,10 @@
       syncStudents();
       if (focus) row.querySelector('.ybf-first').focus();
     }
+    // Only the student rows themselves (a warning can sit next to them).
+    function studentRows() { return studentBox.querySelectorAll(':scope > .ybf-student'); }
     function syncStudents() {
-      var rows = studentBox.children;
+      var rows = studentRows();
       [].forEach.call(rows, function (r) { r.querySelector('.ybf-rm').hidden = rows.length < 2; });
       addBtn.hidden = rows.length >= 30;
     }
@@ -258,13 +260,13 @@
       el.classList.add('ybf-bad');
       var note = document.createElement('div');
       note.className = 'ybf-fieldmsg'; note.setAttribute('role', 'alert'); note.textContent = '⚠ ' + text;
-      (el.closest('.ybf-student') || el).insertAdjacentElement('afterend', note);
+      (el.closest('.ybf-students') || el).insertAdjacentElement('afterend', note);   // below the whole student list, never inside it
       try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_) { el.scrollIntoView(); }
       setTimeout(function () { try { el.focus({ preventScroll: true }); } catch (_) {} }, 350);
     }
     form.addEventListener('input', function (e) {
       var t = e.target.closest && e.target.closest('.ybf-bad');
-      if (t) { t.classList.remove('ybf-bad'); var n = (t.closest('.ybf-student') || t).nextElementSibling; if (n && n.classList.contains('ybf-fieldmsg')) n.remove(); }
+      if (t) { t.classList.remove('ybf-bad'); var n = (t.closest('.ybf-students') || t).nextElementSibling; if (n && n.classList.contains('ybf-fieldmsg')) n.remove(); }
     });
 
     // ---- the confirmation that replaces the form after a successful send ----
@@ -299,13 +301,13 @@
     }
     form.onsubmit = function (e) {
       e.preventDefault();
-      diag('submit pressed: ' + chosen.length + ' photo(s), ' + studentBox.children.length + ' student row(s)');
+      diag('submit pressed: ' + chosen.length + ' photo(s), ' + studentRows().length + ' student row(s)');
       show('', '');
       var f = form.elements;
       var name = f.uploaderName.value.trim(), email = f.uploaderEmail.value.trim();
       // Every student row needs both names, a school and a grade; blank extra rows are ignored.
       var missing = null, kids = [];
-      [].forEach.call(studentBox.children, function (r) {
+      [].forEach.call(studentRows(), function (r) {
         var fi = r.querySelector('.ybf-first'), la = r.querySelector('.ybf-last'), sc = r.querySelector('.ybf-school'), gr = r.querySelector('.ybf-grade');
         var a = fi.value.trim(), b = la.value.trim();
         if (!a && !b) return;
