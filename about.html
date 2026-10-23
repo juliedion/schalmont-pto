@@ -372,19 +372,19 @@
         <div>
           <h2 style="margin-bottom:2px">Schalmont Central PTO</h2>
           <div style="font-family:'Urbanist',sans-serif;font-weight:700;font-size:13px;color:var(--secondary);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px">Meeting Schedule</div>
-          <p style="color:var(--text-light);margin-bottom:24px">Meetings are open to all parents, guardians, and school staff — and available to join virtually via Zoom.</p>
+          <p style="color:var(--text-light);margin-bottom:24px">Meetings are open to all parents, guardians, and school staff — and available to join virtually via Google Meet.</p>
           <div class="meeting-item">
             <span class="meeting-icon">📅</span>
             <div class="meeting-info">
-              <h5>Regular Monthly Meetings</h5>
-              <p><a href="events.html" style="color:var(--primary)">Please check the events calendar for upcoming meeting dates.</a> · 6:00 – 7:00 PM</p>
+              <h5>Three Meetings This School Year</h5>
+              <p>Fall, winter and spring · Thursdays, 6:00 – 7:00 PM</p>
             </div>
           </div>
           <div class="meeting-item">
             <span class="meeting-icon">📍</span>
             <div class="meeting-info">
               <h5>Location</h5>
-              <p>Schalmont Middle School Library<br>2 Sabre Drive, Schenectady, NY 12306<br><span style="font-size:12px;color:var(--text-light)">Use the LGI entrance — the door to the right in the parking lot when facing the school.</span></p>
+              <p>Schalmont Middle School<br>2 Sabre Drive, Schenectady, NY 12306<br><span style="font-size:12px;color:var(--text-light)">The fall meeting is in the Band Room.</span></p>
             </div>
           </div>
           <div class="meeting-item">
@@ -392,9 +392,6 @@
             <div class="meeting-info">
               <h5>Virtual Option Available</h5>
               <div style="background:var(--light-bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-top:8px;font-size:13px;line-height:1.7">
-                <strong>Schalmont PTO Meeting</strong><br>
-                Thursday, March 19 · 6:00 – 7:00 PM<br>
-                <span style="color:var(--text-light)">Time zone: America/New_York</span><br><br>
                 <strong>Google Meet</strong><br>
                 <a href="https://meet.google.com/uuh-dzcr-dnu" target="_blank" rel="noopener" style="color:var(--primary);word-break:break-all">meet.google.com/uuh-dzcr-dnu</a><br>
                 Or dial: (US) +1 724-259-7036 · PIN: 973 412 993#
@@ -403,13 +400,25 @@
           </div>
 
           <div style="margin-top:24px;background:var(--white);border-radius:var(--radius-lg);padding:20px;border:1px solid var(--border)">
-            <h4 style="margin-bottom:14px">Upcoming Meeting Dates</h4>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-              <div style="display:flex;align-items:center;gap:8px;font-size:14px"><span style="background:var(--secondary);color:var(--primary-dark);font-size:11px;font-weight:700;padding:1px 6px;border-radius:4px">Next</span> March 19, 2026</div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:14px">April 14, 2026</div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:14px">May 12, 2026 <span style="font-size:11px;color:var(--primary)">(Elections)</span></div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:14px">June 9, 2026 <span style="font-size:11px;color:var(--text-light)">(Year-End)</span></div>
-            </div>
+            <h4 style="margin-bottom:14px">2026–27 Meeting Dates</h4>
+            <ul class="mtg-dates" style="list-style:none;margin:0;padding:0;display:grid;gap:10px">
+              <li data-mtg="2026-10-22"><b>Fall</b> · Thursday, October 22, 2026 · 6:00 – 7:00 PM · Middle School Band Room</li>
+              <li data-mtg="2027-01-14"><b>Winter</b> · Thursday, January 14, 2027 · 6:00 – 7:00 PM</li>
+              <li data-mtg="2027-04-15"><b>Spring</b> · Thursday, April 15, 2027 · 6:00 – 7:00 PM</li>
+            </ul>
+            <script>
+              // Tag the next meeting "Next" and fade the ones already held.
+              (function () {
+                var today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), next = false;
+                document.querySelectorAll('[data-mtg]').forEach(function (li) {
+                  li.style.fontSize = '14px';
+                  if (li.getAttribute('data-mtg') < today) { li.style.opacity = '.55'; return; }
+                  if (next) return;
+                  next = true;
+                  li.insertAdjacentHTML('afterbegin', '<span style="background:var(--secondary);color:var(--primary-dark);font-size:11px;font-weight:700;padding:1px 6px;border-radius:4px;margin-right:6px">Next</span>');
+                });
+              })();
+            </script>
           </div>
         </div>
 
@@ -422,7 +431,7 @@
             <span class="meeting-icon">📅</span>
             <div class="meeting-info">
               <h5>Regular Monthly Meetings</h5>
-              <p>Third Tuesday of each month · 6:30 – 7:30 PM</p>
+              <p>Third Tuesday of each month · 6:00 – 7:00 PM</p>
             </div>
           </div>
           <div class="meeting-item">

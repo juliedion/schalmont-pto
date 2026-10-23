@@ -179,7 +179,7 @@
 
       <div class="section-heading">
         <h2>Meeting Schedule</h2>
-        <p>Meetings are held monthly during the school year.</p>
+        <p>The Jefferson PTO meets monthly; the Schalmont Central PTO meets three times a year.</p>
         <div class="accent-line"></div>
       </div>
 
@@ -202,15 +202,15 @@
           <div class="meeting-item">
             <span class="meeting-icon">📅</span>
             <div class="meeting-info">
-              <h5>Regular Monthly Meetings</h5>
-              <p><a href="events.html" style="color:var(--primary)">Check the events calendar for upcoming dates.</a> · 6:00 – 7:00 PM</p>
+              <h5>Three Meetings This School Year</h5>
+              <p>Fall, winter and spring · Thursdays, 6:00 – 7:00 PM</p>
             </div>
           </div>
           <div class="meeting-item">
             <span class="meeting-icon">📍</span>
             <div class="meeting-info">
               <h5>Location</h5>
-              <p>Schalmont Middle School Library<br>2 Sabre Drive, Schenectady, NY 12306<br><span style="font-size:12px;color:var(--text-light)">Use the LGI entrance — the door to the right in the parking lot when facing the school.</span></p>
+              <p>Schalmont Middle School<br>2 Sabre Drive, Schenectady, NY 12306<br><span style="font-size:12px;color:var(--text-light)">The fall meeting is in the Band Room.</span></p>
             </div>
           </div>
           <div class="meeting-item">
@@ -225,13 +225,25 @@
             </div>
           </div>
           <div style="margin-top:24px;background:var(--white);border-radius:var(--radius-lg);padding:20px;border:1px solid var(--border)">
-            <h4 style="margin-bottom:14px">Upcoming Meeting Dates</h4>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-              <div style="display:flex;align-items:center;gap:8px;font-size:14px"><span style="background:var(--secondary);color:var(--primary-dark);font-size:11px;font-weight:700;padding:1px 6px;border-radius:4px">Next</span> March 19, 2026</div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:14px">April 14, 2026</div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:14px">May 12, 2026 <span style="font-size:11px;color:var(--primary)">(Elections)</span></div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:14px">June 9, 2026 <span style="font-size:11px;color:var(--text-light)">(Year-End)</span></div>
-            </div>
+            <h4 style="margin-bottom:14px">2026–27 Meeting Dates</h4>
+            <ul class="mtg-dates" style="list-style:none;margin:0;padding:0;display:grid;gap:10px">
+              <li data-mtg="2026-10-22"><b>Fall</b> · Thursday, October 22, 2026 · 6:00 – 7:00 PM · Middle School Band Room</li>
+              <li data-mtg="2027-01-14"><b>Winter</b> · Thursday, January 14, 2027 · 6:00 – 7:00 PM</li>
+              <li data-mtg="2027-04-15"><b>Spring</b> · Thursday, April 15, 2027 · 6:00 – 7:00 PM</li>
+            </ul>
+            <script>
+              // Tag the next meeting "Next" and fade the ones already held.
+              (function () {
+                var today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), next = false;
+                document.querySelectorAll('[data-mtg]').forEach(function (li) {
+                  li.style.fontSize = '14px';
+                  if (li.getAttribute('data-mtg') < today) { li.style.opacity = '.55'; return; }
+                  if (next) return;
+                  next = true;
+                  li.insertAdjacentHTML('afterbegin', '<span style="background:var(--secondary);color:var(--primary-dark);font-size:11px;font-weight:700;padding:1px 6px;border-radius:4px;margin-right:6px">Next</span>');
+                });
+              })();
+            </script>
           </div>
         </div>
 
@@ -244,7 +256,7 @@
             <span class="meeting-icon">📅</span>
             <div class="meeting-info">
               <h5>Regular Monthly Meetings</h5>
-              <p>Third Tuesday of each month · 6:30 – 7:30 PM</p>
+              <p>Third Tuesday of each month · 6:00 – 7:00 PM</p>
             </div>
           </div>
           <div class="meeting-item">
