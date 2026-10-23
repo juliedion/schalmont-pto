@@ -25,6 +25,9 @@
         Press Deploy and copy the "Web app URL" (ends in /exec).
      4. Put the URL and the secret key in the website's private api/config.php on
         Bluehost ('yearbook_drive_url' and 'yearbook_drive_secret').
+   To file photos in a different folder you already have: Project Settings
+   (gear) → Script Properties → set ROOT_ID to the folder's id (the part after
+   /folders/). The PTO Google account needs Editor access to that folder.
    If you ever change this code: Deploy → Manage deployments → edit (pencil) →
    Version: New version → Deploy. The URL stays the same.
    ============================================================ */

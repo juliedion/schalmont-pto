@@ -38,9 +38,10 @@
       '<div class="ybf-msg" role="status" aria-live="polite"></div>' +
       '<form novalidate>' +
         '<fieldset class="ybf-group"><legend>About the photo</legend>' +
-          '<div class="ybf-field"><label for="' + uid + '-students">Student name(s) in the photo <b class="ybf-req">*</b></label>' +
-            '<span class="ybf-hint">First and last names, left to right if you can. One photo of a group? List everyone you know.</span>' +
-            '<textarea id="' + uid + '-students" name="students" rows="3" maxlength="600" required placeholder="e.g. Maya Chen, Liam Portnoy, Ava Ruiz"></textarea></div>' +
+          '<div class="ybf-field"><span class="ybf-label">Student(s) in the photo <b class="ybf-req">*</b></span>' +
+            '<span class="ybf-hint">First and last name for each student. A group photo? Add everyone you know, left to right if you can.</span>' +
+            '<div class="ybf-students"></div>' +
+            '<button type="button" class="ybf-add">+ Add another student</button></div>' +
           '<div class="ybf-field"><span class="ybf-label" id="' + uid + '-sl">School <b class="ybf-req">*</b></span>' +
             '<div class="ybf-grades ybf-schools" role="radiogroup" aria-labelledby="' + uid + '-sl">' +
               SCHOOLS.map(function (sc) {
@@ -68,12 +69,44 @@
             '<input type="file" accept="image/*,.heic,.heif" multiple hidden></div>' +
           '<ul class="ybf-files"></ul>' +
         '</fieldset>' +
+        '<fieldset class="ybf-group"><legend>Parent directory</legend>' +
+          '<span class="ybf-label" id="' + uid + '-dl">Would you like to register for the Schalmont PTO parent directory?</span>' +
+          '<span class="ybf-hint">The directory helps Schalmont families connect. Only other registered Schalmont PTO families can see it, and you choose what to share.</span>' +
+          '<div class="ybf-grades" role="radiogroup" aria-labelledby="' + uid + '-dl">' +
+            '<label class="ybf-chip"><input type="radio" name="directory" value="yes"><span>Yes, sign me up</span></label>' +
+            '<label class="ybf-chip"><input type="radio" name="directory" value="no"><span>No thanks</span></label>' +
+          '</div>' +
+        '</fieldset>' +
         '<button type="submit" class="btn btn-primary ybf-submit">Submit photos</button>' +
         '<p class="ybf-fine">By submitting, you confirm you took these photos and are OK with the Schalmont PTO using them in the yearbook and in marketing communications. ' +
           'To have a photo removed, email <a href="mailto:julie@schalmontpto.com">julie@schalmontpto.com</a>.</p>' +
       '</form>';
 
     var form = root.querySelector('form'), msg = root.querySelector('.ybf-msg');
+    var studentBox = root.querySelector('.ybf-students'), addBtn = root.querySelector('.ybf-add'), rowN = 0;
+
+    // ---- students: one First / Last row each ----
+    function addStudent(focus) {
+      var n = ++rowN, row = document.createElement('div');
+      row.className = 'ybf-student';
+      row.innerHTML =
+        '<input type="text" class="ybf-first" maxlength="40" autocomplete="off" required placeholder="First name" aria-label="Student ' + n + ' first name">' +
+        '<input type="text" class="ybf-last" maxlength="40" autocomplete="off" required placeholder="Last name" aria-label="Student ' + n + ' last name">' +
+        '<button type="button" class="ybf-rm" aria-label="Remove this student">×</button>';
+      row.querySelector('.ybf-rm').onclick = function () { row.remove(); syncStudents(); };
+      studentBox.appendChild(row);
+      syncStudents();
+      if (focus) row.querySelector('.ybf-first').focus();
+    }
+    function syncStudents() {
+      var rows = studentBox.children;
+      [].forEach.call(rows, function (r) { r.querySelector('.ybf-rm').hidden = rows.length < 2; });
+      addBtn.hidden = rows.length >= 30;
+    }
+    function resetStudents() { studentBox.innerHTML = ''; addStudent(false); }
+    addBtn.onclick = function () { addStudent(true); };
+    form.addEventListener('input', function () { if (msg.querySelector('.err')) show('', ''); });   // clear an error once they start fixing it
+    resetStudents();
     var drop = root.querySelector('.ybf-drop'), input = drop.querySelector('input');
     var list = root.querySelector('.ybf-files'), btn = root.querySelector('.ybf-submit');
     var evSel = root.querySelector('select'), evOther = root.querySelector('.ybf-other');
@@ -149,7 +182,7 @@
       });
       drop.hidden = chosen.length >= MAX_FILES;
     }
-    function show(kind, text) { msg.innerHTML = text ? '<div class="ybf-alert ' + kind + '">' + esc(text) + '</div>' : ''; }
+    function show(kind, text, extraHTML) { msg.innerHTML = text ? '<div class="ybf-alert ' + kind + '">' + esc(text) + (extraHTML || '') + '</div>' : ''; }
 
     // ---- submitting ----
     function post(fd) {
@@ -162,11 +195,22 @@
       e.preventDefault();
       show('', '');
       var f = form.elements;
-      var students = f.students.value.trim(), name = f.uploaderName.value.trim(), email = f.uploaderEmail.value.trim();
+      var name = f.uploaderName.value.trim(), email = f.uploaderEmail.value.trim();
+      // Every student row needs both names; blank extra rows are ignored.
+      var missing = null, names = [];
+      [].forEach.call(studentBox.children, function (r) {
+        var fi = r.querySelector('.ybf-first'), la = r.querySelector('.ybf-last'), a = fi.value.trim(), b = la.value.trim();
+        if (!a && !b) return;
+        if (!a || !b) { missing = missing || (a ? la : fi); return; }
+        names.push(a + ' ' + b);
+      });
+      var students = names.join(', ');
+      var wantsDir = !!form.querySelector('input[name=directory][value=yes]:checked');
       var picked = [].filter.call(form.querySelectorAll('input[name=grades]'), function (c) { return c.checked; }).map(function (c) { return c.value; });
       var evSlug = evSel.value === OTHER ? '' : evSel.value;
       var evLabel = evSel.value === OTHER ? evOther.value.trim() : evSlug ? (folders.filter(function (x) { return x.slug === evSlug; })[0] || {}).name || '' : '';
-      var problem = !students ? [f.students, 'Please enter the name of the student(s) in the photo.']
+      var problem = missing ? [missing, 'Please enter both a first and last name for each student.']
+        : !students ? [studentBox.querySelector('.ybf-first'), 'Please enter the first and last name of the student(s) in the photo.']
         : !school ? [form.querySelector('input[name=school]'), 'Please choose the school.']
         : !picked.length ? [form.querySelector('input[name=grades]'), 'Please check the grade(s) of the student(s).']
         : !name ? [f.uploaderName, 'Please enter your name.']
@@ -197,7 +241,7 @@
         var rec = {
           school: school, event: evSlug || 'unsorted', eventLabel: evLabel || 'No event chosen',
           students: students, grades: picked, people: students + ' (' + gradesText + ')',
-          uploaderName: name, uploaderEmail: email, photos: saved, batchId: batchId, status: 'live',
+          uploaderName: name, uploaderEmail: email, directoryInterest: wantsDir, photos: saved, batchId: batchId, status: 'live',
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };
         // The photos are already on the server (with a backup copy of these details), so don't
@@ -206,11 +250,18 @@
         return Promise.race([saveRec, new Promise(function (ok) { setTimeout(ok, 8000); })]).catch(function () {}).then(function () {
           var n = saved.length;
           var bad = chosen.filter(function (it) { return it.state === 'fail'; });
+          // Said yes to the directory: hand their name and email to its Register form.
+          var dirHTML = '';
+          if (wantsDir) {
+            try { sessionStorage.setItem('dirPrefill', JSON.stringify({ name: name, email: email })); } catch (_) {}
+            dirHTML = '<span class="ybf-dir-next">One more step for the parent directory: create your account (it takes a minute).' +
+              '<a class="btn btn-primary" href="/directory#register">Register for the parent directory →</a></span>';
+          }
           show(failed ? 'err' : 'ok', 'Thank you! ' + n + ' photo' + (n === 1 ? ' was' : 's were') + ' sent to the yearbook team.' +
-            (failed ? ' ' + failed + ' didn\'t upload (' + bad[0].err + ') and are still listed below; you can try them again.' : ''));
+            (failed ? ' ' + failed + ' didn\'t upload (' + bad[0].err + ') and are still listed below; you can try them again.' : ''), dirHTML);
           chosen = bad;
           chosen.forEach(function (it) { it.state = ''; });
-          if (!failed) { f.students.value = ''; form.querySelectorAll('input[name=grades]').forEach(function (c) { c.checked = false; }); }
+          if (!failed) { resetStudents(); form.querySelectorAll('input[name=grades]').forEach(function (c) { c.checked = false; }); }
         });
       }).catch(function (err) {
         show('err', 'Sorry, the photos didn\'t upload: ' + err.message);

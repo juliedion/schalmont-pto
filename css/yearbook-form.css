@@ -18,6 +18,13 @@
 .ybf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
 @media (max-width: 600px) { .ybf-row { grid-template-columns: 1fr; } }
 
+.ybf-students { display: grid; gap: 8px; }
+.ybf-student { display: grid; grid-template-columns: 1fr 1fr 36px; gap: 8px; align-items: center; }
+.ybf-student .ybf-rm { border: 0; background: #f2f4f3; width: 32px; height: 32px; border-radius: 50%; font-size: 18px; line-height: 1; cursor: pointer; color: var(--text); }
+.ybf-student .ybf-rm[hidden] { display: block; visibility: hidden; }
+.ybf-add { margin-top: 8px; border: 1.5px dashed var(--border); background: #fff; color: var(--primary); font: inherit; font-weight: 700; font-size: 14px; padding: 8px 14px; border-radius: 10px; cursor: pointer; }
+.ybf-add:hover { border-color: var(--primary); background: #f1f8f3; }
+@media (max-width: 480px) { .ybf-student { grid-template-columns: 1fr 1fr 32px; gap: 6px; } }
 .ybf-grades { display: flex; flex-wrap: wrap; gap: 8px; }
 .ybf-chip { margin: 0 !important; cursor: pointer; }
 .ybf-chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
@@ -47,3 +54,5 @@
 .ybf-alert { padding: 12px 14px; border-radius: 10px; font-size: 14.5px; font-weight: 600; margin-bottom: 16px; }
 .ybf-alert.ok { background: #e9f7ee; color: #14532d; border: 1px solid #9bd3a8; }
 .ybf-alert.err { background: #fff1ee; color: #8a1c00; border: 1px solid #f1a99c; }
+.ybf-dir-next { display: block; margin-top: 10px; font-weight: 600; }
+.ybf-dir-next .btn { display: inline-flex; margin-top: 8px; text-decoration: none; }

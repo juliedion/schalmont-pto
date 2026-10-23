@@ -826,5 +826,21 @@
   </script>
   <script src="js/page-menu.js?v=3"></script>
   <script src="js/menus.js?v=1"></script>
+  <script>
+    // Sent here from the yearbook photo form ("register for the parent directory"):
+    // open the Register tab with their name and email filled in.
+    (function () {
+      if (location.hash !== '#register') return;
+      var btn = document.querySelector('.gate-tab-btn[onclick*="register"]');
+      if (btn) switchGateTab('register', btn);
+      try {
+        var p = JSON.parse(sessionStorage.getItem('dirPrefill') || 'null');
+        if (p) {
+          if (p.name && !document.getElementById('gate-reg-name').value) document.getElementById('gate-reg-name').value = p.name;
+          if (p.email && !document.getElementById('gate-reg-email').value) document.getElementById('gate-reg-email').value = p.email;
+        }
+      } catch (_) {}
+    })();
+  </script>
 </body>
 </html>
