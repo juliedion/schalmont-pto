@@ -23,6 +23,15 @@
   function mb(n) { return n < 1048576 ? Math.max(1, Math.round(n / 1024)) + ' KB' : (n / 1048576).toFixed(n < 10485760 ? 1 : 0) + ' MB'; }
   function isImage(f) { return /^image\//.test(f.type) || /\.(heic|heif)$/i.test(f.name); }
 
+  // The event folders inside each school's Google Drive folder: {school: [names]}. One request per page.
+  var eventsPromise = null;
+  function getEvents() {
+    if (!eventsPromise) eventsPromise = fetch('/api/yearbook-events.php').then(function (r) { return r.json(); })
+      .then(function (d) { return d && d.ok && d.events ? d.events : {}; }).catch(function () { return {}; });
+    return eventsPromise;
+  }
+  function param(k) { try { return new URLSearchParams(location.search).get(k) || ''; } catch (_) { return ''; } }
+
   // Photos are copied to Google Drive by a separate server job (api/yearbook-drive.php), so
   // the parent never waits on Drive. Nudge it after an upload and whenever the form opens.
   function kickDrive() {
@@ -88,7 +97,7 @@
     var drop = root.querySelector('.ybf-drop'), input = drop.querySelector('input');
     var list = root.querySelector('.ybf-files'), btn = root.querySelector('.ybf-submit');
     var evSel = root.querySelector('select[name=event]'), evOther = root.querySelector('.ybf-other');
-    var chosen = [], events = {}, store = db();   // events = {school: [Drive event folder names]}
+    var chosen = [], events = {};   // events = {school: [Drive event folder names]}
 
     // ---- students: First / Last / School / Grade, one row each ----
     function gradeOptions(sc) {
@@ -151,9 +160,26 @@
       evSel.value = [].some.call(evSel.options, function (o) { return o.value === keep; }) ? keep : '';
       evOther.hidden = evSel.value !== OTHER;
     }
-    fetch('/api/yearbook-events.php').then(function (r) { return r.json(); }).then(function (d) {
-      if (d && d.ok && d.events) { events = d.events; fillEvents(); }
-    }).catch(function () {});
+    // Pick an event from outside the form (the event buttons, or ?event= in the link): make sure a
+    // student row is on that school, select the event, and bring the form into view.
+    function pickEvent(sc, name, scroll) {
+      var first = studentBox.querySelector('.ybf-school');
+      if (rowSchools().indexOf(sc) < 0 && first && !first.value) { first.value = sc; first.onchange(); }
+      fillEvents();
+      evSel.value = sc + '|' + name;
+      if (evSel.value !== sc + '|' + name) evSel.value = '';
+      evOther.hidden = true;
+      if (scroll) {
+        root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        var f = studentBox.querySelector('.ybf-first');
+        if (f) setTimeout(function () { try { f.focus({ preventScroll: true }); } catch (_) {} }, 500);
+      }
+    }
+    root.ybfPickEvent = function (sc, name) { getEvents().then(function () { pickEvent(sc, name, true); }); };
+    getEvents().then(function (ev) {
+      events = ev; fillEvents();
+      var want = param('event'); if (want) pickEvent(param('school') || school, want, false);
+    });
     resetStudents();
     evSel.onchange = function () { evOther.hidden = evSel.value !== OTHER; if (!evOther.hidden) evOther.focus(); };
 
@@ -283,11 +309,12 @@
             students: students, grades: kids.filter(function (k) { return k.school === sc; }).map(function (k) { return k.grade; }),
             allSchools: schools, people: students,
             uploaderName: name, uploaderEmail: email, directoryInterest: wantsDir, photos: saved, batchId: batchId, status: 'live',
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            createdAt: window.firebase && firebase.firestore ? firebase.firestore.FieldValue.serverTimestamp() : new Date()
           };
         });
         // The photos are already on the server (with a backup copy of these details), so don't
         // keep the family waiting if Firestore is slow to confirm.
+        var store = db();   // looked up now: the Firebase scripts may still have been loading when the form was built
         var saveRec = store ? Promise.all(recs.map(function (r) { return store.collection('yearbook_photos').add(r); })) : Promise.resolve();
         return Promise.race([saveRec, new Promise(function (ok) { setTimeout(ok, 8000); })]).catch(function () {}).then(function () {
           var n = saved.length;
@@ -314,10 +341,35 @@
     };
   }
 
+  // Buttons for each event folder in a school's Google Drive folder:
+  // <div data-yearbook-events data-school="jefferson"></div>. With a photo form on the same page
+  // a button picks that event in it; otherwise it opens /share-photos with school + event set.
+  function eventButtons(el) {
+    var sc = el.getAttribute('data-school');
+    el.classList.add('ybf-evbtns');
+    el.innerHTML = '<span class="ybf-hint" style="margin:0">Loading events…</span>';
+    getEvents().then(function (ev) {
+      var names = ev[sc] || [];
+      if (!names.length) { el.innerHTML = '<a class="ybf-evbtn" href="/share-photos?school=' + encodeURIComponent(sc) + '"><span aria-hidden="true">📷</span> Upload photos</a>'; return; }
+      el.innerHTML = names.map(function (n) {
+        return '<a class="ybf-evbtn" href="/share-photos?school=' + encodeURIComponent(sc) + '&event=' + encodeURIComponent(n) + '" data-ev="' + esc(n) + '"><span aria-hidden="true">📷</span> ' + esc(n) + '</a>';
+      }).join('');
+      el.addEventListener('click', function (e) {
+        var a = e.target.closest('[data-ev]'), form = document.querySelector('[data-yearbook-form]');
+        if (!a || !form || !form.ybfPickEvent) return;   // no form here: follow the link
+        e.preventDefault();
+        form.ybfPickEvent(sc, a.getAttribute('data-ev'));
+      });
+    });
+  }
+
+  // Runs as soon as it loads (the form markup is above the script tag), so the form and buttons
+  // show right away even while the Firebase scripts are still downloading on a slow phone.
   function boot() {
+    document.querySelectorAll('[data-yearbook-events]').forEach(eventButtons);
     var forms = document.querySelectorAll('[data-yearbook-form]');
     forms.forEach(build);
     if (forms.length) setTimeout(kickDrive, 4000);   // retry anything still waiting for Drive
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  boot();
 })();

@@ -65,3 +65,9 @@
 .ybf-alert.err { background: #fff1ee; color: #8a1c00; border: 1px solid #f1a99c; }
 .ybf-dir-next { display: block; margin-top: 10px; font-weight: 600; }
 .ybf-dir-next .btn { display: inline-flex; margin-top: 8px; text-decoration: none; }
+/* Event upload buttons (one per Drive event folder) */
+.ybf-evbtns { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.ybf-evbtn { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-radius: 12px; background: #fff; border: 1.5px solid var(--border);
+  color: var(--primary-dark, #1a3d24); font-weight: 800; font-size: 14.5px; text-decoration: none; line-height: 1.25; transition: border-color .15s ease, background .15s ease, transform .15s ease; }
+.ybf-evbtn:hover, .ybf-evbtn:focus-visible { border-color: var(--primary); background: #f1f8f3; transform: translateY(-1px); outline: none; }
+

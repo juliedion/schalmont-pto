@@ -70,6 +70,10 @@ ICON = {
 # Each school's own yearbook page (Woestina has none; its school page has a #yearbook section).
 YEARBOOK = {'jefferson': 'yearbook-jefferson.html', 'middle': 'yearbook-middle.html', 'high': 'yearbook-high.html'}
 
+# Extra pages listed under a school in the sidebar (after Yearbook).
+EXTRA_LINKS = {'middle': [('5th Grade Dance', '5th-grade-dance.html'), ('6th & 7th Grade Dance', '6th-7th-grade-dance.html'),
+                          ('8th Grade Dance', '8th-grade-dance.html')]}
+
 TOP_MENUS = [
     ('Families', [('Picture days', 'picture-days.html'), ('Yearbooks', 'yearbooks.html'),
                   ('Lunch menus', 'index.html#hz-lunch'), ('Parent directory', 'directory.html'),
@@ -158,6 +162,7 @@ def sidebar(p, extra=''):
             f'      <a class="sn-subitem" href="{p}{page}">School page</a>',
             f'      <a class="sn-subitem" href="{p}{page}#program-grid">Events &amp; programs</a>',
             f'      <a class="sn-subitem" href="{p}{YEARBOOK.get(key, page + "#yearbook")}">Yearbook</a>',
+            *[f'      <a class="sn-subitem" href="{p}{href}">{e(lbl)}</a>' for lbl, href in EXTRA_LINKS.get(key, [])],
             f'      <div class="sn-classes" aria-label="{e(name)} class pages"><span>Classes</span>{chips}</div>',
             '    </div>',
             '  </div>']
