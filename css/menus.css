@@ -56,6 +56,16 @@
   .sh-has:hover > .sh-drop-schools { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
 }
 @media (max-width: 1320px) { .sh-social { display: none; } }
+/* Small laptops (1181-1320px): tighten the bar so all 8 menu items and Get Involved fit on one line. */
+@media (min-width: 1181px) and (max-width: 1320px) {
+  .sh-inner { gap: 12px; padding: 0 16px; }
+  .sh-brand img { height: 50px; }
+  .sh-brand img + img { padding-left: 9px; }
+  .sh-list .sh-top { padding-left: 9px; padding-right: 9px; font-size: 14.5px; }
+  .sh-actions { gap: 6px; }
+  .sh-login { padding: 7px 11px; font-size: 13.5px; }
+  .sh-cta { padding: 9px 14px; font-size: 14px; }
+}
 /* Tablets & phones: a Menu button opens the whole menu as a panel */
 @media (max-width: 1180px) {
   .sh-toggle { display: inline-flex; }

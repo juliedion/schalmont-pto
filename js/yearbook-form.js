@@ -35,7 +35,6 @@
     var uid = 'ybf-' + (school || 'x');
     root.classList.add('ybf');
     root.innerHTML =
-      '<div class="ybf-msg" role="status" aria-live="polite"></div>' +
       '<form novalidate>' +
         '<fieldset class="ybf-group"><legend>About the photo</legend>' +
           '<div class="ybf-field"><span class="ybf-label">Student(s) in the photo <b class="ybf-req">*</b></span>' +
@@ -68,6 +67,8 @@
             '<label class="ybf-chip"><input type="radio" name="directory" value="no"><span>No thanks</span></label>' +
           '</div>' +
         '</fieldset>' +
+        // Messages sit right above the button, where the parent is looking when they press it.
+        '<div class="ybf-msg" role="status" aria-live="polite"></div>' +
         '<button type="submit" class="btn btn-primary ybf-submit">Submit photos</button>' +
         '<p class="ybf-fine">By submitting, you confirm you took these photos and are OK with the Schalmont PTO using them in the yearbook and in marketing communications. ' +
           'To have a photo removed, email <a href="mailto:julie@schalmontpto.com">julie@schalmontpto.com</a>.</p>' +
@@ -191,7 +192,13 @@
       });
       drop.hidden = chosen.length >= MAX_FILES;
     }
-    function show(kind, text, extraHTML) { msg.innerHTML = text ? '<div class="ybf-alert ' + kind + '">' + esc(text) + (extraHTML || '') + '</div>' : ''; }
+    function show(kind, text, extraHTML) {
+      msg.innerHTML = text ? '<div class="ybf-alert ' + kind + '">' + esc(text) + (extraHTML || '') + '</div>' : '';
+      if (text && msg.getBoundingClientRect) {
+        var r = msg.getBoundingClientRect();
+        if (r.top < 0 || r.bottom > (window.innerHeight || 800)) msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
 
     // ---- submitting ----
     function post(fd) {
@@ -233,7 +240,7 @@
         : !name ? [f.uploaderName, 'Please enter your name.']
         : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? [f.uploaderEmail, 'Please enter a valid email address.']
         : !chosen.length ? [drop, 'Please choose at least one photo.'] : null;
-      if (problem) { show('err', problem[1]); problem[0].focus(); return; }
+      if (problem) { show('err', problem[1]); try { problem[0].focus({ preventScroll: true }); } catch (_) { problem[0].focus(); } return; }
 
       var batchId = new Date().toISOString().replace(/\D/g, '').slice(0, 14) + '-' + Math.random().toString(36).slice(2, 10);
       var gradesText = gradeVals.map(gradeLabel).join(', ');
@@ -243,9 +250,12 @@
       chosen.forEach(function (it) { it.state = ''; });
       var saved = [], failed = 0;
       // One photo per request, in order.
+      var total = chosen.length, nth = 0;
+      show('ok', 'Uploading your photos… please keep this page open until it says Thank you.');
       chosen.reduce(function (p, it) {
         return p.then(function () {
           it.state = 'up'; render();
+          btn.textContent = 'Uploading ' + (++nth) + ' of ' + total + '…';
           var fd = new FormData();
           fd.append('school', school); fd.append('schools', schools.join(',')); fd.append('batchId', batchId);
           fd.append('event', ''); fd.append('eventFolder', evFolderName); fd.append('eventSchool', evSchool); fd.append('eventLabel', evLabel);
@@ -291,7 +301,6 @@
       }).then(function () {
         btn.disabled = false; btn.textContent = 'Submit photos';
         render();
-        root.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     };
   }

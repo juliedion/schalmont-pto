@@ -98,28 +98,28 @@
   /* ================= HERO ================= */
   // Hero photos: images/hero-wide/hero-NN.jpg (first day of school 2026, 1000px wide, no
   // location data). Each entry: [alt text, desktop focus, phone focus]. Focus = CSS
-  // object-position Y in %, from face detection: it puts the faces 36% of the way down the
-  // visible photo on every slide (so they line up as the slides change) while keeping every
-  // face in frame from the wide desktop strip (2:1) to the phone band (about 3:2).
+  // object-position Y in %, from face detection: hair at least 7% below the top edge (about
+  // 14% at usual sizes) and every chin above the "Share your photos"/dots bar (bottom 20%),
+  // from the wide desktop strip (2:1) to the phone band (about 3:2).
   var HERO_PHOTOS = [
-    ['Two students on their front porch on the first day of school', 55, 56],
-    ['A student sitting on the steps with a first-day-of-4th-grade chalkboard sign', 32, 32],
-    ['A student holding a first-day-of-first-grade sign', 33, 32],
-    ['A smiling student holding a first-day-of-2nd-grade sign', 26, 25],
-    ['Two friends smiling in front of a world map', 24, 23],
-    ['A student standing by a blue spruce on the first day of school', 28, 27],
-    ['A student with a backpack on the first day of school', 42, 42],
-    ['A student holding a first-day-of-fourth-grade sign at the front door', 31, 31],
-    ['Three students together on the first day of school', 39, 40],
-    ['A smiling student in a denim jacket ready for school', 37, 37],
-    ['Two high school students on the first day of school', 28, 28],
-    ['A student in a soccer jersey outside the school', 32, 31],
-    ['A student on the front steps with a first-day-of-sixth-grade sign', 3, 1],
-    ['A smiling student heading to school with a bag of supplies', 13, 11],
-    ['A student with a new backpack on the first day of school', 34, 34],
-    ['A young student in a gray hoodie by a fence', 22, 21],
-    ['A grinning student with a backpack on the first day of school', 18, 17],
-    ['Two brothers ready for the first day of school', 20, 19]
+    ['Two students on their front porch on the first day of school', 57, 56],
+    ['A student sitting on the steps with a first-day-of-4th-grade chalkboard sign', 31, 32],
+    ['A student holding a first-day-of-first-grade sign', 37, 38],
+    ['A smiling student holding a first-day-of-2nd-grade sign', 15, 13],
+    ['Two friends smiling in front of a world map', 22, 22],
+    ['A student standing by a blue spruce on the first day of school', 32, 33],
+    ['A student with a backpack on the first day of school', 45, 45],
+    ['A student holding a first-day-of-fourth-grade sign at the front door', 33, 34],
+    ['Three students together on the first day of school', 40, 41],
+    ['A smiling student in a denim jacket ready for school', 41, 42],
+    ['Two high school students on the first day of school', 20, 22],
+    ['A student in a soccer jersey outside the school', 35, 36],
+    ['A student on the front steps with a first-day-of-sixth-grade sign', 5, 4],
+    ['A smiling student heading to school with a bag of supplies', 4, 7],
+    ['A student with a new backpack on the first day of school', 38, 40],
+    ['A young student in a gray hoodie by a fence', 20, 20],
+    ['A grinning student with a backpack on the first day of school', 9, 6],
+    ['Two brothers ready for the first day of school', 14, 12]
   ];
   function heroSrc(i) { return 'images/hero-wide/hero-' + String(i + 1).padStart(2, '0') + '.jpg'; }
   function initHero() {

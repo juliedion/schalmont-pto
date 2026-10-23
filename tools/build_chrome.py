@@ -119,6 +119,7 @@ def header(p, style=''):
         f'        <li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">Schools{down}</button>'
         f'<div class="sh-drop sh-drop-schools">{schools}<a class="sh-all" href="{p}schools.html">All schools →</a></div></li>',
         f'        <li><a class="sh-top" href="{p}events.html">Calendar</a></li>',
+        f'        <li><a class="sh-top" href="{p}yearbooks.html">Yearbooks</a></li>',
         '        ' + menus,
         f'        <li><a class="sh-top" href="{p}contact.html">Contact</a></li>',
         '      </ul>',
@@ -182,7 +183,7 @@ def add_assets(src, slash):
     """css/menus.css in <head>, js/menus.js before </body> -- exactly once each."""
     src = ASSETS_CSS.sub('', src)
     src = ASSETS_JS.sub('', src)
-    src = re.sub(r'(\n[ \t]*)</head>', lambda m: m.group(1) + f'  <link rel="stylesheet" href="{slash}css/menus.css?v=2">' + m.group(1) + '</head>', src, count=1)
+    src = re.sub(r'(\n[ \t]*)</head>', lambda m: m.group(1) + f'  <link rel="stylesheet" href="{slash}css/menus.css?v=3">' + m.group(1) + '</head>', src, count=1)
     return re.sub(r'(\n[ \t]*)</body>', lambda m: m.group(1) + f'  <script src="{slash}js/menus.js?v=1"></script>' + m.group(1) + '</body>', src, count=1)
 
 
