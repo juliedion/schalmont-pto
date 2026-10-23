@@ -1,0 +1,49 @@
+/* Yearbook photo submission form (js/yearbook-form.js) */
+.ybf { max-width: 720px; }
+.ybf form { margin: 0; }
+.ybf-group { border: 0; padding: 0; margin: 0 0 22px; min-width: 0; }
+.ybf-group legend { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--primary); padding: 0; margin-bottom: 10px; }
+.ybf-field { margin-bottom: 14px; }
+.ybf-field label, .ybf-label { display: block; font-weight: 700; font-size: 14.5px; color: var(--text); margin-bottom: 4px; }
+.ybf-hint { display: block; font-size: 13px; color: var(--text-light); line-height: 1.45; margin: -2px 0 8px; }
+.ybf-req { color: #b42318; font-weight: 800; }
+.ybf-opt { font-weight: 500; color: var(--text-light); font-size: 13px; }
+.ybf input[type=text], .ybf input[type=email], .ybf select, .ybf textarea {
+  width: 100%; box-sizing: border-box; padding: 11px 12px; border: 1px solid var(--border); border-radius: 10px;
+  font: inherit; font-size: 15px; background: #fff; color: var(--text);
+}
+.ybf textarea { resize: vertical; min-height: 72px; }
+.ybf input:focus, .ybf select:focus, .ybf textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0, 122, 61, .15); }
+.ybf-other { margin-top: 8px; }
+.ybf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+@media (max-width: 600px) { .ybf-row { grid-template-columns: 1fr; } }
+
+.ybf-grades { display: flex; flex-wrap: wrap; gap: 8px; }
+.ybf-chip { margin: 0 !important; cursor: pointer; }
+.ybf-chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.ybf-chip span { display: inline-flex; align-items: center; justify-content: center; min-width: 48px; height: 44px; padding: 0 12px; border-radius: 10px; border: 1.5px solid var(--border); background: #fff; font-weight: 800; font-size: 15px; color: var(--text); }
+.ybf-chip input:checked + span { background: var(--primary); border-color: var(--primary); color: #fff; }
+.ybf-chip input:focus-visible + span { box-shadow: 0 0 0 3px rgba(0, 122, 61, .3); }
+.ybf-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.ybf-drop { border: 2px dashed var(--border); border-radius: 14px; padding: 26px 16px; text-align: center; cursor: pointer; color: var(--text-light); font-size: 14.5px; background: #fafcfb; }
+.ybf-drop strong { color: var(--primary); }
+.ybf-drop:hover, .ybf-drop.is-drag, .ybf-drop:focus-visible { border-color: var(--primary); background: #f1f8f3; outline: none; }
+.ybf-files { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
+.ybf-file { display: flex; align-items: center; gap: 12px; padding: 8px; border: 1px solid var(--border); border-radius: 10px; background: #fff; }
+.ybf-file img, .ybf-noprev { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: #eef1ef; display: grid; place-items: center; font-size: 22px; }
+.ybf-file div { flex: 1; min-width: 0; }
+.ybf-file b { display: block; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ybf-file small { font-size: 12.5px; color: var(--text-light); }
+.ybf-file em { color: #8a4b00; font-style: normal; font-weight: 700; }
+.ybf-file button { border: 0; background: #f2f4f3; width: 32px; height: 32px; border-radius: 50%; font-size: 18px; line-height: 1; cursor: pointer; color: var(--text); flex-shrink: 0; }
+.ybf-file.is-done { border-color: #9bd3a8; background: #f3fbf5; }
+.ybf-file.is-fail { border-color: #f1a99c; background: #fff5f3; }
+.ybf-file.is-up { opacity: .75; }
+
+.ybf-submit { font-size: 16px; padding: 14px 28px; border: 0; cursor: pointer; }
+.ybf-submit:disabled { opacity: .6; cursor: progress; }
+.ybf-fine { font-size: 12.5px; color: var(--text-light); line-height: 1.5; margin: 14px 0 0; }
+.ybf-alert { padding: 12px 14px; border-radius: 10px; font-size: 14.5px; font-weight: 600; margin-bottom: 16px; }
+.ybf-alert.ok { background: #e9f7ee; color: #14532d; border: 1px solid #9bd3a8; }
+.ybf-alert.err { background: #fff1ee; color: #8a1c00; border: 1px solid #f1a99c; }

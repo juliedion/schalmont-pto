@@ -194,7 +194,9 @@
       const sel = document.getElementById('approved-folder');
       const cur = sel.value;
       sel.innerHTML = '<option value="">Choose an event folder…</option>' +
-        folders.map(f => `<option value="${f.slug}">${esc(f.name)} (${countFor(f.slug)})</option>`).join('');
+        folders.map(f => `<option value="${f.slug}">${esc(f.name)} (${countFor(f.slug)})</option>`).join('') +
+        // Photos sent from the yearbook pages without picking an event (any typed-in event shows on each photo)
+        (countFor('unsorted') ? `<option value="unsorted">No event chosen (${countFor('unsorted')})</option>` : '');
       sel.value = cur;
     }
 
@@ -230,7 +232,8 @@
         fig.innerHTML = `
           <a href="${esc(ph.url)}" target="_blank"><img src="${esc(ph.url)}" alt=""></a>
           <figcaption>${sub.people ? esc(sub.people) : '<i>no names</i>'}<br>
-            <span style="color:var(--text-light)">by ${esc(sub.uploaderName || '')}</span></figcaption>
+            ${sub.event === 'unsorted' && sub.eventLabel && sub.eventLabel !== 'No event chosen' ? `<span>Event: ${esc(sub.eventLabel)}</span><br>` : ''}
+            <span style="color:var(--text-light)">by ${esc(sub.uploaderName || '')}${sub.uploaderEmail ? ` · <a href="mailto:${esc(sub.uploaderEmail)}">${esc(sub.uploaderEmail)}</a>` : ''}</span></figcaption>
           <div style="display:flex">
             <a class="dl" href="${esc(ph.url)}" download style="flex:1">Download</a>
             <button class="dl" data-rm style="flex:1;border:none;border-left:1px solid var(--border);background:none;cursor:pointer;color:var(--error)">Remove</button>

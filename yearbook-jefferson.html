@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="css/styles.css?v=5">
   <link rel="icon" href="images/favicon.svg">
   <link rel="stylesheet" href="css/menus.css?v=2">
+  <link rel="stylesheet" href="css/yearbook-form.css?v=1">
 </head>
 <body>
 
@@ -142,7 +143,7 @@
   <!-- QUICK UPLOAD -->
   <section class="section-sm">
     <div class="container">
-      <a href="https://www.dropbox.com/request/ako7yg6d0v6i2mpy239d" target="_blank" rel="noopener" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:12px 24px;text-decoration:none">📤 Upload Back to School Photos</a>
+      <a href="#upload-photos" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:12px 24px;text-decoration:none">📤 Submit Yearbook Photos</a>
     </div>
   </section>
 
@@ -171,18 +172,14 @@
       </div>
 
       <!-- PHOTO UPLOADS -->
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
+      <div id="upload-photos" style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;scroll-margin-top:100px">
         <div style="background:linear-gradient(135deg,#3a7a1e 0%,#6bb044 100%);padding:28px 32px">
           <h2 style="color:#fff;font-size:22px;margin-bottom:6px">📸 Upload Photos for the Yearbook</h2>
-          <p style="color:rgba(255,255,255,0.8);font-size:14px;line-height:1.6;margin:0">Have photos from a school event or activity? Share them with the yearbook team — no Dropbox account needed.</p>
+          <p style="color:rgba(255,255,255,0.8);font-size:14px;line-height:1.6;margin:0">Have photos from a school event or activity? Send them to the yearbook team here, and tell us who&rsquo;s in them.</p>
         </div>
 
-        <div style="padding:32px">
-          <p style="font-size:14px;color:var(--text);line-height:1.7;margin-bottom:20px">Please name your files with the event or activity and grade if you can (e.g. <strong>trunk-or-treat_grade2_01.jpg</strong>) so the yearbook team can sort them.</p>
-          <a href="https://www.dropbox.com/request/ako7yg6d0v6i2mpy239d" target="_blank" rel="noopener" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:10px;font-size:16px;padding:14px 28px;text-decoration:none">
-            📤 Upload Back to School Photos
-          </a>
-          <p style="font-size:12px;color:var(--text-light);margin-top:16px">Opens in a new tab. No Dropbox account required.</p>
+        <div style="padding:32px" id="submit-photos">
+          <div data-yearbook-form data-school="jefferson"></div>
         </div>
       </div>
 
@@ -263,6 +260,7 @@
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="js/yearbook-form.js?v=3"></script>
   <script src="js/page-menu.js?v=3"></script>
   <script src="js/menus.js?v=1"></script>
 </body>

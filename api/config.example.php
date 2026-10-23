@@ -160,4 +160,24 @@ return [
   'github_token'  => '',
   'github_repo'   => 'juliedion/schalmont-pto',
   'github_branch' => 'main',      // the branch the deploy publishes from
+
+  /* ============================================================
+     YEARBOOK PHOTOS → GOOGLE DRIVE  (one time, ~10 minutes)
+     Photos from the yearbook pages' form always save on this server. With this
+     filled in, each one is ALSO filed in the PTO's Google Drive:
+       Schalmont PTO Yearbook Photos / <School> / <2026-27> / <Event> / ...
+     plus a "Yearbook photo submissions" sheet listing who's in each photo.
+
+     1. Signed in to the PTO Google account, go to script.google.com → New project.
+        Name it "Schalmont Yearbook Photos", delete what's there, and paste in the
+        whole file tools/yearbook-drive-script.gs from the website code.
+     2. In the function menu at the top pick "setup" → Run. Allow the permissions.
+        The Execution log shows the SECRET KEY and the Drive folder link.
+     3. Deploy → New deployment → gear → "Web app". Execute as: Me.
+        Who has access: Anyone. Deploy, then copy the Web app URL (ends in /exec).
+     4. Paste the URL and the secret key below, in your private config.php on Bluehost.
+     5. In Drive, share each school's folder with that school's yearbook coordinator.
+     ============================================================ */
+  'yearbook_drive_url'    => '',
+  'yearbook_drive_secret' => '',
 ];
