@@ -18,23 +18,8 @@ header('X-Content-Type-Options: nosniff');
 
 function out($code, $arr) { http_response_code($code); echo json_encode($arr); exit; }
 function fail($msg) { out(400, ['ok' => false, 'error' => $msg]); }
+require __DIR__ . '/_yearbook_drive.php';
 
-/* Send one saved photo to the Google Drive script. Returns the Drive link or '' on failure. */
-function to_drive($cfg, $path, $fields) {
-  $url = $cfg['yearbook_drive_url'] ?? ''; $key = $cfg['yearbook_drive_secret'] ?? '';
-  if ($url === '' || $key === '' || !function_exists('curl_init')) return '';
-  $mime = function_exists('mime_content_type') ? (@mime_content_type($path) ?: 'application/octet-stream') : 'application/octet-stream';
-  $body = json_encode($fields + ['secret' => $key, 'mimeType' => $mime, 'data' => base64_encode(file_get_contents($path))]);
-  $ch = curl_init($url);
-  curl_setopt_array($ch, [
-    CURLOPT_POST => true, CURLOPT_POSTFIELDS => $body, CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-    CURLOPT_RETURNTRANSFER => true, CURLOPT_FOLLOWLOCATION => true,   // Apps Script answers with a redirect
-    CURLOPT_CONNECTTIMEOUT => 15, CURLOPT_TIMEOUT => 120,
-  ]);
-  $res = json_decode((string)curl_exec($ch), true);
-  curl_close($ch);
-  return (is_array($res) && !empty($res['ok'])) ? (string)($res['url'] ?? 'ok') : '';
-}
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') out(405, ['ok' => false, 'error' => 'POST only']);
 
@@ -135,15 +120,15 @@ foreach ($files as $f) {
   $saved[] = ['url' => "/uploads/yearbook/$school/$event/$fname", 'original' => $f['name'], 'path' => "$destDir/$fname", 'ext' => $ext];
 }
 
-/* ---- copy to Google Drive (if connected), once per school in the photo ----
-   Done AFTER answering the parent (see the end): the photo is already safe on this
-   server, and copying a big phone photo to Drive takes 20-40 seconds -- the parent
-   shouldn't have to sit on "Uploading…" for that.
+/* ---- queue the copies to Google Drive, one per school in the photo ----
+   Not done in this request: copying a big phone photo to Drive takes 20-40 seconds and
+   the host holds the reply until a request finishes. The form pings
+   api/yearbook-drive.php afterwards, which works through the queue (and retries).
    File name: "Students (grades) - who sent it - time.ext", so it sorts and reads well in Drive. */
 $cfg = @include __DIR__ . '/config.php';
 if (!is_array($cfg)) $cfg = [];
 $who = $students !== '' ? $students : $people;
-$jobs = [];
+$jobs = [];   // [index, saved path, fields]
 foreach ($saved as $i => $sv) {
   // The form already puts each student's grade in the names; older submissions send grades separately.
   $nice = trim(mb_substr($who, 0, 110) . ($grades !== '' && strpos($who, '(') === false ? " ($grades)" : '') . ' - ' . $uploader);
@@ -177,29 +162,13 @@ $prev = file_exists($metaFile) ? json_decode(file_get_contents($metaFile), true)
   'submittedAt' => $prev['submittedAt'] ?? date('c'), 'ip' => $ip,
 ], JSON_PRETTY_PRINT), LOCK_EX);
 
-/* ---- answer the parent now, then copy to Drive ---- */
-ignore_user_abort(true);
-@set_time_limit(300);
-$body = json_encode(['ok' => true, 'batchId' => $batchId, 'files' => $saved, 'drive' => $jobs ? 'sending' : 'off']);
-http_response_code(200);
-header('Content-Length: ' . strlen($body));
-header('Connection: close');
-echo $body;
-if (function_exists('fastcgi_finish_request')) {
-  fastcgi_finish_request();
-} else {
-  while (ob_get_level() > 0) @ob_end_flush();
-  @flush();
+/* ---- put the Drive copies in the queue (uploads/yearbook/.queue, .json = not web-readable) ---- */
+if ($jobs && !empty($cfg['yearbook_drive_url'])) {
+  @mkdir("$baseDir/.queue", 0755, true);
+  foreach ($jobs as [$i, $path, $fields]) {
+    @file_put_contents("$baseDir/.queue/" . date('Ymd-His') . '-' . bin2hex(random_bytes(4)) . '.json',
+      json_encode(['path' => $path, 'meta' => $metaFile, 'fields' => $fields, 'tries' => 0]), LOCK_EX);
+  }
 }
 
-$driveLog = [];
-foreach ($jobs as [$i, $path, $fields]) {
-  $link = to_drive($cfg, $path, $fields);
-  $driveLog[] = ['file' => basename($path), 'school' => $fields['school'], 'drive' => $link ?: 'FAILED', 'at' => date('c')];
-}
-if ($driveLog) {   // note what reached Drive in the backup copy, so a failed one can be re-sent by hand
-  $m = json_decode((string)@file_get_contents($metaFile), true) ?: [];
-  $m['drive'] = array_merge($m['drive'] ?? [], $driveLog);
-  @file_put_contents($metaFile, json_encode($m, JSON_PRETTY_PRINT), LOCK_EX);
-}
-exit;
+out(200, ['ok' => true, 'batchId' => $batchId, 'files' => $saved, 'drive' => $jobs ? 'queued' : 'off']);

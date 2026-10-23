@@ -23,6 +23,12 @@
   function mb(n) { return n < 1048576 ? Math.max(1, Math.round(n / 1024)) + ' KB' : (n / 1048576).toFixed(n < 10485760 ? 1 : 0) + ' MB'; }
   function isImage(f) { return /^image\//.test(f.type) || /\.(heic|heif)$/i.test(f.name); }
 
+  // Photos are copied to Google Drive by a separate server job (api/yearbook-drive.php), so
+  // the parent never waits on Drive. Nudge it after an upload and whenever the form opens.
+  function kickDrive() {
+    try { fetch('/api/yearbook-drive.php', { method: 'POST', keepalive: true }).catch(function () {}); } catch (_) {}
+  }
+
   function db() {
     if (!window.firebase || !firebase.firestore) return null;
     if (!firebase.apps.length && typeof firebaseConfig !== 'undefined') firebase.initializeApp(firebaseConfig);   // js/auth.js normally does this
@@ -269,6 +275,7 @@
         });
       }, Promise.resolve()).then(function () {
         if (!saved.length) throw new Error((chosen[0] && chosen[0].err) || 'Upload failed');
+        kickDrive();
         // One review record per school, so each school's yearbook team sees the photo.
         var recs = schools.map(function (sc) {
           return {
@@ -307,6 +314,10 @@
     };
   }
 
-  function boot() { document.querySelectorAll('[data-yearbook-form]').forEach(build); }
+  function boot() {
+    var forms = document.querySelectorAll('[data-yearbook-form]');
+    forms.forEach(build);
+    if (forms.length) setTimeout(kickDrive, 4000);   // retry anything still waiting for Drive
+  }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
