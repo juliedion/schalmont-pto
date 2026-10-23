@@ -67,6 +67,9 @@ ICON = {
 }
 
 
+# Each school's own yearbook page (Woestina has none; its school page has a #yearbook section).
+YEARBOOK = {'jefferson': 'yearbook-jefferson.html', 'middle': 'yearbook-middle.html', 'high': 'yearbook-high.html'}
+
 TOP_MENUS = [
     ('Families', [('Picture days', 'picture-days.html'), ('Yearbooks', 'yearbooks.html'),
                   ('Lunch menus', 'index.html#hz-lunch'), ('Parent directory', 'directory.html'),
@@ -112,10 +115,12 @@ def header(p, style=''):
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menu</span></button>',
         '    <div class="sh-menu" id="sh-menu">',
         '      <ul class="sh-list">',
+        f'        <li><a class="sh-top" href="{p}index.html">Home</a></li>',
         f'        <li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">Schools{down}</button>'
         f'<div class="sh-drop sh-drop-schools">{schools}<a class="sh-all" href="{p}schools.html">All schools →</a></div></li>',
         f'        <li><a class="sh-top" href="{p}events.html">Calendar</a></li>',
         '        ' + menus,
+        f'        <li><a class="sh-top" href="{p}contact.html">Contact</a></li>',
         '      </ul>',
         '      <div class="sh-actions">',
         f'        <a class="sh-icon" href="{p}index.html#search" aria-label="Search the site">{ICON["search"]}</a>',
@@ -151,7 +156,7 @@ def sidebar(p, extra=''):
             f'    <div class="sn-sub sidenav-submenu" id="snav-{key}" hidden>',
             f'      <a class="sn-subitem" href="{p}{page}">School page</a>',
             f'      <a class="sn-subitem" href="{p}{page}#program-grid">Events &amp; programs</a>',
-            f'      <a class="sn-subitem" href="{p}{page}#yearbook">Yearbook</a>',
+            f'      <a class="sn-subitem" href="{p}{YEARBOOK.get(key, page + "#yearbook")}">Yearbook</a>',
             f'      <div class="sn-classes" aria-label="{e(name)} class pages"><span>Classes</span>{chips}</div>',
             '    </div>',
             '  </div>']

@@ -96,26 +96,44 @@
   };
 
   /* ================= HERO ================= */
-  // Hero photos: images/hero-wide/hero-NN.jpg, the uncut photo from each desktop hero
-  // artboard (images/hero/), same order as HOME_PHOTOS so the alt text matches.
-  // HERO_FOCUS = how far down each photo the crop sits (CSS object-position Y, in %),
-  // worked out from face detection so every face stays in frame with room above the
-  // heads. Adding a photo? Start it at '15%' and check it on a wide screen.
-  var HERO_FOCUS = { 1: 23, 2: 11, 3: 18, 4: 2, 5: 33, 6: 12, 7: 17, 8: 8, 9: 6, 10: 29, 11: 16, 12: 4, 13: 4, 14: 2, 15: 5, 16: 18,
-    17: 32, 18: 26, 19: 19, 20: 9, 21: 11, 22: 17, 23: 16, 24: 6, 25: 8, 26: 19, 27: 18, 28: 5, 29: 15, 30: 21, 31: 14 };
+  // Hero photos: images/hero-wide/hero-NN.jpg (first day of school 2026, 1000px wide, no
+  // location data). Each entry: [alt text, desktop focus, phone focus]. Focus = CSS
+  // object-position Y in %, from face detection: it puts the faces 36% of the way down the
+  // visible photo on every slide (so they line up as the slides change) while keeping every
+  // face in frame from the wide desktop strip (2:1) to the phone band (about 3:2).
+  var HERO_PHOTOS = [
+    ['Two students on their front porch on the first day of school', 55, 56],
+    ['A student sitting on the steps with a first-day-of-4th-grade chalkboard sign', 32, 32],
+    ['A student holding a first-day-of-first-grade sign', 33, 32],
+    ['A smiling student holding a first-day-of-2nd-grade sign', 26, 25],
+    ['Two friends smiling in front of a world map', 24, 23],
+    ['A student standing by a blue spruce on the first day of school', 28, 27],
+    ['A student with a backpack on the first day of school', 42, 42],
+    ['A student holding a first-day-of-fourth-grade sign at the front door', 31, 31],
+    ['Three students together on the first day of school', 39, 40],
+    ['A smiling student in a denim jacket ready for school', 37, 37],
+    ['Two high school students on the first day of school', 28, 28],
+    ['A student in a soccer jersey outside the school', 32, 31],
+    ['A student on the front steps with a first-day-of-sixth-grade sign', 3, 1],
+    ['A smiling student heading to school with a bag of supplies', 13, 11],
+    ['A student with a new backpack on the first day of school', 34, 34],
+    ['A young student in a gray hoodie by a fence', 22, 21],
+    ['A grinning student with a backpack on the first day of school', 18, 17],
+    ['Two brothers ready for the first day of school', 20, 19]
+  ];
   function heroSrc(i) { return 'images/hero-wide/hero-' + String(i + 1).padStart(2, '0') + '.jpg'; }
   function initHero() {
     var hero = $('#hz-hero'), wrap = $('#hz-slides'), dotsEl = $('#hz-dots');
     if (!hero || !wrap) return;
-    wrap.innerHTML = HOME_PHOTOS.map(function (p, i) {
-      var pos = ' style="object-position:center ' + (HERO_FOCUS[i + 1] != null ? HERO_FOCUS[i + 1] : 15) + '%"';
+    wrap.innerHTML = HERO_PHOTOS.map(function (p, i) {
+      var pos = ' style="--fd:' + p[1] + '%;--fm:' + p[2] + '%"';
       // Only the first photo loads up front; each next one loads just before it's shown.
       var attr = i === 0 ? 'src="' + heroSrc(i) + '" fetchpriority="high"' : 'data-src="' + heroSrc(i) + '"';
       return '<div class="hz-slide' + (i === 0 ? ' is-active' : '') + '" role="group" aria-roledescription="slide" aria-label="' +
-        (i + 1) + ' of ' + HOME_PHOTOS.length + '"' + (i ? ' aria-hidden="true"' : '') + '>' +
-        '<img ' + attr + pos + ' alt="' + esc(p[1]) + '" width="700" height="850" decoding="async"></div>';
+        (i + 1) + ' of ' + HERO_PHOTOS.length + '"' + (i ? ' aria-hidden="true"' : '') + '>' +
+        '<img ' + attr + pos + ' alt="' + esc(p[0]) + '" width="1000" height="1333" decoding="async"></div>';
     }).join('');
-    dotsEl.innerHTML = HOME_PHOTOS.map(function (_, i) {
+    dotsEl.innerHTML = HERO_PHOTOS.map(function (_, i) {
       return '<button type="button" class="hz-dot" aria-label="Show photo ' + (i + 1) + '"' + (i === 0 ? ' aria-current="true"' : '') + '></button>';
     }).join('');
 

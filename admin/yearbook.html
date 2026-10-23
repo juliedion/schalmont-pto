@@ -195,8 +195,8 @@
       const cur = sel.value;
       sel.innerHTML = '<option value="">Choose an event folder…</option>' +
         folders.map(f => `<option value="${f.slug}">${esc(f.name)} (${countFor(f.slug)})</option>`).join('') +
-        // Photos sent from the yearbook pages without picking an event (any typed-in event shows on each photo)
-        (countFor('unsorted') ? `<option value="unsorted">No event chosen (${countFor('unsorted')})</option>` : '');
+        // Photos from the yearbook pages' form (their event, if any, shows on each photo; Drive has them filed by event)
+        (countFor('unsorted') ? `<option value="unsorted">From the yearbook photo form (${countFor('unsorted')})</option>` : '');
       sel.value = cur;
     }
 

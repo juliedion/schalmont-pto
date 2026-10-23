@@ -19,12 +19,21 @@
 @media (max-width: 600px) { .ybf-row { grid-template-columns: 1fr; } }
 
 .ybf-students { display: grid; gap: 8px; }
-.ybf-student { display: grid; grid-template-columns: 1fr 1fr 36px; gap: 8px; align-items: center; }
+.ybf-student { display: grid; grid-template-columns: 1fr 1fr 1.1fr 1fr 32px; gap: 8px; align-items: center; }
+.ybf .ybf-student select { padding-left: 10px; padding-right: 6px; }
 .ybf-student .ybf-rm { border: 0; background: #f2f4f3; width: 32px; height: 32px; border-radius: 50%; font-size: 18px; line-height: 1; cursor: pointer; color: var(--text); }
 .ybf-student .ybf-rm[hidden] { display: block; visibility: hidden; }
 .ybf-add { margin-top: 8px; border: 1.5px dashed var(--border); background: #fff; color: var(--primary); font: inherit; font-weight: 700; font-size: 14px; padding: 8px 14px; border-radius: 10px; cursor: pointer; }
 .ybf-add:hover { border-color: var(--primary); background: #f1f8f3; }
-@media (max-width: 480px) { .ybf-student { grid-template-columns: 1fr 1fr 32px; gap: 6px; } }
+/* Narrow screens: names on one line, school + grade under them, each student in a light box. */
+@media (max-width: 700px) {
+  .ybf-student { grid-template-columns: 1fr 1fr 32px; gap: 6px; padding: 8px; border: 1px solid var(--border); border-radius: 12px; background: #fafcfb; }
+  .ybf-student .ybf-first { grid-column: 1; grid-row: 1; }
+  .ybf-student .ybf-last { grid-column: 2; grid-row: 1; }
+  .ybf-student .ybf-school { grid-column: 1; grid-row: 2; }
+  .ybf-student .ybf-grade { grid-column: 2; grid-row: 2; }
+  .ybf-student .ybf-rm { grid-column: 3; grid-row: 1 / span 2; }
+}
 .ybf-grades { display: flex; flex-wrap: wrap; gap: 8px; }
 .ybf-chip { margin: 0 !important; cursor: pointer; }
 .ybf-chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }

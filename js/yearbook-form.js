@@ -1,6 +1,6 @@
 /* Yearbook photo submission form, shared by the school yearbook pages.
    Drop <div data-yearbook-form data-school="jefferson|middle|high"></div> on a page (that
-   school starts out picked; families can switch to another school) and
+   school starts out picked for each student; each student can be from any school) and
    load this script after the Firebase scripts. Photos go one at a time to
    api/yearbook-upload.php (keeps each request under the server's upload limit); the
    submission details are saved to Firestore `yearbook_photos` for the back office's
@@ -39,18 +39,9 @@
       '<form novalidate>' +
         '<fieldset class="ybf-group"><legend>About the photo</legend>' +
           '<div class="ybf-field"><span class="ybf-label">Student(s) in the photo <b class="ybf-req">*</b></span>' +
-            '<span class="ybf-hint">First and last name for each student. A group photo? Add everyone you know, left to right if you can.</span>' +
+            '<span class="ybf-hint">First and last name, school and grade for each student. A group photo? Add everyone you know, left to right if you can. Students can be from different schools.</span>' +
             '<div class="ybf-students"></div>' +
             '<button type="button" class="ybf-add">+ Add another student</button></div>' +
-          '<div class="ybf-field"><span class="ybf-label" id="' + uid + '-sl">School <b class="ybf-req">*</b></span>' +
-            '<div class="ybf-grades ybf-schools" role="radiogroup" aria-labelledby="' + uid + '-sl">' +
-              SCHOOLS.map(function (sc) {
-                return '<label class="ybf-chip"><input type="radio" name="school" value="' + sc[0] + '"' + (sc[0] === school ? ' checked' : '') + ' required><span>' + esc(sc[1]) + '</span></label>';
-              }).join('') +
-            '</div></div>' +
-          '<div class="ybf-field"><span class="ybf-label" id="' + uid + '-gl">Grade(s) of the student(s) <b class="ybf-req">*</b></span>' +
-            '<span class="ybf-hint">Check every grade that\'s in the photo.</span>' +
-            '<div class="ybf-grades ybf-grade-list" role="group" aria-labelledby="' + uid + '-gl"></div></div>' +
           '<div class="ybf-field"><label for="' + uid + '-event">Event <span class="ybf-opt">(optional)</span></label>' +
             '<select id="' + uid + '-event" name="event"><option value="">Not sure / no specific event</option><option value="' + OTHER + '">Other event (type it in)</option></select>' +
             '<input type="text" class="ybf-other" id="' + uid + '-other" maxlength="80" placeholder="What event is it from?" hidden aria-label="Event name"></div>' +
@@ -85,15 +76,39 @@
     var form = root.querySelector('form'), msg = root.querySelector('.ybf-msg');
     var studentBox = root.querySelector('.ybf-students'), addBtn = root.querySelector('.ybf-add'), rowN = 0;
 
-    // ---- students: one First / Last row each ----
+    var drop = root.querySelector('.ybf-drop'), input = drop.querySelector('input');
+    var list = root.querySelector('.ybf-files'), btn = root.querySelector('.ybf-submit');
+    var evSel = root.querySelector('select[name=event]'), evOther = root.querySelector('.ybf-other');
+    var chosen = [], events = {}, store = db();   // events = {school: [Drive event folder names]}
+
+    // ---- students: First / Last / School / Grade, one row each ----
+    function gradeOptions(sc) {
+      return '<option value="">Grade…</option>' + (GRADES[sc] || []).map(function (g) {
+        return '<option value="' + g + '">' + esc(gradeLabel(g)) + '</option>';
+      }).join('');
+    }
     function addStudent(focus) {
       var n = ++rowN, row = document.createElement('div');
+      var rows = studentBox.querySelectorAll('.ybf-school');
+      var sc = rows.length ? rows[rows.length - 1].value : school;   // a new row starts on the last row's school
       row.className = 'ybf-student';
       row.innerHTML =
         '<input type="text" class="ybf-first" maxlength="40" autocomplete="off" required placeholder="First name" aria-label="Student ' + n + ' first name">' +
         '<input type="text" class="ybf-last" maxlength="40" autocomplete="off" required placeholder="Last name" aria-label="Student ' + n + ' last name">' +
+        '<select class="ybf-school" required aria-label="Student ' + n + ' school"><option value="">School…</option>' +
+          SCHOOLS.map(function (x) { return '<option value="' + x[0] + '">' + esc(x[1]) + '</option>'; }).join('') + '</select>' +
+        '<select class="ybf-grade" required aria-label="Student ' + n + ' grade"></select>' +
         '<button type="button" class="ybf-rm" aria-label="Remove this student">×</button>';
-      row.querySelector('.ybf-rm').onclick = function () { row.remove(); syncStudents(); };
+      var scSel = row.querySelector('.ybf-school'), grSel = row.querySelector('.ybf-grade');
+      scSel.value = sc || '';
+      grSel.innerHTML = gradeOptions(scSel.value);
+      if (scSel.value === 'woestina') grSel.value = 'Pre-K';
+      scSel.onchange = function () {
+        grSel.innerHTML = gradeOptions(scSel.value);
+        if (scSel.value === 'woestina') grSel.value = 'Pre-K';
+        fillEvents();
+      };
+      row.querySelector('.ybf-rm').onclick = function () { row.remove(); syncStudents(); fillEvents(); };
       studentBox.appendChild(row);
       syncStudents();
       if (focus) row.querySelector('.ybf-first').focus();
@@ -103,40 +118,34 @@
       [].forEach.call(rows, function (r) { r.querySelector('.ybf-rm').hidden = rows.length < 2; });
       addBtn.hidden = rows.length >= 30;
     }
-    function resetStudents() { studentBox.innerHTML = ''; addStudent(false); }
+    function rowSchools() {
+      var out = [];
+      studentBox.querySelectorAll('.ybf-school').forEach(function (s) { if (s.value && out.indexOf(s.value) < 0) out.push(s.value); });
+      return out;
+    }
+    function resetStudents() { studentBox.innerHTML = ''; addStudent(false); fillEvents(); }
     addBtn.onclick = function () { addStudent(true); };
     form.addEventListener('input', function () { if (msg.querySelector('.err')) show('', ''); });   // clear an error once they start fixing it
-    resetStudents();
-    var drop = root.querySelector('.ybf-drop'), input = drop.querySelector('input');
-    var list = root.querySelector('.ybf-files'), btn = root.querySelector('.ybf-submit');
-    var evSel = root.querySelector('select'), evOther = root.querySelector('.ybf-other');
-    var gradeBox = root.querySelector('.ybf-grade-list');
-    var chosen = [], folders = [], store = db();
 
-    // Picking a school shows its grades and its events (the yearbook folders that school
-    // set up in the back office), between "Not sure" and "Other".
-    function setSchool(sc) {
-      school = sc;
-      gradeBox.innerHTML = school ? GRADES[school].map(function (g) {
-        return '<label class="ybf-chip"><input type="checkbox" name="grades" value="' + g + '"><span>' + esc(g) + (g === 'K' ? '<i class="ybf-sr"> Kindergarten</i>' : /^\d/.test(g) ? '<i class="ybf-sr"> ' + esc(gradeLabel(g)) + '</i>' : '') + '</span></label>';
-      }).join('') : '<span class="ybf-hint" style="margin:0">Choose a school first.</span>';
-      folders = [];
-      var keep = evSel.value === OTHER ? OTHER : '';
-      [].slice.call(evSel.options, 1, -1).forEach(function (o) { o.remove(); });
-      evSel.value = keep;
-      if (!store || !school) return;
-      var asked = school;
-      store.collection('yearbook_folders').where('school', '==', school).get().then(function (snap) {
-        if (asked !== school) return;   // switched schools while this was loading
-        folders = snap.docs.map(function (d) { return d.data(); })
-          .filter(function (f) { return f.slug && f.name; })
-          .sort(function (a, b) { return a.name.localeCompare(b.name); });
-        evSel.options[evSel.options.length - 1].insertAdjacentHTML('beforebegin',
-          folders.map(function (f) { return '<option value="' + esc(f.slug) + '">' + esc(f.name) + '</option>'; }).join(''));
-      }).catch(function () {});
+    // ---- events: the event folders inside each school's folder in the PTO's Google Drive
+    // (api/yearbook-events.php), for the schools picked above, grouped by school when
+    // there's more than one. Option value = "school|folder name". ----
+    function fillEvents() {
+      var keep = evSel.value, scs = rowSchools();
+      var opts = function (sc) { return (events[sc] || []).map(function (n) { return '<option value="' + esc(sc + '|' + n) + '">' + esc(n) + '</option>'; }).join(''); };
+      var body = scs.length > 1
+        ? scs.map(function (sc) {
+            return (events[sc] || []).length ? '<optgroup label="' + esc(SCHOOLS.filter(function (x) { return x[0] === sc; })[0][1]) + '">' + opts(sc) + '</optgroup>' : '';
+          }).join('')
+        : scs.map(opts).join('');
+      evSel.innerHTML = '<option value="">Not sure / no specific event</option>' + body + '<option value="' + OTHER + '">Other event (type it in)</option>';
+      evSel.value = [].some.call(evSel.options, function (o) { return o.value === keep; }) ? keep : '';
+      evOther.hidden = evSel.value !== OTHER;
     }
-    form.querySelectorAll('input[name=school]').forEach(function (r) { r.onchange = function () { setSchool(r.value); }; });
-    setSchool(school);
+    fetch('/api/yearbook-events.php').then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.ok && d.events) { events = d.events; fillEvents(); }
+    }).catch(function () {});
+    resetStudents();
     evSel.onchange = function () { evOther.hidden = evSel.value !== OTHER; if (!evOther.hidden) evOther.focus(); };
 
     // ---- choosing photos ----
@@ -196,30 +205,40 @@
       show('', '');
       var f = form.elements;
       var name = f.uploaderName.value.trim(), email = f.uploaderEmail.value.trim();
-      // Every student row needs both names; blank extra rows are ignored.
-      var missing = null, names = [];
+      // Every student row needs both names, a school and a grade; blank extra rows are ignored.
+      var missing = null, kids = [];
       [].forEach.call(studentBox.children, function (r) {
-        var fi = r.querySelector('.ybf-first'), la = r.querySelector('.ybf-last'), a = fi.value.trim(), b = la.value.trim();
+        var fi = r.querySelector('.ybf-first'), la = r.querySelector('.ybf-last'), sc = r.querySelector('.ybf-school'), gr = r.querySelector('.ybf-grade');
+        var a = fi.value.trim(), b = la.value.trim();
         if (!a && !b) return;
-        if (!a || !b) { missing = missing || (a ? la : fi); return; }
-        names.push(a + ' ' + b);
+        if (missing) return;
+        if (!a || !b) missing = [a ? la : fi, 'Please enter both a first and last name for each student.'];
+        else if (!sc.value) missing = [sc, 'Please choose the school for ' + a + ' ' + b + '.'];
+        else if (!gr.value) missing = [gr, 'Please choose the grade for ' + a + ' ' + b + '.'];
+        else kids.push({ name: a + ' ' + b, school: sc.value, grade: gr.value });
       });
-      var students = names.join(', ');
+      var schools = [], gradeVals = [];
+      kids.forEach(function (k) { if (schools.indexOf(k.school) < 0) schools.push(k.school); if (gradeVals.indexOf(k.grade) < 0) gradeVals.push(k.grade); });
+      var schoolName = function (sc) { return SCHOOLS.filter(function (x) { return x[0] === sc; })[0][1]; };
+      // "Maya Chen (3rd grade), …" -- with the school too when the photo spans schools.
+      var students = kids.map(function (k) {
+        return k.name + ' (' + (schools.length > 1 ? schoolName(k.school) + ', ' : '') + gradeLabel(k.grade) + ')';
+      }).join(', ');
       var wantsDir = !!form.querySelector('input[name=directory][value=yes]:checked');
-      var picked = [].filter.call(form.querySelectorAll('input[name=grades]'), function (c) { return c.checked; }).map(function (c) { return c.value; });
-      var evSlug = evSel.value === OTHER ? '' : evSel.value;
-      var evLabel = evSel.value === OTHER ? evOther.value.trim() : evSlug ? (folders.filter(function (x) { return x.slug === evSlug; })[0] || {}).name || '' : '';
-      var problem = missing ? [missing, 'Please enter both a first and last name for each student.']
-        : !students ? [studentBox.querySelector('.ybf-first'), 'Please enter the first and last name of the student(s) in the photo.']
-        : !school ? [form.querySelector('input[name=school]'), 'Please choose the school.']
-        : !picked.length ? [form.querySelector('input[name=grades]'), 'Please check the grade(s) of the student(s).']
+      var evPick = evSel.value && evSel.value !== OTHER ? evSel.value.split('|') : null;   // [school, folder name]
+      var evSchool = evPick ? evPick[0] : '', evFolderName = evPick ? evPick.slice(1).join('|') : '';
+      var evLabel = evSel.value === OTHER ? evOther.value.trim() : evFolderName;
+      var problem = missing ? missing
+        : !kids.length ? [studentBox.querySelector('.ybf-first'), 'Please enter the first and last name of the student(s) in the photo.']
         : !name ? [f.uploaderName, 'Please enter your name.']
         : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? [f.uploaderEmail, 'Please enter a valid email address.']
         : !chosen.length ? [drop, 'Please choose at least one photo.'] : null;
       if (problem) { show('err', problem[1]); problem[0].focus(); return; }
 
       var batchId = new Date().toISOString().replace(/\D/g, '').slice(0, 14) + '-' + Math.random().toString(36).slice(2, 10);
-      var gradesText = picked.map(gradeLabel).join(', ');
+      var gradesText = gradeVals.map(gradeLabel).join(', ');
+      // Photo files live once on the server under the first school; Drive gets a copy for every school.
+      var school = schools[0];
       btn.disabled = true; btn.textContent = 'Uploading…';
       chosen.forEach(function (it) { it.state = ''; });
       var saved = [], failed = 0;
@@ -228,8 +247,8 @@
         return p.then(function () {
           it.state = 'up'; render();
           var fd = new FormData();
-          fd.append('school', school); fd.append('batchId', batchId);
-          fd.append('event', evSlug); fd.append('eventLabel', evLabel);
+          fd.append('school', school); fd.append('schools', schools.join(',')); fd.append('batchId', batchId);
+          fd.append('event', ''); fd.append('eventFolder', evFolderName); fd.append('eventSchool', evSchool); fd.append('eventLabel', evLabel);
           fd.append('students', students); fd.append('grades', gradesText);
           fd.append('uploaderName', name); fd.append('uploaderEmail', email);
           fd.append('photos[]', it.file);
@@ -238,15 +257,19 @@
         });
       }, Promise.resolve()).then(function () {
         if (!saved.length) throw new Error((chosen[0] && chosen[0].err) || 'Upload failed');
-        var rec = {
-          school: school, event: evSlug || 'unsorted', eventLabel: evLabel || 'No event chosen',
-          students: students, grades: picked, people: students + ' (' + gradesText + ')',
-          uploaderName: name, uploaderEmail: email, directoryInterest: wantsDir, photos: saved, batchId: batchId, status: 'live',
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
+        // One review record per school, so each school's yearbook team sees the photo.
+        var recs = schools.map(function (sc) {
+          return {
+            school: sc, event: 'unsorted', eventLabel: evLabel || 'No event chosen',
+            students: students, grades: kids.filter(function (k) { return k.school === sc; }).map(function (k) { return k.grade; }),
+            allSchools: schools, people: students,
+            uploaderName: name, uploaderEmail: email, directoryInterest: wantsDir, photos: saved, batchId: batchId, status: 'live',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          };
+        });
         // The photos are already on the server (with a backup copy of these details), so don't
         // keep the family waiting if Firestore is slow to confirm.
-        var saveRec = store ? store.collection('yearbook_photos').add(rec) : Promise.resolve();
+        var saveRec = store ? Promise.all(recs.map(function (r) { return store.collection('yearbook_photos').add(r); })) : Promise.resolve();
         return Promise.race([saveRec, new Promise(function (ok) { setTimeout(ok, 8000); })]).catch(function () {}).then(function () {
           var n = saved.length;
           var bad = chosen.filter(function (it) { return it.state === 'fail'; });
@@ -261,7 +284,7 @@
             (failed ? ' ' + failed + ' didn\'t upload (' + bad[0].err + ') and are still listed below; you can try them again.' : ''), dirHTML);
           chosen = bad;
           chosen.forEach(function (it) { it.state = ''; });
-          if (!failed) { resetStudents(); form.querySelectorAll('input[name=grades]').forEach(function (c) { c.checked = false; }); }
+          if (!failed) resetStudents();
         });
       }).catch(function (err) {
         show('err', 'Sorry, the photos didn\'t upload: ' + err.message);

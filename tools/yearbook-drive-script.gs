@@ -6,9 +6,16 @@
    files the photo in Drive as:
 
      Schalmont PTO Yearbook Photos /
-       Middle School / 2026-27 / Fall Concert / Maya Chen, Liam Portnoy (6th grade) - ….jpg
+       Middle School / Fall Concert / Maya Chen (6th grade), Liam Portnoy (7th grade) - ….jpg
 
-   ("No event chosen" when the parent didn't pick one.) Every photo is also logged
+   EVENTS: the folders inside each school's folder ARE the form's event list. To add
+   an event, a coordinator just makes a new folder inside their school's folder; it
+   shows up on the form within a couple of minutes. Photos with no event go to
+   "No event chosen"; ones where the parent typed in some other event go to
+   "Other events" (the typed name is in the sheet and the photo's description).
+   A photo of students from two schools is filed in both schools' folders.
+
+   Every photo is also logged
    in the "Yearbook photo submissions" sheet in the top folder: school, event,
    students, grades, who sent it, their email, and a link to the photo.
    Share each SCHOOL folder with that school's yearbook coordinator. Keep the top
@@ -35,6 +42,7 @@
 var ROOT_NAME = 'Schalmont PTO Yearbook Photos';
 var SHEET_NAME = 'Yearbook photo submissions';
 var SCHOOL_NAMES = { woestina: 'Woestina', jefferson: 'Jefferson', middle: 'Middle School', high: 'High School', pto: 'PTO-wide' };
+var NO_EVENT = 'No event chosen', OTHER_EVENTS = 'Other events';
 
 function setup() {
   var props = PropertiesService.getScriptProperties();
@@ -45,6 +53,25 @@ function setup() {
   logSheet_();
   Logger.log('SECRET KEY (for config.php): ' + secret);
   Logger.log('Photos folder: ' + root.getUrl());
+}
+
+// The website asks for each school's event folders (folder names only) to fill the form's list.
+function doGet(e) {
+  var cache = CacheService.getScriptCache(), hit = cache.get('events');
+  if (hit) return ContentService.createTextOutput(hit).setMimeType(ContentService.MimeType.JSON);
+  var root = rootFolder_(), events = {};
+  Object.keys(SCHOOL_NAMES).forEach(function (k) {
+    if (k === 'pto') return;
+    var names = [], it = child_(root, SCHOOL_NAMES[k]).getFolders();
+    while (it.hasNext()) {
+      var n = it.next().getName();
+      if (n !== NO_EVENT && n !== OTHER_EVENTS && !/^\d{4}-\d{2}$/.test(n)) names.push(n);
+    }
+    events[k] = names.sort(function (a, b) { return a.localeCompare(b); });
+  });
+  var out = JSON.stringify({ ok: true, events: events });
+  cache.put('events', out, 120);   // a new Drive folder shows on the form within 2 minutes
+  return ContentService.createTextOutput(out).setMimeType(ContentService.MimeType.JSON);
 }
 
 function doPost(e) {
@@ -60,18 +87,19 @@ function doPost(e) {
     var folder;
     try {
       var school = child_(rootFolder_(), SCHOOL_NAMES[req.school] || 'Other');
-      folder = child_(child_(school, schoolYear_(new Date())), clean_(req.eventLabel) || 'No event chosen');
+      // An event picked from the list is one of this school's folders; anything typed in goes to "Other events".
+      folder = child_(school, clean_(req.eventFolder) || (req.eventLabel ? OTHER_EVENTS : NO_EVENT));
     } finally { lock.releaseLock(); }
 
     var blob = Utilities.newBlob(Utilities.base64Decode(req.data), req.mimeType || 'application/octet-stream', clean_(req.filename) || 'photo.jpg');
     var file = folder.createFile(blob);
     file.setDescription(
       'Students: ' + (req.students || '') + '\nGrades: ' + (req.grades || '') +
-      '\nEvent: ' + (req.eventLabel || 'No event chosen') +
+      '\nEvent: ' + (req.eventLabel || NO_EVENT) +
       '\nSent by: ' + (req.uploaderName || '') + ' <' + (req.uploaderEmail || '') + '>' +
       '\nOriginal file: ' + (req.original || ''));
 
-    logSheet_().appendRow([new Date(), SCHOOL_NAMES[req.school] || req.school, req.eventLabel || 'No event chosen',
+    logSheet_().appendRow([new Date(), SCHOOL_NAMES[req.school] || req.school, req.eventLabel || NO_EVENT,
       req.students || '', req.grades || '', req.uploaderName || '', req.uploaderEmail || '', file.getUrl(), req.batchId || '']);
     return json_({ ok: true, id: file.getId(), url: file.getUrl() });
   } catch (err) {
@@ -82,7 +110,6 @@ function doPost(e) {
 /* ---- helpers ---- */
 function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 function clean_(s) { return String(s || '').replace(/[\/\\:*?"<>|\u0000-\u001f]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 150); }
-function schoolYear_(d) { var y = d.getFullYear(), start = d.getMonth() >= 6 ? y : y - 1; return start + '-' + String(start + 1).slice(2); }  // July starts a new year
 function child_(parent, name) {
   var it = parent.getFoldersByName(name);
   return it.hasNext() ? it.next() : parent.createFolder(name);

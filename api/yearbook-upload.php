@@ -55,9 +55,16 @@ $people   = trim(strip_tags($_POST['people']       ?? ''));
 $students = trim(strip_tags($_POST['students']     ?? ''));
 $grades   = trim(strip_tags($_POST['grades']       ?? ''));
 $batchIn  = preg_replace('/[^a-z0-9-]/i', '', $_POST['batchId'] ?? '');
+$evFolder = trim(strip_tags($_POST['eventFolder'] ?? ''));   // a Drive event folder name picked on the form
+$evSchool = $_POST['eventSchool'] ?? '';                       // ...and the school it belongs to
+$schools  = array_values(array_unique(array_filter(explode(',', (string)($_POST['schools'] ?? '')))));
 if ($event === '') $event = 'unsorted';
 
 if (!in_array($school, $SCHOOLS, true)) fail('Please choose a school.');
+// A photo of students from several schools goes to each of those schools in Drive.
+$schools = array_values(array_filter($schools, function ($s) use ($SCHOOLS) { return in_array($s, $SCHOOLS, true); }));
+if (!in_array($school, $schools, true)) array_unshift($schools, $school);
+$evFolder = mb_substr($evFolder, 0, 120);
 if (strlen($event) > 60) fail('Please choose an event folder.');
 if ($uploader === '' || strlen($uploader) > 80) fail('Please enter your name.');
 $evLabel  = mb_substr($evLabel, 0, 80);
@@ -128,18 +135,24 @@ foreach ($files as $f) {
   $saved[] = ['url' => "/uploads/yearbook/$school/$event/$fname", 'original' => $f['name'], 'path' => "$destDir/$fname", 'ext' => $ext];
 }
 
-/* ---- copy to Google Drive (if connected) ----
+/* ---- copy to Google Drive (if connected), once per school in the photo ----
    File name: "Students (grades) - who sent it - time.ext", so it sorts and reads well in Drive. */
 $cfg = @include __DIR__ . '/config.php';
 if (!is_array($cfg)) $cfg = [];
 $who = $students !== '' ? $students : $people;
 foreach ($saved as $i => $sv) {
-  $nice = trim(mb_substr($who, 0, 90) . ($grades !== '' ? " ($grades)" : '') . ' - ' . $uploader);
-  $saved[$i]['drive'] = to_drive($cfg, $sv['path'], [
-    'school' => $school, 'eventLabel' => $evLabel, 'students' => $who, 'grades' => $grades,
-    'uploaderName' => $uploader, 'uploaderEmail' => $email, 'original' => $sv['original'], 'batchId' => $batchIn,
-    'filename' => $nice . ' - ' . date('Ymd-His') . '-' . substr(md5($sv['url']), 0, 4) . '.' . ($sv['ext'] === 'jpeg' ? 'jpg' : $sv['ext']),
-  ]);
+  // The form already puts each student's grade in the names; older submissions send grades separately.
+  $nice = trim(mb_substr($who, 0, 110) . ($grades !== '' && strpos($who, '(') === false ? " ($grades)" : '') . ' - ' . $uploader);
+  $links = [];
+  foreach ($schools as $sc) {
+    $links[] = to_drive($cfg, $sv['path'], [
+      'school' => $sc, 'eventLabel' => $evLabel, 'eventFolder' => ($sc === $evSchool ? $evFolder : ''),
+      'students' => $who, 'grades' => $grades,
+      'uploaderName' => $uploader, 'uploaderEmail' => $email, 'original' => $sv['original'], 'batchId' => $batchIn,
+      'filename' => $nice . ' - ' . date('Ymd-His') . '-' . substr(md5($sv['url']), 0, 4) . '.' . ($sv['ext'] === 'jpeg' ? 'jpg' : $sv['ext']),
+    ]);
+  }
+  $saved[$i]['drive'] = implode(' ', array_filter($links));
   unset($saved[$i]['path'], $saved[$i]['ext']);
 }
 $saved = array_values($saved);
