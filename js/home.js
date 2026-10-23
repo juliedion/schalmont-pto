@@ -500,6 +500,92 @@
     });
   }
 
+  /* ================= TODAY'S EVENTS + NEXT WEEK (dashboard cards) ================= */
+  function byStartTime(a, b) {
+    // All-day and multi-day entries first, then by start time.
+    var ta = a.time || '', tb = b.time || '';
+    return a.date < b.date ? -1 : a.date > b.date ? 1 : ta < tb ? -1 : ta > tb ? 1 : 0;
+  }
+  function dedupe(list) {
+    var seen = {};
+    return list.filter(function (e) { var k = normTitle(e.title); if (seen[k]) return false; seen[k] = 1; return true; });
+  }
+  function dayEventHTML(e, meta) {
+    var title = e.href ? '<a href="' + esc(e.href) + '">' + esc(e.title) + '</a>' : esc(e.title);
+    return '<li class="hz-event"><div class="hz-event-main">' +
+      '<span class="hz-te-tag" style="background:' + GROUP_COLOR[e.group] + ';color:' + GROUP_TEXT[e.group] + '">' + esc(GROUP_LABEL[e.group] || '') + '</span>' +
+      '<p class="hz-event-title">' + title + '</p>' +
+      '<div class="hz-event-meta"><span>' + ICON.clock + esc(meta) + '</span>' +
+      (e.location ? '<span>' + ICON.pin + esc(e.location) + '</span>' : '') + '</div></div>' +
+      (e.href ? '<a class="hz-event-go" href="' + esc(e.href) + '" aria-label="Details: ' + esc(e.title) + '">Details →</a>' : '') + '</li>';
+  }
+  // Daily themes shown under each day in the Today / Next Week cards (school spirit days etc.).
+  var DAY_NOTES = {
+    '2026-10-26': 'Cozy or Fancy', '2026-10-27': 'Tourist Day', '2026-10-28': 'Beach vs. Boots',
+    '2026-10-29': 'Team Sports Apparel', '2026-10-30': 'Favorite Character Duo Day'
+  };
+  function dayNoteHTML(ymd) {
+    return DAY_NOTES[ymd] ? '<a class="hz-te-note" href="/spirit-week">💚 MS Spirit Week: <b>' + esc(DAY_NOTES[ymd]) + '</b></a>' : '';
+  }
+  function initDayEvents() {
+    var todayList = $('#hz-te-list'), weekList = $('#hz-nw-list');
+    if (!todayList) return;
+    var today = etYMD();
+    // "Next week" = the coming Monday through Sunday (on a Sunday, that's tomorrow on).
+    var mon = addDays(today, dow(today) === 0 ? 1 : 8 - dow(today)), sun = addDays(mon, 6);
+    $('#hz-te-pill').textContent = fmt(today, { weekday: 'short', month: 'short', day: 'numeric' });
+    $('#hz-nw-pill').textContent = fmt(mon, { month: 'short', day: 'numeric' }) + ' – ' + fmt(sun, { month: 'short', day: 'numeric' });
+
+    loadEvents().then(function (events) {
+      var multi = function (e) { return e.endDate && e.endDate > e.date; };
+
+      // TODAY: anything on today, including multi-day events that are under way.
+      var now = dedupe(events.filter(function (e) { return e.date <= today && (e.endDate || e.date) >= today; })
+        .sort(function (a, b) { return (a.time || '') < (b.time || '') ? -1 : (a.time || '') > (b.time || '') ? 1 : 0; }));
+      var todayNote = dayNoteHTML(today) ? '<li class="hz-te-block">' + dayNoteHTML(today) + '</li>' : '';
+      if (now.length) {
+        todayList.innerHTML = todayNote + now.slice(0, 5).map(function (e) {
+          var meta = multi(e) ? (e.date < today ? 'Through ' : fmt(e.date, { month: 'short', day: 'numeric' }) + ' – ') + fmt(e.endDate, { weekday: 'short', month: 'short', day: 'numeric' })
+            : (e.time ? prettyTime(e.time) : 'All day');
+          return dayEventHTML(e, meta);
+        }).join('') + (now.length > 5 ? '<li class="hz-empty">+ ' + (now.length - 5) + ' more on the calendar</li>' : '');
+      } else {
+        var next = events.filter(function (e) { return e.date > today; }).sort(byStartTime)[0];
+        todayList.innerHTML = todayNote + '<li class="hz-empty">Nothing on the calendar today.' +
+          (next ? '<br>Next up: <b>' + (next.href ? '<a class="hz-link" href="' + esc(next.href) + '">' + esc(next.title) + '</a>' : esc(next.title)) + '</b>, ' +
+            esc(fmt(next.date, { weekday: 'short', month: 'short', day: 'numeric' })) : '') + '</li>';
+      }
+
+      // NEXT WEEK: grouped by day. Something that started earlier (a month-long fundraiser)
+      // is listed once, under Monday, as "continuing".
+      var wk = dedupe(events.filter(function (e) { return e.date <= sun && (e.endDate || e.date) >= mon; }).sort(byStartTime));
+      var noteDays = Object.keys(DAY_NOTES).filter(function (d) { return d >= mon && d <= sun; });
+      if (!wk.length && !noteDays.length) {
+        weekList.innerHTML = '<li class="hz-empty">Nothing posted for next week yet — check back soon!</li>';
+        return;
+      }
+      // One block per day, so a day never splits across the card's two columns.
+      var days = {}, order = [], shown = wk.slice(0, 12);
+      shown.forEach(function (e) {
+        var day = e.date < mon ? mon : e.date;
+        if (!days[day]) { days[day] = []; order.push(day); }
+        var meta = multi(e)
+          ? (e.date < mon ? 'Continuing through ' : fmt(e.date, { weekday: 'short' }) + ' – ') + fmt(e.endDate, { weekday: 'short', month: 'short', day: 'numeric' })
+          : (e.time ? prettyTime(e.time) : 'All day');
+        days[day].push(dayEventHTML(e, meta));
+      });
+      noteDays.forEach(function (d) { if (!days[d]) { days[d] = []; order.push(d); } });
+      order.sort();
+      weekList.innerHTML = order.map(function (day) {
+        return '<li class="hz-te-block"><p class="hz-te-day">' + esc(fmt(day, { weekday: 'long', month: 'short', day: 'numeric' })) + '</p>' +
+          dayNoteHTML(day) + (days[day].length ? '<ul class="hz-events hz-te-list">' + days[day].join('') + '</ul>' : '') + '</li>';
+      }).join('') + (wk.length > shown.length ? '<li class="hz-empty">+ ' + (wk.length - shown.length) + ' more on the calendar</li>' : '');
+    }).catch(function () {
+      var msg = '<li class="hz-empty">Events couldn\'t be loaded right now. <a class="hz-link" href="events.html">See the events page →</a></li>';
+      todayList.innerHTML = msg; weekList.innerHTML = msg;
+    });
+  }
+
   /* ================= COMBINED CALENDAR ================= */
   var calFilter = 'all', calendar = null;
   function setFilter(f) {
@@ -915,6 +1001,7 @@
     initLetterDays();
     initLunch();
     initPanels();
+    initDayEvents();
     initCalendar();
     initSearch();
     initJumpLinks();

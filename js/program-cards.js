@@ -856,9 +856,9 @@ const PROGRAM_CARDS_EXTRA = {
       "eventEndDate": "2026-10-30",
       "badgeType": "active",
       "badgeText": "Spirit Week",
-      "desc": "<strong>Mon:</strong> Night In vs. Night Out (cozy or fancy)<br><strong>Tue:</strong> Tourist Day (dress like a traveler)<br><strong>Wed:</strong> Beach vs. Boots (summer or western)<br><strong>Thu:</strong> Team Together (sports apparel)<br><strong>Fri:</strong> Famous Dynamic Duo (favorite character pair; no masks, school appropriate)",
+      "desc": "<strong>Mon:</strong> Cozy or Fancy<br><strong>Tue:</strong> Tourist Day<br><strong>Wed:</strong> Beach vs. Boots<br><strong>Thu:</strong> Team Sports Apparel<br><strong>Fri:</strong> Favorite Character Duo Day<br>For more details, check Schoology.",
       "actions": [
-        { "label": "See the Spirit Week flyer →", "href": "images/flyers/ms-spirit-week-2026.jpg", "cls": "btn btn-primary" }
+        { "label": "See Spirit Week →", "href": "/spirit-week", "cls": "btn btn-primary" }
       ]
     }
   ]

@@ -250,8 +250,24 @@
 .home2 .hz-lunch-next .hz-lunch-items li:first-child { font-size: 14px; }
 .home2 .hz-lunch-note { font-size: 12.5px; font-weight: 800; color: #8a4b00; background: #fff1e0; border-radius: 8px; padding: 6px 10px; margin: 2px 0 8px; }
 
+/* Today's events + next week (second row of the dashboard) */
+.home2 .hz-dash .hz-card-nextweek { grid-column: span 2; }
+.home2 .hz-dash .hz-card-today, .home2 .hz-dash .hz-card-nextweek { min-height: 0; }
+.home2 .hz-te-list { padding: 0; }
+.home2 .hz-te-list .hz-event { padding: 8px 6px; }
+.home2 .hz-te-tag { display: inline-block; font-size: 10.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; line-height: 1.4; }
+.home2 .hz-te-block { list-style: none; break-inside: avoid; padding-bottom: 8px; }
+.home2 .hz-te-day { font-size: 11.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--hz-emerald-text); margin: 0; padding: 6px 6px 2px; border-top: 1px solid var(--hz-line); }
+.home2 .hz-card-nextweek #hz-nw-list { columns: 2; column-gap: 20px; }
+.home2 .hz-te-list .hz-empty { padding: 14px 6px; text-align: left; }
+.home2 .hz-te-note { display: block; margin: 4px 6px 2px; padding: 6px 10px; border-radius: 8px; background: #e6ffd0; color: var(--hz-forest); font-size: 13px; text-decoration: none; }
+.home2 .hz-te-note:hover { background: var(--hz-lime); }
+.home2 .hz-te-foot { margin-top: auto; padding-top: 10px; }
+
 @media (max-width: 1100px) {
   .home2 .hz-dash { grid-template-columns: 1fr 1fr; }
+  .home2 .hz-dash .hz-card-nextweek { grid-column: auto; }
+  .home2 .hz-card-nextweek #hz-nw-list { columns: 1; }
   .home2 .hz-dash .hz-card-letters { grid-column: 1 / -1; order: -1; }
 }
 @media (max-width: 640px) {

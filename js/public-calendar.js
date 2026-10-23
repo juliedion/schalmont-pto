@@ -41,7 +41,12 @@
   // loadAll() also keeps the district's own synced entries (school closings, early
   // release, board meetings) as a separate `district` list -- the homepage's combined
   // calendar has a District filter; everything else only wants `events`.
-  var CACHE_KEY = 'pcalEvents4', CACHE_MS = 10 * 60000;
+  var CACHE_KEY = 'pcalEvents6', CACHE_MS = 10 * 60000;
+  // Events kept in the site code, for things that need to be on the calendar before anyone
+  // adds them in the back office. A back-office entry with the same title and date wins.
+  var SITE_EVENTS = [
+    { title: 'Middle School Spirit Week', date: '2026-10-26', endDate: '2026-10-30', time: '', location: 'Schalmont Middle School', school: 'middle', href: '/spirit-week' }
+  ];
   function loadEvents() { return loadAll().then(function (r) { return r.events; }); }
   function loadAll() {
     try {
@@ -54,6 +59,9 @@
     // Entries kept off the public site even if they're still in the back office. Oct 2026:
     // Trail of Treats is Oct 30 -- these three Oct 24 entries were left over from an old date.
     var HIDDEN = { '0t1QgIFraoqVJNL295br': true, 'LrD6Y9DJTgjgFaIPGmTz': true, 'sheet_2026_10_24_trail_of_treats': true };
+    // Public names for back-office entries (lowercased back-office title -> name shown on the site).
+    var RENAME = { 'candy monster initiative': 'Feed the Trail of Treats Candy Monster at the Middle School' };
+    var shownTitle = function (t) { return RENAME[String(t).trim().toLowerCase()] || t; };
 
     return Promise.all([
       db.collection('pto_events').where('status', 'in', ['planned', 'confirmed', 'done']).get(),
@@ -67,6 +75,7 @@
       pagesSnap.docs.forEach(function (d) {
         var p = d.data();
         if (!p.title || !p.slug) return;
+        p.title = shownTitle(p.title);
         var titleKey = p.title.trim().toLowerCase();
         var sch = routeOf(Array.isArray(p.schools) && p.schools.length ? p.schools : (p.school ? [p.school] : []));
         var prefix = { woestina: 'woestina', jefferson: 'jefferson', middle: 'ms', high: 'hs', pto: 'pto' }[sch];
@@ -87,6 +96,7 @@
         if (BOOKKEEPING[d.id] || HIDDEN[d.id] || d.id.indexOf('__') === 0) return;
         var e = d.data();
         if (!e.title || !e.date) return;
+        e.title = shownTitle(e.title);
         // The district's own school-closing/early-release entries already have their own
         // District tab (the embedded Google Calendar) -- keep them out of the back-office
         // tabs so they don't show twice, once here and once under School PTO (MS & HS).
@@ -109,6 +119,12 @@
           school: e.school || 'pto',
           href: (existing && existing.href) || (pageMatch && pageMatch.href) || null
         };
+      });
+
+      // Site-kept events (see SITE_EVENTS) unless the back office already has one by that title.
+      SITE_EVENTS.forEach(function (e) {
+        var titleKey = e.title.trim().toLowerCase();
+        if (!byKey[titleKey + '|' + e.date]) byKey[titleKey + '|' + e.date] = Object.assign({}, e);
       });
 
       var merged = mergeDuplicates(Object.keys(byKey).map(function (k) { return byKey[k]; }), district);
