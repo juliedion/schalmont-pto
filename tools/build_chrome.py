@@ -48,6 +48,7 @@ MAIN_ITEMS = [
     ('Clubs', 'middle-school.html#announcements', r'club'),
     ('Food Drive', '/event?t=holiday-food-drive-holiday-boxes', r'food drive'),
     ('Giftcards', 'giftcards.html', r'gift ?cards?'),
+    ('Gertrude Hawk Chocolate Bars', 'gertrude-hawk-chocolate.html', r'gertrude|chocolate'),
     ('Holiday Catalog Fundraiser', 'holiday.html', r'holiday catalog'),
     ('Holiday Shoppe', 'holiday-shoppe.html', r'holiday shoppe'),
     ('PTO Meetings', 'meetings.html', r'meeting'),

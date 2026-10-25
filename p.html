@@ -18,13 +18,18 @@
     .page-hero h1 { margin:0; }
     .page-hero p { margin:10px 0 0; }
     #pg-body { max-width:none; }
-    .tot-flyers { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:18px; margin:18px 0 22px; }
+    .tot-flyers { display:grid; grid-template-columns:minmax(0, .7723fr) minmax(0, .7735fr) minmax(0, .6667fr); gap:18px; margin:18px 0 22px; align-items:start; }   /* widths ∝ each flyer's width/height, so all three are the same height */
     .tot-flyers figure { margin:0; text-align:center; }
     .tot-flyers img { width:100%; height:auto; display:block; border-radius:12px; cursor:zoom-in; box-shadow:0 4px 16px rgba(0,0,0,.15); }
     .tot-flyers figcaption { margin-top:10px; }
     .tot-flyers figcaption a { display:inline-block; font-weight:800; color:var(--primary); text-decoration:none; border:2px solid var(--primary); border-radius:999px; padding:7px 16px; }
     .tot-flyers figcaption a:hover { background:var(--primary); color:#fff; }
     .tot-when { text-align:center; margin:26px 0 10px; line-height:1.15; }
+    .tot-alert { background:#c8102e; color:#fff; font-weight:800; font-size:clamp(17px, 2vw, 22px); line-height:1.35; text-align:center; border-radius:12px; padding:14px 18px; margin:0 0 4px; }
+    .section:has(.tot-alert) { padding-top:18px; }
+    .tot-notice { background:#1a1a1a; color:#fff; border-radius:12px; padding:16px 18px; margin:4px 0 18px; text-align:center; }
+    .tot-notice-big { font-size:clamp(20px, 2.6vw, 30px); font-weight:800; line-height:1.25; margin:0; color:#ffb347; }
+    .tot-notice-small { font-size:clamp(15px, 1.7vw, 18px); font-weight:700; margin:8px 0 0; }
     .tot-date { font-size:clamp(30px, 4.6vw, 52px); font-weight:800; color:var(--primary-dark); margin:0; }
     .tot-time { font-size:clamp(26px, 4vw, 44px); font-weight:800; color:#d4570b; margin:6px 0 0; }
     .tot-where { font-size:clamp(17px, 2vw, 22px); font-weight:700; color:var(--text); margin:10px 0 0; }
@@ -66,9 +71,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="/js/firebase-config.js"></script>
-  <script src="/js/site-chrome.js?v=13"></script>
+  <script src="/js/site-chrome.js?v=14"></script>
   <script src="/admin/render-blocks.js?v=2"></script>
-  <script src="/js/signup-embed.js?v=4"></script>
+  <script src="/js/signup-embed.js?v=5"></script>
   <script src="/js/photo-lightbox.js?v=2"></script>
   <script>
     renderSiteChrome();
@@ -153,7 +158,21 @@
       '7Pgsdbof9URojBmTyi3J': { from: 'jykqeTbLZAowLXPJ9hr9', link: 'trail-of-treats-volunteers', skip: 2,
         anchor: 'volunteer', heading: 'Volunteer Sign-Ups', fixHref: '/signup/trailrsvp',
         calloutAfter: 'Friday, October 30', callout: 'We still need volunteers for Friday! Sign up below →',
-        layout: 'trailoftreats' }
+        layout: 'trailoftreats', noBirthdate: true,   // Julie: no birthday check on this page
+        notice: '<p class="tot-notice-big">All volunteers: please arrive at 5:30 PM and check in at the PTO table.</p>' +
+                '<p class="tot-notice-small">Trail Set Up Team: 2:00 PM, meet at the back of the Middle School.</p>',
+        // Corrections to the embedded sign-up sheets (Julie, Oct 2026)
+        // Every slot is on the event day (they were saved as Sept 30, the day the sheets were made).
+        sheets: {
+          'tvR23zACcMZbh86Sr6KZ': { slot: { date: '2026-10-30' } },   // RSVP
+          'lw0RNHociidFEg6soK02': { slot: { date: '2026-10-30' } },   // Sabre Scarers
+          'C6rCRrRmFcJN39t5Ku0g': { sheet: { eventTime: '14:00', eventEndTime: '', eventLocation: 'Back of the Middle School' }, slot: { date: '2026-10-30', start: '14:00', end: '' } },   // Trail Set Up Team
+          '1vk052Klw3hVOcBA48aH': { slot: { date: '2026-10-30' } },   // Trail Tear-Down Team
+          '6VUGyf47KVN8JxvPlntx': { slot: { date: '2026-10-30' } },   // Trail Chaperones
+          'rcmnyKQZnkce7yhw4g7K': { slot: { date: '2026-10-30' } },   // Trail Entrance Guards
+          'MQKGtw6LYwh41EyP7PAM': { slot: { date: '2026-10-30' } },   // Bake Sale Table Help
+          '5PTxnanbUUPColwTYrON': { slot: { date: '2026-10-30' }, note: 'Drop off anytime before 3:00 PM on Friday, October 30.' }   // Bake Sale Donations
+        } }
     }; }
     function sendTo() { return { 'trail-of-treats-volunteers': '/trailoftreats#volunteer' }; }
 
@@ -181,7 +200,8 @@
       const isDate = b => b.type === 'heading' && /Friday, October 30/.test(b.text || '');
       const isCandyFlyer = b => b.type === 'image' && /82ee696148/.test(b.url || '');
       const drop = blocks.filter(isDrop), rest = [];
-      let buttons = null;
+      let buttons = null, volIntro = '';
+      const ZONES_OLD = /five themed trail zones\s*[—-]\s*Bloody Camp, Medical, Spiders, Witches, and Zombies\s*[—-]/i;
       blocks.forEach((b, i) => {
         if (isDrop(b) || isFlyerRow(b) || isDate(b) || isCandyFlyer(b)) return;
         if (i === 0 && b.type === 'columns') {   // RSVP / Scare Crew buttons: Scare Crew jumps to the sign-ups below
@@ -189,6 +209,9 @@
           return;
         }
         if (b.type === 'image' && !b.url) return;                       // an empty picture slot
+        if (b.type === 'heading' && /^volunteers needed/i.test(String(b.text || '').trim())) return;   // moved into the sign-up box
+        if (b.type === 'paragraph' && /It takes a whole crew/i.test(b.text || '')) { volIntro = b.text; return; }
+        if (ZONES_OLD.test(b.text || '')) b = Object.assign({}, b, { text: b.text.replace(ZONES_OLD, 'four themed trail zones — Bloody Camp/Medical, Circus/Clowns/Carnival, Witches &amp; Spiders, and Zombies &amp; Aliens —') });
         if (/Prefer to donate monetarily/i.test(b.text || '')) {
           rest.push({ type: 'paragraph', align: 'center', rich: true, text: 'Can\'t send in candy but want to help? Donate so we can buy candy for the event: <a href="https://www.zeffy.com/en-US/donation-form/schalmont-trail-of-treats-monetary-candy-donation">donate online here</a>, or send cash or a check (made payable to <b>Schalmont PTO</b>) in with your student, in an envelope labeled <b>Schalmont PTO</b>.' });
           return;
@@ -200,7 +223,8 @@
         rest.push(b);
       });
       const date = '<div class="tot-when"><p class="tot-date">Friday, October 30, 2026</p><p class="tot-time">6:00 – 8:00 PM</p><p class="tot-where">Schalmont Middle School Back Fields</p></div>';
-      return { top: renderBlocks(drop) + row + (buttons ? renderBlocks([buttons]) : '') + date, blocks: rest };
+      const alertBox = drop.map(b => '<div class="tot-alert">' + String(b.text || '').replace(/<[^>]+>/g, '') + '</div>').join('');
+      return { top: alertBox + row + (buttons ? renderBlocks([buttons]) : '') + date, blocks: rest, volIntro: volIntro };
     }
 
     async function mergedBody(p, pId) {
@@ -213,10 +237,10 @@
       } catch (_) {}
       if (!extra.length) return renderBlocks(p.blocks);
       let blocks = JSON.parse(JSON.stringify(p.blocks || []));
-      let lead = '';
+      let lead = '', volIntro = '';
       if (m.layout === 'trailoftreats') {
         blocks = noEmoji(blocks); extra = noEmoji(extra);
-        const L = trailLayout(blocks); lead = L.top; blocks = L.blocks;
+        const L = trailLayout(blocks); lead = L.top; blocks = L.blocks; volIntro = L.volIntro;
       }
       const isLink = b => b && b.type === 'button' && String(b.href || '').indexOf(m.link) >= 0;
       const at = blocks.findIndex(isLink);
@@ -224,7 +248,9 @@
       // Buttons inside column blocks (e.g. the top "Scare Crew Signup") jump down to the sign-ups.
       (function walk(list) { (list || []).forEach(b => { if (b && b.cells) b.cells.forEach(c => walk(c.blocks)); else if (isLink(b)) b.href = /rsvp/i.test(b.label || '') ? m.fixHref : '/trailoftreats#' + m.anchor; }); })(blocks);
       const section = '<section id="' + m.anchor + '" style="scroll-margin-top:100px;margin:28px 0;padding:22px 18px;border:3px solid #f57914;border-radius:16px;background:#fff8f0">' +
-        '<h2 style="text-align:center;margin:0 0 12px">' + m.heading + '</h2>' + renderBlocks(extra) + '</section>';
+        '<h2 style="text-align:center;margin:0 0 12px">' + m.heading + '</h2>' +
+        (m.notice ? '<div class="tot-notice">' + m.notice + '</div>' : '') +
+        (volIntro ? renderBlocks([{ type: 'paragraph', align: 'center', text: volIntro }]) : '') + renderBlocks(extra) + '</section>';
       const before = at >= 0 ? blocks.slice(0, at) : blocks, after = at >= 0 ? blocks.slice(at + 1) : [];
       let ci = before.findIndex(b => String(b.text || '').indexOf(m.calloutAfter) >= 0);
       if (ci < 0 && lead) ci = -2;   // custom layout: callout goes first, right under the date
@@ -274,13 +300,21 @@
         document.title = p.title + ' — Schalmont PTO';
         hero.textContent = p.title || 'Untitled page';
         if (preview && p.status !== 'published') document.getElementById('preview-banner').hidden = false;
+        if ((mergeCfg()[pId] || {}).noBirthdate) window.SIGNUP_NO_DOB = true;   // no date-of-birth step on this page's sheets
+        if ((mergeCfg()[pId] || {}).sheets) window.SIGNUP_OVERRIDES = mergeCfg()[pId].sheets;
         body.innerHTML = renderPageHeader(p) + await mergedBody(p, pId);
         mountSignupEmbeds(db);
         // Emoji-free pages: the sign-up sheets draw themselves in afterwards, so clean their text as it arrives.
         if ((mergeCfg()[pId] || {}).layout) {
           const clean = () => {
             const w = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
-            for (let n; (n = w.nextNode());) { const t = n.nodeValue.replace(EMOJI, ''); if (t !== n.nodeValue) n.nodeValue = t; }
+            for (let n; (n = w.nextNode());) {
+              const t = n.nodeValue.replace(EMOJI, '')
+                // Sabre Scarer zones as the sign-up slots have them (Julie)
+                .replace(/Bloody Camp, Medical, Spiders, Witches, or Zombies/g, 'Bloody Camp/Medical, Circus/Clowns/Carnival, Witches & Spiders, or Zombies & Aliens')
+                .replace(/\*\*/g, '');   // the sheets' **bold** markers aren't turned into bold, so drop them
+              if (t !== n.nodeValue) n.nodeValue = t;
+            }
           };
           clean();
           new MutationObserver(clean).observe(body, { childList: true, subtree: true });

@@ -77,6 +77,7 @@
         <a class="sn-item" href="middle-school.html#announcements" data-match="club">Clubs</a>
         <a class="sn-item" href="/event?t=holiday-food-drive-holiday-boxes" data-match="food drive">Food Drive</a>
         <a class="sn-item" href="giftcards.html" data-match="gift ?cards?">Giftcards</a>
+        <a class="sn-item" href="gertrude-hawk-chocolate.html" data-match="gertrude|chocolate">Gertrude Hawk Chocolate Bars</a>
         <a class="sn-item" href="holiday.html" data-match="holiday catalog">Holiday Catalog Fundraiser</a>
         <a class="sn-item" href="holiday-shoppe.html" data-match="holiday shoppe">Holiday Shoppe</a>
         <a class="sn-item" href="meetings.html" data-match="meeting">PTO Meetings</a>
@@ -185,15 +186,20 @@
           </figure>
         </div>
       </div>
+      <div class="cb-partner">
+        <img src="images/Partners/profit-raisers-logo.png" alt="Profit-Raisers" width="252" height="162">
+        <p>We're proud to partner with <strong>Profit-Raisers</strong> to bring the SaveAround coupon books to Schalmont families. Every book sold through the PTO helps support our students and school programs.</p>
+      </div>
       <div class="cb-lightbox" id="cb-lightbox" hidden role="dialog" aria-modal="true" aria-label="Flyer">
         <button type="button" class="cb-lb-x" aria-label="Close">✕</button>
         <img alt="">
       </div>
       <style>
-        .cb-gift { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 28px; align-items: start; background: #fff8ec; border: 1px solid #f1d9a8; border-radius: var(--radius-lg); padding: clamp(18px, 3vw, 30px); margin: 0 0 30px; }
+        .cb-gift { display: grid; grid-template-columns: 1fr; gap: 22px; align-items: start; background: #fff8ec; border: 1px solid #f1d9a8; border-radius: var(--radius-lg); padding: clamp(18px, 3vw, 30px); margin: 0 0 30px; }
         .cb-gift h2 { font-size: clamp(22px, 2.6vw, 30px); margin: 0 0 12px; color: var(--primary-dark); }
         .cb-gift p { font-size: 16px; line-height: 1.7; margin: 0 0 12px; }
-        .cb-flyers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        .cb-flyers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+        .cb-gift-text { max-width: 900px; }
         .cb-flyers figure { margin: 0; text-align: center; }
         .cb-zoom { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
         .cb-zoom img { width: 100%; height: auto; display: block; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,.15); }
@@ -204,8 +210,12 @@
         .cb-lightbox[hidden] { display: none; }
         .cb-lightbox img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; }
         .cb-lb-x { position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: #fff; color: #111; font-size: 22px; cursor: pointer; }
-        @media (max-width: 900px) { .cb-gift { grid-template-columns: 1fr; } }
-        @media (max-width: 480px) { .cb-flyers { grid-template-columns: 1fr; } }
+        @media (max-width: 640px) { .cb-flyers { grid-template-columns: 1fr; } }
+        .cb-partner { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 22px; margin: 0 0 30px; }
+        .cb-partner img { width: 170px; height: auto; flex-shrink: 0; }
+        .cb-partner p { flex: 1; min-width: 240px; margin: 0; font-size: 16px; line-height: 1.6; }
+        .sw-cb-offer.is-featured { border: 2px solid var(--primary); background: #f1f8f3; }
+        .sw-cb-offer.is-featured em { display: inline-block; font-style: normal; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; background: var(--primary); color: #fff; border-radius: 999px; padding: 2px 8px; margin-bottom: 4px; }
       </style>
       <script>
         (function () {
@@ -221,6 +231,7 @@
 
       <h3 style="font-size:18px;margin-bottom:12px">A taste of what's inside</h3>
       <div class="sw-cb-offers">
+          <div class="sw-cb-offer is-featured"><em>Featured</em><strong>DICK'S Sporting Goods</strong><span>Savings in the SaveAround app and online</span></div>
           <div class="sw-cb-offer"><strong>Sport Clips</strong><span>A free MVP haircut experience</span></div>
           <div class="sw-cb-offer"><strong>Sunset Lanes</strong><span>Buy one game of bowling, get a second free</span></div>
           <div class="sw-cb-offer"><strong>FunPlex Fun Park</strong><span>Buy one go-kart ride, get one free</span></div>

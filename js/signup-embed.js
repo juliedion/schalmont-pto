@@ -145,6 +145,13 @@
   }
 
   function render(db, el, id, sheet, slotDocs, entryDocs, prefill) {
+    // A page can correct an embedded sheet's details without changing the sheet itself:
+    // window.SIGNUP_OVERRIDES = { sheetId: { sheet: {eventTime, eventLocation, ...}, slot: {start, ...}, note: 'html' } }
+    var ov = (window.SIGNUP_OVERRIDES || {})[id];
+    if (ov) {
+      sheet = Object.assign({}, sheet, ov.sheet || {});
+      if (ov.slot) slotDocs = slotDocs.map(function (d) { var x = Object.assign({}, d.data(), ov.slot); return { id: d.id, data: function () { return x; } }; });
+    }
     var byName = {};
     var liveIds = {};
     entryDocs.forEach(function (d) {
@@ -176,7 +183,9 @@
     }
     if (sheet.intro) html += '<div class="pg-su-intro">' + sanitizeIntroHtml(sheet.intro) + '</div>';
     // A sheet can require a date of birth (e.g. roles limited to older students); say so up front.
-    if (sheet.askBirthdate === true) html += '<div class="pg-su-age">🎂 ' + esc(sheet.ageNote || DEFAULT_AGE_NOTE) + ' A date of birth is required to sign up.</div>';
+    // A page can turn that off for its embedded sheets with window.SIGNUP_NO_DOB = true (p.html).
+    if (sheet.askBirthdate === true) html += '<div class="pg-su-age">🎂 ' + esc(sheet.ageNote || DEFAULT_AGE_NOTE) + (window.SIGNUP_NO_DOB ? '' : ' A date of birth is required to sign up.') + '</div>';
+    if (ov && ov.note) html += '<div class="pg-su-note" style="margin:8px 0;padding:10px 12px;border-radius:10px;background:#fff4e5;font-weight:700">' + ov.note + '</div>';
     if (sheet.imageUrl) {
       var imgMargin = alignMargin(sheet.imageAlign);
       html += '<figure class="pg-su-figure"' + (imgMargin ? ' style="' + imgMargin + '"' : '') + '><img src="' + esc(sheet.imageUrl) + '" alt="' + esc(sheet.imageAlt || '') + '">' +
@@ -209,7 +218,7 @@
         html += '<button type="button" class="pg-su-open">Sign up</button>';
       }
       if (!myEntry && !closed && (!full || (prefill && prefill.slotId === d.id))) {
-        html += formHtml(prefill && prefill.slotId === d.id ? prefill : null, sheet.askItem !== false, sheet.askSchool === true, sheet.askBirthdate === true);
+        html += formHtml(prefill && prefill.slotId === d.id ? prefill : null, sheet.askItem !== false, sheet.askSchool === true, (sheet.askBirthdate === true && !window.SIGNUP_NO_DOB));
       }
       html += '</div>';
     });

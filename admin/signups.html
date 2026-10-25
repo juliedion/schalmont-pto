@@ -22,11 +22,13 @@
     .su-field input, .su-field select, .su-field textarea { width:100%; padding:9px 10px; border:1px solid var(--border); border-radius:7px; font-family:inherit; font-size:14px; }
     .su-field textarea { min-height:60px; resize:vertical; }
     .su-slots { border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:12px; }
-    .su-slotrow { display:grid; grid-template-columns:1.4fr .9fr .8fr .8fr .8fr auto; gap:8px; padding:9px 10px; align-items:center; border-top:1px solid var(--border); }
+    .su-slotrow { display:grid; grid-template-columns:1.4fr .9fr .8fr .8fr .8fr auto auto; gap:8px; padding:9px 10px; align-items:center; border-top:1px solid var(--border); }
     .su-slotrow:first-child { border-top:none; }
     .su-slothead { background:var(--light-bg); font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--text-light); }
     .su-slotrow input { width:100%; padding:6px 7px; border:1px solid var(--border); border-radius:6px; font-family:inherit; font-size:13px; }
     .su-x { background:none; border:none; color:var(--error); font-size:16px; cursor:pointer; }
+    .su-dup { background:#fff; border:1px solid var(--border); border-radius:6px; color:var(--primary); font-family:inherit; font-size:12px; font-weight:700; padding:5px 8px; cursor:pointer; white-space:nowrap; }
+    .su-dup:hover { background:var(--light-bg); }
     .su-rte-bar { display:flex; gap:4px; align-items:center; margin-bottom:6px; }
     .su-rte-bar button { width:30px; height:30px; border:1px solid var(--border); border-radius:6px; background:#fff; cursor:pointer; font-family:inherit; font-size:14px; }
     .su-rte-bar button:hover { background:var(--light-bg); }
@@ -191,7 +193,7 @@
         <p style="font-size:12.5px;color:var(--text-light);margin:0 0 8px">One row per slot people can claim. Leave
            <strong>Limit</strong> at 0 for no cap. Date/time are optional (use them for conference or shift slots).</p>
         <div class="su-slots" id="slots">
-          <div class="su-slotrow su-slothead"><span>Label</span><span>Date</span><span>Start</span><span>End</span><span>Limit</span><span></span></div>
+          <div class="su-slotrow su-slothead"><span>Label</span><span>Date</span><span>Start</span><span>End</span><span>Limit</span><span></span><span></span></div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           <button class="bo-btn ghost sm" id="add-slot">＋ Add slot</button>
@@ -482,7 +484,7 @@
       loadResponses();
     }
 
-    function addSlotRow(s) {
+    function addSlotRow(s, after) {
       const row = document.createElement('div');
       row.className = 'su-slotrow';
       row.dataset.id = s.id || '';
@@ -493,9 +495,25 @@
         <input data-f="start" type="time" value="${esc(s.start || '')}">
         <input data-f="end" type="time" value="${esc(s.end || '')}">
         <input data-f="capacity" type="number" min="0" value="${s.capacity != null ? s.capacity : 0}">
+        <button class="su-dup" type="button" title="Copy this slot right below it">⧉ Duplicate</button>
         <button class="su-x" title="Remove">✕</button>`;
       row.querySelector('.su-x').onclick = () => { row.remove(); };
-      document.getElementById('slots').appendChild(row);
+      row.querySelector('.su-dup').onclick = () => duplicateSlotRow(row);
+      if (after) after.after(row); else document.getElementById('slots').appendChild(row);
+      return row;
+    }
+    // A copy of a slot, placed right below it. If it has a start and end time, the copy starts
+    // when this one ends and runs the same length (6:00-6:30 -> 6:30-7:00), so back-to-back
+    // shifts take one click each. It's a new slot: nobody is signed up for it yet.
+    function duplicateSlotRow(row) {
+      const v = f => row.querySelector('[data-f="' + f + '"]').value;
+      const s = { label: v('label'), date: v('date'), start: v('start'), end: v('end'), capacity: Number(v('capacity')) || 0 };
+      const mins = t => { const p = String(t).split(':'); return p.length === 2 ? (+p[0]) * 60 + (+p[1]) : null; };
+      const hhmm = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+      const a = mins(s.start), b = mins(s.end);
+      if (a != null && b != null && b > a && b + (b - a) <= 24 * 60) { s.start = hhmm(b); s.end = hhmm(b + (b - a)); }
+      const copy = addSlotRow(s, row);
+      copy.querySelector('[data-f="label"]').focus();
     }
 
     async function saveSheet() {
