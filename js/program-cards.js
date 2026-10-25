@@ -185,22 +185,6 @@ const PROGRAM_CARDS_DEFAULTS = {
       "order": 9
     },
     {
-      "id": "trunk-or-treat",
-      "icon": "🎃",
-      "title": "Trunk or Treat",
-      "badgeType": "past",
-      "badgeText": "✓ Past Event",
-      "desc": "Trunk or Treat was a great success! Thank you to all the families and volunteers who made it happen. We'll see you again next fall!",
-      "actions": [
-        {
-          "label": "Upload Yearbook Photos →",
-          "href": "https://www.dropbox.com/request/ako7yg6d0v6i2mpy239d",
-          "cls": "btn btn-primary"
-        }
-      ],
-      "order": 10
-    },
-    {
       "id": "turn-off-screens",
       "icon": "📵",
       "title": "Turn Off the Screens",
@@ -962,15 +946,19 @@ const PROGRAM_CARDS_EXTRA = {
   }
 
   function loadInto(el) {
-    var school = el.dataset.school;
-    var extra = (PROGRAM_CARDS_EXTRA[school] || []).map(function (c) { return withDates(c, null); });
-    var fallback = sortAndFilter((PROGRAM_CARDS_DEFAULTS[school] || []).map(function (c) { return withDates(c, null); }).concat(extra));
+    // data-school can name several schools: "jefferson woestina" (Woestina Pre-K is part of Jefferson).
+    var schools = String(el.dataset.school).split(/[\s,]+/).filter(Boolean), school = schools[0];
+    var pick = function (src) { return [].concat.apply([], schools.map(function (s) { return src[s] || []; })); };
+    var extra = pick(PROGRAM_CARDS_EXTRA).map(function (c) { return withDates(c, null); });
+    var seenF = {};
+    var fallback = sortAndFilter(pick(PROGRAM_CARDS_DEFAULTS).map(function (c) { return withDates(c, null); }).concat(extra)
+      .filter(function (c) { var k = String(c.title || '').toLowerCase().replace(/[^a-z0-9]+/g, ''); if (seenF[k]) return false; seenF[k] = 1; return true; }));
     render(el, fallback);   // instant, no flash of empty content
     try {
       if (!window.firebase || !firebase.apps || !firebase.apps.length) return;
       var db = firebase.firestore();
       Promise.all([
-        db.collection('program_cards').where('school', '==', school).get(),
+        db.collection('program_cards').where('school', 'in', schools).get(),
         // Events shared by several schools are filed as PTO-wide cards -- pick up the ones whose
         // page is for this school (or for every school).
         db.collection('program_cards').where('school', '==', 'pto').get(),
@@ -981,12 +969,14 @@ const PROGRAM_CARDS_EXTRA = {
         var seen = {}, cards = [];
         r[0].docs.concat(r[1].docs).forEach(function (d) {
           var c = d.data(), fromPto = c.school === 'pto' && school !== 'pto';
+          if (/^trunk or treat 2026$/i.test(String(c.title || '').trim())) return;   // removed from the site (Oct 2026)
           var page = c.pageId && pages ? pages[c.pageId] : null;
           // A card for a page that isn't published would lead nowhere -- leave it off.
           if (c.pageId && pages && !page) return;
+          if (page && /^trunk or treat 2026$/i.test(String(page.title || '').trim())) return;
           if (fromPto) {
             var sc = page ? pageSchools(page) : [];
-            if (sc.length && sc.indexOf(school) < 0 && sc.indexOf('pto') < 0) return;
+            if (sc.length && !sc.some(function (x) { return schools.indexOf(x) >= 0; }) && sc.indexOf('pto') < 0) return;
           }
           // Same event filed under this school AND PTO-wide: show it once.
           var key = c.pageId || String(c.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '');

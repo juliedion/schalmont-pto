@@ -32,7 +32,7 @@
     .ev-day small { color: var(--text-light); white-space: nowrap; }
     .ev-status { text-align: center; color: var(--text-light); padding: 40px 10px; }
   </style>
-  <link rel="stylesheet" href="/css/menus.css?v=4">
+  <link rel="stylesheet" href="/css/menus.css?v=5">
 </head>
 <body>
 
@@ -61,13 +61,13 @@
 
   <div id="sc-footer"></div>
 
-  <script src="/js/site-chrome.js?v=8"></script>
+  <script src="/js/site-chrome.js?v=11"></script>
   <script>renderSiteChrome();</script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="/js/firebase-config.js"></script>
   <script>if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);</script>
-  <script src="/js/public-calendar.js?v=10"></script>
+  <script src="/js/public-calendar.js?v=11"></script>
   <script>
   (function () {
     var LABEL = { woestina: 'Jefferson PTO', jefferson: 'Jefferson PTO', middle: 'Schalmont Central PTO', high: 'Schalmont Central PTO', pto: 'Schalmont Central PTO', '': 'Schalmont Central PTO', district: 'Schalmont School District' };
@@ -100,8 +100,11 @@
     }
     waitData(30000).then(function (d) { return d.loadAll().then(function (r) { return [d, r.events.concat(r.district)]; }); }).then(function (x) {
       var D = x[0], all = x[1];
-      var e = all.filter(function (v) { return v.date === wantD && D.slugify(v.title) === wantT; })[0] ||
-              all.filter(function (v) { return D.slugify(v.title) === wantT; }).sort(function (a, b) { return Math.abs(new Date(a.date) - new Date(wantD)) - Math.abs(new Date(b.date) - new Date(wantD)); })[0];
+      var todayYMD = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+      var series = all.filter(function (v) { return D.slugify(v.title) === wantT; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+      // No date in the link (e.g. "School Spirit Fridays" in the menu): the next one coming up.
+      var e = (wantD && series.filter(function (v) { return v.date === wantD; })[0]) ||
+              series.filter(function (v) { return (v.endDate || v.date) >= todayYMD; })[0] || series[series.length - 1];
       if (!e) {
         document.getElementById('ev-title').textContent = 'Event not found';
         body.innerHTML = '<div class="ev-card"><p>This event may have been moved or removed from the calendar.</p><div class="ev-actions"><a class="ev-btn solid" href="/index.html#calendar">See the calendar →</a></div></div>';
@@ -133,6 +136,9 @@
         (e.school === 'district' ? '<p class="ev-note">This is a <b>school district</b> date. For changes and details, check <a href="https://www.schalmont.org" target="_blank" rel="noopener" style="color:var(--primary)">schalmont.org</a> and ParentSquare.</p>'
           : '<p class="ev-note">Questions about this event? <a href="/contact" style="color:var(--primary)">Contact the PTO</a> or check the PTO\'s Facebook group for updates.</p>') +
       '</div>' +
+      (series.length > 1 ? '<div class="ev-day"><h2>All dates</h2><ul>' + series.filter(function (v) { return (v.endDate || v.date) >= todayYMD || v === e; }).map(function (v) {
+        return '<li><a href="/event?d=' + v.date + '&t=' + encodeURIComponent(wantT) + '" style="--c:' + color(v) + '"' + (v === e ? ' aria-current="true"' : '') + '><span>' + esc(fmt(v.date, { weekday: 'long', month: 'long', day: 'numeric' })) + (v === e ? ' · this one' : '') + '</span><small>' + esc(v.time ? time(v.time) : 'All day') + '</small></a></li>';
+      }).join('') + '</ul></div>' : '') +
       (sameDay.length ? '<div class="ev-day"><h2>Also on ' + esc(fmt(e.date, { weekday: 'long', month: 'short', day: 'numeric' })) + '</h2><ul>' + sameDay.map(function (v) {
         return '<li><a href="' + esc(v.href) + '" style="--c:' + color(v) + '"><span>' + esc(v.title) + '</span><small>' + esc(v.time ? time(v.time) : 'All day') + '</small></a></li>';
       }).join('') + '</ul></div>' : '');
@@ -141,6 +147,6 @@
     });
   })();
   </script>
-  <script src="/js/menus.js?v=2"></script>
+  <script src="/js/menus.js?v=3"></script>
 </body>
 </html>

@@ -65,6 +65,7 @@
     document.querySelectorAll('.sidenav-submenu[id^="snav-"]').forEach(function (submenu) {
       var school = submenu.id.replace(/^snav-/, '');
       addLinks(school, submenu);
+      if (school === 'jefferson') addLinks('woestina', submenu);   // Woestina Pre-K is part of Jefferson
     });
   });
 })();

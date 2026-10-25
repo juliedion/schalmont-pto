@@ -506,7 +506,7 @@
 @media (max-width: 640px) { .home2 .hz-moment, .home2 .hz-moment img { width: 168px; } .home2 .hz-moment img { height: 210px; } }
 
 /* ---------- Lower content (kept from the old homepage, restyled) ---------- */
-.home2 .hz-schools { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.home2 .hz-schools { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .home2 .hz-school { display: flex; flex-direction: column; color: var(--hz-ink); padding: 18px; border-radius: 16px; background: #fff; box-shadow: var(--hz-shadow); border-top: 5px solid var(--sc, var(--hz-emerald)); transition: transform .15s ease, box-shadow .2s ease; }
 .home2 .hz-school:hover { box-shadow: 0 12px 26px rgba(0, 47, 32, .14); }
 .home2 .hz-school-main { text-decoration: none; color: inherit; display: block; }

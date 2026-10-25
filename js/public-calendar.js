@@ -41,7 +41,7 @@
   // loadAll() also keeps the district's own synced entries (school closings, early
   // release, board meetings) as a separate `district` list -- the homepage's combined
   // calendar has a District filter; everything else only wants `events`.
-  var CACHE_KEY = 'pcalEvents9', CACHE_MS = 10 * 60000;
+  var CACHE_KEY = 'pcalEvents10', CACHE_MS = 10 * 60000;
   // Events kept in the site code, for things that need to be on the calendar before anyone
   // adds them in the back office. A back-office entry with the same title and date wins.
   var SITE_EVENTS = [
@@ -77,6 +77,9 @@
     // The district calendar's "JES PTO Meeting" rows sit on the 15th of each month; the real
     // meetings are the third Tuesday (already on the PTO calendar), so those rows are hidden.
     var HIDE_TITLES = { 'jes pto meeting': true };
+    // Removed from the public site entirely (Julie, Oct 2026), whatever calendar/page it comes from.
+    var REMOVED = { 'trunk or treat 2026': true };
+    var removed = function (t) { return !!REMOVED[String(t || '').trim().toLowerCase()]; };
     function applyFix(e, school) {
       var t = String(e.title || '').trim().toLowerCase();
       var f = FIXES[t + '|' + e.date] || FIXES[t + '|' + school] || FIXES[t];
@@ -100,7 +103,7 @@
 
       pagesSnap.docs.forEach(function (d) {
         var p = d.data();
-        if (!p.title || !p.slug) return;
+        if (!p.title || !p.slug || removed(p.title)) return;
         p.title = shownTitle(p.title);
         var titleKey = p.title.trim().toLowerCase();
         var sch = routeOf(Array.isArray(p.schools) && p.schools.length ? p.schools : (p.school ? [p.school] : []));
@@ -122,7 +125,7 @@
       eventsSnap.docs.forEach(function (d) {
         if (BOOKKEEPING[d.id] || HIDDEN[d.id] || d.id.indexOf('__') === 0) return;
         var e = d.data();
-        if (!e.title || !e.date) return;
+        if (!e.title || !e.date || removed(e.title)) return;
         e.title = shownTitle(e.title);
         // The district's own school-closing/early-release entries already have their own
         // District tab (the embedded Google Calendar) -- keep them out of the back-office

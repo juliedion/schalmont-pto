@@ -177,3 +177,11 @@
 .sn-ad { margin: 18px 12px 8px; }
 .home-ad { margin: 26px auto 4px; padding: 0 16px; }
 
+/* ---- Left menu main list (Oct 2026): one alphabetical list, every item the same size ---- */
+.sn .sn-item, .sn .sn-main .sn-item, .sn .sn-item.sn-plain { font-size: 15px; font-weight: 600; padding: 6px 10px; line-height: 1.3; }
+.sn-main { display: flex; flex-direction: column; gap: 1px; }
+.sn-row { display: flex; flex-direction: column; }
+.sn-children { display: flex; flex-direction: column; gap: 1px; padding-left: 14px; margin: 1px 0 3px 10px; border-left: 2px solid #dbe8df; }
+.sn-children .sn-item { color: #2b4434; }
+.sn-div { border: 0; border-top: 1px solid #dbe5df; margin: 12px 8px; }
+

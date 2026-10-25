@@ -137,7 +137,40 @@
     });
   }
 
-  function initAll(root) { initHeader(root); init(root); initAds(); }
+  /* ---- Left menu: every upcoming PTO event from the calendar (data/sidebar-events.json, made
+     by tools/sidebar-events.mjs), merged alphabetically into the main list. Events a fixed item
+     already covers (its data-match regex) are skipped; each event drops off after it ends. */
+  function sortKey(el) {
+    var t = (el.getAttribute('data-sort') || el.textContent || '').trim().toLowerCase();
+    return t.replace(/^(20\d\d\s+|the\s+|a\s+)/, '');
+  }
+  function sortMain(main) {
+    [].slice.call(main.children).sort(function (a, b) { return sortKey(a).localeCompare(sortKey(b)); })
+      .forEach(function (el) { main.appendChild(el); });
+  }
+  function initMenuEvents(root) {
+    var main = (root || document).querySelector('.sn .sn-main');
+    if (!main || main.dataset.events) return;
+    main.dataset.events = '1';
+    sortMain(main);
+    var covers = [].map.call(main.querySelectorAll('[data-match]'), function (a) { try { return new RegExp(a.getAttribute('data-match'), 'i'); } catch (_) { return null; } }).filter(Boolean);
+    var today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+    fetch('/data/sidebar-events.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
+      var have = {};
+      [].forEach.call(main.querySelectorAll('a'), function (a) { have[a.textContent.trim().toLowerCase()] = 1; });
+      (d.events || []).forEach(function (e) {
+        if (!e.title || (e.end || e.date) < today || have[e.title.toLowerCase()]) return;
+        if (covers.some(function (re) { return re.test(e.title); })) return;
+        var a = document.createElement('a');
+        a.className = 'sn-item sn-event'; a.href = e.href || '/index.html#calendar'; a.textContent = e.title;
+        if (norm(a.getAttribute('href')) === norm(location.pathname + location.search)) a.setAttribute('aria-current', 'page');
+        main.appendChild(a);
+      });
+      sortMain(main);
+    }).catch(function () {});
+  }
+
+  function initAll(root) { initHeader(root); init(root); initAds(); initMenuEvents(root); }
   window.initSidenav = initAll;
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { initAll(); });
   else initAll();

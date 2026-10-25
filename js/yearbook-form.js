@@ -6,10 +6,9 @@
    submission details are saved to Firestore `yearbook_photos` for the back office's
    yearbook review (admin/yearbook.html). */
 (function () {
-  var SCHOOLS = [['woestina', 'Woestina'], ['jefferson', 'Jefferson'], ['middle', 'Middle School'], ['high', 'High School']];
+  var SCHOOLS = [['jefferson', 'Jefferson (incl. Woestina Pre-K)'], ['middle', 'Middle School'], ['high', 'High School']];
   var GRADES = {
-    woestina: ['Pre-K'],
-    jefferson: ['K', '1', '2', '3', '4'],
+    jefferson: ['Pre-K', 'K', '1', '2', '3', '4'],   // Pre-K = Woestina
     middle: ['5', '6', '7', '8'],
     high: ['9', '10', '11', '12']
   };
@@ -133,10 +132,8 @@
       var scSel = row.querySelector('.ybf-school'), grSel = row.querySelector('.ybf-grade');
       scSel.value = sc || '';
       grSel.innerHTML = gradeOptions(scSel.value);
-      if (scSel.value === 'woestina') grSel.value = 'Pre-K';
       scSel.onchange = function () {
         grSel.innerHTML = gradeOptions(scSel.value);
-        if (scSel.value === 'woestina') grSel.value = 'Pre-K';
         fillEvents();
       };
       row.querySelector('.ybf-rm').onclick = function () { row.remove(); syncStudents(); fillEvents(); };

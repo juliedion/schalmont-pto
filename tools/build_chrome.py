@@ -19,10 +19,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SCHOOLS = [
     # key, name, grades, colour, school page, [(chip label, class page), ...]
-    ('woestina', 'Woestina Pre-K', 'Pre-K', '#8bc341', 'woestina.html',
-     [('Pre-K', 'classof2040.html')]),
-    ('jefferson', 'Jefferson Elementary', 'Grades K–4', '#6bb044', 'jefferson.html',
-     [('K', 'classof2039.html'), ('1st', 'classof2038.html'), ('2nd', 'classof2037.html'),
+    # Woestina Pre-K is part of Jefferson: its Pre-K class page is listed here.
+    ('jefferson', 'Jefferson Elementary', 'Pre-K–4 · incl. Woestina', '#6bb044', 'jefferson.html',
+     [('Pre-K', 'classof2040.html'), ('K', 'classof2039.html'), ('1st', 'classof2038.html'), ('2nd', 'classof2037.html'),
       ('3rd', 'classof2036.html'), ('4th', 'classof2035.html')]),
     ('middle', 'Middle School', 'Grades 5–8', '#087d40', 'middle-school.html',
      [('5th', 'classof2034.html'), ('6th', 'classof2033.html'), ('7th', 'classof2032.html'),
@@ -31,23 +30,41 @@ SCHOOLS = [
      [('Fr', 'classof2030.html'), ('So', 'classof2029.html'), ('Jr', 'classof2028.html'),
       ('Sr', 'classof2027.html')]),
 ]
-GROUPS = [
-    ('For families', [('Picture days', 'picture-days.html'), ('Yearbooks', 'yearbooks.html'),
-                      ('Parent directory', 'directory.html'), ('Photo gallery', 'gallery.html'),
-                      ('Sports', 'sports.html')]),
-    # Groups the PTO partners with, each listed on its own (full addresses open in a new tab).
-    ('Schalmont groups', [('Student Council', 'student-council.html'),
-                        ('Schalmont Athletic Association', 'https://www.schalmont.org/middle-school/schalmont-athletic-association/'),
-                        ('Friends of Music', 'https://www.schalmont.org/friends-of-music/'),
-                        ('Friends of the Library', 'https://sites.google.com/schalmont.net/friendsofschalmontlibraries/home'),
-                        ('Scouts', 'https://www.troop3054.org/'),
-                        ('Girl Scouts', 'https://www.girlscoutsneny.org')]),
-    ('Get involved', [('Volunteer', 'volunteer.html'), ('Donate', 'donate.html'),
-                      ('Fundraisers', 'fundraisers.html'), ('Spirit shop', 'shop.html'),
-                      ('Gift cards', 'giftcards.html'), ('Coupon book', 'couponbook.html')]),
-    ('About the PTO', [('About us', 'about.html'), ('Meetings', 'meetings.html'), ('FAQs', 'faq.html'),
-                       ('Contact us', 'contact.html'), ('Social media', 'social.html')]),
+# The left menu's main list (Julie, Oct 2026): one alphabetical list, all the same size.
+# (label, link, match) -- `match` is a regex: calendar events whose title matches it are
+# already covered by this item, so js/menus.js won't add them again from
+# data/sidebar-events.json (every other upcoming PTO event is added, alphabetically).
+# No backslashes in these: the menu is also stored inside a JavaScript string (js/site-chrome.js).
+MAIN_ITEMS = [
+    ('Brawl for the Ball', '/brawlfortheball', r'brawl'),
+    ('Cheesy Fundraiser', '/event?t=cheesy-fundraiser', r'cheesy'),
+    ('Charleston Wrap Fundraiser', '/jefferson/fallfr', r'charleston'),
+    ('Coupon Books', 'couponbook.html', r'coupon'),
+    ('Dances', 'dances.html', r'dance'),
+    ('Directory', 'directory.html', ''),
+    ('Donate', 'donate.html', ''),
+    ('Events Calendar', 'index.html#calendar', ''),
+    ('Clubs', 'middle-school.html#announcements', r'club'),
+    ('Food Drive', '/event?t=holiday-food-drive-holiday-boxes', r'food drive'),
+    ('Giftcards', 'giftcards.html', r'gift ?cards?'),
+    ('Holiday Catalog Fundraiser', 'holiday.html', r'holiday catalog'),
+    ('Holiday Shoppe', 'holiday-shoppe.html', r'holiday shoppe'),
+    ('Merry Morning with Santa', 'craft-fair-santa.html', r'merry morning'),
+    ('Picture Days', 'picture-days.html', r'picture'),
+    ('School Spirit Fridays', '/event?t=school-spirit-friday', r'school spirit friday'),
+    ('Spiritwear Shoppe', 'shop.html', r'spiritwear'),
+    ('Sports', 'sports.html', ''),
+    ('Trail of Treats', '/trailoftreats', r'trail of treats'),
+    ('Yearbooks', 'yearbooks.html', r'yearbook'),
 ]
+# Shown under "Partners" (no arrows, Julie). Full addresses open in a new tab.
+PARTNER_GROUPS = [('Student Council', 'student-council.html'),
+                  ('Schalmont Athletic Association', 'https://www.schalmont.org/middle-school/schalmont-athletic-association/'),
+                  ('Friends of Music', 'https://www.schalmont.org/friends-of-music/'),
+                  ('Friends of the Library', 'https://sites.google.com/schalmont.net/friendsofschalmontlibraries/home'),
+                  ('Scouts', 'https://www.troop3054.org/'),
+                  ('Girl Scouts', 'https://www.girlscoutsneny.org')]
+ABOUT_ITEMS = [('About us', 'about.html'), ('Contact Us', 'contact.html'), ('Social Media', 'social.html')]
 # Extra blocks shown at the top of the sidebar on specific pages (below the search box).
 GIFT_CARD_AD = '\n'.join([
     '  <a href="giftcards.html" class="sidenav-gc-ad">',
@@ -67,7 +84,7 @@ ICON = {
 }
 
 
-# Each school's own yearbook page (Woestina has no yearbook, so no link).
+# Each school's own yearbook page.
 YEARBOOK = {'jefferson': 'yearbook-jefferson.html', 'middle': 'yearbook-middle.html', 'high': 'yearbook-high.html'}
 
 # Extra pages listed under a school in the sidebar (after Yearbook).
@@ -81,7 +98,7 @@ TOP_MENUS = [
     ('Support', [('Volunteer', 'volunteer.html'), ('Donate', 'donate.html'), ('Fundraisers', 'fundraisers.html'),
                  ('Spirit shop', 'shop.html'), ('Gift cards', 'giftcards.html'), ('Coupon book', 'couponbook.html'),
                  ('Partner groups', 'partners.html')]),
-    ('About', [('About the PTO', 'about.html'), ('Woestina/Jefferson PTO', 'about.html#jefferson-pto'),
+    ('About', [('About the PTO', 'about.html'), ('Jefferson Elementary PTO', 'about.html#jefferson-pto'),
                ('Schalmont Central PTO', 'about.html#schalmont-central-pto'), ('Meetings', 'meetings.html'),
                ('FAQs', 'faq.html'), ('Contact us', 'contact.html'), ('Social media', 'social.html')]),
 ]
@@ -113,7 +130,7 @@ def header(p, style=''):
         '  <nav class="sh-inner" aria-label="Main">',
         f'    <a href="{p}index.html" class="sh-brand" aria-label="Schalmont PTO home">',
         f'      <img src="{p}images/logo-web.png" alt="Schalmont Central PTO" width="360" height="230">',
-        f'      <img src="{p}images/jes-pto-tiger-web.png" alt="Woestina/Jefferson PTO" width="422" height="300">',
+        f'      <img src="{p}images/jes-pto-tiger-web.png" alt="Jefferson Elementary PTO" width="422" height="300">',
         '    </a>',
         '    <button type="button" class="sh-toggle" id="sh-toggle" aria-expanded="false" aria-controls="sh-menu">'
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menu</span></button>',
@@ -147,9 +164,23 @@ def sidebar(p, extra=''):
            '    <label class="sn-sr" for="sn-q">Search the site</label>',
            f'    {ICON["search"]}<input id="sn-q" name="q" type="search" placeholder="Search the site" autocomplete="off">',
            '  </form>'] + ([extra] if extra else []) + [
-           f'  <a class="sn-item" href="{p}index.html">{ICON["home"]}<span>Home</span></a>',
-           f'  <a class="sn-item" href="{p}index.html#calendar">{ICON["cal"]}<span>Events calendar</span></a>',
-           '  <div class="sn-label">Schools</div>']
+           f'  <a class="sn-item" href="{p}index.html">Home</a>']
+    def link(t, href, cls='sn-item', match=''):
+        full = href if href.startswith(('http', '/')) else p + href
+        ext = ' target="_blank" rel="noopener"' if href.startswith('http') else ''
+        m = f' data-match="{e(match)}"' if match else ''
+        return f'<a class="{cls}" href="{e(full)}"{ext}{m}>{e(t)}</a>'
+    # Main list: fixed items + Partners (with its groups); js/menus.js adds calendar events and sorts.
+    out.append('  <nav class="sn-main" aria-label="PTO events and pages">')
+    for t, href, match in MAIN_ITEMS:
+        out.append('    ' + link(t, href, match=match))
+    out.append('    <div class="sn-row" data-sort="Partners">' + link('Partners', 'partners.html') +
+               '<div class="sn-children">' + ''.join(link(t, h, 'sn-item sn-child') for t, h in PARTNER_GROUPS) + '</div></div>')
+    out.append('  </nav>')
+    out.append('  <hr class="sn-div">')
+    out += ['  ' + link(t, h) for t, h in ABOUT_ITEMS]
+    out.append('  <hr class="sn-div">')
+    out.append('  <div class="sn-label">Schools</div>')
     for key, name, grades, colour, page, classes in SCHOOLS:
         chips = ''.join(f'<a href="{p}{href}">{e(lbl)}</a>' for lbl, href in classes)
         out += [
@@ -166,10 +197,6 @@ def sidebar(p, extra=''):
             f'      <div class="sn-classes" aria-label="{e(name)} class pages"><span>Classes</span>{chips}</div>',
             '    </div>',
             '  </div>']
-    for label, links in GROUPS:
-        out.append(f'  <div class="sn-label">{e(label)}</div>')
-        out += [f'  <a class="sn-item sn-plain" href="{href}" target="_blank" rel="noopener">{e(t)} ↗</a>' if href.startswith('http')
-                else f'  <a class="sn-item sn-plain" href="{p}{href}">{e(t)}</a>' for t, href in links]
     out.append('  <div class="sn-ad" data-ad="square"></div>')   # ad spot: filled from data/ads.json
     out.append('</aside>')
     return '\n'.join(out)
@@ -189,8 +216,8 @@ def add_assets(src, slash):
     """css/menus.css in <head>, js/menus.js before </body> -- exactly once each."""
     src = ASSETS_CSS.sub('', src)
     src = ASSETS_JS.sub('', src)
-    src = re.sub(r'(\n[ \t]*)</head>', lambda m: m.group(1) + f'  <link rel="stylesheet" href="{slash}css/menus.css?v=4">' + m.group(1) + '</head>', src, count=1)
-    return re.sub(r'(\n[ \t]*)</body>', lambda m: m.group(1) + f'  <script src="{slash}js/menus.js?v=2"></script>' + m.group(1) + '</body>', src, count=1)
+    src = re.sub(r'(\n[ \t]*)</head>', lambda m: m.group(1) + f'  <link rel="stylesheet" href="{slash}css/menus.css?v=5">' + m.group(1) + '</head>', src, count=1)
+    return re.sub(r'(\n[ \t]*)</body>', lambda m: m.group(1) + f'  <script src="{slash}js/menus.js?v=3"></script>' + m.group(1) + '</body>', src, count=1)
 
 
 def indent_block(block, indent):

@@ -337,7 +337,7 @@
     { key: 'jefferson', label: 'Jefferson', name: 'Jefferson Elementary' },
     { key: 'middle', label: 'Middle', name: 'Schalmont Middle School' },
     { key: 'high', label: 'High', name: 'Schalmont High School' },
-    { key: 'woestina', label: 'Woestina', name: 'Woestina Pre-K' }
+    { key: 'woestina', label: 'Pre-K', name: 'Woestina Pre-K (Jefferson)' }
   ];
   var FOOD_PAGE = 'https://www.schalmont.org/district-office-services/food-services/';
   // Today's lunch comes from data/lunch-menus.json, built daily from the district's menu
