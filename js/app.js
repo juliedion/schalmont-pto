@@ -1559,13 +1559,19 @@ function initNavAuth() {
     if (dropdownOpen && !dropdown.contains(e.target) && e.target.id !== 'nav-login-btn') closeDropdown();
   });
 
+  // Signed in: a clear account button -- avatar (photo or initial, with a green "online" dot),
+  // "Signed in" + first name, and a caret for the menu.
   function renderNavBtn(btn, user, photo) {
-    const initial = user.displayName ? user.displayName[0].toUpperCase() : user.email[0].toUpperCase();
-    const avatarHtml = photo
-      ? `<img src="${photo}" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.5)">`
-      : `<span style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.25);display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff">${initial}</span>`;
-    btn.style.cssText = 'display:inline-flex;align-items:center;gap:4px;padding:3px 8px 3px 3px;border-radius:99px;cursor:pointer;font-size:13px;text-decoration:none;background:rgba(255,255,255,0.1)';
-    btn.innerHTML = `${avatarHtml}<span style="color:rgba(255,255,255,0.85);font-size:11px;line-height:1">&#9660;</span>`;
+    const name = (user.displayName || user.email.split('@')[0]).trim();
+    const first = name.split(/[\s._-]+/)[0];
+    const initial = name[0].toUpperCase();
+    const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    btn.className = 'sh-login sh-acct';
+    btn.style.cssText = '';
+    btn.title = 'Signed in as ' + user.email;
+    btn.setAttribute('aria-label', 'Your account, signed in as ' + user.email);
+    btn.innerHTML = '<span class="sh-acct-av">' + (photo ? '<img src="' + esc(photo) + '" alt="">' : esc(initial)) + '</span>' +
+      '<span class="sh-acct-txt"><small>Signed in</small><b>' + esc(first.charAt(0).toUpperCase() + first.slice(1)) + '</b></span><span class="sh-acct-caret" aria-hidden="true">&#9660;</span>';
     btn.removeAttribute('href');
     btn.onclick = e => {
       e.preventDefault();
@@ -1576,7 +1582,7 @@ function initNavAuth() {
       dropdown.style.right = (window.innerWidth - rect.right) + 'px';
       dropdown.style.left = 'auto';
       dropdown.style.display = 'block';
-      document.getElementById('nav-auth-email').textContent = user.email;
+      document.getElementById('nav-auth-email').textContent = 'Signed in as ' + user.email;
       dropdownOpen = true;
     };
   }
@@ -1599,6 +1605,7 @@ function initNavAuth() {
       btn.innerHTML = 'Login/Register';
       btn.onclick = null;
       btn.style.cssText = '';
+      btn.className = 'sh-login'; btn.removeAttribute('title'); btn.removeAttribute('aria-label');
       closeDropdown();
     }
   });

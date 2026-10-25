@@ -35,6 +35,13 @@
     .gh-card h2 { font-size: 20px; margin: 0 0 10px; color: var(--primary-dark); }
     .gh-card p, .gh-card li { font-size: 16px; line-height: 1.65; margin: 0 0 8px; }
     .gh-card ul { margin: 0; padding-left: 20px; }
+    .gh-order { background: #fff; border: 2px solid #e6b84a; border-radius: 18px; padding: clamp(18px, 3vw, 30px); }
+    .gh-order h2 { font-size: clamp(22px, 2.6vw, 30px); margin: 0 0 8px; color: var(--primary-dark); }
+    .gh-order > p { font-size: 16px; line-height: 1.6; margin: 0 0 16px; }
+    .gh-order-frame { position: relative; width: 100%; height: 1100px; border-radius: 12px; overflow: hidden; background: #f7f7f7; }
+    .gh-order-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .gh-order-alt { margin: 14px 0 0 !important; text-align: center; }
+    @media (max-width: 640px) { .gh-order-frame { height: 1300px; } }
     .gh-lightbox { position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.85); display: flex; align-items: center; justify-content: center; padding: 20px; }
     .gh-lightbox[hidden] { display: none; }
     .gh-lightbox img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; }
@@ -42,7 +49,7 @@
     @media (max-width: 520px) { .gh-prices { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 860px) { .gh-wrap { grid-template-columns: 1fr; } .gh-flyer { max-width: 520px; margin: 0 auto; } }
   </style>
-  <link rel="stylesheet" href="/css/menus.css?v=10">
+  <link rel="stylesheet" href="/css/menus.css?v=12">
 </head>
 <body>
 
@@ -88,11 +95,11 @@
               <div class="gh-card">
                 <h2>How to pay</h2>
                 <ul>
-                  <li><strong>Pay online:</strong> <a href="https://www.zeffy.com/en-US/ticketing/gertrude-hawk-chocolate-bar-fundraiser-schalmont-pto" target="_blank" rel="noopener" style="color:var(--primary)">order and pay on Zeffy</a>, or scan the "Pay Online" code on the flyer.</li>
+                  <li><strong>Pay online:</strong> use the <a href="#order" style="color:var(--primary)">order form below</a>, or scan the "Pay Online" code on the flyer.</li>
                   <li><strong>Venmo:</strong> scan the Venmo code on the flyer.</li>
                   <li><strong>Cash or check:</strong> made payable to <strong>Schalmont PTO</strong>.</li>
                 </ul>
-                <p style="margin-top:14px"><a class="gh-btn solid" href="https://www.zeffy.com/en-US/ticketing/gertrude-hawk-chocolate-bar-fundraiser-schalmont-pto" target="_blank" rel="noopener">Order online →</a></p>
+                <p style="margin-top:14px"><a class="gh-btn solid" href="#order">Order online →</a></p>
               </div>
 
               <div class="gh-card">
@@ -100,6 +107,22 @@
                 <p>Look for the PTO chocolate table at school events, including the <a href="/trailoftreats" style="color:var(--primary)">Trail of Treats</a> on Friday, October 30. Questions? <a href="/contact" style="color:var(--primary)">Contact the PTO</a>.</p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ONLINE ORDER FORM (Zeffy, embedded; the button below opens it on Zeffy if the embed is blocked) -->
+      <section class="section" id="order" style="padding-top:0;scroll-margin-top:90px">
+        <div class="container">
+          <div class="gh-order">
+            <h2>Order chocolate bars online</h2>
+            <p>Pick how many bars you'd like and pay securely online. Bars go home with your student or can be picked up at the PTO table. Buy 10 and you'll get a free squishy!</p>
+            <div class="gh-order-frame">
+              <iframe title="Gertrude Hawk chocolate bar order form, powered by Zeffy"
+                      src="https://www.zeffy.com/embed/ticketing/gertrude-hawk-chocolate-bar-fundraiser-schalmont-pto"
+                      allowpaymentrequest allowtransparency="true" loading="lazy"></iframe>
+            </div>
+            <p class="gh-order-alt">Form not showing? <a class="gh-btn solid" href="https://www.zeffy.com/en-US/ticketing/gertrude-hawk-chocolate-bar-fundraiser-schalmont-pto" target="_blank" rel="noopener">Open the order form on Zeffy →</a></p>
           </div>
         </div>
       </section>
@@ -114,7 +137,7 @@
 
   <div id="sc-footer"></div>
 
-  <script src="/js/site-chrome.js?v=16"></script>
+  <script src="/js/site-chrome.js?v=17"></script>
   <script>renderSiteChrome();</script>
   <script>
     (function () {
@@ -125,6 +148,6 @@
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !lb.hidden) close(); });
     })();
   </script>
-  <script src="/js/menus.js?v=4"></script>
+  <script src="/js/menus.js?v=5"></script>
 </body>
 </html>

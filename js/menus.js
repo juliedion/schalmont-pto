@@ -85,6 +85,21 @@
     });
     if (toggle) toggle.addEventListener('click', function () {
       var open = head.classList.toggle('menu-open');
+      // Phones: the left menu is hidden, so put a copy of it in the Menu panel (once).
+      var panel = head.querySelector('.sh-menu'), side = document.querySelector('aside.sn');
+      if (open && panel && side && !panel.querySelector('.sh-mobile-sn')) {
+        var box = document.createElement('div'); box.className = 'sh-mobile-sn';
+        var copy = side.cloneNode(true);
+        copy.removeAttribute('data-ready'); copy.removeAttribute('id');
+        copy.querySelectorAll('[id]').forEach(function (el) { el.id = 'm-' + el.id; });
+        copy.querySelectorAll('[aria-controls]').forEach(function (el) { el.setAttribute('aria-controls', 'm-' + el.getAttribute('aria-controls')); });
+        copy.querySelectorAll('.sn-more, .sn-ad, .sn-search').forEach(function (el) { el.remove(); });
+        copy.querySelectorAll('.sn-label').forEach(function (el) {   // its ad isn't copied, so drop "Proud Sponsors" too
+          if (/proud sponsors/i.test(el.textContent)) { var hr = el.previousElementSibling; el.remove(); if (hr && hr.tagName === 'HR') hr.remove(); }
+        });
+        box.appendChild(copy); panel.appendChild(box);
+        init(box);   // school accordions etc. in the copy
+      }
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
       toggle.querySelector('span').textContent = open ? 'Close' : 'Menu';
     });

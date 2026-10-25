@@ -11,8 +11,11 @@ RewriteEngine On
   </FilesMatch>
 </IfModule>
 
+# The old Get Involved page was removed (Oct 2026); its button is now Donate.
+RewriteRule ^get-involved(\.html)?/?$ /donate [R=301,L]
+
 # Chocolate bars: the page (with the 4-for-$10 flyer and the Zeffy order link)
-RewriteRule ^chocolate(\.html)?/?$ /gertrude-hawk-chocolate [R=302,L]
+RewriteRule ^chocolate(\.html)?/?$ /gertrude-hawk-chocolate [R=301,L]
 
 # The printed spirit wear order form says /spiritwear -- the store lives on the shop page
 RewriteRule ^spiritwear/?$ /shop [R=301,L]

@@ -206,3 +206,41 @@
 @media (min-width: 901px) { .homepage-sidenav.sn { top: 84px; max-height: calc(100vh - 84px); } }
 @media (min-width: 901px) and (max-width: 1180px) { .homepage-sidenav.sn { top: 70px; max-height: calc(100vh - 70px); } }   /* header is 70px here */
 .sn-ad .ad-label { display: none; }   /* "Proud Sponsors" above it already says so */
+
+/* ---- Top menu, Oct 2026: Home · About · Meetings · Contact on the right, | , search box, account, Donate ---- */
+.sh-menu { justify-content: flex-end; }
+.sh-list { margin-left: auto; }
+.sh-sep { width: 1px; height: 28px; background: rgba(255, 255, 255, .35); flex-shrink: 0; }
+.sh-search { position: relative; display: flex; align-items: center; }
+.sh-search svg { position: absolute; left: 12px; color: rgba(255, 255, 255, .75); pointer-events: none; }
+.sh-search input { width: 190px; height: 38px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .3); background: rgba(255, 255, 255, .1);
+  color: #fff; font: inherit; font-size: 14px; padding: 0 14px 0 36px; transition: width .2s ease, background .2s ease; }
+.sh-search input::placeholder { color: rgba(255, 255, 255, .7); }
+.sh-search input:focus { outline: none; width: 240px; background: #fff; color: #14261c; border-color: #a3ff45; box-shadow: 0 0 0 3px rgba(163, 255, 69, .35); }
+.sh-search input:focus + svg, .sh-search:focus-within svg { color: #4f6a58; }
+/* Signed-in account button (js/app.js) */
+.sh-acct { display: inline-flex; align-items: center; gap: 8px; padding: 3px 12px 3px 3px; border-radius: 999px; background: rgba(255, 255, 255, .12);
+  border: 1px solid rgba(163, 255, 69, .55); cursor: pointer; text-decoration: none; color: #fff; line-height: 1.1; }
+.sh-acct:hover { background: rgba(255, 255, 255, .2); }
+.sh-acct-av { width: 32px; height: 32px; border-radius: 50%; background: #a3ff45; color: #002F20; display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 14px; position: relative; flex-shrink: 0; overflow: visible; }
+.sh-acct-av img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+.sh-acct-av::after { content: ""; position: absolute; right: -1px; bottom: -1px; width: 10px; height: 10px; border-radius: 50%; background: #3ddc84; border: 2px solid #002F20; }
+.sh-acct-txt { display: flex; flex-direction: column; text-align: left; }
+.sh-acct-txt small { font-size: 10.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: rgba(255, 255, 255, .7); }
+.sh-acct-txt b { font-size: 13.5px; font-weight: 800; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sh-acct-caret { font-size: 10px; opacity: .8; }
+@media (max-width: 1180px) {
+  .sh-menu { justify-content: flex-start; }   /* phone panel: start at the top and scroll */
+  .sh-menu > * { flex-shrink: 0; }
+  .sh-sep { display: none; }
+  .sh-list { margin-left: 0; }
+  .sh-search { width: 100%; }
+  .sh-search input, .sh-search input:focus { width: 100%; }
+  /* Phones/tablets: the Menu button also shows the full left menu (cloned in by js/menus.js) */
+  .sh-mobile-sn { background: #fbfcfb; border-radius: 14px; padding: 6px 4px; margin-top: 6px; }
+  .sh-mobile-sn .sn { position: static !important; max-height: none !important; overflow: visible !important; display: flex !important; border: 0; padding: 8px 8px 12px; background: none; }
+  .sh-mobile-sn .sn-search, .sh-mobile-sn .sn-ad, .sh-mobile-sn .sn-more { display: none !important; }
+}
+@media (min-width: 901px) { .sh-mobile-sn { display: none; } }   /* the real left menu is showing */
+
