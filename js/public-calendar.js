@@ -41,12 +41,14 @@
   // loadAll() also keeps the district's own synced entries (school closings, early
   // release, board meetings) as a separate `district` list -- the homepage's combined
   // calendar has a District filter; everything else only wants `events`.
-  var CACHE_KEY = 'pcalEvents8', CACHE_MS = 10 * 60000;
+  var CACHE_KEY = 'pcalEvents9', CACHE_MS = 10 * 60000;
   // Events kept in the site code, for things that need to be on the calendar before anyone
   // adds them in the back office. A back-office entry with the same title and date wins.
   var SITE_EVENTS = [
     { title: 'Middle School Spirit Week', date: '2026-10-26', endDate: '2026-10-30', time: '', location: 'Schalmont Middle School', school: 'middle', href: '/spirit-week' }
   ];
+  function slugify(t) { return String(t || '').toLowerCase().replace(/&amp;/g, 'and').replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80); }
+  function eventUrl(e) { return '/event?d=' + e.date + '&t=' + slugify(e.title); }
   function loadEvents() { return loadAll().then(function (r) { return r.events; }); }
   function loadAll() {
     try {
@@ -155,6 +157,10 @@
       });
 
       var merged = mergeDuplicates(Object.keys(byKey).map(function (k) { return byKey[k]; }), district);
+      // Every event links to a page about it: its own back-office page if it has one,
+      // otherwise the automatic event page (event.html) -- after merging, so a copy WITH a
+      // page still wins the merge.
+      merged.events.concat(merged.district).forEach(function (e) { if (!e.href) e.href = eventUrl(e); });
       var result = { at: Date.now(), events: merged.events, district: merged.district };
       try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(result)); } catch (_) {}
       return result;
@@ -270,7 +276,7 @@
     return gap === 1 || (gap === 3 && a.getUTCDay() === 5);
   }
 
-  window.PTOEventData = { loadAll: loadAll, mergeDuplicates: mergeDuplicates };
+  window.PTOEventData = { loadAll: loadAll, mergeDuplicates: mergeDuplicates, eventUrl: eventUrl, slugify: slugify };
 
   function eventsForSchool(events, school) {
     if (school === 'all') return events;

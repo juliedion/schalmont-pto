@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="Event — Schalmont PTO">
+  <meta property="og:image" content="https://schalmontpto.com/images/Schalmont-PTO-logo.png">
+  <meta property="og:type" content="website">
+  <meta name="description" content="Details for an event on the Schalmont PTO and district calendar.">
+  <title>Event — Schalmont PTO</title>
+  <link rel="stylesheet" href="/css/styles.css?v=6">
+  <link rel="icon" href="/images/favicon.svg">
+  <!-- The automatic page for any calendar event that has no page of its own:
+       /event?d=YYYY-MM-DD&t=title-slug (links made by js/public-calendar.js eventUrl()). -->
+  <style>
+    .ev-wrap { max-width: 760px; margin: 0 auto; }
+    .ev-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: clamp(18px, 4vw, 30px); }
+    .ev-tag { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+    .ev-facts { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 12px; }
+    .ev-facts li { display: grid; grid-template-columns: 28px 1fr; gap: 10px; font-size: 16px; line-height: 1.45; }
+    .ev-facts b { display: block; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-light); }
+    .ev-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    .ev-btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 999px; font-weight: 800; font-size: 14.5px; text-decoration: none; border: 2px solid var(--primary); color: var(--primary); background: #fff; cursor: pointer; }
+    .ev-btn.solid { background: var(--primary); color: #fff; }
+    .ev-btn:hover { filter: brightness(.95); }
+    .ev-note { margin: 18px 0 0; padding: 12px 14px; border-radius: 12px; background: var(--light-bg); font-size: 14px; color: var(--text); line-height: 1.6; }
+    .ev-day { margin-top: 26px; }
+    .ev-day h2 { font-size: 18px; margin: 0 0 10px; }
+    .ev-day ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+    .ev-day li a { display: flex; gap: 10px; align-items: baseline; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; text-decoration: none; color: var(--text); background: #fff; border-left: 4px solid var(--c); }
+    .ev-day li a:hover { border-color: var(--primary); }
+    .ev-day small { color: var(--text-light); white-space: nowrap; }
+    .ev-status { text-align: center; color: var(--text-light); padding: 40px 10px; }
+  </style>
+  <link rel="stylesheet" href="/css/menus.css?v=4">
+</head>
+<body>
+
+  <div id="sc-header"></div>
+
+  <div class="homepage-layout">
+    <div id="sc-sidenav"></div>
+    <div class="homepage-main">
+
+      <section class="page-hero" style="background:linear-gradient(135deg,#002F20 0%,#007A3D 100%)">
+        <div class="container">
+          <p style="margin:0 0 8px"><a href="/index.html#calendar" style="color:rgba(255,255,255,.85);text-decoration:none">← Back to the calendar</a></p>
+          <h1 style="margin:0" id="ev-title">Event</h1>
+          <p style="margin:10px 0 0" id="ev-sub"></p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container ev-wrap" id="ev-body">
+          <p class="ev-status">Loading the event…</p>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <div id="sc-footer"></div>
+
+  <script src="/js/site-chrome.js?v=8"></script>
+  <script>renderSiteChrome();</script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script>if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);</script>
+  <script src="/js/public-calendar.js?v=10"></script>
+  <script>
+  (function () {
+    var LABEL = { woestina: 'Jefferson PTO', jefferson: 'Jefferson PTO', middle: 'Schalmont Central PTO', high: 'Schalmont Central PTO', pto: 'Schalmont Central PTO', '': 'Schalmont Central PTO', district: 'Schalmont School District' };
+    var COLOR = { woestina: '#63E629', jefferson: '#63E629', district: '#2F5D8C' };
+    var TEXTC = { woestina: '#002F20', jefferson: '#002F20' };
+    var SCHOOL = { woestina: 'Woestina Pre-K', jefferson: 'Jefferson Elementary', middle: 'Middle School', high: 'High School', pto: 'All schools', district: 'District-wide' };
+    function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+    function fmt(d, o) { return new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', Object.assign({ timeZone: 'UTC' }, o)); }
+    function time(hm) { var p = String(hm).split(':'), h = +p[0], m = p[1] || '00'; return (h % 12 || 12) + (m === '00' ? '' : ':' + m) + ' ' + (h < 12 ? 'AM' : 'PM'); }
+    function addDays(d, n) { var x = new Date(d + 'T12:00:00Z'); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); }
+    function color(e) { return COLOR[e.school] || '#007A3D'; }
+    var q = new URLSearchParams(location.search), wantD = q.get('d') || '', wantT = q.get('t') || '';
+    var body = document.getElementById('ev-body');
+
+    function waitData(ms) {
+      return new Promise(function (ok, fail) { var t = 0; (function c() { if (window.PTOEventData) return ok(window.PTOEventData); if ((t += 150) > ms) return fail(); setTimeout(c, 150); })(); });
+    }
+    function calLinks(e) {
+      var allDay = !e.time, end = e.endDate && e.endDate > e.date ? e.endDate : e.date;
+      var d1 = e.date.replace(/-/g, ''), dates;
+      if (allDay) dates = d1 + '/' + addDays(end, 1).replace(/-/g, '');
+      else { var t = e.time.replace(':', '') + '00', h = Math.min(23, +e.time.split(':')[0] + 1); dates = d1 + 'T' + t + '/' + end.replace(/-/g, '') + 'T' + String(h).padStart(2, '0') + e.time.split(':')[1] + '00'; }
+      var g = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(e.title) + '&dates=' + dates +
+        '&ctz=America/New_York' + (e.location ? '&location=' + encodeURIComponent(e.location) : '') + '&details=' + encodeURIComponent(location.href);
+      var ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Schalmont PTO//EN', 'BEGIN:VEVENT', 'UID:' + wantD + '-' + wantT + '@schalmontpto.com',
+        allDay ? 'DTSTART;VALUE=DATE:' + dates.split('/')[0] : 'DTSTART;TZID=America/New_York:' + dates.split('/')[0],
+        allDay ? 'DTEND;VALUE=DATE:' + dates.split('/')[1] : 'DTEND;TZID=America/New_York:' + dates.split('/')[1],
+        'SUMMARY:' + e.title.replace(/[,;]/g, '\\$&'), e.location ? 'LOCATION:' + e.location.replace(/[,;]/g, '\\$&') : '', 'URL:' + location.href, 'END:VEVENT', 'END:VCALENDAR'].filter(Boolean).join('\r\n');
+      return { google: g, ics: 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics) };
+    }
+    waitData(30000).then(function (d) { return d.loadAll().then(function (r) { return [d, r.events.concat(r.district)]; }); }).then(function (x) {
+      var D = x[0], all = x[1];
+      var e = all.filter(function (v) { return v.date === wantD && D.slugify(v.title) === wantT; })[0] ||
+              all.filter(function (v) { return D.slugify(v.title) === wantT; }).sort(function (a, b) { return Math.abs(new Date(a.date) - new Date(wantD)) - Math.abs(new Date(b.date) - new Date(wantD)); })[0];
+      if (!e) {
+        document.getElementById('ev-title').textContent = 'Event not found';
+        body.innerHTML = '<div class="ev-card"><p>This event may have been moved or removed from the calendar.</p><div class="ev-actions"><a class="ev-btn solid" href="/index.html#calendar">See the calendar →</a></div></div>';
+        return;
+      }
+      var multi = e.endDate && e.endDate > e.date;
+      var when = multi ? fmt(e.date, { weekday: 'long', month: 'long', day: 'numeric' }) + ' – ' + fmt(e.endDate, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+                       : fmt(e.date, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+      document.title = e.title + ' — Schalmont PTO';
+      document.getElementById('ev-title').textContent = e.title;
+      document.getElementById('ev-sub').textContent = when + (e.time ? ' · ' + time(e.time) : '');
+      var own = e.href && e.href.indexOf('/event?') !== 0;   // a real event page exists
+      var links = calLinks(e), maps = e.location ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(e.location) : '';
+      var sameDay = all.filter(function (v) { return v !== e && v.date <= e.date && (v.endDate || v.date) >= e.date; })
+        .sort(function (a, b) { return (a.time || '') < (b.time || '') ? -1 : 1; }).slice(0, 8);
+      body.innerHTML = '<div class="ev-card">' +
+        '<span class="ev-tag" style="background:' + color(e) + ';color:' + (TEXTC[e.school] || '#fff') + '">' + esc(LABEL[e.school] || 'Schalmont') + '</span>' +
+        '<ul class="ev-facts">' +
+          '<li><span aria-hidden="true">📅</span><span><b>When</b>' + esc(when) + '</span></li>' +
+          '<li><span aria-hidden="true">🕒</span><span><b>Time</b>' + esc(e.time ? time(e.time) : 'All day') + '</span></li>' +
+          (e.location ? '<li><span aria-hidden="true">📍</span><span><b>Where</b><a href="' + esc(maps) + '" target="_blank" rel="noopener" style="color:var(--primary)">' + esc(e.location) + '</a></span></li>' : '') +
+          '<li><span aria-hidden="true">🏫</span><span><b>For</b>' + esc(SCHOOL[e.school] || 'Schalmont families') + '</span></li>' +
+        '</ul>' +
+        '<div class="ev-actions">' +
+          (own ? '<a class="ev-btn solid" href="' + esc(e.href) + '">Full event details →</a>' : '') +
+          '<a class="ev-btn" href="' + esc(links.google) + '" target="_blank" rel="noopener">📅 Add to Google Calendar</a>' +
+          '<a class="ev-btn" href="' + links.ics + '" download="' + esc(wantT || 'event') + '.ics">📲 Add to iPhone / Outlook</a>' +
+        '</div>' +
+        (e.school === 'district' ? '<p class="ev-note">This is a <b>school district</b> date. For changes and details, check <a href="https://www.schalmont.org" target="_blank" rel="noopener" style="color:var(--primary)">schalmont.org</a> and ParentSquare.</p>'
+          : '<p class="ev-note">Questions about this event? <a href="/contact" style="color:var(--primary)">Contact the PTO</a> or check the PTO\'s Facebook group for updates.</p>') +
+      '</div>' +
+      (sameDay.length ? '<div class="ev-day"><h2>Also on ' + esc(fmt(e.date, { weekday: 'long', month: 'short', day: 'numeric' })) + '</h2><ul>' + sameDay.map(function (v) {
+        return '<li><a href="' + esc(v.href) + '" style="--c:' + color(v) + '"><span>' + esc(v.title) + '</span><small>' + esc(v.time ? time(v.time) : 'All day') + '</small></a></li>';
+      }).join('') + '</ul></div>' : '');
+    }).catch(function () {
+      body.innerHTML = '<p class="ev-status">This event couldn\'t be loaded right now. <a href="/index.html#calendar">See the calendar →</a></p>';
+    });
+  })();
+  </script>
+  <script src="/js/menus.js?v=2"></script>
+</body>
+</html>
