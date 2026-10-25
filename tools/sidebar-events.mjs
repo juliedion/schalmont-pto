@@ -54,7 +54,7 @@ vm.createContext(ctx);
 vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/public-calendar.js'), 'utf8'), ctx);
 
 // Left out of the menu (still on the calendar) -- Julie, Oct 2026. Lowercase, matched against the start of the title.
-const SKIP = ['4th grad photo', '4th grand pano photo', '5th grade fun day', 'cat in hat', 'coin wars', 'color run',
+const SKIP = ['4th grade moving up', '4th grad photo', '4th grand pano photo', '5th grade fun day', 'cat in hat', 'coin wars', 'color run',
   'counselor appreciation', 'field day', 'glow night', 'green eggs', 'holiday staff appreciation', 'last day big wave',
   'march madness', 'masquerade ball', 'oh the places', 'pre-appreciation week', 'restaurant', 'schalmont night out',
   'schalmont spring color run', 'seuss spirit', 'spring color run', 'spring pto meeting', 'spring silent auction',

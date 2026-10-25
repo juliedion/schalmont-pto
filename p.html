@@ -17,9 +17,20 @@
       font-size:13px; padding:8px 14px; }
     .page-hero h1 { margin:0; }
     .page-hero p { margin:10px 0 0; }
-    #pg-body { max-width:760px; }
+    #pg-body { max-width:none; }
+    .tot-flyers { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:18px; margin:18px 0 22px; }
+    .tot-flyers figure { margin:0; text-align:center; }
+    .tot-flyers img { width:100%; height:auto; display:block; border-radius:12px; cursor:zoom-in; box-shadow:0 4px 16px rgba(0,0,0,.15); }
+    .tot-flyers figcaption { margin-top:10px; }
+    .tot-flyers figcaption a { display:inline-block; font-weight:800; color:var(--primary); text-decoration:none; border:2px solid var(--primary); border-radius:999px; padding:7px 16px; }
+    .tot-flyers figcaption a:hover { background:var(--primary); color:#fff; }
+    .tot-when { text-align:center; margin:26px 0 10px; line-height:1.15; }
+    .tot-date { font-size:clamp(30px, 4.6vw, 52px); font-weight:800; color:var(--primary-dark); margin:0; }
+    .tot-time { font-size:clamp(26px, 4vw, 44px); font-weight:800; color:#d4570b; margin:6px 0 0; }
+    .tot-where { font-size:clamp(17px, 2vw, 22px); font-weight:700; color:var(--text); margin:10px 0 0; }
+    @media (max-width: 700px) { .tot-flyers { grid-template-columns:1fr; } }
   </style>
-  <link rel="stylesheet" href="/css/menus.css?v=5">
+  <link rel="stylesheet" href="/css/menus.css?v=6">
 </head>
 <body>
 
@@ -140,10 +151,57 @@
     function mergeCfg() { return {
       // 2026 Schalmont PTO Trail of Treats  <-  Trail of Treats Volunteer Crew
       '7Pgsdbof9URojBmTyi3J': { from: 'jykqeTbLZAowLXPJ9hr9', link: 'trail-of-treats-volunteers', skip: 2,
-        anchor: 'volunteer', heading: '🎃 Volunteer Sign-Ups', fixHref: '/signup/trailrsvp',
-        calloutAfter: 'Friday, October 30', callout: '🙋 We still need volunteers for Friday! Sign up below →' }
+        anchor: 'volunteer', heading: 'Volunteer Sign-Ups', fixHref: '/signup/trailrsvp',
+        calloutAfter: 'Friday, October 30', callout: 'We still need volunteers for Friday! Sign up below →',
+        layout: 'trailoftreats' }
     }; }
     function sendTo() { return { 'trail-of-treats-volunteers': '/trailoftreats#volunteer' }; }
+
+    // Emoji-free text, for pages that ask for it (Julie: Trail of Treats).
+    const EMOJI = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}\u{20E3}]\s?/gu;
+    function noEmoji(x) {
+      if (typeof x === 'string') return x.replace(EMOJI, '');
+      if (Array.isArray(x)) return x.map(noEmoji);
+      if (x && typeof x === 'object') { const o = {}; Object.keys(x).forEach(k => { o[k] = noEmoji(x[k]); }); return o; }
+      return x;
+    }
+    /* Trail of Treats layout (Julie, Oct 2026): "not a drop-off event" first, then the three flyers
+       side by side (click = lightbox, link under each to download), the sign-up buttons, a big
+       date line, then the page's own content minus the old flyer row, date line and candy flyer. */
+    function trailLayout(blocks) {
+      const flyers = [
+        ['/uploads/pages/pto/20261002-100009-9131affe06.png', 'Haunted Trail of Treats flyer', 'Trail-of-Treats-Flyer.png'],
+        ['/images/flyers/trail-of-treats-danger.jpg', 'Trail of Treats needs you: danger of canceling this event', 'Trail-of-Treats-Needs-You.jpg'],
+        ['/uploads/pages/pto/20261007-115513-82ee696148.jpg', 'Feed the Candy Monster: candy donations flyer', 'Feed-the-Candy-Monster.jpg']
+      ];
+      const row = '<div class="tot-flyers">' + flyers.map(f =>
+        '<figure><img src="' + f[0] + '" alt="' + f[1] + '" loading="lazy"><figcaption><a href="' + f[0] + '" download="' + f[2] + '">Download flyer</a></figcaption></figure>').join('') + '</div>';
+      const isDrop = b => /not a drop-off event/i.test(b.text || '');
+      const isFlyerRow = b => b.type === 'columns' && JSON.stringify(b).indexOf('DOWNLOAD FLYER') >= 0;
+      const isDate = b => b.type === 'heading' && /Friday, October 30/.test(b.text || '');
+      const isCandyFlyer = b => b.type === 'image' && /82ee696148/.test(b.url || '');
+      const drop = blocks.filter(isDrop), rest = [];
+      let buttons = null;
+      blocks.forEach((b, i) => {
+        if (isDrop(b) || isFlyerRow(b) || isDate(b) || isCandyFlyer(b)) return;
+        if (i === 0 && b.type === 'columns') {   // RSVP / Scare Crew buttons: Scare Crew jumps to the sign-ups below
+          buttons = JSON.parse(JSON.stringify(b).replace(/https?:\/\/schalmontpto\.com\/trail-of-treats-volunteers|\/trail-of-treats-volunteers/g, '/trailoftreats#volunteer'));
+          return;
+        }
+        if (b.type === 'image' && !b.url) return;                       // an empty picture slot
+        if (/Prefer to donate monetarily/i.test(b.text || '')) {
+          rest.push({ type: 'paragraph', align: 'center', rich: true, text: 'Can\'t send in candy but want to help? Donate so we can buy candy for the event: <a href="https://www.zeffy.com/en-US/donation-form/schalmont-trail-of-treats-monetary-candy-donation">donate online here</a>, or send cash or a check (made payable to <b>Schalmont PTO</b>) in with your student, in an envelope labeled <b>Schalmont PTO</b>.' });
+          return;
+        }
+        if (b.type === 'button' && /candy fund/i.test(b.label || '')) {
+          rest.push(Object.assign({}, b, { label: 'DONATE ONLINE FOR CANDY', href: 'https://www.zeffy.com/en-US/donation-form/schalmont-trail-of-treats-monetary-candy-donation' }));
+          return;
+        }
+        rest.push(b);
+      });
+      const date = '<div class="tot-when"><p class="tot-date">Friday, October 30, 2026</p><p class="tot-time">6:00 – 8:00 PM</p><p class="tot-where">Schalmont Middle School Back Fields</p></div>';
+      return { top: renderBlocks(drop) + row + (buttons ? renderBlocks([buttons]) : '') + date, blocks: rest };
+    }
 
     async function mergedBody(p, pId) {
       const m = mergeCfg()[pId];
@@ -154,7 +212,12 @@
         if (d.exists && d.data().status === 'published') extra = (d.data().blocks || []).slice(m.skip || 0);
       } catch (_) {}
       if (!extra.length) return renderBlocks(p.blocks);
-      const blocks = JSON.parse(JSON.stringify(p.blocks || []));
+      let blocks = JSON.parse(JSON.stringify(p.blocks || []));
+      let lead = '';
+      if (m.layout === 'trailoftreats') {
+        blocks = noEmoji(blocks); extra = noEmoji(extra);
+        const L = trailLayout(blocks); lead = L.top; blocks = L.blocks;
+      }
       const isLink = b => b && b.type === 'button' && String(b.href || '').indexOf(m.link) >= 0;
       const at = blocks.findIndex(isLink);
       blocks.forEach((b, i) => { if (i !== at && isLink(b)) b.href = /rsvp/i.test(b.label || '') ? m.fixHref : '/trailoftreats#' + m.anchor; });   // "RSVP" buttons -> the RSVP form
@@ -163,10 +226,11 @@
       const section = '<section id="' + m.anchor + '" style="scroll-margin-top:100px;margin:28px 0;padding:22px 18px;border:3px solid #f57914;border-radius:16px;background:#fff8f0">' +
         '<h2 style="text-align:center;margin:0 0 12px">' + m.heading + '</h2>' + renderBlocks(extra) + '</section>';
       const before = at >= 0 ? blocks.slice(0, at) : blocks, after = at >= 0 ? blocks.slice(at + 1) : [];
-      const ci = before.findIndex(b => String(b.text || '').indexOf(m.calloutAfter) >= 0);
+      let ci = before.findIndex(b => String(b.text || '').indexOf(m.calloutAfter) >= 0);
+      if (ci < 0 && lead) ci = -2;   // custom layout: callout goes first, right under the date
       const callout = '<p style="text-align:center;margin:18px 0"><a href="#' + m.anchor + '" style="display:inline-block;background:#f57914;color:#fff;font-weight:800;font-size:18px;padding:14px 24px;border-radius:999px;text-decoration:none">' + m.callout + '</a></p>';
-      const top = ci >= 0 ? renderBlocks(before.slice(0, ci + 1)) + callout + renderBlocks(before.slice(ci + 1)) : callout + renderBlocks(before);
-      return top + section + renderBlocks(after);
+      const top = ci >= 0 ? renderBlocks(before.slice(0, ci + 1)) + callout + renderBlocks(before.slice(ci + 1)) : callout + renderBlocks(before);   // ci -2/-1: callout first
+      return lead + top + section + renderBlocks(after);
     }
 
     async function render(preview) {
@@ -212,6 +276,15 @@
         if (preview && p.status !== 'published') document.getElementById('preview-banner').hidden = false;
         body.innerHTML = renderPageHeader(p) + await mergedBody(p, pId);
         mountSignupEmbeds(db);
+        // Emoji-free pages: the sign-up sheets draw themselves in afterwards, so clean their text as it arrives.
+        if ((mergeCfg()[pId] || {}).layout) {
+          const clean = () => {
+            const w = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
+            for (let n; (n = w.nextNode());) { const t = n.nodeValue.replace(EMOJI, ''); if (t !== n.nodeValue) n.nodeValue = t; }
+          };
+          clean();
+          new MutationObserver(clean).observe(body, { childList: true, subtree: true });
+        }
         if (location.hash) { const t = document.getElementById(location.hash.slice(1)); if (t) setTimeout(() => t.scrollIntoView({ block: 'start' }), 300); }
         renderPageRelations(p, pId);
       } catch (e) {

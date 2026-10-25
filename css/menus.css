@@ -185,3 +185,7 @@
 .sn-children .sn-item { color: #2b4434; }
 .sn-div { border: 0; border-top: 1px solid #dbe5df; margin: 12px 8px; }
 
+/* Page content uses the full width next to the left menu (Julie, Oct 2026): many sections had
+   their own narrow max-width (760-1100px), leaving empty space on the right on wide screens. */
+.homepage-main .container, .homepage-main .container[style] { max-width: 1400px !important; }
+
