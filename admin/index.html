@@ -6,7 +6,7 @@
   <title>PTO Back Office</title>
   <meta name="robots" content="noindex">
   <link rel="stylesheet" href="../css/styles.css?v=6">
-  <link rel="stylesheet" href="admin.css?v=7">
+  <link rel="stylesheet" href="admin.css?v=8">
   <link rel="icon" href="../images/favicon.svg">
 </head>
 <body>
@@ -14,64 +14,64 @@
   <div id="bo-shell"></div>
 
   <main id="bo-main" style="display:none">
-    <div class="bo-hello">
-      <div>
-        <h1 class="bo-h1"><span id="hello"></span>, <span id="me-name"></span></h1>
-        <p class="bo-lead">You're working on <strong id="w-school"></strong>. Switch schools any time with
-          <strong>Working on</strong> in the menu.</p>
-      </div>
+    <!-- SCHOOL OVERVIEW: one school's pages, sign-up sheets and dates, each with an obvious Edit button.
+         The school comes from ?s= (or the last one picked); the sidebar switcher changes it. -->
+    <header class="hub-head" id="hub-head">
+      <p class="hub-hello"><span id="hello"></span>, <span id="me-name"></span></p>
+      <h1 class="hub-title"><span class="hub-dot" aria-hidden="true"></span><span id="hub-name"></span></h1>
+      <p class="hub-sub" id="hub-sub"></p>
+      <div class="hub-switch" id="hub-switch" role="group" aria-label="Switch school"></div>
+    </header>
+
+    <h2 class="sr-only">What do you want to do?</h2>
+    <div class="hub-actions">
+      <a class="hub-action" href="#hub-pages">
+        <span class="hub-action-icon" data-icon="edit" aria-hidden="true"></span>
+        <b>Edit a page</b><small>Pick it from the list below and press <em>Edit</em>.</small>
+      </a>
+      <button type="button" class="hub-action" id="act-new-page">
+        <span class="hub-action-icon" data-icon="plus" aria-hidden="true"></span>
+        <b>New web page</b><small>An event, program or fundraiser. Starts as a private draft.</small>
+      </button>
+      <a class="hub-action" href="#hub-signups">
+        <span class="hub-action-icon" data-icon="signups" aria-hidden="true"></span>
+        <b>Sign-up sheets</b><small>Edit a sheet or see who signed up.</small>
+      </a>
+      <a class="hub-action" id="act-cal" href="#">
+        <span class="hub-action-icon" data-icon="calendar" aria-hidden="true"></span>
+        <b>Calendar</b><small>See what's planned and add a date.</small>
+      </a>
     </div>
 
-    <!-- The handful of things volunteers come here to do -->
-    <h2 class="sr-only">What do you want to do?</h2>
-    <div class="bo-actions">
-      <button type="button" class="bo-action primary" id="act-new-page">
-        <span class="bo-action-icon" data-icon="plus" aria-hidden="true"></span>
-        <b>Make a new web page</b>
-        <small>For an event, program or fundraiser. Starts as a private draft.</small>
-      </button>
-      <a class="bo-action" id="act-edit" href="#">
-        <span class="bo-action-icon" data-icon="site" aria-hidden="true"></span>
-        <b>Change a page</b>
-        <small>Update dates, text, photos or buttons on a page that's already up.</small>
-      </a>
-      <a class="bo-action" id="act-signup" href="#">
-        <span class="bo-action-icon" data-icon="signups" aria-hidden="true"></span>
-        <b>Make a sign-up sheet</b>
-        <small>Volunteer shifts, donations or supplies, with spots that fill up.</small>
-      </a>
-      <a class="bo-action" id="act-cal" href="#">
-        <span class="bo-action-icon" data-icon="calendar" aria-hidden="true"></span>
-        <b>Check the calendar</b>
-        <small>See what's planned and add an event or meeting.</small>
-      </a>
-    </div>
+    <section class="hub-card" id="hub-pages" aria-labelledby="pages-h">
+      <div class="hub-card-head">
+        <div><h2 id="pages-h">Web pages</h2><p class="hub-card-sub" id="pages-summary"></p></div>
+        <div class="hub-card-tools">
+          <input type="search" id="pages-q" placeholder="Find a page…" aria-label="Find a page">
+          <button type="button" class="bo-btn sm" id="new-page-2">+ New page</button>
+        </div>
+      </div>
+      <ul class="hub-list" id="pages-list"><li class="bo-empty">Loading…</li></ul>
+      <button type="button" class="hub-more" id="pages-more" hidden>Show all pages</button>
+    </section>
+
+    <section class="hub-card" id="hub-signups" aria-labelledby="su-h">
+      <div class="hub-card-head">
+        <div><h2 id="su-h">Sign-up sheets</h2><p class="hub-card-sub" id="su-summary"></p></div>
+        <div class="hub-card-tools"><a class="bo-btn sm" id="new-sheet" href="#">+ New sign-up sheet</a></div>
+      </div>
+      <ul class="hub-list" id="su-list"><li class="bo-empty">Loading…</li></ul>
+    </section>
 
     <div class="bo-dash">
-      <section class="bo-panel-card" aria-labelledby="pages-h">
-        <div class="bo-panel-head">
-          <h2 id="pages-h">Your pages</h2>
-          <a id="pages-all" href="#">See all pages →</a>
-        </div>
-        <p class="bo-summary" id="pages-summary"></p>
-        <ul class="bo-items" id="pages-list"><li class="bo-empty">Loading…</li></ul>
+      <section class="bo-panel-card" aria-labelledby="soon-h">
+        <div class="bo-panel-head"><h2 id="soon-h">Coming up (3 weeks)</h2><a id="soon-all" href="#">Calendar →</a></div>
+        <ul class="bo-items" id="soon-list"><li class="bo-empty">Loading…</li></ul>
       </section>
-
-      <div>
-        <section class="bo-panel-card" aria-labelledby="todo-h">
-          <div class="bo-panel-head">
-            <h2 id="todo-h">Promo to-dos this week</h2>
-          </div>
-          <ul class="bo-items" id="todo-list"><li class="bo-empty">Loading…</li></ul>
-        </section>
-        <section class="bo-panel-card" aria-labelledby="soon-h">
-          <div class="bo-panel-head">
-            <h2 id="soon-h">Coming up</h2>
-            <a id="soon-all" href="#">Calendar →</a>
-          </div>
-          <ul class="bo-items" id="soon-list"><li class="bo-empty">Loading…</li></ul>
-        </section>
-      </div>
+      <section class="bo-panel-card" aria-labelledby="todo-h">
+        <div class="bo-panel-head"><h2 id="todo-h">Promo to-dos this week</h2></div>
+        <ul class="bo-items" id="todo-list"><li class="bo-empty">Loading…</li></ul>
+      </section>
     </div>
 
     <div class="bo-helpbar">
@@ -87,16 +87,19 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="../js/firebase-config.js"></script>
-  <script src="admin-core.js?v=7"></script>
+  <script src="admin-core.js?v=8"></script>
   <script>
     requireAdmin((me) => {
       document.querySelectorAll('[data-icon]').forEach(el => el.innerHTML = BO_ICON[el.dataset.icon] || '');
       const h = new Date().getHours();
       document.getElementById('hello').textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
       document.getElementById('me-name').textContent = (me.name || '').split(/[ @]/)[0] || me.name;
-      document.getElementById('act-new-page').onclick = () => newWebPage('events', workingSchool());
-      load(workingSchool());
-      document.addEventListener('bo:school', e => load(e.detail));
+      const W = workingSchool();
+      document.getElementById('act-new-page').onclick = document.getElementById('new-page-2').onclick =
+        () => newWebPage('events', W === ALL ? undefined : W);
+      document.getElementById('pages-q').oninput = () => drawPages();
+      document.getElementById('pages-more').onclick = () => { showAll = true; drawPages(); };
+      load(W);
     });
 
     const DAY = 86400000;
@@ -107,51 +110,109 @@
       return days < 1 ? 'today' : days < 2 ? 'yesterday' : days < 7 ? days + ' days ago' : fmtDate(ts);
     }
 
-    // Everything on Home is about the school picked in "Working on".
+    // Everything here is about one school (the one picked in the sidebar), or every school for "Everything".
+    let W0 = null, pages = [], showAll = false;
     function load(W) {
-      document.getElementById('w-school').textContent = W === ALL ? 'the whole website (all schools)' : SCHOOLS[W];
-      document.getElementById('act-edit').href = scopedHref('site', W);
-      document.getElementById('pages-all').href = scopedHref('site', W);
-      document.getElementById('act-signup').href = scopedHref('signups', W);
+      W0 = W;
+      const hub = HUB[W] || HUB.pto;
+      const head = document.getElementById('hub-head');
+      head.style.setProperty('--sc', hub.color); head.style.setProperty('--ink', hub.ink);
+      document.getElementById('hub-name').textContent = W === ALL ? 'Everything (all schools)' : hub.name;
+      document.getElementById('hub-sub').textContent = W === ALL
+        ? 'Every page and sign-up sheet on the website. Pick one school on the left to see just its things.'
+        : 'Everything for ' + hub.name + ' in one place: its web pages, sign-up sheets and dates.';
+      document.title = (W === ALL ? 'Everything' : hub.name) + ' — PTO Back Office';
+      const opts = scopeOptions();
+      document.getElementById('hub-switch').innerHTML = opts.length > 1 ? '<span>Switch to:</span>' + opts.filter(k => k !== W).map(k =>
+        `<button type="button" data-school="${k}" style="--c:${(HUB[k] || HUB.pto).color}"><i aria-hidden="true"></i>${esc((HUB[k] || {}).name || SCHOOLS[k])}</button>`).join('') : '';
+      document.querySelectorAll('#hub-switch button').forEach(b => b.onclick = () => switchWorkingSchool(b.dataset.school));
       document.getElementById('act-cal').href = scopedHref('calendar', W);
       document.getElementById('soon-all').href = scopedHref('calendar', W);
+      document.getElementById('new-sheet').href = scopedHref('signups', W) + (W === ALL ? '?' : '&') + 'new=1';
       loadPages(W);
+      loadSignups(W);
       loadEvents(W);
     }
+    const schoolNames = p => pageSchools(p).map(x => (HUB[x] || {}).name || SCHOOLS[x] || x).join(', ') || 'No school';
 
-    /* ---- Your pages: drafts first, then the most recently edited ---- */
+    /* ---- Web pages: drafts first, then the most recently edited; each with Edit + View ---- */
     async function loadPages(W) {
-      const list = document.getElementById('pages-list'), sum = document.getElementById('pages-summary');
+      const list = document.getElementById('pages-list');
       try {
-        // Newer pages list every school they belong to; older ones only have `school`.
-        const [a, b] = W === ALL
-          ? [await db.collection('pages').get(), { docs: [] }]   // whole website (officers only)
-          : await Promise.all([
-            db.collection('pages').where('schools', 'array-contains', W).get(),
-            db.collection('pages').where('school', '==', W).get()
-          ]);
+        const keys = hubKeys(W);
+        // Newer pages list every school they belong to (`schools`); older ones only have `school`.
+        const snaps = keys === null ? [await db.collection('pages').get()]
+          : await Promise.all(keys.flatMap(k => [db.collection('pages').where('schools', 'array-contains', k).get(), db.collection('pages').where('school', '==', k).get()]));
         const byId = {};
-        [...a.docs, ...b.docs].forEach(d => byId[d.id] = { id: d.id, ...d.data() });
-        const pages = Object.values(byId);
+        snaps.forEach(sn => sn.docs.forEach(d => byId[d.id] = { id: d.id, ...d.data() }));
         const stamp = p => { const t = p.updatedAt || p.createdAt; return t && t.toMillis ? t.toMillis() : 0; };
+        pages = Object.values(byId).filter(Boolean).sort((x, y) => (x.status === 'published') - (y.status === 'published') || stamp(y) - stamp(x));
         const drafts = pages.filter(p => p.status !== 'published').length;
-        sum.innerHTML = pages.length
-          ? `${pages.length} page${pages.length === 1 ? '' : 's'}` + (drafts ? ` · <strong>${drafts} draft${drafts === 1 ? '' : 's'} not published yet</strong>` : ' · all published')
+        document.getElementById('pages-summary').innerHTML = pages.length
+          ? `${pages.length} page${pages.length === 1 ? '' : 's'}` + (drafts ? ` · <strong>${drafts} draft${drafts === 1 ? '' : 's'} not on the website yet</strong>` : ' · all on the website')
           : '';
-        pages.sort((x, y) => stamp(y) - stamp(x));
-        const top = pages.slice(0, 7);
-        list.innerHTML = top.length ? top.map(p => {
-          const live = p.status === 'published';
-          const view = live ? `<a class="bo-btn ghost sm" href="/${pagePath(routingSchool(pageSchools(p)), p.slug)}" target="_blank" rel="noopener" aria-label="View ${esc(p.title)} on the website">View</a>` : '';
-          return `<li class="bo-item">
-            <span class="bo-pill ${live ? 'live' : 'draft'}">${live ? 'Live' : 'Draft'}</span>
-            <div class="bo-item-main"><b>${esc(p.title || 'Untitled page')}</b>
-              <span>${W === ALL ? esc(pageSchools(p).map(x => SCHOOLS[x] ? SCHOOLS[x].replace(' (all schools)', '') : x).join(', ') || 'No school') + ' · ' : ''}${p.eventDate ? 'Event ' + esc(shortDate(p.eventDate)) + ' · ' : ''}Edited ${esc(when(p.updatedAt || p.createdAt))}</span></div>
-            ${view}<a class="bo-btn sm" href="page-editor.html?id=${p.id}" aria-label="Edit ${esc(p.title)}">Edit</a>
-          </li>`;
-        }).join('') : `<li class="bo-empty">No pages for ${esc(scopeLabel(W))} yet. Press <strong>Make a new web page</strong> to start one.</li>`;
+        drawPages();
       } catch (e) {
         list.innerHTML = `<li class="bo-empty">Couldn't load pages (${esc(e.message)}).</li>`;
+      }
+    }
+    function drawPages() {
+      const list = document.getElementById('pages-list'), q = document.getElementById('pages-q').value.trim().toLowerCase();
+      const hit = pages.filter(p => !q || (p.title || '').toLowerCase().includes(q) || (p.slug || '').includes(q));
+      const shown = q || showAll ? hit : hit.slice(0, 8);
+      const more = document.getElementById('pages-more');
+      more.hidden = shown.length >= hit.length; more.textContent = 'Show all ' + hit.length + ' pages';
+      list.innerHTML = shown.length ? shown.map(p => {
+        const live = p.status === 'published', url = '/' + pagePath(routingSchool(pageSchools(p)), p.slug);
+        return `<li class="hub-row">
+          <span class="bo-pill ${live ? 'live' : 'draft'}">${live ? 'On the website' : 'Draft'}</span>
+          <div class="hub-row-main"><b>${esc(p.title || 'Untitled page')}</b>
+            <span>${W0 === ALL || pageSchools(p).length > 1 ? esc(schoolNames(p)) + ' · ' : ''}${p.eventDate ? 'Event ' + esc(shortDate(p.eventDate)) + ' · ' : ''}Edited ${esc(when(p.updatedAt || p.createdAt))}${live ? ' · <a href="' + esc(url) + '" target="_blank" rel="noopener">schalmontpto.com' + esc(url) + '</a>' : ''}</span></div>
+          <div class="hub-row-btns">
+            ${live ? `<a class="bo-btn ghost sm" href="${esc(url)}" target="_blank" rel="noopener" aria-label="View ${esc(p.title)} on the website">View</a>` : ''}
+            <a class="bo-btn sm hub-edit" href="page-editor.html?id=${p.id}" aria-label="Edit ${esc(p.title)}">${BO_ICON.edit}<span>Edit page</span></a>
+          </div>
+        </li>`;
+      }).join('') : `<li class="bo-empty">${q ? 'No page matches “' + esc(q) + '”.' : 'No pages yet. Press <strong>+ New page</strong> to start one.'}</li>`;
+    }
+
+    /* ---- Sign-up sheets for this school: Edit + Who signed up + View ---- */
+    async function loadSignups(W) {
+      const list = document.getElementById('su-list'), sum = document.getElementById('su-summary');
+      try {
+        const keys = hubKeys(W);
+        const snap = await db.collection('signups').get();
+        const sheets = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+          .filter(s => keys === null || keys.includes(s.school || 'pto'))
+          .sort((a, b) => (a.status === 'closed') - (b.status === 'closed') || (b.updatedAt?.seconds || 0) - (a.updatedAt?.seconds || 0));
+        const open = sheets.filter(s => s.status !== 'closed').length;
+        sum.textContent = sheets.length ? `${sheets.length} sheet${sheets.length === 1 ? '' : 's'} · ${open} open for sign-ups` : '';
+        if (!sheets.length) { list.innerHTML = '<li class="bo-empty">No sign-up sheets yet. Press <strong>+ New sign-up sheet</strong> to make one.</li>'; return; }
+        list.innerHTML = sheets.map(s => {
+          const url = s.slug ? '/signup/' + s.slug : '/signup.html?id=' + s.id, closed = s.status === 'closed';
+          return `<li class="hub-row" data-sheet="${s.id}">
+            <span class="bo-pill ${closed ? 'draft' : 'live'}">${closed ? 'Closed' : 'Open'}</span>
+            <div class="hub-row-main"><b>${esc(s.title || 'Untitled sign-up sheet')}</b>
+              <span>${W0 === ALL ? esc((HUB[s.school || 'pto'] || {}).name || SCHOOLS[s.school] || '') + ' · ' : ''}<span class="hub-fill">Counting spots…</span>${s.eventDate ? ' · ' + esc(shortDate(s.eventDate)) : ''}</span></div>
+            <div class="hub-row-btns">
+              <a class="bo-btn ghost sm" href="${esc(url)}" target="_blank" rel="noopener">View</a>
+              <a class="bo-btn ghost sm" href="signups.html?id=${s.id}&tab=responses">Who signed up</a>
+              <a class="bo-btn sm hub-edit" href="signups.html?id=${s.id}">${BO_ICON.edit}<span>Edit sheet</span></a>
+            </div>
+          </li>`;
+        }).join('');
+        // Spots filled, per sheet (one small read each, in the background).
+        sheets.slice(0, 30).forEach(async s => {
+          try {
+            const sl = await db.collection('signups').doc(s.id).collection('slots').get();
+            let taken = 0, cap = 0, unl = false;
+            sl.docs.forEach(d => { const x = d.data(); taken += x.taken || 0; if (x.capacity) cap += x.capacity; else unl = true; });
+            const el = list.querySelector(`[data-sheet="${s.id}"] .hub-fill`);
+            if (el) el.textContent = sl.size ? (unl && !cap ? taken + ' signed up' : taken + ' of ' + cap + (unl ? '+' : '') + ' spots filled') + ' · ' + sl.size + ' slot' + (sl.size === 1 ? '' : 's') : 'No slots yet';
+          } catch (_) { const el = list.querySelector(`[data-sheet="${s.id}"] .hub-fill`); if (el) el.textContent = ''; }
+        });
+      } catch (e) {
+        list.innerHTML = `<li class="bo-empty">Couldn't load sign-up sheets (${esc(e.message)}).</li>`;
       }
     }
 
@@ -163,7 +224,7 @@
         // One range filter on one field -- no composite index needed (see back-office notes).
         const snap = await db.collection('pto_events').where('date', '>=', addDays(today, -60)).get();
         const evs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-          .filter(e => !d_isMeta(e.id) && (W === ALL || (e.school || 'pto') === W || (e.school || 'pto') === 'pto'));
+          .filter(e => !d_isMeta(e.id) && (W === ALL || hubKeys(W).includes(e.school || 'pto') || (e.school || 'pto') === 'pto'));
 
         const upcoming = evs.filter(e => (e.endDate || e.date) >= today && e.date <= addDays(today, 21))
           .sort((x, y) => (x.date + (x.time || '')).localeCompare(y.date + (y.time || ''))).slice(0, 6);

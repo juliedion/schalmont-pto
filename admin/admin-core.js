@@ -211,21 +211,39 @@ async function changePasswordNow() {
    ------------------------------------------------------------ */
 const ALL = 'all';
 function scopeLabel(s) { return s === ALL ? 'Whole website' : (SCHOOLS[s] || s); }
-function scopeOptions() { return (ME && ME.isSuper ? [ALL] : []).concat(manageableSchools()); }
+function scopeOptions() {
+  // Woestina Pre-K is part of Jefferson on the website, so it's folded into Jefferson here too
+  // (kept as its own choice only for someone who runs Woestina but not Jefferson).
+  const mine = manageableSchools().filter(k => !(k === 'woestina' && manageableSchools().includes('jefferson')));
+  return mine.concat(ME && ME.isSuper ? [ALL] : []);
+}
+/* How each school appears in the school switcher: name, grades line and colour. */
+const HUB = {
+  jefferson: { name: 'Jefferson Elementary', sub: 'Pre-K–4 · incl. Woestina', color: '#63E629', ink: '#0d3b1c' },
+  woestina:  { name: 'Woestina Pre-K', sub: 'Pre-K', color: '#2bb3a3', ink: '#fff' },
+  middle:    { name: 'Middle School', sub: 'Grades 5–8', color: '#007A3D', ink: '#fff' },
+  high:      { name: 'High School', sub: 'Grades 9–12', color: '#044d2a', ink: '#fff' },
+  pto:       { name: 'PTO-wide / District', sub: 'Every school', color: '#6b46c1', ink: '#fff' },
+  all:       { name: 'Everything', sub: 'All schools at once', color: '#3b4a42', ink: '#fff' }
+};
+/* The school keys a hub covers (Jefferson's includes Woestina's pages and sheets). */
+function hubKeys(W) { return W === ALL ? null : W === 'jefferson' ? ['jefferson', 'woestina'] : [W]; }
 function workingSchool() {
   const opts = scopeOptions();
-  const fromUrl = getParam('s');
+  let fromUrl = getParam('s');
+  if (fromUrl === 'woestina' && opts.includes('jefferson')) fromUrl = 'jefferson';
   if (fromUrl && opts.includes(fromUrl)) {
     try { localStorage.setItem('boSchool', fromUrl); } catch (_) {}
     return fromUrl;
   }
   let saved = null;
   try { saved = localStorage.getItem('boSchool'); } catch (_) {}
+  if (saved === 'woestina' && opts.includes('jefferson')) saved = 'jefferson';
   if (saved && opts.includes(saved)) return saved;
   return opts[0] || 'pto';
 }
 // Screens whose content depends on ?s= -- switching scope there reloads with the new one.
-const SCHOOL_SCOPED_PAGES = ['school.html', 'section.html', 'signups.html', 'fundraising.html', 'yearbook.html', 'calendar.html', 'site.html'];
+const SCHOOL_SCOPED_PAGES = ['index.html', 'school.html', 'section.html', 'signups.html', 'fundraising.html', 'yearbook.html', 'calendar.html', 'site.html'];
 function switchWorkingSchool(s) {
   try { localStorage.setItem('boSchool', s); } catch (_) {}
   const path = window.location.pathname.split('/').pop() || 'index.html';
@@ -235,8 +253,9 @@ function switchWorkingSchool(s) {
     if (s === ALL) u.searchParams.delete('s'); else u.searchParams.set('s', s);
     window.location.href = u.toString();
   } else {
-    renderShell();
-    document.dispatchEvent(new CustomEvent('bo:school', { detail: s }));   // Home re-loads its lists
+    // Editing one page/sheet, or on a screen that isn't about one school: picking a school
+    // takes you to that school's overview, where its pages and sign-up sheets are listed.
+    window.location.href = 'index.html' + (s === ALL ? '' : '?s=' + s);
   }
 }
 /* Where each sidebar item goes for the current scope (whole website vs one school). */
@@ -312,14 +331,18 @@ function renderShell() {
        <span class="bo-navicon">${BO_ICON[icon]}</span><span>${label}</span></a>`;
   const initials = String(ME.name || ME.email || '?').split(/[\s@.]+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
 
+  // The school switcher: always visible, one button per school, so it's obvious which
+  // school you're working on and how to change it (a dropdown hid this before).
+  const hub = HUB[W] || HUB.pto;
+  const schoolBtns = opts.map(k => {
+    const h = HUB[k] || { name: SCHOOLS[k], sub: '', color: '#888' };
+    return `<button type="button" class="bo-school${k === W ? ' on' : ''}" data-school="${k}" style="--sc:${h.color}" aria-pressed="${k === W}">
+      <span class="bo-school-dot" aria-hidden="true"></span><span class="bo-school-txt"><b>${esc(h.name)}</b><small>${esc(h.sub)}</small></span></button>`;
+  }).join('');
   const picker = opts.length > 1
-    ? `<label class="bo-working">
-         <span class="bo-working-lbl">Working on</span>
-         <select id="bo-working-select" aria-label="What are you working on?">
-           ${opts.map(s => `<option value="${s}"${s === W ? ' selected' : ''}>${esc(s === ALL ? 'Whole website (all schools)' : SCHOOLS[s])}</option>`).join('')}
-         </select>
-       </label>`
-    : `<div class="bo-working"><span class="bo-working-lbl">Working on</span><strong>${esc(scopeLabel(W))}</strong></div>`;
+    ? `<div class="bo-schools" role="group" aria-label="Which school are you working on?">
+         <span class="bo-working-lbl">1 · Pick a school</span>${schoolBtns}</div>`
+    : `<div class="bo-schools"><span class="bo-working-lbl">Your school</span>${schoolBtns}</div>`;
 
   shell.innerHTML = `
     <aside class="bo-sidebar" id="bo-sidebar">
@@ -332,38 +355,34 @@ function renderShell() {
       </div>
       <div class="bo-drawer" id="bo-drawer">
         ${picker}
-        <div class="bo-create">
-          <button type="button" class="bo-create-btn" id="bo-create-btn" aria-expanded="false" aria-controls="bo-create-menu">${BO_ICON.plus}<span>Create new</span></button>
-          <div class="bo-create-menu" id="bo-create-menu" hidden>
-            <button type="button" data-create="page">${BO_ICON.site}<span><b>Web page</b><small>An event, program or info page</small></span></button>
-            <a href="${scopedHref('signups', W)}${W === ALL ? '?' : '&'}new=1">${BO_ICON.signups}<span><b>Sign-up sheet</b><small>Volunteer shifts or items to bring</small></span></a>
-            <a href="calendar.html?new=1${W === ALL ? '' : '&s=' + W}">${BO_ICON.calendar}<span><b>Calendar event</b><small>Add a date to the PTO calendar</small></span></a>
-          </div>
-        </div>
         <nav class="bo-nav" aria-label="Back office">
-          ${link('index.html', 'Home', 'home', path === 'index.html')}
-
-          <div class="bo-navgroup-label">Website</div>
-          ${link(scopedHref('site', W), 'Website pages', 'site', path === 'site.html' || (path === 'school.html' && tab === 'pages'))}
-          ${ME.isSuper ? link('live-edit.html', 'Edit the website', 'edit', path === 'live-edit.html') : ''}
-          ${link(scopedHref('events', W), 'Events &amp; programs', 'events', path === 'section.html' && cat === 'events')}
-          ${link(scopedHref('files', W), 'Photos &amp; files', 'files', path === 'school.html' && (tab === 'files' || tab === 'photos'))}
-
-          <div class="bo-navgroup-label">Planning</div>
-          ${link(scopedHref('calendar', W), 'Calendar', 'calendar', (path === 'school.html' && tab === 'calendar') || path === 'calendar.html')}
-          ${link('meetings.html', 'Meetings', 'meetings', path === 'meetings.html')}
-          ${link(scopedHref('ideas', W), 'Idea board', 'ideas', path === 'school.html' && tab === 'ideas')}
-
-          <div class="bo-navgroup-label">Sign-ups &amp; money</div>
+          <div class="bo-navgroup-label bo-navgroup-school" style="--sc:${hub.color}">2 · Work on ${esc(W === ALL ? 'all schools' : hub.name)}</div>
+          ${link('index.html' + (W === ALL ? '' : '?s=' + W), 'Overview', 'home', path === 'index.html')}
+          ${link(scopedHref('site', W), 'Web pages', 'site', path === 'site.html' || path === 'page-editor.html' || (path === 'school.html' && tab === 'pages') || (path === 'section.html' && cat === 'events'))}
           ${link(scopedHref('signups', W), 'Sign-up sheets', 'signups', path === 'signups.html')}
+          ${link(scopedHref('calendar', W), 'Calendar', 'calendar', (path === 'school.html' && tab === 'calendar') || path === 'calendar.html')}
+          ${link(scopedHref('files', W), 'Photos &amp; files', 'files', path === 'school.html' && (tab === 'files' || tab === 'photos'))}
           ${link(scopedHref('fundraising', W), 'Fundraisers', 'fundraising', path === 'fundraising.html')}
           ${link(scopedHref('yearbook', W), 'Yearbook photos', 'yearbook', path === 'yearbook.html')}
+
+          <div class="bo-navgroup-label">Whole PTO</div>
+          ${link('meetings.html', 'Meetings', 'meetings', path === 'meetings.html')}
+          ${link(scopedHref('ideas', W), 'Idea board', 'ideas', path === 'school.html' && tab === 'ideas')}
+          ${ME.isSuper ? link('live-edit.html', 'Edit the website live', 'edit', path === 'live-edit.html') : ''}
 
           ${ME.isSuper ? `
           <div class="bo-navgroup-label">Officers</div>
           ${link('people.html', 'People &amp; roles', 'people', path === 'people.html')}
           ${link('directory.html', 'Directory sign-ups', 'approve', path === 'directory.html')}` : ''}
         </nav>
+        <div class="bo-create">
+          <button type="button" class="bo-create-btn" id="bo-create-btn" aria-expanded="false" aria-controls="bo-create-menu">${BO_ICON.plus}<span>Create something new</span></button>
+          <div class="bo-create-menu" id="bo-create-menu" hidden>
+            <button type="button" data-create="page">${BO_ICON.site}<span><b>Web page</b><small>An event, program or info page${W === ALL ? '' : ' for ' + esc(hub.name)}</small></span></button>
+            <a href="${scopedHref('signups', W)}${W === ALL ? '?' : '&'}new=1">${BO_ICON.signups}<span><b>Sign-up sheet</b><small>Volunteer shifts or items to bring</small></span></a>
+            <a href="calendar.html?new=1${W === ALL ? '' : '&s=' + W}">${BO_ICON.calendar}<span><b>Calendar event</b><small>Add a date to the PTO calendar</small></span></a>
+          </div>
+        </div>
         <nav class="bo-nav bo-nav-minor" aria-label="Help and more">
           ${link('help.html', 'How-to guides', 'guides', path === 'help.html')}
           ${link('assistant.html', 'Ask the assistant', 'assistant', path === 'assistant.html')}
@@ -386,8 +405,9 @@ function renderShell() {
   cMenu.querySelector('[data-create="page"]').addEventListener('click', () => { setCreate(false); newWebPage('events', W === ALL ? undefined : W); });
   document.addEventListener('click', (e) => { if (!cMenu.hidden && !cMenu.contains(e.target)) setCreate(false); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !cMenu.hidden) { setCreate(false); cBtn.focus(); } });
-  const sel = document.getElementById('bo-working-select');
-  if (sel) sel.addEventListener('change', () => switchWorkingSchool(sel.value));
+  shell.querySelectorAll('.bo-school[data-school]').forEach(b => b.addEventListener('click', () => {
+    if (b.dataset.school !== W) switchWorkingSchool(b.dataset.school);
+  }));
   const btn = document.getElementById('bo-menu-btn'), sidebar = document.getElementById('bo-sidebar');
   btn.addEventListener('click', () => {
     const open = sidebar.classList.toggle('open');

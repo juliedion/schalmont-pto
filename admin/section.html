@@ -6,7 +6,7 @@
   <title>PTO Back Office</title>
   <meta name="robots" content="noindex">
   <link rel="stylesheet" href="../css/styles.css?v=6">
-  <link rel="stylesheet" href="admin.css?v=7">
+  <link rel="stylesheet" href="admin.css?v=8">
   <link rel="icon" href="../images/favicon.svg">
   <style>
     .sec-add { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:18px 0 24px; }
@@ -49,7 +49,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="../js/firebase-config.js"></script>
-  <script src="admin-core.js?v=7"></script>
+  <script src="admin-core.js?v=8"></script>
   <script>
     const LEAD = {
       events:     'Every event and ongoing program that gets its own web page — fun runs, dances, nights out, clubs, reading nights, spirit initiatives, and more.',
@@ -82,7 +82,7 @@
       document.getElementById('sec-lead').textContent = LEAD[cat];
       if (scopeSchool) {
         const home = document.querySelector('.bo-btn.ghost.sm[href="index.html"]');
-        if (home) { home.href = 'school.html?s=' + scopeSchool; home.textContent = '← ' + (SCHOOLS[scopeSchool] || scopeSchool) + ' Workspace'; }
+        if (home) { home.href = 'index.html?s=' + scopeSchool; home.textContent = '← ' + ((HUB[scopeSchool] || {}).name || SCHOOLS[scopeSchool]) + ' overview'; }
       }
 
       if (sec.singular) {

@@ -47,8 +47,7 @@
 
   <main id="bo-main" style="display:none">
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-      <a class="bo-btn ghost sm" href="index.html">← Back Office Home</a>
-      <a class="bo-btn ghost sm" id="back-school" href="#">← <span id="back-school-name">School</span> Workspace</a>
+      <a class="bo-btn ghost sm" id="back-school" href="index.html">← Back to <span id="back-school-name">your school</span>'s pages</a>
     </div>
 
     <div class="bo-topbar">
@@ -263,7 +262,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="../js/firebase-config.js"></script>
   <script>window.BO_NO_SIDEBAR = true;</script>
-  <script src="admin-core.js?v=7"></script>
+  <script src="admin-core.js?v=8"></script>
   <script src="render-blocks.js?v=2"></script>
   <script src="../js/signup-embed.js?v=5"></script>
   <script>
@@ -582,9 +581,10 @@
       const rp = document.getElementById('redirect-prefix');
       if (rp) rp.textContent = school ? SCHOOL_PREFIX[school] + '/' : '';
       const bs = document.getElementById('back-school');
-      if (bs) bs.href = 'school.html?s=' + school;
+      const hubKey = workingSchool() === ALL ? ALL : (school === 'woestina' && scopeOptions().includes('jefferson') ? 'jefferson' : (school || 'pto'));
+      if (bs) bs.href = 'index.html' + (hubKey === ALL ? '' : '?s=' + hubKey) + '#hub-pages';
       const bsn = document.getElementById('back-school-name');
-      if (bsn) bsn.textContent = SCHOOLS[school] || 'School';
+      if (bsn) bsn.textContent = hubKey === ALL ? 'all' : ((HUB[hubKey] || {}).name || SCHOOLS[school] || 'your school');
     }
 
     // web-address friendly, same rules as admin-core.js's shared slugify() (lowercase,

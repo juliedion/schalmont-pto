@@ -753,3 +753,74 @@ a.bo-card:hover { box-shadow: var(--bo-shadow-hover); transform: translateY(-2px
 .bo-tr.is-past:hover, .pg-card.is-past:hover { opacity: .85; }
 .bo-pill.past, .pg-pill.past { background: #eceeed; color: #5d6460; }
 .pg-when { display: block; font-size: 12.5px; font-weight: 600; color: var(--bo-muted); margin-top: 2px; }
+
+/* ============================================================
+   School-first layout (Oct 2026): a visible school switcher in the sidebar and a
+   per-school Overview listing that school's pages and sign-up sheets, each with an
+   obvious "Edit" button. (Replaces the hidden "Working on" dropdown.)
+   ============================================================ */
+.bo-schools { margin: 0 14px 6px; display: grid; gap: 6px; }
+.bo-schools .bo-working-lbl { margin-bottom: 2px; }
+.bo-school { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 9px 11px; border-radius: 11px;
+  border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.04); color: #fff; cursor: pointer; font: inherit; transition: background .15s; }
+.bo-school:hover { background: rgba(255,255,255,.11); }
+.bo-school:focus-visible { outline: 3px solid var(--bo-lime, #9cff3c); outline-offset: 1px; }
+.bo-school.on { background: #fff; color: #12261a; border-color: #fff; box-shadow: inset 5px 0 0 var(--sc); }
+.bo-school-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--sc); flex: none; box-shadow: 0 0 0 2px rgba(255,255,255,.35); }
+.bo-school.on .bo-school-dot { box-shadow: 0 0 0 2px rgba(0,0,0,.08); }
+.bo-school-txt b { display: block; font-size: 13.5px; line-height: 1.2; }
+.bo-school-txt small { display: block; font-size: 11px; opacity: .7; margin-top: 1px; }
+.bo-navgroup-school { color: #fff !important; opacity: .95; letter-spacing: .08em !important; }
+.bo-create { margin-top: 14px !important; }
+
+.hub-head { background: var(--sc, #295c38); color: var(--ink, #fff); border-radius: 20px; padding: 22px 26px 18px; margin-bottom: 18px; position: relative; overflow: hidden; }
+.hub-head::after { content: ''; position: absolute; right: -60px; top: -60px; width: 220px; height: 220px; border-radius: 50%; background: rgba(255,255,255,.12); }
+.hub-hello { margin: 0 0 2px; font-weight: 700; opacity: .85; font-size: 15px; }
+.hub-title { margin: 0; font-size: clamp(26px, 3.4vw, 36px); line-height: 1.15; color: inherit; display: flex; align-items: center; gap: 12px; }
+.hub-dot { width: 16px; height: 16px; border-radius: 50%; background: currentColor; opacity: .85; flex: none; }
+.hub-sub { margin: 6px 0 0; font-size: 15.5px; opacity: .92; max-width: 640px; }
+.hub-switch { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; position: relative; z-index: 1; }
+.hub-switch span { font-size: 13px; font-weight: 700; opacity: .85; }
+.hub-switch button { display: inline-flex; align-items: center; gap: 7px; font: inherit; font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 999px;
+  border: 1px solid rgba(0,0,0,.08); background: rgba(255,255,255,.92); color: #12261a; cursor: pointer; }
+.hub-switch button:hover { background: #fff; }
+.hub-switch button i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); }
+
+.hub-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+.hub-action { display: flex; flex-direction: column; gap: 4px; text-align: left; font: inherit; color: inherit; text-decoration: none; cursor: pointer;
+  background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 16px; transition: box-shadow .15s, transform .15s; }
+.hub-action:hover { box-shadow: 0 8px 22px rgba(16,42,27,.1); transform: translateY(-1px); }
+.hub-action b { font-size: 16px; color: var(--primary-dark); }
+.hub-action small { font-size: 13px; color: var(--text-light); line-height: 1.45; }
+.hub-action-icon { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: #eef7e6; color: var(--primary-dark); margin-bottom: 4px; }
+
+.hub-card { background: #fff; border: 1px solid var(--border); border-radius: 18px; padding: 18px 20px; margin-bottom: 18px; scroll-margin-top: 20px; }
+.hub-card-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.hub-card-head h2 { margin: 0; font-size: 21px; }
+.hub-card-sub { margin: 2px 0 0; font-size: 14px; color: var(--text-light); }
+.hub-card-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.hub-card-tools input { font: inherit; font-size: 14px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 999px; min-width: 200px; }
+.hub-list { list-style: none; margin: 0; padding: 0; }
+.hub-row { display: flex; align-items: center; gap: 12px; padding: 12px 4px; border-top: 1px solid var(--border); }
+.hub-row:first-child { border-top: 0; }
+.hub-row .bo-pill { flex: none; min-width: 108px; text-align: center; }
+.hub-row-main { flex: 1; min-width: 0; }
+.hub-row-main b { display: block; font-size: 15.5px; color: var(--primary-dark); }
+.hub-row-main > span { display: block; font-size: 13px; color: var(--text-light); margin-top: 2px; overflow-wrap: anywhere; }
+.hub-row-main a { color: inherit; }
+.hub-row-btns { display: flex; gap: 6px; flex: none; flex-wrap: wrap; justify-content: flex-end; }
+.hub-edit { display: inline-flex !important; align-items: center; gap: 6px; }
+.hub-edit svg { width: 15px; height: 15px; }
+.hub-more { display: block; margin: 8px auto 0; font: inherit; font-weight: 700; color: var(--primary); background: none; border: 0; cursor: pointer; padding: 8px; }
+@media (max-width: 1000px) { .hub-actions { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) {
+  .hub-row { flex-wrap: wrap; }
+  .hub-row .bo-pill { min-width: 0; }
+  .hub-row-main { flex-basis: calc(100% - 120px); }
+  .hub-row-btns { width: 100%; justify-content: flex-start; }
+  .hub-card-tools input { min-width: 0; width: 100%; }
+}
+.hub-more[hidden] { display: none; }
+@media (max-width: 860px) { body.bo-has-shell { grid-template-columns: minmax(0, 1fr); } #bo-main { min-width: 0; } }
+@media (max-width: 480px) { .hub-actions { grid-template-columns: 1fr 1fr; gap: 8px; } .hub-action { padding: 12px; } .hub-action small { display: none; } .hub-head { padding: 18px; } }
+@media (max-width: 1000px) { .bo-dash { grid-template-columns: minmax(0, 1fr) !important; } .bo-panel-card { min-width: 0; } }
