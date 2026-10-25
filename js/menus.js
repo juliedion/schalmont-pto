@@ -170,7 +170,37 @@
     }).catch(function () {});
   }
 
-  function initAll(root) { initHeader(root); init(root); initAds(); initMenuEvents(root); }
+  /* ---- "More" hint at the bottom of the left menu: the menu scrolls on its own, so when items
+     are hidden below (a long list, or the footer coming up under it) a bar with a down arrow
+     shows; clicking it scrolls the menu. It hides once you reach the end of the list. */
+  function initMoreHint(root) {
+    var nav = (root || document).querySelector('aside.sn');
+    if (!nav || nav.querySelector('.sn-more')) return;
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'sn-more'; btn.setAttribute('aria-label', 'Scroll the menu down for more');
+    btn.innerHTML = '<span>More</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+    nav.appendChild(btn);
+    function update() {
+      var rect = nav.getBoundingClientRect();
+      var hiddenInside = nav.scrollTop + nav.clientHeight < nav.scrollHeight - 12;   // more list below
+      var cutOff = rect.bottom > window.innerHeight + 4;                             // menu runs past the screen
+      btn.classList.toggle('is-on', hiddenInside || cutOff);
+    }
+    btn.addEventListener('click', function () {
+      if (nav.scrollTop + nav.clientHeight < nav.scrollHeight - 12) nav.scrollBy({ top: Math.round(nav.clientHeight * 0.7), behavior: 'smooth' });
+      else window.scrollBy({ top: Math.round(window.innerHeight * 0.6), behavior: 'smooth' });
+    });
+    nav.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    // The menu grows when calendar events and ads load in, and when a school is opened.
+    if (window.ResizeObserver) new ResizeObserver(update).observe(nav);
+    nav.addEventListener('click', function () { setTimeout(update, 250); });
+    setTimeout(update, 400); setTimeout(update, 2000);
+    update();
+  }
+
+  function initAll(root) { initHeader(root); init(root); initAds(); initMenuEvents(root); initMoreHint(root); }
   window.initSidenav = initAll;
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { initAll(); });
   else initAll();

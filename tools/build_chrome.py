@@ -68,6 +68,11 @@ PARTNER_GROUPS = [('Student Council', 'student-council.html'), ('Sabre Nation', 
                   ('Scouts', 'https://www.troop3054.org/'),
                   ('Girl Scouts', 'https://www.girlscoutsneny.org')]
 ABOUT_ITEMS = [('About us', 'about.html'), ('Contact Us', 'contact.html'), ('Social Media', 'social.html')]
+# The district's parent apps (open in a new tab; no arrows, same look as the rest).
+SCHOOL_APPS = [('ParentSquare', 'https://www.parentsquare.com/signin'),
+               ('eSchool Parent Portal', 'https://parentportal-neric.eschooldata.com/SchalmontCSD'),
+               ('Schoology', 'https://app.schoology.com/login'),
+               ('District Website', 'https://www.schalmont.org')]
 # Extra blocks shown at the top of the sidebar on specific pages (below the search box).
 GIFT_CARD_AD = '\n'.join([
     '  <a href="giftcards.html" class="sidenav-gc-ad">',
@@ -177,11 +182,12 @@ def sidebar(p, extra=''):
     out.append('  <nav class="sn-main" aria-label="PTO events and pages">')
     for t, href, match in MAIN_ITEMS:
         out.append('    ' + link(t, href, match=match))
-    out.append('    <div class="sn-row" data-sort="Partners">' + link('Partners', 'partners.html') +
-               '<div class="sn-children">' + ''.join(link(t, h, 'sn-item sn-child') for t, h in PARTNER_GROUPS) + '</div></div>')
     out.append('  </nav>')
     out.append('  <hr class="sn-div">')
     out += ['  ' + link(t, h) for t, h in ABOUT_ITEMS]
+    out.append('  <hr class="sn-div">')
+    out.append('  <div class="sn-label">School apps</div>')
+    out += ['  ' + link(t, h) for t, h in SCHOOL_APPS]
     out.append('  <hr class="sn-div">')
     out.append('  <div class="sn-label">Schools</div>')
     for key, name, grades, colour, page, classes in SCHOOLS:
@@ -200,6 +206,12 @@ def sidebar(p, extra=''):
             f'      <div class="sn-classes" aria-label="{e(name)} class pages"><span>Classes</span>{chips}</div>',
             '    </div>',
             '  </div>']
+    # Below the schools: Our Friends (the partner groups), then the sponsor ad (Julie, Oct 2026).
+    out.append('  <hr class="sn-div">')
+    out.append('  <div class="sn-row">' + link('Our Friends', 'partners.html') +
+               '<div class="sn-children">' + ''.join(link(t, h, 'sn-item sn-child') for t, h in PARTNER_GROUPS) + '</div></div>')
+    out.append('  <hr class="sn-div">')
+    out.append('  <div class="sn-label">Proud Sponsors</div>')
     out.append('  <div class="sn-ad" data-ad="square"></div>')   # ad spot: filled from data/ads.json
     out.append('</aside>')
     return '\n'.join(out)
@@ -219,8 +231,8 @@ def add_assets(src, slash):
     """css/menus.css in <head>, js/menus.js before </body> -- exactly once each."""
     src = ASSETS_CSS.sub('', src)
     src = ASSETS_JS.sub('', src)
-    src = re.sub(r'(\n[ \t]*)</head>', lambda m: m.group(1) + f'  <link rel="stylesheet" href="{slash}css/menus.css?v=6">' + m.group(1) + '</head>', src, count=1)
-    return re.sub(r'(\n[ \t]*)</body>', lambda m: m.group(1) + f'  <script src="{slash}js/menus.js?v=3"></script>' + m.group(1) + '</body>', src, count=1)
+    src = re.sub(r'(\n[ \t]*)</head>', lambda m: m.group(1) + f'  <link rel="stylesheet" href="{slash}css/menus.css?v=10">' + m.group(1) + '</head>', src, count=1)
+    return re.sub(r'(\n[ \t]*)</body>', lambda m: m.group(1) + f'  <script src="{slash}js/menus.js?v=4"></script>' + m.group(1) + '</body>', src, count=1)
 
 
 def indent_block(block, indent):

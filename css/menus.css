@@ -189,3 +189,20 @@
    their own narrow max-width (760-1100px), leaving empty space on the right on wide screens. */
 .homepage-main .container, .homepage-main .container[style] { max-width: 1400px !important; }
 
+/* "More" hint at the bottom of the left menu (js/menus.js initMoreHint) */
+.sn-more { position: sticky; bottom: -28px; z-index: 2; display: none; align-items: center; justify-content: center; gap: 0;
+  margin: 8px -14px -28px; padding: 26px 0 12px; border: 0; cursor: pointer; font: inherit; font-size: 13px; font-weight: 800; color: #0f3d22;
+  background: linear-gradient(180deg, rgba(251, 252, 251, 0) 0%, rgba(251, 252, 251, .96) 45%, #fbfcfb 100%); }
+.sn-more.is-on { display: flex; }
+.sn-more span, .sn-more svg { background: #e2f3d5; }
+.sn-more span { padding: 5px 4px 5px 14px; border-radius: 999px 0 0 999px; }
+.sn-more svg { padding: 5px 12px 5px 2px; width: 34px; height: 26px; box-sizing: border-box; border-radius: 0 999px 999px 0; animation: sn-bob 1.6s ease-in-out infinite; }
+.sn-more:hover span, .sn-more:hover svg { background: #a3ff45; }
+@keyframes sn-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
+@media (prefers-reduced-motion: reduce) { .sn-more svg { animation: none; } }
+
+/* The left menu starts right under the 84px header and fits the screen (was top 70px, so it ran
+   14px off the bottom and the "More" hint could be cut off). */
+@media (min-width: 901px) { .homepage-sidenav.sn { top: 84px; max-height: calc(100vh - 84px); } }
+@media (min-width: 901px) and (max-width: 1180px) { .homepage-sidenav.sn { top: 70px; max-height: calc(100vh - 70px); } }   /* header is 70px here */
+.sn-ad .ad-label { display: none; }   /* "Proud Sponsors" above it already says so */
