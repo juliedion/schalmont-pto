@@ -18,6 +18,12 @@
     .page-hero h1 { margin:0; }
     .page-hero p { margin:10px 0 0; }
     #pg-body { max-width:none; }
+    .pg-topbox { background:#fff8ec; border:2px solid #e6a23c; border-radius:16px; padding:18px 22px; margin:0 0 24px; text-align:center; }
+    .pg-topbox p { margin:0 0 8px; font-size:16px; }
+    .pg-topbox-t { font-size:clamp(20px, 2.4vw, 26px) !important; font-weight:800; color:var(--primary-dark); }
+    .pg-topbox-code { font-size:clamp(34px, 5vw, 52px) !important; font-weight:800; letter-spacing:.08em; color:#b3261e; line-height:1.1; }
+    .pg-topbox-btn { display:inline-block; background:var(--primary); color:#fff !important; font-weight:800; border-radius:999px; padding:12px 22px; text-decoration:none; margin-top:4px; }
+    .pg-topbox a:not(.pg-topbox-btn) { color:var(--primary); font-weight:700; }
     .tot-flyers { display:grid; grid-template-columns:minmax(0, .7723fr) minmax(0, .7735fr) minmax(0, .6667fr); gap:18px; margin:18px 0 22px; align-items:start; }   /* widths ∝ each flyer's width/height, so all three are the same height */
     .tot-flyers figure { margin:0; text-align:center; }
     .tot-flyers img { width:100%; height:auto; display:block; border-radius:12px; cursor:zoom-in; box-shadow:0 4px 16px rgba(0,0,0,.15); }
@@ -174,6 +180,14 @@
           '5PTxnanbUUPColwTYrON': { slot: { date: '2026-10-30' }, note: 'Drop off anytime before 3:00 PM on Friday, October 30.' }   // Bake Sale Donations
         } }
     }; }
+    // A box placed at the very top of a back-office page (site-kept, until it's in the page itself).
+    function pageTop() { return {
+      // Jefferson's Charleston Wrap Fall Fundraiser (/jefferson/fallfr)
+      'VDCBMdcGa02H5zyDnoqt': '<div class="pg-topbox"><p class="pg-topbox-t">Shop the Charleston Wrap fundraiser online</p>' +
+        '<p>Go to <a href="https://registercw.com/registrant/registration" target="_blank" rel="noopener">registercw.com</a> and enter our school code:</p>' +
+        '<p class="pg-topbox-code">31678</p>' +
+        '<p><a class="pg-topbox-btn" href="https://registercw.com/registrant/registration" target="_blank" rel="noopener">Register &amp; shop at registercw.com →</a></p></div>'
+    }; }
     function sendTo() { return { 'trail-of-treats-volunteers': '/trailoftreats#volunteer' }; }
 
     // Emoji-free text, for pages that ask for it (Julie: Trail of Treats).
@@ -302,7 +316,7 @@
         if (preview && p.status !== 'published') document.getElementById('preview-banner').hidden = false;
         if ((mergeCfg()[pId] || {}).noBirthdate) window.SIGNUP_NO_DOB = true;   // no date-of-birth step on this page's sheets
         if ((mergeCfg()[pId] || {}).sheets) window.SIGNUP_OVERRIDES = mergeCfg()[pId].sheets;
-        body.innerHTML = renderPageHeader(p) + await mergedBody(p, pId);
+        body.innerHTML = (pageTop()[pId] || '') + renderPageHeader(p) + await mergedBody(p, pId);
         mountSignupEmbeds(db);
         // Emoji-free pages: the sign-up sheets draw themselves in afterwards, so clean their text as it arrives.
         if ((mergeCfg()[pId] || {}).layout) {

@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta property="og:title" content="Gertrude Hawk Chocolate Bars — 4 for $10 | Schalmont PTO">
-  <meta property="og:description" content="Gertrude Hawk chocolate bars: $3 each, 2 for $5, 4 for $10. Buy 10 bars and get a free squishy! Every bar supports the Schalmont PTO.">
+  <meta property="og:description" content="Gertrude Hawk chocolate bars: $3 each, 2 for $5, 4 for $10, 10 for $20. Buy 10 bars and get a free squishy! Every bar supports the Schalmont PTO.">
   <meta property="og:image" content="https://schalmontpto.com/images/flyers/gertrude-hawk-chocolate-4-for-10.jpg">
   <meta property="og:url" content="https://schalmontpto.com/gertrude-hawk-chocolate">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="description" content="Gertrude Hawk chocolate bars from the Schalmont PTO: $3 each, 2 for $5, 4 for $10. Buy 10 bars, get a free squishy.">
+  <meta name="description" content="Gertrude Hawk chocolate bars from the Schalmont PTO: $3 each, 2 for $5, 4 for $10, 10 for $20. Buy 10 bars, get a free squishy.">
   <title>Gertrude Hawk Chocolate Bars — Schalmont PTO</title>
   <link rel="stylesheet" href="/css/styles.css?v=6">
   <link rel="icon" href="/images/favicon.svg">
@@ -26,7 +26,7 @@
     .gh-promo { background: linear-gradient(135deg, #0f3d22, #1d5c34); color: #fff; border-radius: 16px; padding: 20px 22px; margin-bottom: 20px; text-align: center; }
     .gh-promo b { display: block; font-size: clamp(24px, 3.2vw, 34px); line-height: 1.15; color: #f4cf6a; }
     .gh-promo span { display: block; font-size: 16px; margin-top: 6px; opacity: .92; }
-    .gh-prices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 22px; }
+    .gh-prices { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
     .gh-price { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px 10px; text-align: center; }
     .gh-price b { display: block; font-size: clamp(26px, 3vw, 36px); color: var(--primary-dark); line-height: 1; }
     .gh-price span { display: block; font-size: 14px; color: var(--text-light); margin-top: 6px; font-weight: 700; }
@@ -39,6 +39,7 @@
     .gh-lightbox[hidden] { display: none; }
     .gh-lightbox img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; }
     .gh-lb-x { position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: #fff; color: #111; font-size: 22px; cursor: pointer; }
+    @media (max-width: 520px) { .gh-prices { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 860px) { .gh-wrap { grid-template-columns: 1fr; } .gh-flyer { max-width: 520px; margin: 0 auto; } }
   </style>
   <link rel="stylesheet" href="/css/menus.css?v=6">
@@ -74,13 +75,14 @@
             <div>
               <div class="gh-promo">
                 <b>Buy 10 bars, get a FREE squishy!</b>
-                <span>While supplies last.</span>
+                <span>10 bars for just $20. While supplies last.</span>
               </div>
 
               <div class="gh-prices">
                 <div class="gh-price"><b>$3</b><span>each</span></div>
                 <div class="gh-price"><b>2 for $5</b><span>save $1</span></div>
-                <div class="gh-price best"><b>4 for $10</b><span>best deal</span></div>
+                <div class="gh-price"><b>4 for $10</b><span>save $2</span></div>
+                <div class="gh-price best"><b>10 for $20</b><span>best deal + free squishy</span></div>
               </div>
 
               <div class="gh-card">
