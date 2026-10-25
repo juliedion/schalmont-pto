@@ -167,6 +167,58 @@
         </div>
       </div>
 
+      <!-- GIFT IDEA + FLYERS (click a flyer to see it larger) -->
+      <div class="cb-gift">
+        <div class="cb-gift-text">
+          <h2>A great gift for the holidays &amp; birthdays</h2>
+          <p>Stuck on what to get the hard-to-buy-for people on your list? A SaveAround coupon book is a gift they'll actually use all year: free food, family fun, oil changes, haircuts and hundreds more deals at places they already go. It's perfect for grandparents, teachers, neighbors, coworkers, college students and anyone who "doesn't need anything."</p>
+          <p>Use the offers in the SaveAround app or in print, and one or two deals pays for the book. Best of all, every book you give supports the Schalmont Central PTO and our students.</p>
+        </div>
+        <div class="cb-flyers">
+          <figure>
+            <button type="button" class="cb-zoom" data-full="images/flyers/saveAround-coupon-book-2027.jpg" aria-label="See the coupon book flyer larger"><img src="images/flyers/saveAround-coupon-book-2027.jpg" alt="Support Schalmont Central PTO by purchasing a SaveAround Greater Albany 2027 coupon book, only $25. A great gift for the holidays, perfect for birthdays, holidays or the hard to buy for person." loading="lazy"></button>
+            <figcaption><a href="images/flyers/saveAround-coupon-book-2027.jpg" download="Schalmont-SaveAround-2027-Coupon-Book-Flyer.jpg">Download flyer</a></figcaption>
+          </figure>
+          <figure>
+            <button type="button" class="cb-zoom" data-full="images/flyers/saveAround-app-savings-directory.jpg" aria-label="See where you can use the SaveAround app, larger"><img src="images/flyers/saveAround-app-savings-directory.jpg" alt="Where you can use the SaveAround app: a directory of restaurants, stores, auto services and hotels with app, online and local offers." loading="lazy"></button>
+            <figcaption><a href="images/flyers/saveAround-app-savings-directory.jpg" download="SaveAround-App-Savings-Directory.jpg">Download the savings directory</a></figcaption>
+          </figure>
+        </div>
+      </div>
+      <div class="cb-lightbox" id="cb-lightbox" hidden role="dialog" aria-modal="true" aria-label="Flyer">
+        <button type="button" class="cb-lb-x" aria-label="Close">✕</button>
+        <img alt="">
+      </div>
+      <style>
+        .cb-gift { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 28px; align-items: start; background: #fff8ec; border: 1px solid #f1d9a8; border-radius: var(--radius-lg); padding: clamp(18px, 3vw, 30px); margin: 0 0 30px; }
+        .cb-gift h2 { font-size: clamp(22px, 2.6vw, 30px); margin: 0 0 12px; color: var(--primary-dark); }
+        .cb-gift p { font-size: 16px; line-height: 1.7; margin: 0 0 12px; }
+        .cb-flyers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        .cb-flyers figure { margin: 0; text-align: center; }
+        .cb-zoom { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
+        .cb-zoom img { width: 100%; height: auto; display: block; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,.15); }
+        .cb-flyers figcaption { margin-top: 10px; }
+        .cb-flyers figcaption a { display: inline-block; font-weight: 800; color: var(--primary); text-decoration: none; border: 2px solid var(--primary); border-radius: 999px; padding: 7px 14px; font-size: 14px; }
+        .cb-flyers figcaption a:hover { background: var(--primary); color: #fff; }
+        .cb-lightbox { position: fixed; inset: 0; z-index: 9999; background: rgba(0, 0, 0, .85); display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .cb-lightbox[hidden] { display: none; }
+        .cb-lightbox img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; }
+        .cb-lb-x { position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: #fff; color: #111; font-size: 22px; cursor: pointer; }
+        @media (max-width: 900px) { .cb-gift { grid-template-columns: 1fr; } }
+        @media (max-width: 480px) { .cb-flyers { grid-template-columns: 1fr; } }
+      </style>
+      <script>
+        (function () {
+          var lb = document.getElementById('cb-lightbox'), img = lb.querySelector('img'), last = null;
+          function close() { lb.hidden = true; document.body.style.overflow = ''; if (last) last.focus(); }
+          document.querySelectorAll('.cb-zoom').forEach(function (b) {
+            b.addEventListener('click', function () { last = b; img.src = b.getAttribute('data-full'); img.alt = b.querySelector('img').alt; lb.hidden = false; document.body.style.overflow = 'hidden'; lb.querySelector('.cb-lb-x').focus(); });
+          });
+          lb.addEventListener('click', function (e) { if (e.target === lb || e.target.closest('.cb-lb-x')) close(); });
+          document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !lb.hidden) close(); });
+        })();
+      </script>
+
       <h3 style="font-size:18px;margin-bottom:12px">A taste of what's inside</h3>
       <div class="sw-cb-offers">
           <div class="sw-cb-offer"><strong>Sport Clips</strong><span>A free MVP haircut experience</span></div>
