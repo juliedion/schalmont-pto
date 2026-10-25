@@ -20,46 +20,28 @@
    "href": "/event?d=2027-03-05&t=3-4-dance"
   },
   {
-   "title": "4th grad photo",
-   "date": "2027-06-18",
-   "end": "2027-06-18",
-   "href": "/event?d=2027-06-18&t=4th-grad-photo"
-  },
-  {
    "title": "4th Grade Moving Up",
    "date": "2027-06-23",
    "end": "2027-06-23",
    "href": "/event?d=2027-06-23&t=4th-grade-moving-up"
   },
   {
-   "title": "4th Grand Pano Photo",
-   "date": "2027-05-14",
-   "end": "2027-05-14",
-   "href": "/event?d=2027-05-14&t=4th-grand-pano-photo"
-  },
-  {
    "title": "5th Grade Dance",
-   "date": "2027-06-04",
-   "end": "2027-06-04",
-   "href": "/event?d=2027-06-04&t=5th-grade-dance"
+   "date": "2027-01-22",
+   "end": "2027-01-22",
+   "href": "/5th-grade-dance"
   },
   {
-   "title": "5th Grade Fun Day PTO Support",
-   "date": "2027-06-17",
-   "end": "2027-06-17",
-   "href": "/event?d=2027-06-17&t=5th-grade-fun-day-pto-support"
+   "title": "6th & 7th Grade Dance",
+   "date": "2027-03-12",
+   "end": "2027-03-12",
+   "href": "/6th-7th-grade-dance"
   },
   {
-   "title": "6/7 Grade Dance",
-   "date": "2027-05-21",
-   "end": "2027-05-21",
-   "href": "/event?d=2027-05-21&t=6-7-grade-dance"
-  },
-  {
-   "title": "8th Grade Dance",
+   "title": "8th Grade Dance (June 11 or 12, TBD)",
    "date": "2027-06-11",
-   "end": "2027-06-12",
-   "href": "/event?d=2027-06-11&t=8th-grade-dance"
+   "end": "2027-06-11",
+   "href": "/8th-grade-dance"
   },
   {
    "title": "A Very Merry Morning & Craft Fair",
@@ -68,46 +50,10 @@
    "href": "/craft-fair-santa"
   },
   {
-   "title": "Cat in HAT",
-   "date": "2027-03-03",
-   "end": "2027-03-03",
-   "href": "/event?d=2027-03-03&t=cat-in-hat"
-  },
-  {
    "title": "Cheesy Fundraiser",
    "date": "2026-10-01",
    "end": "2026-11-30",
    "href": "/event?d=2026-10-01&t=cheesy-fundraiser"
-  },
-  {
-   "title": "Coin Wars",
-   "date": "2027-02-01",
-   "end": "2027-02-01",
-   "href": "/event?d=2027-02-01&t=coin-wars"
-  },
-  {
-   "title": "Color Run",
-   "date": "2027-04-24",
-   "end": "2027-04-24",
-   "href": "/event?d=2027-04-24&t=color-run"
-  },
-  {
-   "title": "Color Run Registration Opens",
-   "date": "2027-04-16",
-   "end": "2027-04-16",
-   "href": "/event?d=2027-04-16&t=color-run-registration-opens"
-  },
-  {
-   "title": "Color Run Sponsor Deadline",
-   "date": "2027-04-23",
-   "end": "2027-04-23",
-   "href": "/event?d=2027-04-23&t=color-run-sponsor-deadline"
-  },
-  {
-   "title": "Counselor Appreciation / Sunshine Cart",
-   "date": "2027-02-05",
-   "end": "2027-02-05",
-   "href": "/event?d=2027-02-05&t=counselor-appreciation-sunshine-cart"
   },
   {
    "title": "Feed the Trail of Treats Candy Monster at the Middle School",
@@ -116,37 +62,7 @@
    "href": "/event?d=2026-09-27&t=feed-the-trail-of-treats-candy-monster-at-the-middle-school"
   },
   {
-   "title": "Field Day",
-   "date": "2027-06-14",
-   "end": "2027-06-15",
-   "href": "/event?d=2027-06-14&t=field-day"
-  },
-  {
-   "title": "Glow Night / Student Social",
-   "date": "2027-02-26",
-   "end": "2027-02-26",
-   "href": "/event?d=2027-02-26&t=glow-night-student-social"
-  },
-  {
-   "title": "Grade 5 Dance",
-   "date": "2027-01-08",
-   "end": "2027-01-08",
-   "href": "/event?d=2027-01-08&t=grade-5-dance"
-  },
-  {
-   "title": "Grades 6/7 Dance",
-   "date": "2027-03-19",
-   "end": "2027-03-19",
-   "href": "/event?d=2027-03-19&t=grades-6-7-dance"
-  },
-  {
-   "title": "GREEN Eggs & Ham",
-   "date": "2027-03-04",
-   "end": "2027-03-04",
-   "href": "/event?d=2027-03-04&t=green-eggs-and-ham"
-  },
-  {
-   "title": "High School Craft Fair – PTO/Scouts Support",
+   "title": "High School Craft Fair",
    "date": "2026-11-14",
    "end": "2026-11-14",
    "href": "/event?d=2026-11-14&t=high-school-craft-fair-pto-scouts-support"
@@ -156,12 +72,6 @@
    "date": "2026-10-27",
    "end": "2026-11-25",
    "href": "/event?d=2026-10-27&t=holiday-food-drive-holiday-boxes"
-  },
-  {
-   "title": "Holiday Staff Appreciation",
-   "date": "2026-12-18",
-   "end": "2026-12-18",
-   "href": "/event?d=2026-12-18&t=holiday-staff-appreciation"
   },
   {
    "title": "Jefferson PTO Meeting",
@@ -188,34 +98,10 @@
    "href": "/event?d=2027-05-10&t=kindergarten-screening"
   },
   {
-   "title": "Last Day Big Wave",
-   "date": "2027-06-22",
-   "end": "2027-06-23",
-   "href": "/event?d=2027-06-22&t=last-day-big-wave"
-  },
-  {
    "title": "Light the Loop - Class of 2028 Fundraiser",
    "date": "2026-12-05",
    "end": "2026-12-05",
    "href": "/lightheloop"
-  },
-  {
-   "title": "Light Up Schalmont with Santa",
-   "date": "2026-12-11",
-   "end": "2026-12-11",
-   "href": "/event?d=2026-12-11&t=light-up-schalmont-with-santa"
-  },
-  {
-   "title": "March Madness Student vs. Staff Event",
-   "date": "2027-03-12",
-   "end": "2027-03-12",
-   "href": "/event?d=2027-03-12&t=march-madness-student-vs-staff-event"
-  },
-  {
-   "title": "Masquerade Ball",
-   "date": "2027-05-14",
-   "end": "2027-05-14",
-   "href": "/event?d=2027-05-14&t=masquerade-ball"
   },
   {
    "title": "Middle School Spirit Week",
@@ -224,40 +110,10 @@
    "href": "/spirit-week"
   },
   {
-   "title": "Oh the Places you'll go!",
-   "date": "2027-03-05",
-   "end": "2027-03-05",
-   "href": "/event?d=2027-03-05&t=oh-the-places-you-ll-go"
-  },
-  {
    "title": "Picture Retake Day",
    "date": "2026-11-06",
    "end": "2026-11-06",
    "href": "/picture-days"
-  },
-  {
-   "title": "Pre-Appreciation Week Treat",
-   "date": "2027-04-30",
-   "end": "2027-04-30",
-   "href": "/event?d=2027-04-30&t=pre-appreciation-week-treat"
-  },
-  {
-   "title": "Restaurant / Community Giveback Week",
-   "date": "2027-01-25",
-   "end": "2027-01-25",
-   "href": "/event?d=2027-01-25&t=restaurant-community-giveback-week"
-  },
-  {
-   "title": "Schalmont Night Out",
-   "date": "2027-01-14",
-   "end": "2027-01-14",
-   "href": "/event?d=2027-01-14&t=schalmont-night-out"
-  },
-  {
-   "title": "Schalmont Spring Color Run",
-   "date": "2027-05-22",
-   "end": "2027-05-22",
-   "href": "/event?d=2027-05-22&t=schalmont-spring-color-run"
   },
   {
    "title": "School Spirit Friday",
@@ -266,64 +122,10 @@
    "href": "/event?d=2026-10-30&t=school-spirit-friday"
   },
   {
-   "title": "Seuss Spirit: Fox in SOCKS",
-   "date": "2027-03-02",
-   "end": "2027-03-02",
-   "href": "/event?d=2027-03-02&t=seuss-spirit-fox-in-socks"
-  },
-  {
-   "title": "Spring Color Run",
-   "date": "2027-05-08",
-   "end": "2027-05-08",
-   "href": "/event?d=2027-05-08&t=spring-color-run"
-  },
-  {
-   "title": "Spring PTO Meeting",
-   "date": "2027-04-08",
-   "end": "2027-04-15",
-   "href": "/event?d=2027-04-08&t=spring-pto-meeting"
-  },
-  {
-   "title": "Spring Silent Auction and Talent Show",
-   "date": "2027-04-09",
-   "end": "2027-04-09",
-   "href": "/event?d=2027-04-09&t=spring-silent-auction-and-talent-show"
-  },
-  {
    "title": "Spring Spiritwear Drop",
    "date": "2027-03-26",
    "end": "2027-03-26",
    "href": "/event?d=2027-03-26&t=spring-spiritwear-drop"
-  },
-  {
-   "title": "Spring Staff Appreciation",
-   "date": "2027-03-19",
-   "end": "2027-03-19",
-   "href": "/event?d=2027-03-19&t=spring-staff-appreciation"
-  },
-  {
-   "title": "Teacher Appreciation Week",
-   "date": "2027-05-03",
-   "end": "2027-05-07",
-   "href": "/event?d=2027-05-03&t=teacher-appreciation-week"
-  },
-  {
-   "title": "Teacher Luncheon",
-   "date": "2027-06-22",
-   "end": "2027-06-22",
-   "href": "/event?d=2027-06-22&t=teacher-luncheon"
-  },
-  {
-   "title": "Thanksgiving Staff Appreciation",
-   "date": "2026-11-24",
-   "end": "2026-11-24",
-   "href": "/event?d=2026-11-24&t=thanksgiving-staff-appreciation"
-  },
-  {
-   "title": "Tournament of Champions",
-   "date": "2027-06-16",
-   "end": "2027-06-16",
-   "href": "/event?d=2027-06-16&t=tournament-of-champions"
   },
   {
    "title": "Trail of Treats Volunteer Crew",
@@ -332,40 +134,10 @@
    "href": "/trail-of-treats-volunteers"
   },
   {
-   "title": "Turn Off the Screens",
-   "date": "2027-01-04",
-   "end": "2027-01-25",
-   "href": "/event?d=2027-01-04&t=turn-off-the-screens-wk1"
-  },
-  {
-   "title": "Valentine Candy Grams / Kindness Grams",
-   "date": "2027-02-12",
-   "end": "2027-02-12",
-   "href": "/event?d=2027-02-12&t=valentine-candy-grams-kindness-grams"
-  },
-  {
-   "title": "Veterans Day Support",
+   "title": "Veterans Day Student Council Event",
    "date": "2026-11-11",
    "end": "2026-11-11",
    "href": "/event?d=2026-11-11&t=veterans-day-support"
-  },
-  {
-   "title": "Winter PTO Meeting",
-   "date": "2027-01-14",
-   "end": "2027-01-14",
-   "href": "/event?d=2027-01-14&t=winter-pto-meeting"
-  },
-  {
-   "title": "Year-End Staff Appreciation Lunch",
-   "date": "2027-06-23",
-   "end": "2027-06-23",
-   "href": "/event?d=2027-06-23&t=year-end-staff-appreciation-lunch"
-  },
-  {
-   "title": "Year-End Staff Thank You",
-   "date": "2027-06-21",
-   "end": "2027-06-21",
-   "href": "/event?d=2027-06-21&t=year-end-staff-thank-you"
   }
  ]
 }

@@ -44,11 +44,13 @@ MAIN_ITEMS = [
     ('Directory', 'directory.html', ''),
     ('Donate', 'donate.html', ''),
     ('Events Calendar', 'index.html#calendar', ''),
+    ('FAQs', 'faq.html', ''),
     ('Clubs', 'middle-school.html#announcements', r'club'),
     ('Food Drive', '/event?t=holiday-food-drive-holiday-boxes', r'food drive'),
     ('Giftcards', 'giftcards.html', r'gift ?cards?'),
     ('Holiday Catalog Fundraiser', 'holiday.html', r'holiday catalog'),
     ('Holiday Shoppe', 'holiday-shoppe.html', r'holiday shoppe'),
+    ('PTO Meetings', 'meetings.html', r'meeting'),
     ('Merry Morning with Santa', 'craft-fair-santa.html', r'merry morning'),
     ('Picture Days', 'picture-days.html', r'picture'),
     ('School Spirit Fridays', '/event?t=school-spirit-friday', r'school spirit friday'),
@@ -58,7 +60,7 @@ MAIN_ITEMS = [
     ('Yearbooks', 'yearbooks.html', r'yearbook'),
 ]
 # Shown under "Partners" (no arrows, Julie). Full addresses open in a new tab.
-PARTNER_GROUPS = [('Student Council', 'student-council.html'),
+PARTNER_GROUPS = [('Student Council', 'student-council.html'), ('Sabre Nation', 'partners.html#sabre-nation'),
                   ('Schalmont Athletic Association', 'https://www.schalmont.org/middle-school/schalmont-athletic-association/'),
                   ('Friends of Music', 'https://www.schalmont.org/friends-of-music/'),
                   ('Friends of the Library', 'https://sites.google.com/schalmont.net/friendsofschalmontlibraries/home'),

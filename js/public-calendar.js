@@ -41,7 +41,7 @@
   // loadAll() also keeps the district's own synced entries (school closings, early
   // release, board meetings) as a separate `district` list -- the homepage's combined
   // calendar has a District filter; everything else only wants `events`.
-  var CACHE_KEY = 'pcalEvents10', CACHE_MS = 10 * 60000;
+  var CACHE_KEY = 'pcalEvents12', CACHE_MS = 10 * 60000;
   // Events kept in the site code, for things that need to be on the calendar before anyone
   // adds them in the back office. A back-office entry with the same title and date wins.
   var SITE_EVENTS = [
@@ -72,14 +72,20 @@
       'pto meeting|jefferson': { title: 'Jefferson PTO Meeting', time: '18:00', location: 'Jefferson Elementary Library', href: '/meetings#jefferson-pto', forceTime: true },
       'pto meeting?|jefferson': { title: 'Jefferson PTO Meeting', time: '18:00', location: 'Jefferson Elementary Library', href: '/meetings#jefferson-pto', forceTime: true },
       '2026 1st annual brawl for the ball|2026-11-30': { date: '2026-11-13' },   // Julie: it's Friday, Nov 13
+      // Dances (Julie, Oct 2026): one entry each, on the right date
+      'grade 5 dance|2027-01-08': { title: '5th Grade Dance', date: '2027-01-22', time: '19:00', forceTime: true, location: 'Schalmont Middle School', href: '/5th-grade-dance' },
+      'grades 6/7 dance|2027-03-19': { title: '6th & 7th Grade Dance', date: '2027-03-12', time: '19:00', forceTime: true, location: 'Schalmont Middle School', href: '/6th-7th-grade-dance' },
+      '8th grade dance|2027-06-11': { title: '8th Grade Dance (June 11 or 12, TBD)', time: '19:00', forceTime: true, location: 'Schalmont Middle School', href: '/8th-grade-dance' },
       'holiday food drive starts': { title: 'Holiday Food Drive: Holiday Boxes', location: 'Drop off at the Jefferson main office' }
     };
     // The district calendar's "JES PTO Meeting" rows sit on the 15th of each month; the real
     // meetings are the third Tuesday (already on the PTO calendar), so those rows are hidden.
     var HIDE_TITLES = { 'jes pto meeting': true };
     // Removed from the public site entirely (Julie, Oct 2026), whatever calendar/page it comes from.
-    var REMOVED = { 'trunk or treat 2026': true };
-    var removed = function (t) { return !!REMOVED[String(t || '').trim().toLowerCase()]; };
+    var REMOVED = { 'trunk or treat 2026': true, 'light up schalmont with santa': true,   // cancelled (Julie, Oct 2026)
+      // duplicate dance entries on the wrong dates (the right ones are fixed in FIXES)
+      '5th grade dance|2027-06-04': true, '6/7 grade dance|2027-05-21': true, '8th grade dance|2027-06-12': true };
+    var removed = function (t, d) { t = String(t || '').trim().toLowerCase(); return !!(REMOVED[t] || REMOVED[t + '|' + d]); };
     function applyFix(e, school) {
       var t = String(e.title || '').trim().toLowerCase();
       var f = FIXES[t + '|' + e.date] || FIXES[t + '|' + school] || FIXES[t];
@@ -103,7 +109,7 @@
 
       pagesSnap.docs.forEach(function (d) {
         var p = d.data();
-        if (!p.title || !p.slug || removed(p.title)) return;
+        if (!p.title || !p.slug || removed(p.title, p.eventDate)) return;
         p.title = shownTitle(p.title);
         var titleKey = p.title.trim().toLowerCase();
         var sch = routeOf(Array.isArray(p.schools) && p.schools.length ? p.schools : (p.school ? [p.school] : []));
@@ -125,7 +131,7 @@
       eventsSnap.docs.forEach(function (d) {
         if (BOOKKEEPING[d.id] || HIDDEN[d.id] || d.id.indexOf('__') === 0) return;
         var e = d.data();
-        if (!e.title || !e.date || removed(e.title)) return;
+        if (!e.title || !e.date || removed(e.title, e.date)) return;
         e.title = shownTitle(e.title);
         // The district's own school-closing/early-release entries already have their own
         // District tab (the embedded Google Calendar) -- keep them out of the back-office

@@ -603,8 +603,8 @@ const PROGRAM_CARDS_DEFAULTS = {
       "icon": "🎩",
       "title": "8th Grade Dance",
       "badgeType": "active",
-      "badgeText": "Jun 11 (tentative)",
-      "desc": "Friday, June 11, 2027 (date tentative), 7:00–9:00 PM. The theme will be chosen by the 8th grade class! Parents, sign up if you're interested in volunteering.",
+      "badgeText": "Jun 11 or 12 (TBD)",
+      "desc": "Friday, June 11 or 12, 2027 (date TBD), 7:00–9:00 PM. The theme will be chosen by the 8th grade class! Parents, sign up if you're interested in volunteering.",
       "actions": [
         {
           "label": "Details & Volunteer →",

@@ -53,6 +53,15 @@ ctx.window = ctx;
 vm.createContext(ctx);
 vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/public-calendar.js'), 'utf8'), ctx);
 
+// Left out of the menu (still on the calendar) -- Julie, Oct 2026. Lowercase, matched against the start of the title.
+const SKIP = ['4th grad photo', '4th grand pano photo', '5th grade fun day', 'cat in hat', 'coin wars', 'color run',
+  'counselor appreciation', 'field day', 'glow night', 'green eggs', 'holiday staff appreciation', 'last day big wave',
+  'march madness', 'masquerade ball', 'oh the places', 'pre-appreciation week', 'restaurant', 'schalmont night out',
+  'schalmont spring color run', 'seuss spirit', 'spring color run', 'spring pto meeting', 'spring silent auction',
+  'spring staff appreciation', 'teacher appreciation week', 'teacher luncheon', 'thanksgiving staff appreciation',
+  'tournament of champions', 'turn off the screens', 'valentine', 'winter pto meeting', 'year-end staff'];
+// Shorter names in the menu
+const MENU_NAME = { 'high school craft fair – pto/scouts support': 'High School Craft Fair', 'veterans day support': 'Veterans Day Student Council Event' };
 const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 const r = await ctx.PTOEventData.loadAll();
 const key = (t) => String(t).toLowerCase().replace(/&amp;/g, '&').replace(/\b20\d\d\b|\b1st annual\b|\bschalmont pto\b|\s*-?\s*\b(wk|week)\s*\d.*$/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -66,6 +75,11 @@ for (const e of r.events) {                     // PTO events only (district dat
   if (!cur || (own && !cur.own) || (own === cur.own && e.date < cur.date)) {
     best[k] = { title: e.title.replace(/\s*-\s*wk\s*\d.*$/i, '').trim(), date: e.date, end: cur ? (cur.end > end ? cur.end : end) : end, href: e.href, own };
   } else if (end > cur.end) cur.end = end;
+}
+for (const k of Object.keys(best)) {
+  const t = best[k].title.toLowerCase();
+  if (SKIP.some((s) => t.startsWith(s))) { delete best[k]; continue; }
+  if (MENU_NAME[t]) best[k].title = MENU_NAME[t];
 }
 const events = Object.values(best).sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase())).map(({ own, ...x }) => x);
 fs.writeFileSync(path.join(ROOT, 'data/sidebar-events.json'), JSON.stringify({ updated: today, events }, null, 1));
