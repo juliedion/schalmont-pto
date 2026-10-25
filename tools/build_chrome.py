@@ -57,6 +57,7 @@ MAIN_ITEMS = [
     ('Picture Days', 'picture-days.html', r'picture'),
     ('School Spirit Fridays', '/event?t=school-spirit-friday', r'school spirit friday'),
     ('Spiritwear Shoppe', 'shop.html', r'spiritwear'),
+    ('Student Banking', 'school-banking.html', r'banking'),
     ('Sports', 'sports.html', ''),
     ('Storytime at the Shelter', 'storytime-at-the-shelter.html', r'storytime'),
     ('Trail of Treats', '/trailoftreats', r'trail of treats'),
@@ -99,7 +100,8 @@ ICON = {
 YEARBOOK = {'jefferson': 'yearbook-jefferson.html', 'middle': 'yearbook-middle.html', 'high': 'yearbook-high.html'}
 
 # Extra pages listed under a school in the sidebar (after Yearbook).
-EXTRA_LINKS = {'middle': [('5th Grade Dance', '5th-grade-dance.html'), ('6th & 7th Grade Dance', '6th-7th-grade-dance.html'),
+EXTRA_LINKS = {'jefferson': [('Student Banking', 'school-banking.html')],
+               'middle': [('5th Grade Dance', '5th-grade-dance.html'), ('6th & 7th Grade Dance', '6th-7th-grade-dance.html'),
                           ('8th Grade Dance', '8th-grade-dance.html')]}
 
 TOP_MENUS = [
