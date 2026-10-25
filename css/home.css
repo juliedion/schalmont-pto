@@ -141,9 +141,9 @@
   .home2 .hz-search-icon { top: 16px; }
   .home2 .hz-dots { display: none; }
 }
-/* Tablets and small laptops: the photo gets its own uncovered band under the search, so no
-   face ever sits behind the search box (side by side, they overlap below ~1100px). */
-@media (max-width: 1100px) {
+/* Tablets and laptops: the photo gets its own uncovered band under the search, so no face ever
+   sits behind the search box. With the left menu taking 248px, side by side needs ~1360px. */
+@media (max-width: 1360px) {
   .home2 .hz-hero { height: auto; min-height: 250px; }
   .home2 .hz-hero-inner { padding-top: 20px; padding-bottom: 18px; flex-direction: column; align-items: stretch; gap: 0; }
   .home2 .hz-strip { position: relative; top: auto; right: auto; bottom: auto; width: 100%; height: clamp(220px, 62vw, 520px);
@@ -545,3 +545,7 @@
 @media (prefers-reduced-motion: reduce) {
   .home2 *, .home2 *::before, .home2 *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
 }
+
+/* Homepage inside the shared left-menu layout: the content column must be allowed to shrink. */
+.home2 .homepage-main { min-width: 0; }
+

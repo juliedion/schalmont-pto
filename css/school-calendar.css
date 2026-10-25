@@ -1,0 +1,48 @@
+/* School-page calendar (js/school-calendar.js) -- matches the homepage calendar's look. */
+.scal { --sc-forest: #002F20; --sc-lime: #a3ff45; --sc-line: #e3ebe6; --sc-ink: #14261c; --sc-muted: #5b6b62; --sc-gray: #f2f5f3;
+  background: #fff; border: 1px solid var(--border, #e3ebe6); border-radius: 16px; padding: 16px 18px 18px; text-align: left; }
+.scal-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.scal-filter { border: 1.5px solid var(--sc-line); background: #fff; color: var(--sc-ink); font: inherit; font-weight: 800; font-size: 13px; padding: 8px 14px; border-radius: 999px; display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+.scal-filter i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.scal-filter:hover { border-color: #007A3D; }
+.scal-filter[aria-pressed="true"] { background: var(--sc-forest); border-color: var(--sc-forest); color: #fff; }
+.scal-cal { min-height: 480px; }
+.scal-status { padding: 60px 10px; text-align: center; color: var(--sc-muted); }
+.scal .fc { --fc-border-color: var(--sc-line); --fc-today-bg-color: #eefbe6; --fc-button-bg-color: #fff; --fc-button-border-color: var(--sc-line); --fc-button-text-color: var(--sc-ink);
+  --fc-button-hover-bg-color: var(--sc-gray); --fc-button-hover-border-color: var(--sc-line); --fc-button-active-bg-color: var(--sc-forest); --fc-button-active-border-color: var(--sc-forest);
+  --fc-list-event-hover-bg-color: var(--sc-gray); font-size: 14px; }
+.scal .fc .fc-toolbar-title { font-size: 20px; font-weight: 800; color: var(--sc-forest); }
+.scal .fc .fc-button { font-weight: 800; border-radius: 999px !important; padding: 6px 12px; text-transform: capitalize; box-shadow: none !important; }
+.scal .fc .fc-button-group > .fc-button { border-radius: 0 !important; }
+.scal .fc .fc-button-group > .fc-button:first-child { border-radius: 999px 0 0 999px !important; }
+.scal .fc .fc-button-group > .fc-button:last-child { border-radius: 0 999px 999px 0 !important; }
+.scal .fc .fc-button-primary:not(:disabled).fc-button-active { color: var(--sc-lime); }
+.scal .fc .fc-col-header-cell-cushion { color: var(--sc-forest); font-weight: 800; text-transform: uppercase; font-size: 11.5px; letter-spacing: .06em; padding: 6px 0; text-decoration: none; }
+.scal .fc .fc-daygrid-day-number { color: var(--sc-ink); font-weight: 700; text-decoration: none; }
+.scal .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number { background: var(--sc-forest); color: var(--sc-lime); border-radius: 999px; min-width: 24px; text-align: center; }
+.scal .fc .fc-daygrid-day-frame { min-height: 110px; }
+.scal .fc .fc-event { cursor: pointer; border-radius: 6px; font-weight: 700; }
+.scal .fc .fc-daygrid-event { white-space: normal; margin-bottom: 3px; padding: 3px 6px; font-size: 12.5px; line-height: 1.3; }
+.scal .fc .fc-daygrid-event .fc-event-title { white-space: normal; }
+.scal .fc .fc-daygrid-block-event .fc-event-main-frame { flex-direction: column; align-items: flex-start; }
+.scal .fc .fc-daygrid-block-event .fc-event-time { overflow: visible; font-weight: 800; opacity: .9; margin: 0; }
+.scal .fc .fc-list-event-title a { font-weight: 700; color: var(--sc-ink); text-decoration: none; }
+.scal .fc .fc-list-day-cushion { background: var(--sc-gray); }
+.scal .fc .fc-list-day-cushion a { color: var(--sc-forest); text-decoration: none; font-weight: 800; }
+.scal .fc .fc-event:focus-visible { outline: 3px solid #007A3D; outline-offset: 1px; }
+@media (max-width: 640px) {
+  .scal { padding: 12px; }
+  .scal .fc .fc-toolbar { flex-direction: column; gap: 8px; align-items: stretch; }
+  .scal .fc .fc-toolbar-chunk { display: flex; justify-content: center; }
+  .scal .fc .fc-toolbar-title { font-size: 18px; text-align: center; }
+  .scal-filter { font-size: 12.5px; padding: 7px 11px; }
+}
+.scal-dialog { border: 0; border-radius: 18px; padding: 0; max-width: 440px; width: calc(100% - 32px); box-shadow: 0 20px 60px rgba(0, 0, 0, .25); }
+.scal-dialog::backdrop { background: rgba(0, 20, 12, .55); }
+.scal-dlg-head { background: linear-gradient(135deg, #002F20, #007A3D); color: #fff; padding: 16px 48px 14px 18px; position: relative; }
+.scal-dlg-head h3 { color: #fff; margin: 4px 0 0; font-size: 19px; line-height: 1.25; }
+.scal-dlg-tag { font-size: 11.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #a3ff45; }
+.scal-dlg-x { position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 50%; border: 0; background: rgba(255, 255, 255, .14); color: #fff; font-size: 18px; cursor: pointer; }
+.scal-dlg-body { padding: 16px 18px 18px; display: grid; gap: 8px; font-size: 14.5px; }
+.scal-dlg-body a { color: #007A3D; }
+.scal-dlg-body .btn { justify-self: start; margin-top: 6px; color: #000; }

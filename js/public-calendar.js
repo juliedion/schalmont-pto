@@ -41,7 +41,7 @@
   // loadAll() also keeps the district's own synced entries (school closings, early
   // release, board meetings) as a separate `district` list -- the homepage's combined
   // calendar has a District filter; everything else only wants `events`.
-  var CACHE_KEY = 'pcalEvents6', CACHE_MS = 10 * 60000;
+  var CACHE_KEY = 'pcalEvents8', CACHE_MS = 10 * 60000;
   // Events kept in the site code, for things that need to be on the calendar before anyone
   // adds them in the back office. A back-office entry with the same title and date wins.
   var SITE_EVENTS = [
@@ -62,6 +62,30 @@
     // Public names for back-office entries (lowercased back-office title -> name shown on the site).
     var RENAME = { 'candy monster initiative': 'Feed the Trail of Treats Candy Monster at the Middle School' };
     var shownTitle = function (t) { return RENAME[String(t).trim().toLowerCase()] || t; };
+    // Details kept up to date from the PTOs' Facebook posts until they're fixed in the back office.
+    // Key: lowercased title, optionally '|YYYY-MM-DD'. Only blank fields are filled, except title.
+    var FIXES = {
+      'craft fair & santa|2026-12-05': { title: 'A Very Merry Morning & Craft Fair', time: '10:00', location: 'Jefferson Elementary', href: '/craft-fair-santa' },
+      'picture retake day|2026-11-06': { time: '08:00', location: 'Jefferson Elementary', href: '/picture-days' },
+      'pto meeting|jefferson': { title: 'Jefferson PTO Meeting', time: '18:00', location: 'Jefferson Elementary Library', href: '/meetings#jefferson-pto', forceTime: true },
+      'pto meeting?|jefferson': { title: 'Jefferson PTO Meeting', time: '18:00', location: 'Jefferson Elementary Library', href: '/meetings#jefferson-pto', forceTime: true },
+      '2026 1st annual brawl for the ball|2026-11-30': { date: '2026-11-13' },   // Julie: it's Friday, Nov 13
+      'holiday food drive starts': { title: 'Holiday Food Drive: Holiday Boxes', location: 'Drop off at the Jefferson main office' }
+    };
+    // The district calendar's "JES PTO Meeting" rows sit on the 15th of each month; the real
+    // meetings are the third Tuesday (already on the PTO calendar), so those rows are hidden.
+    var HIDE_TITLES = { 'jes pto meeting': true };
+    function applyFix(e, school) {
+      var t = String(e.title || '').trim().toLowerCase();
+      var f = FIXES[t + '|' + e.date] || FIXES[t + '|' + school] || FIXES[t];
+      if (!f) return e;
+      if (f.title) e.title = f.title;
+      if (f.date) e.date = f.date;
+      if (f.time && (!e.time || f.forceTime)) e.time = f.time;
+      if (f.location && !e.location) e.location = f.location;
+      if (f.href && !e.href) e.href = f.href;
+      return e;
+    }
 
     return Promise.all([
       db.collection('pto_events').where('status', 'in', ['planned', 'confirmed', 'done']).get(),
@@ -90,6 +114,7 @@
           title: p.title, date: p.eventDate, endDate: endDate, time: p.eventTime || '',
           location: p.eventLocation || '', school: sch, href: href
         };
+        applyFix(byKey[key], sch);
       });
 
       eventsSnap.docs.forEach(function (d) {
@@ -101,6 +126,7 @@
         // District tab (the embedded Google Calendar) -- keep them out of the back-office
         // tabs so they don't show twice, once here and once under School PTO (MS & HS).
         if (e.category === 'District Calendar' || e.source === 'gcal') {
+          if (HIDE_TITLES[String(e.title).trim().toLowerCase()]) return;
           district.push({ title: e.title, date: e.date, endDate: e.endDate && e.endDate > e.date ? e.endDate : '',
             time: e.time || '', location: e.location || '', school: 'district', href: null });
           return;
@@ -119,6 +145,7 @@
           school: e.school || 'pto',
           href: (existing && existing.href) || (pageMatch && pageMatch.href) || null
         };
+        applyFix(byKey[key], byKey[key].school);
       });
 
       // Site-kept events (see SITE_EVENTS) unless the back office already has one by that title.

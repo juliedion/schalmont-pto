@@ -39,6 +39,8 @@ RewriteRule ^jes/([A-Za-z0-9_-]+)/?$ /jefferson/$1 [R=301,L]
 # infinite redirect loop.)
 RewriteRule ^haunted-trail/?$ /trailoftreats [R=301,L]
 RewriteRule ^pto/trail-of-treats/?$ /trailoftreats [R=301,L]
+# The volunteer sign-ups now live on the main Trail of Treats page (p.html MERGE).
+RewriteRule ^(pto/)?trail-of-treats-volunteers/?$ /trailoftreats#volunteer [R=302,NE,L]
 
 # Back-office published pages, e.g. /ms/spring-concert  or  /jefferson/fun-run
 RewriteRule ^(woestina|jefferson|ms|hs|pto)/([A-Za-z0-9_-]+)/?$ p.php?prefix=$1&slug=$2 [L,QSA]

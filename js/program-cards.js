@@ -831,6 +831,32 @@ const PROGRAM_CARDS_DEFAULTS = {
    back-office cards, sort by date like everything else, and drop off once they end.
    `desc` is HTML. */
 const PROGRAM_CARDS_EXTRA = {
+  "jefferson": [
+    {
+      "id": "jes-holiday-food-drive-2026",
+      "icon": "🎁",
+      "title": "Holiday Food Drive: Holiday Boxes",
+      "eventDate": "2026-10-27",
+      "eventEndDate": "2026-11-25",
+      "badgeType": "active",
+      "badgeText": "36 boxes needed",
+      "desc": "Help make the holidays brighter for those in need! Wrap a box in holiday wrapping paper for our Holiday Food Drive and drop it off at the Jefferson main office. Homeroom parents: boxes are needed this week.",
+      "actions": []
+    },
+    {
+      "id": "jes-merry-morning-2026",
+      "icon": "🎅",
+      "title": "A Very Merry Morning & Craft Fair",
+      "eventDate": "2026-12-05",
+      "eventEndDate": "2026-12-05",
+      "badgeType": "active",
+      "badgeText": "Sat, Dec 5",
+      "desc": "<strong>A Very Merry Morning</strong> from 10 AM: pancakes, photos with Santa, holiday craft fair and shopping local.<br><strong>Jefferson's Craft Fair</strong> 10 AM – 3 PM, with a raffle.",
+      "actions": [
+        { "label": "Details →", "href": "craft-fair-santa.html", "cls": "btn btn-primary" }
+      ]
+    }
+  ],
   "middle": [
     {
       "id": "ms-spirit-week-2026",

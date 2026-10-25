@@ -115,6 +115,7 @@
   </style>
   <link rel="stylesheet" href="css/yearbook-form.css?v=7">
   <link rel="stylesheet" href="css/menus.css?v=4">
+  <link rel="stylesheet" href="css/school-calendar.css?v=1">
 </head>
 <body>
 
@@ -259,38 +260,8 @@
         <p>Upcoming events for Jefferson Elementary families. <a href="index.html#calendar" style="color:var(--primary)">View full calendar →</a></p>
         <div class="accent-line"></div>
       </div>
-      <div class="cal-tab-select-wrap">
-        <select class="cal-tab-select" id="cal-tab-select" onchange="window.showCalTabFromSelect(this.value)">
-          <option value="jefferson" selected>Jefferson PTO</option>
-          <option value="all">All Events</option>
-          <option value="district">District</option>
-        </select>
-      </div>
-      <div class="cal-tabs-row" style="margin-bottom:16px">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-light);margin-bottom:6px;text-align:center">View</div>
-        <div style="display:flex;gap:5px;flex-wrap:nowrap;justify-content:center;overflow-x:auto">
-          <button class="cal-tab-btn" style="--tab-color:var(--primary)" onclick="window.showCalTab('all',this)">All Events</button>
-          <button class="cal-tab-btn active" style="--tab-color:#6bb044" onclick="window.showCalTab('jefferson',this)">Jefferson PTO</button>
-          <button class="cal-tab-btn" style="--tab-color:#039BE5" onclick="window.showCalTab('district',this)">District</button>
-        </div>
-      </div>
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:8px">
-        <div class="cal-panel" id="cal-panel-all" style="display:none">
-          <div class="pcal-cal" data-school="all"></div>
-        </div>
-        <div class="cal-panel" id="cal-panel-jefferson">
-          <div class="pcal-cal" data-school="jefferson"></div>
-        </div>
-        <div class="cal-panel" id="cal-panel-district" style="display:none">
-          <div style="padding:40px 40px 20px;text-align:center">
-            <div style="font-size:52px;margin-bottom:12px">🏫</div>
-            <h3 style="font-size:20px;margin-bottom:8px">Schalmont District Calendar</h3>
-            <p style="color:var(--text-light);max-width:440px;margin:0 auto 20px;font-size:14px;line-height:1.6">The Schalmont Central Schools district calendar is hosted on the district website.</p>
-            <a href="https://www.schalmont.org/district-office-services/about-us/calendar/" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:15px;padding:12px 28px;margin-bottom:20px;display:inline-block">View District Calendar →</a>
-          </div>
-          <iframe src="https://calendar.google.com/calendar/embed?src=9b60l7e14ii7jvaeee0n5q0ghk%40group.calendar.google.com&ctz=America%2FNew_York" style="border:0;width:100%;height:540px;display:block" frameborder="0" scrolling="no" loading="lazy"></iframe>
-        </div>
-      </div>
+      <!-- Same compact calendar as the homepage (js/school-calendar.js), this PTO's events first -->
+      <div class="scal" data-school-cal="jefferson"></div>
     </div>
   </section>
 
@@ -527,8 +498,9 @@
   <script src="js/firebase-config.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
-  <script src="js/public-calendar.js?v=7"></script>
-  <script src="js/program-cards.js?v=6"></script>
+  <script src="js/public-calendar.js?v=9"></script>
+  <script src="js/school-calendar.js?v=1"></script>
+  <script src="js/program-cards.js?v=7"></script>
   <script src="js/page-menu.js?v=3"></script>
   <script src="js/menus.js?v=2"></script>
 </body>
