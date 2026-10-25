@@ -837,7 +837,8 @@ const PROGRAM_CARDS_EXTRA = {
       "badgeText": "Sat, Dec 5",
       "desc": "<strong>A Very Merry Morning</strong> from 10 AM: pancakes, photos with Santa, holiday craft fair and shopping local.<br><strong>Jefferson's Craft Fair</strong> 10 AM – 3 PM, with a raffle.",
       "actions": [
-        { "label": "Details →", "href": "craft-fair-santa.html", "cls": "btn btn-primary" }
+        { "label": "Merry Morning →", "href": "merry-morning.html", "cls": "btn btn-primary" },
+        { "label": "Craft Fair →", "href": "craft-fair.html", "cls": "btn btn-primary" }
       ]
     }
   ],

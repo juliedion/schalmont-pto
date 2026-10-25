@@ -23,7 +23,11 @@
     .gh-btn.line { color: var(--primary); border: 2px solid var(--primary); background: #fff; }
     .gh-btn.solid { color: #1a1205; background: #e6b84a; border: 2px solid #e6b84a; }
     .gh-btn:hover { filter: brightness(.95); }
-    .gh-promo { background: linear-gradient(135deg, #0f3d22, #1d5c34); color: #fff; border-radius: 16px; padding: 20px 22px; margin-bottom: 20px; text-align: center; }
+    .gh-promo { background: linear-gradient(135deg, #0f3d22, #1d5c34); color: #fff; border-radius: 16px; padding: 20px 22px; margin-bottom: 20px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 18px; }
+    .gh-squishy { width: 96px; height: auto; flex: 0 0 auto; animation: gh-squish 2.4s ease-in-out infinite; transform-origin: 50% 95%; }
+    @keyframes gh-squish { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.08, .9); } }
+    @media (prefers-reduced-motion: reduce) { .gh-squishy { animation: none; } }
+    @media (max-width: 420px) { .gh-promo { flex-direction: column; gap: 8px; } }
     .gh-promo b { display: block; font-size: clamp(24px, 3.2vw, 34px); line-height: 1.15; color: #f4cf6a; }
     .gh-promo span { display: block; font-size: 16px; margin-top: 6px; opacity: .92; }
     .gh-prices { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
@@ -81,8 +85,23 @@
 
             <div>
               <div class="gh-promo">
-                <b>Buy 10 bars, get a FREE squishy!</b>
-                <span>10 bars for just $20. While supplies last.</span>
+                <svg class="gh-squishy" viewBox="0 0 120 110" role="img" aria-label="A cute pink squishy">
+                  <ellipse cx="60" cy="102" rx="38" ry="5" fill="rgba(0,0,0,.25)"/>
+                  <path d="M16 70c0-30 18-52 44-52s44 22 44 52c0 20-16 30-44 30S16 90 16 70z" fill="#ffb8d2"/>
+                  <ellipse cx="38" cy="22" rx="10" ry="13" fill="#ffb8d2" transform="rotate(-20 38 22)"/>
+                  <ellipse cx="82" cy="22" rx="10" ry="13" fill="#ffb8d2" transform="rotate(20 82 22)"/>
+                  <ellipse cx="38" cy="23" rx="5" ry="7" fill="#ff8fb6" transform="rotate(-20 38 23)"/>
+                  <ellipse cx="82" cy="23" rx="5" ry="7" fill="#ff8fb6" transform="rotate(20 82 23)"/>
+                  <path d="M30 50c6-14 20-20 30-20" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none" opacity=".6"/>
+                  <circle cx="44" cy="66" r="6" fill="#3a2230"/><circle cx="76" cy="66" r="6" fill="#3a2230"/>
+                  <circle cx="46" cy="64" r="2" fill="#fff"/><circle cx="78" cy="64" r="2" fill="#fff"/>
+                  <ellipse cx="34" cy="78" rx="7" ry="4" fill="#ff7aa8" opacity=".7"/><ellipse cx="86" cy="78" rx="7" ry="4" fill="#ff7aa8" opacity=".7"/>
+                  <path d="M54 76q6 6 12 0" stroke="#3a2230" stroke-width="3" stroke-linecap="round" fill="none"/>
+                </svg>
+                <div>
+                  <b>Buy 10 bars, get a FREE squishy!</b>
+                  <span>10 bars for just $20. While supplies last.</span>
+                </div>
               </div>
 
               <div class="gh-prices">
@@ -103,8 +122,9 @@
               </div>
 
               <div class="gh-card">
-                <h2>Where to find us</h2>
-                <p>Look for the PTO chocolate table at school events, including the <a href="/trailoftreats" style="color:var(--primary)">Trail of Treats</a> on Friday, October 30. Questions? <a href="/contact" style="color:var(--primary)">Contact the PTO</a>.</p>
+                <h2>Order online, pick up in the main office</h2>
+                <p><a href="#order" style="color:var(--primary);font-weight:700">Order online</a> and pick up your chocolate bars in the <strong>main office</strong>. You can also have them <strong>sent home with your student</strong>.</p>
+                <p>You'll also find the PTO chocolate table at school events, including the <a href="/trailoftreats" style="color:var(--primary)">Trail of Treats</a> on Friday, October 30. Questions? <a href="/contact" style="color:var(--primary)">Contact the PTO</a>.</p>
               </div>
             </div>
           </div>
@@ -116,7 +136,7 @@
         <div class="container">
           <div class="gh-order">
             <h2>Order chocolate bars online</h2>
-            <p>Pick how many bars you'd like and pay securely online. Bars go home with your student or can be picked up at the PTO table. Buy 10 and you'll get a free squishy!</p>
+            <p><strong>Order online, then pick up your bars in the main office</strong> (or we can send them home with your student). Pick how many bars you'd like and pay securely online. Buy 10 and you'll get a free squishy!</p>
             <div class="gh-order-frame">
               <iframe title="Gertrude Hawk chocolate bar order form, powered by Zeffy"
                       src="https://www.zeffy.com/embed/ticketing/gertrude-hawk-chocolate-bar-fundraiser-schalmont-pto"

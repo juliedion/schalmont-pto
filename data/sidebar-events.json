@@ -38,10 +38,10 @@
    "href": "/8th-grade-dance"
   },
   {
-   "title": "A Very Merry Morning & Craft Fair",
+   "title": "A Very Merry Morning at Jefferson",
    "date": "2026-12-05",
    "end": "2026-12-05",
-   "href": "/craft-fair-santa"
+   "href": "/merry-morning"
   },
   {
    "title": "Cheesy Fundraiser",
@@ -65,13 +65,19 @@
    "title": "Holiday Food Drive: Holiday Boxes",
    "date": "2026-10-27",
    "end": "2026-11-25",
-   "href": "/event?d=2026-10-27&t=holiday-food-drive-holiday-boxes"
+   "href": "/holiday-boxes"
   },
   {
    "title": "Jefferson PTO Meeting",
    "date": "2026-11-17",
    "end": "2027-06-15",
    "href": "/meetings#jefferson-pto"
+  },
+  {
+   "title": "Jefferson's Annual Craft Fair",
+   "date": "2026-12-05",
+   "end": "2026-12-05",
+   "href": "/craft-fair"
   },
   {
    "title": "Journey to Jefferson",
@@ -120,6 +126,12 @@
    "date": "2027-03-26",
    "end": "2027-03-26",
    "href": "/event?d=2027-03-26&t=spring-spiritwear-drop"
+  },
+  {
+   "title": "Storytime at the Shelter (APF)",
+   "date": "2026-11-07",
+   "end": "2026-12-05",
+   "href": "/storytime-at-the-shelter"
   },
   {
    "title": "Trail of Treats Volunteer Crew",

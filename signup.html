@@ -235,10 +235,16 @@
       }).catch(function (e) { app.innerHTML = '<p class="su-err">Could not load this sheet. ' + esc(e.message) + '</p>'; });
     }
 
+    // Sheet text kept up to date here until it's changed in the back office (Julie, Oct 2026).
+    var SHEET_FIX = {
+      'rcmnyKQZnkce7yhw4g7K': { intro: '<b>Volunteers must be high school age or older. Man the entrance to the trail! Ensure there is no running and that guests have their hands stamped.</b>' }   // Trail Entrance Guards: high school age or older (was 18+)
+    };
+    function fixSheet(id, sheet) { return SHEET_FIX[id] ? Object.assign({}, sheet, SHEET_FIX[id]) : sheet; }
+
     function load() {
       db.collection('signups').doc(ID).get().then(function (snap) {
         if (!snap.exists) { app.innerHTML = '<p class="su-err">This sign-up sheet was not found.</p>'; return; }
-        var sheet = snap.data();
+        var sheet = fixSheet(ID, snap.data());
         Promise.all([
           db.collection('signups').doc(ID).collection('slots').orderBy('order').get(),
           db.collection('signups').doc(ID).collection('entries').get()
@@ -250,7 +256,7 @@
 
     function loadWithPrefill(slotId, priorFields) {
       db.collection('signups').doc(ID).get().then(function (snap) {
-        var sheet = snap.data();
+        var sheet = fixSheet(ID, snap.data());
         Promise.all([
           db.collection('signups').doc(ID).collection('slots').orderBy('order').get(),
           db.collection('signups').doc(ID).collection('entries').get()

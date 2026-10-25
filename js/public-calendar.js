@@ -41,11 +41,14 @@
   // loadAll() also keeps the district's own synced entries (school closings, early
   // release, board meetings) as a separate `district` list -- the homepage's combined
   // calendar has a District filter; everything else only wants `events`.
-  var CACHE_KEY = 'pcalEvents12', CACHE_MS = 10 * 60000;
+  var CACHE_KEY = 'pcalEvents13', CACHE_MS = 10 * 60000;
   // Events kept in the site code, for things that need to be on the calendar before anyone
   // adds them in the back office. A back-office entry with the same title and date wins.
   var SITE_EVENTS = [
-    { title: 'Middle School Spirit Week', date: '2026-10-26', endDate: '2026-10-30', time: '', location: 'Schalmont Middle School', school: 'middle', href: '/spirit-week' }
+    { title: 'Middle School Spirit Week', date: '2026-10-26', endDate: '2026-10-30', time: '', location: 'Schalmont Middle School', school: 'middle', href: '/spirit-week' },
+    { title: "Jefferson's Annual Craft Fair", date: '2026-12-05', time: '10:00', location: 'Jefferson Elementary', school: 'jefferson', href: '/craft-fair' },
+    { title: 'Storytime at the Shelter (APF)', date: '2026-11-07', time: '10:30', location: 'Animal Protective Foundation', school: 'pto', href: '/storytime-at-the-shelter' },
+    { title: 'Storytime at the Shelter (APF)', date: '2026-12-05', time: '10:30', location: 'Animal Protective Foundation', school: 'pto', href: '/storytime-at-the-shelter' }
   ];
   function slugify(t) { return String(t || '').toLowerCase().replace(/&amp;/g, 'and').replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80); }
   function eventUrl(e) { return '/event?d=' + e.date + '&t=' + slugify(e.title); }
@@ -67,7 +70,7 @@
     // Details kept up to date from the PTOs' Facebook posts until they're fixed in the back office.
     // Key: lowercased title, optionally '|YYYY-MM-DD'. Only blank fields are filled, except title.
     var FIXES = {
-      'craft fair & santa|2026-12-05': { title: 'A Very Merry Morning & Craft Fair', time: '10:00', location: 'Jefferson Elementary', href: '/craft-fair-santa' },
+      'craft fair & santa|2026-12-05': { title: 'A Very Merry Morning at Jefferson', time: '10:00', location: 'Jefferson Elementary', href: '/merry-morning' },
       'picture retake day|2026-11-06': { time: '08:00', location: 'Jefferson Elementary', href: '/picture-days' },
       'pto meeting|jefferson': { title: 'Jefferson PTO Meeting', time: '18:00', location: 'Jefferson Elementary Library', href: '/meetings#jefferson-pto', forceTime: true },
       'pto meeting?|jefferson': { title: 'Jefferson PTO Meeting', time: '18:00', location: 'Jefferson Elementary Library', href: '/meetings#jefferson-pto', forceTime: true },
@@ -76,7 +79,7 @@
       'grade 5 dance|2027-01-08': { title: '5th Grade Dance', date: '2027-01-22', time: '19:00', forceTime: true, location: 'Schalmont Middle School', href: '/5th-grade-dance' },
       'grades 6/7 dance|2027-03-19': { title: '6th & 7th Grade Dance', date: '2027-03-12', time: '19:00', forceTime: true, location: 'Schalmont Middle School', href: '/6th-7th-grade-dance' },
       '8th grade dance|2027-06-11': { title: '8th Grade Dance (June 11 or 12, TBD)', time: '19:00', forceTime: true, location: 'Schalmont Middle School', href: '/8th-grade-dance' },
-      'holiday food drive starts': { title: 'Holiday Food Drive: Holiday Boxes', location: 'Drop off at the Jefferson main office' }
+      'holiday food drive starts': { title: 'Holiday Food Drive: Holiday Boxes', location: 'Drop off at the Jefferson main office', href: '/holiday-boxes' }
     };
     // The district calendar's "JES PTO Meeting" rows sit on the 15th of each month; the real
     // meetings are the third Tuesday (already on the PTO calendar), so those rows are hidden.

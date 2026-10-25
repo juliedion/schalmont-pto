@@ -16,6 +16,7 @@ RewriteRule ^get-involved(\.html)?/?$ /donate [R=301,L]
 
 # Chocolate bars: the page (with the 4-for-$10 flyer and the Zeffy order link)
 RewriteRule ^chocolate(\.html)?/?$ /gertrude-hawk-chocolate [R=301,L]
+RewriteRule ^craft-fair-santa(\.html)?/?$ /merry-morning [R=301,L]
 
 # The printed spirit wear order form says /spiritwear -- the store lives on the shop page
 RewriteRule ^spiritwear/?$ /shop [R=301,L]

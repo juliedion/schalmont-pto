@@ -46,17 +46,19 @@ MAIN_ITEMS = [
     ('Events Calendar', 'index.html#calendar', ''),
     ('FAQs', 'faq.html', ''),
     ('Clubs', 'middle-school.html#announcements', r'club'),
-    ('Food Drive', '/event?t=holiday-food-drive-holiday-boxes', r'food drive'),
+    ('Food Drive: Holiday Boxes', 'holiday-boxes.html', r'food drive|holiday boxes'),
     ('Giftcards', 'giftcards.html', r'gift ?cards?'),
     ('Gertrude Hawk Chocolate Bars', 'gertrude-hawk-chocolate.html', r'gertrude|chocolate'),
+    ('Jefferson Craft Fair', 'craft-fair.html', r'annual craft fair'),
     ('Holiday Catalog Fundraiser', 'holiday.html', r'holiday catalog'),
     ('Holiday Shoppe', 'holiday-shoppe.html', r'holiday shoppe'),
     ('PTO Meetings', 'meetings.html', r'meeting'),
-    ('Merry Morning with Santa', 'craft-fair-santa.html', r'merry morning'),
+    ('Merry Morning at Jefferson', 'merry-morning.html', r'merry morning'),
     ('Picture Days', 'picture-days.html', r'picture'),
     ('School Spirit Fridays', '/event?t=school-spirit-friday', r'school spirit friday'),
     ('Spiritwear Shoppe', 'shop.html', r'spiritwear'),
     ('Sports', 'sports.html', ''),
+    ('Storytime at the Shelter', 'storytime-at-the-shelter.html', r'storytime'),
     ('Trail of Treats', '/trailoftreats', r'trail of treats'),
     ('Yearbooks', 'yearbooks.html', r'yearbook'),
 ]
@@ -66,7 +68,8 @@ PARTNER_GROUPS = [('Student Council', 'student-council.html'), ('Sabre Nation', 
                   ('Friends of Music', 'https://www.schalmont.org/friends-of-music/'),
                   ('Friends of the Library', 'https://sites.google.com/schalmont.net/friendsofschalmontlibraries/home'),
                   ('Scouts', 'https://www.troop3054.org/'),
-                  ('Girl Scouts', 'https://www.girlscoutsneny.org')]
+                  ('Girl Scouts', 'https://www.girlscoutsneny.org'),
+                  ('Animal Protective Foundation (APF)', 'partners.html#apf')]
 ABOUT_ITEMS = [('About us', 'about.html'), ('Contact Us', 'contact.html'), ('Social Media', 'social.html')]
 # The district's parent apps (open in a new tab; no arrows, same look as the rest).
 SCHOOL_APPS = [('ParentSquare', 'https://www.parentsquare.com/signin'),
