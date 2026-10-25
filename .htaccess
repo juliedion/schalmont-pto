@@ -42,7 +42,7 @@ RewriteRule ^jes/([A-Za-z0-9_-]+)/?$ /jefferson/$1 [R=301,L]
 # -- that IS the real page's own address now, and self-redirecting it caused an
 # infinite redirect loop.)
 RewriteRule ^haunted-trail/?$ /trailoftreats [R=301,L]
-RewriteRule ^pto/trail-of-treats/?$ /trailoftreats [R=301,L]
+RewriteRule ^pto/trail-?of-?treats/?$ /trailoftreats [R=301,L]
 # The volunteer sign-ups now live on the main Trail of Treats page (p.html MERGE).
 RewriteRule ^(pto/)?trail-of-treats-volunteers/?$ /trailoftreats#volunteer [R=302,NE,L]
 

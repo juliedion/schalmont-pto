@@ -188,6 +188,9 @@
         '<p class="pg-topbox-code">31678</p>' +
         '<p><a class="pg-topbox-btn" href="https://registercw.com/registrant/registration" target="_blank" rel="noopener">Register &amp; shop at registercw.com →</a></p></div>'
     }; }
+    function pageFix() { return {
+      'OtQ77G5nO29JBGYySusM': { flyerUrl: '/images/flyers/light-the-loop.png' }   // Light the Loop - Class of 2028 (Julie, Oct 2026)
+    }; }
     function sendTo() { return { 'trail-of-treats-volunteers': '/trailoftreats#volunteer' }; }
 
     // Emoji-free text, for pages that ask for it (Julie: Trail of Treats).
@@ -310,6 +313,9 @@
         // Pages taken off the public site even though still published in the back office.
         if (!preview && p && /^trunk or treat 2026$/i.test(String(p.title || '').trim())) p = null;
         if (!p) { notFound(); return; }
+        // Site-kept fixes to a page's own fields (until they're made in the back office).
+        const pf = pageFix()[pId];
+        if (pf) p = Object.assign({}, p, pf, { blocks: (p.blocks || []).filter(b => !(b.type === 'image' && !b.url)) });   // drop empty "flyer goes here" photo blocks
 
         document.title = p.title + ' — Schalmont PTO';
         hero.textContent = p.title || 'Untitled page';
