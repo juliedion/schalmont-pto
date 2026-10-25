@@ -57,6 +57,7 @@
       <a class="sn-item" href="index.html">Home</a>
       <nav class="sn-main" aria-label="PTO events and pages">
         <a class="sn-item" href="/brawlfortheball" data-match="brawl">Brawl for the Ball</a>
+        <a class="sn-item" href="box-tops.html" data-match="box tops">Box Tops for Education</a>
         <a class="sn-item" href="/event?t=cheesy-fundraiser" data-match="cheesy">Cheesy Fundraiser</a>
         <a class="sn-item" href="/jefferson/fallfr" data-match="charleston">Charleston Wrap Fundraiser</a>
         <a class="sn-item" href="couponbook.html" data-match="coupon">Coupon Books</a>
@@ -154,26 +155,51 @@
   </section>
 
 
-  <!-- FLYER -->
+  <!-- FLYERS -->
   <section class="section">
-    <div class="container" style="max-width:780px">
+    <div class="container" style="max-width:1000px">
+      <style>
+        .bt-code { background: #fff; border: 3px solid #c8102e; border-radius: 18px; padding: 20px 24px; text-align: center; margin: 0 auto 28px; max-width: 640px; }
+        .bt-code b { display: block; font-size: clamp(28px, 4vw, 40px); letter-spacing: .08em; color: #1b2a4a; margin: 4px 0; }
+        .bt-flyers { display: grid; grid-template-columns: minmax(0, .75fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+        .bt-flyers figure { margin: 0; }
+        .bt-flyers img { width: 100%; height: auto; display: block; border-radius: 14px; box-shadow: 0 8px 30px rgba(0,0,0,.15); background: #fff; }
+        .bt-flyers figcaption { text-align: center; font-size: 14px; color: var(--text-light); margin-top: 8px; }
+        .bt-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 0 0 24px; text-align: center; }
+        .bt-step { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px 12px; }
+        .bt-step b { display: block; font-size: 20px; letter-spacing: .04em; }
+        .bt-step span { font-size: 14.5px; color: var(--text); }
+        @media (max-width: 760px) { .bt-flyers, .bt-steps { grid-template-columns: 1fr; } }
+      </style>
 
-      <div style="text-align:center;margin-bottom:40px">
-        <img src="images/gallery/box-tops/box-tops.jpg"
-             alt="Box Tops for Education Flyer"
-             style="width:100%;height:auto;display:block;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg)">
+      <div class="bt-code">
+        <div style="font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#c8102e">Jefferson Elementary's referral code</div>
+        <b>I61P24UG</b>
+        <p style="margin:0;font-size:15px">Download the Box Tops app, choose <strong>Jefferson Elementary School, Schenectady, NY</strong>, and enter this code (or scan the QR code below).</p>
       </div>
 
-      <div style="background:var(--light-bg);border-radius:var(--radius-lg);padding:32px;text-align:center">
-        <h2 style="margin-bottom:12px">How It Works</h2>
-        <div class="accent-line" style="margin:0 auto 20px"></div>
-        <p style="font-size:16px;line-height:1.7;color:var(--text-light);max-width:560px;margin:0 auto 28px">Download the free Box Tops for Education app, shop for participating products, and scan your receipt. Each Box Top earns $0.10 for Jefferson Elementary — it adds up fast!</p>
-        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
-          <a href="https://www.boxtops4education.com" target="_blank" rel="noopener" class="btn btn-primary">Download the App →</a>
-          <a href="fundraisers-jefferson.html" class="btn btn-outline">Back to Fundraisers</a>
-        </div>
+      <div class="bt-steps">
+        <div class="bt-step"><b style="color:#38a9c4">SCAN</b><span>qualifying receipts in the app</span></div>
+        <div class="bt-step"><b style="color:#d81e4b">SUBMIT</b><span>qualifying digital receipts in the app</span></div>
+        <div class="bt-step"><b style="color:#e8a325">CONNECT</b><span>your Walmart and Box Tops accounts</span></div>
+      </div>
+      <p style="text-align:center;font-size:16px;line-height:1.7;max-width:720px;margin:0 auto 28px">Hundreds of products you already buy earn cash for Jefferson. Online shoppers can earn too: order groceries for delivery or pickup, request an email receipt at checkout, or shop with your connected Walmart account.</p>
+
+      <div class="bt-flyers">
+        <figure>
+          <a href="/images/flyers/box-tops-jefferson-code.jpg" target="_blank" rel="noopener"><img src="/images/flyers/box-tops-jefferson-code.jpg" width="900" height="1260" alt="Box Tops for Education: Jefferson Elementary School, Schenectady, NY. QR code. Referral code I61P24UG."></a>
+          <figcaption>Scan to join Jefferson's Box Tops team</figcaption>
+        </figure>
+        <figure>
+          <a href="/images/flyers/box-tops-how-it-works.jpg" target="_blank" rel="noopener"><img src="/images/flyers/box-tops-how-it-works.jpg" alt="Earn cash for schools with Box Tops. Here's how it works: scan qualifying receipts in the app, submit qualifying digital receipts in the app, connect your Walmart and Box Tops accounts. Online shoppers can earn with Box Tops too. See products and learn more at btfe.com."></a>
+          <figcaption>How Box Tops works (tap to enlarge)</figcaption>
+        </figure>
       </div>
 
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:30px">
+        <a href="https://www.boxtops4education.com" target="_blank" rel="noopener" class="btn btn-primary">Get the app &amp; see products at btfe.com →</a>
+        <a href="fundraisers-jefferson.html" class="btn btn-outline">Back to Fundraisers</a>
+      </div>
     </div>
   </section>
 

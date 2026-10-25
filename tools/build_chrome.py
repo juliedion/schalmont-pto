@@ -37,6 +37,7 @@ SCHOOLS = [
 # No backslashes in these: the menu is also stored inside a JavaScript string (js/site-chrome.js).
 MAIN_ITEMS = [
     ('Brawl for the Ball', '/brawlfortheball', r'brawl'),
+    ('Box Tops for Education', 'box-tops.html', r'box tops'),
     ('Cheesy Fundraiser', '/event?t=cheesy-fundraiser', r'cheesy'),
     ('Charleston Wrap Fundraiser', '/jefferson/fallfr', r'charleston'),
     ('Coupon Books', 'couponbook.html', r'coupon'),
