@@ -67,7 +67,7 @@ ICON = {
 }
 
 
-# Each school's own yearbook page (Woestina has none; its school page has a #yearbook section).
+# Each school's own yearbook page (Woestina has no yearbook, so no link).
 YEARBOOK = {'jefferson': 'yearbook-jefferson.html', 'middle': 'yearbook-middle.html', 'high': 'yearbook-high.html'}
 
 # Extra pages listed under a school in the sidebar (after Yearbook).
@@ -122,7 +122,7 @@ def header(p, style=''):
         f'        <li><a class="sh-top" href="{p}index.html">Home</a></li>',
         f'        <li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">Schools{down}</button>'
         f'<div class="sh-drop sh-drop-schools">{schools}<a class="sh-all" href="{p}schools.html">All schools →</a></div></li>',
-        f'        <li><a class="sh-top" href="{p}events.html">Calendar</a></li>',
+        f'        <li><a class="sh-top" href="{p}index.html#calendar">Calendar</a></li>',
         f'        <li><a class="sh-top" href="{p}yearbooks.html">Yearbooks</a></li>',
         '        ' + menus,
         f'        <li><a class="sh-top" href="{p}contact.html">Contact</a></li>',
@@ -148,7 +148,7 @@ def sidebar(p, extra=''):
            f'    {ICON["search"]}<input id="sn-q" name="q" type="search" placeholder="Search the site" autocomplete="off">',
            '  </form>'] + ([extra] if extra else []) + [
            f'  <a class="sn-item" href="{p}index.html">{ICON["home"]}<span>Home</span></a>',
-           f'  <a class="sn-item" href="{p}events.html">{ICON["cal"]}<span>Events calendar</span></a>',
+           f'  <a class="sn-item" href="{p}index.html#calendar">{ICON["cal"]}<span>Events calendar</span></a>',
            '  <div class="sn-label">Schools</div>']
     for key, name, grades, colour, page, classes in SCHOOLS:
         chips = ''.join(f'<a href="{p}{href}">{e(lbl)}</a>' for lbl, href in classes)
@@ -161,7 +161,7 @@ def sidebar(p, extra=''):
             f'    <div class="sn-sub sidenav-submenu" id="snav-{key}" hidden>',
             f'      <a class="sn-subitem" href="{p}{page}">School page</a>',
             f'      <a class="sn-subitem" href="{p}{page}#program-grid">Events &amp; programs</a>',
-            f'      <a class="sn-subitem" href="{p}{YEARBOOK.get(key, page + "#yearbook")}">Yearbook</a>',
+            *([f'      <a class="sn-subitem" href="{p}{YEARBOOK[key]}">Yearbook</a>'] if key in YEARBOOK else []),
             *[f'      <a class="sn-subitem" href="{p}{href}">{e(lbl)}</a>' for lbl, href in EXTRA_LINKS.get(key, [])],
             f'      <div class="sn-classes" aria-label="{e(name)} class pages"><span>Classes</span>{chips}</div>',
             '    </div>',
@@ -170,6 +170,7 @@ def sidebar(p, extra=''):
         out.append(f'  <div class="sn-label">{e(label)}</div>')
         out += [f'  <a class="sn-item sn-plain" href="{href}" target="_blank" rel="noopener">{e(t)} ↗</a>' if href.startswith('http')
                 else f'  <a class="sn-item sn-plain" href="{p}{href}">{e(t)}</a>' for t, href in links]
+    out.append('  <div class="sn-ad" data-ad="square"></div>')   # ad spot: filled from data/ads.json
     out.append('</aside>')
     return '\n'.join(out)
 
@@ -188,8 +189,8 @@ def add_assets(src, slash):
     """css/menus.css in <head>, js/menus.js before </body> -- exactly once each."""
     src = ASSETS_CSS.sub('', src)
     src = ASSETS_JS.sub('', src)
-    src = re.sub(r'(\n[ \t]*)</head>', lambda m: m.group(1) + f'  <link rel="stylesheet" href="{slash}css/menus.css?v=3">' + m.group(1) + '</head>', src, count=1)
-    return re.sub(r'(\n[ \t]*)</body>', lambda m: m.group(1) + f'  <script src="{slash}js/menus.js?v=1"></script>' + m.group(1) + '</body>', src, count=1)
+    src = re.sub(r'(\n[ \t]*)</head>', lambda m: m.group(1) + f'  <link rel="stylesheet" href="{slash}css/menus.css?v=4">' + m.group(1) + '</head>', src, count=1)
+    return re.sub(r'(\n[ \t]*)</body>', lambda m: m.group(1) + f'  <script src="{slash}js/menus.js?v=2"></script>' + m.group(1) + '</body>', src, count=1)
 
 
 def indent_block(block, indent):

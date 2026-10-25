@@ -108,7 +108,36 @@
     });
   }
 
-  function initAll(root) { initHeader(root); init(root); }
+  /* ---- Ad spots: every <div data-ad="banner|square"> on a page is filled from data/ads.json
+     (the one place to change ads). Several ads in a spot take turns; none -> "Advertise with us". */
+  var adsPromise = null;
+  function initAds() {
+    var spots = document.querySelectorAll('[data-ad]:not([data-ad-done])');
+    if (!spots.length) return;
+    if (!adsPromise) adsPromise = fetch('/data/ads.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).catch(function () { return {}; });
+    adsPromise.then(function (cfg) {
+      [].forEach.call(spots, function (el, n) {
+        el.setAttribute('data-ad-done', '');
+        var kind = el.getAttribute('data-ad'), list = (cfg[kind] || []).filter(function (a) { return a && a.img; });
+        el.classList.add('ad-spot', 'ad-' + kind);
+        if (!list.length) {
+          el.innerHTML = '<a class="ad-house" href="' + (cfg.advertiseLink || '/fundraisers.html#advertise') + '"><b>Your business here</b><span>Reach Schalmont families · Advertise with the PTO →</span></a>';
+          return;
+        }
+        el.innerHTML = '<span class="ad-label">Sponsor</span>' + list.map(function (a, i) {
+          return '<a class="ad-item" href="' + a.href + '" target="_blank" rel="noopener sponsored"' + (i ? ' hidden' : '') + '>' +
+            '<img src="' + a.img + '" alt="' + String(a.name || 'Sponsor').replace(/"/g, '&quot;') + ' (advertisement)" loading="lazy"></a>';
+        }).join('');
+        var items = el.querySelectorAll('.ad-item'), cur = (n + Math.floor(Math.random() * items.length)) % items.length;
+        [].forEach.call(items, function (it, i) { it.hidden = i !== cur; });
+        if (items.length > 1 && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+          setInterval(function () { items[cur].hidden = true; cur = (cur + 1) % items.length; items[cur].hidden = false; }, 10000);
+        }
+      });
+    });
+  }
+
+  function initAll(root) { initHeader(root); init(root); initAds(); }
   window.initSidenav = initAll;
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { initAll(); });
   else initAll();

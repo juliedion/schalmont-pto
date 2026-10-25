@@ -13,10 +13,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="css/styles.css?v=6">
-  <link rel="stylesheet" href="css/home.css?v=19">
+  <link rel="stylesheet" href="css/home.css?v=21">
   <link rel="preload" as="image" href="images/hero-wide/hero-01.jpg" fetchpriority="high">
   <link rel="icon" href="images/favicon.svg">
-  <link rel="stylesheet" href="css/menus.css?v=3">
+  <link rel="stylesheet" href="css/menus.css?v=4">
 </head>
 <body class="home2">
   <a class="hz-skip" href="#main">Skip to main content</a>
@@ -33,7 +33,7 @@
         <ul class="sh-list">
           <li><a class="sh-top" href="index.html">Home</a></li>
           <li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">Schools<svg class="sh-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="sh-drop sh-drop-schools"><a class="sh-school" href="woestina.html" style="--sc:#8bc341"><span class="sh-dot" aria-hidden="true"></span><span><b>Woestina Pre-K</b><small>Pre-K</small></span></a><a class="sh-school" href="jefferson.html" style="--sc:#6bb044"><span class="sh-dot" aria-hidden="true"></span><span><b>Jefferson Elementary</b><small>Grades K–4</small></span></a><a class="sh-school" href="middle-school.html" style="--sc:#087d40"><span class="sh-dot" aria-hidden="true"></span><span><b>Middle School</b><small>Grades 5–8</small></span></a><a class="sh-school" href="high-school.html" style="--sc:#044d2a"><span class="sh-dot" aria-hidden="true"></span><span><b>High School</b><small>Grades 9–12</small></span></a><a class="sh-all" href="schools.html">All schools →</a></div></li>
-          <li><a class="sh-top" href="events.html">Calendar</a></li>
+          <li><a class="sh-top" href="index.html#calendar">Calendar</a></li>
           <li><a class="sh-top" href="yearbooks.html">Yearbooks</a></li>
           <li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">Families<svg class="sh-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="sh-drop"><a href="picture-days.html">Picture days</a><a href="yearbooks.html">Yearbooks</a><a href="index.html#hz-lunch">Lunch menus</a><a href="directory.html">Parent directory</a><a href="gallery.html">Photo gallery</a><a href="sports.html">Sports</a><a href="family-scouts.html">Scouts</a></div></li><li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">Support<svg class="sh-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="sh-drop"><a href="volunteer.html">Volunteer</a><a href="donate.html">Donate</a><a href="fundraisers.html">Fundraisers</a><a href="shop.html">Spirit shop</a><a href="giftcards.html">Gift cards</a><a href="couponbook.html">Coupon book</a><a href="partners.html">Partner groups</a></div></li><li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">About<svg class="sh-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="sh-drop"><a href="about.html">About the PTO</a><a href="about.html#jefferson-pto">Woestina/Jefferson PTO</a><a href="about.html#schalmont-central-pto">Schalmont Central PTO</a><a href="meetings.html">Meetings</a><a href="faq.html">FAQs</a><a href="contact.html">Contact us</a><a href="social.html">Social media</a></div></li>
           <li><a class="sh-top" href="contact.html">Contact</a></li>
@@ -154,21 +154,28 @@
         </section>
 
         <section class="hz-card hz-card-nextweek" id="hz-next-week" aria-labelledby="hz-nw-title">
-          <div class="hz-dash-head">
+          <div class="hz-dash-head hz-wk-head">
             <h3 class="hz-card-title" id="hz-nw-title">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>
-              Reminder: Coming Up Next Week
+              Week at a Glance
             </h3>
-            <span class="hz-pill" id="hz-nw-pill">Next week</span>
+            <div class="hz-wk-tabs" role="tablist" aria-label="Choose a week">
+              <button type="button" role="tab" class="hz-wk-tab" id="hz-wk-this" aria-selected="true">This week</button>
+              <button type="button" role="tab" class="hz-wk-tab" id="hz-wk-next" aria-selected="false">Next week</button>
+            </div>
           </div>
-          <ul class="hz-events hz-te-list" id="hz-nw-list" aria-live="polite">
-            <li><span class="hz-skel" style="width:100%;height:48px"></span></li>
-            <li><span class="hz-skel" style="width:100%;height:48px;margin-top:8px"></span></li>
-          </ul>
-          <div class="hz-te-foot"><a class="hz-link" href="#hz-calendar-section">See the whole week on the calendar →</a></div>
+          <p class="hz-wk-range" id="hz-nw-pill"></p>
+          <div id="hz-nw-list" aria-live="polite">
+            <span class="hz-skel" style="width:100%;height:44px;margin-bottom:10px"></span>
+            <span class="hz-skel" style="width:100%;height:120px"></span>
+          </div>
+          <div class="hz-te-foot"><a class="hz-link" href="#calendar">See everything on the calendar →</a></div>
         </section>
 
       </div>
+
+      <!-- AD SPOT: homepage banner (ads come from data/ads.json) -->
+      <div class="home-ad" data-ad="banner"></div>
 
       <!-- THE DISTRICT'S PARENT APPS (run by the school district, not the PTO) -->
       <section class="hz-apps" id="school-apps" aria-labelledby="hz-apps-title">
@@ -288,12 +295,6 @@
           <a class="hz-pics-more" href="share-photos.html">Send in yearbook photos →</a>
         </div>
         <div class="hz-pics-grid hz-yb-grid">
-          <a class="hz-pic hz-yb-card" href="woestina.html#yearbook">
-            <span class="hz-pic-school">Woestina Pre-K</span>
-            <span class="hz-yb-status is-wait">Not yet confirmed</span>
-            <span class="hz-yb-price">Price not announced</span>
-            <span class="hz-pic-btn">Yearbook page →</span>
-          </a>
           <a class="hz-pic hz-yb-card" href="yearbook-jefferson.html">
             <span class="hz-pic-school">Jefferson Elementary · K–4</span>
             <span class="hz-yb-status is-wait">Not yet confirmed</span>
@@ -325,7 +326,7 @@
       <div class="hz-section-head"><div><p class="hz-kicker">Start with your child's school</p><h2 id="hz-schools-title">Find Your School</h2><p>Events, class pages, yearbooks and contacts for each school.</p></div><a href="schools.html" class="hz-link">All schools →</a></div>
       <div class="hz-schools">
         <div class="hz-school" style="--sc:#8bc341"><a href="woestina.html" class="hz-school-main"><b>Woestina Pre-K</b><span>Ages 3–4 · Woestina/Jefferson PTO</span><em>School page →</em></a>
-          <p class="hz-school-links"><a href="woestina.html#yearbook">Yearbook</a><a href="fundraisers-woestina.html">Fundraisers</a></p>
+          <p class="hz-school-links"><a href="fundraisers-woestina.html">Fundraisers</a></p>
           <nav class="hz-classes" aria-label="Woestina class pages"><a href="classof2040.html">Class of 2040 · Pre-K</a></nav></div>
         <div class="hz-school" style="--sc:#6bb044"><a href="jefferson.html" class="hz-school-main"><b>Jefferson Elementary</b><span>Grades K–4 · Woestina/Jefferson PTO</span><em>School page →</em></a>
           <p class="hz-school-links"><a href="yearbook-jefferson.html">Yearbook</a><a href="school-supplies.html">Supplies</a><a href="fundraisers-jefferson.html">Fundraisers</a></p>
@@ -396,7 +397,7 @@
           <h2 id="hz-cal-title">PTO &amp; District Calendar</h2>
           <p>What's coming up over the next five weeks, from both PTOs and the district. Tap any event for details.</p>
         </div>
-        <a href="events.html" class="hz-link">Open the events page →</a>
+        <a href="index.html#calendar" class="hz-link">Open the events page →</a>
       </div>
       <div class="hz-card hz-cal-card">
         <div class="hz-cal-bar">
@@ -508,7 +509,10 @@
   </main>
 
   <!-- Homepage dashboard: runs immediately; event panels wait for Firebase below -->
-  <script src="js/home.js?v=18"></script>
+  <script src="js/home.js?v=21"></script>
+
+  <!-- AD SPOT: bottom banner, same as every other page (data/ads.json) -->
+  <div class="home-ad" data-ad="banner" style="margin-bottom:26px"></div>
 
   <section class="partners-section">
     <div class="partners-section-header">
@@ -597,7 +601,7 @@
         <div>
           <div class="footer-heading">Quick Links</div>
           <ul class="footer-links">
-            <li><a href="events.html">Events Calendar</a></li>
+            <li><a href="index.html#calendar">Events Calendar</a></li>
             <li><a href="directory.html">Parent Directory</a></li>
             <li><a href="shop.html">Shop</a></li>
             <li><a href="fundraisers.html">Fundraisers</a></li>
@@ -613,10 +617,7 @@
         </div>
         <div class="footer-ad-col">
 
-          <div class="footer-ad-box" style="padding:0;overflow:hidden;border-radius:var(--radius)">
-            <a href="https://www.namebubbles.com/?rfsn=8825780.ef49f8" id="footer-ad-img-1" target="_blank" rel="noopener" style="display:block"><img src="images/Ads/Square/Name-Bubbles-Schalmont-Ad1-square.jpg" alt="Advertisement" class="footer-ad-img" style="width:100%;display:block"></a>
-            <a href="https://tinyurl.com/3e4rd8vr" id="footer-ad-img-2" target="_blank" rel="noopener" style="display:none"><img src="images/Ads/Square/Squaress-ad2026.jpg" alt="Advertisement" class="footer-ad-img" style="width:100%;display:block"></a>
-          </div>
+          <div class="footer-ad-box" data-ad="square"></div>
         </div>
       </div>
       <div class="footer-bottom">
@@ -641,6 +642,6 @@
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
   <script src="js/public-calendar.js?v=7"></script>
-  <script src="js/menus.js?v=1"></script>
+  <script src="js/menus.js?v=2"></script>
 </body>
 </html>

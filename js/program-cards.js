@@ -415,22 +415,6 @@ const PROGRAM_CARDS_DEFAULTS = {
       "order": 0
     },
     {
-      "id": "yearbook",
-      "icon": "📷",
-      "title": "Yearbook",
-      "badgeType": "active",
-      "badgeText": "Photos Wanted",
-      "desc": "Have photos from a Woestina Pre-K event or classroom activity? Share them for the yearbook — no Dropbox account needed. Please name your files with the event and class if you can.",
-      "actions": [
-        {
-          "label": "📤 Upload Back to School Photos →",
-          "href": "https://www.dropbox.com/request/px5b11gupoytiyeofcvo",
-          "cls": "btn btn-primary"
-        }
-      ],
-      "order": 1
-    },
-    {
       "id": "staff-appreciation",
       "icon": "🌟",
       "title": "Staff Appreciation Week",

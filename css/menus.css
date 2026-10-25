@@ -160,3 +160,20 @@
 .sn-sublabel { font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #6b7d71; padding: 10px 8px 3px; }
 .sn :focus-visible { outline: 3px solid #a5e54a; outline-offset: 1px; }
 .sn .sn-sub { border-left: 0; background: none; margin: 0; }   /* drop the old .sidenav-submenu look */
+
+/* ---- Ad spots (filled by js/menus.js from data/ads.json) ---- */
+.ad-spot { position: relative; }
+.ad-spot .ad-item { display: block; line-height: 0; border-radius: 10px; overflow: hidden; }
+.ad-spot .ad-item[hidden] { display: none; }
+.ad-spot img { width: 100%; height: auto; display: block; }
+.ad-spot .ad-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #8a948f; margin: 0 0 4px; line-height: 1.2; }
+.ad-banner { max-width: 728px; margin: 0 auto; }
+.ad-house { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center; padding: 18px 14px;
+  border: 2px dashed #b9d8c4; border-radius: 12px; background: #f4faf6; color: #1a3d24; text-decoration: none; line-height: 1.3; }
+.ad-house b { font-size: 15px; }
+.ad-house span { font-size: 12.5px; color: #4b6355; }
+.ad-house:hover { border-color: #007A3D; background: #eaf6ee; }
+.ad-square .ad-house { min-height: 160px; }
+.sn-ad { margin: 18px 12px 8px; }
+.home-ad { margin: 26px auto 4px; padding: 0 16px; }
+

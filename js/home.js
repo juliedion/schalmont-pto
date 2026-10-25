@@ -549,10 +549,73 @@
     var todayList = $('#hz-te-list'), weekList = $('#hz-nw-list');
     if (!todayList) return;
     var today = etYMD();
-    // "Next week" = the coming Monday through Sunday (on a Sunday, that's tomorrow on).
-    var mon = addDays(today, dow(today) === 0 ? 1 : 8 - dow(today)), sun = addDays(mon, 6);
     $('#hz-te-pill').textContent = fmt(today, { weekday: 'short', month: 'short', day: 'numeric' });
-    $('#hz-nw-pill').textContent = fmt(mon, { month: 'short', day: 'numeric' }) + ' – ' + fmt(sun, { month: 'short', day: 'numeric' });
+
+    /* ---- WEEK AT A GLANCE: "This week" / "Next week" tabs. A school week runs Mon-Sun; on a
+       Saturday or Sunday, "this week" is the one about to start. Top: a "Don't miss" strip of
+       deadlines and schedule changes; then things running all week; then one column per day. */
+    var allEvents = [], weekOffset = 0;
+    var thisMon = addDays(today, dow(today) === 0 ? 1 : dow(today) === 6 ? 2 : 1 - dow(today));
+    var SCHEDULE = /no school|school closed|schools? closed|early (dismissal|release)|half[ -]?day|delay(ed)? (opening|start)|recess|holiday (break|recess)|superintendent|conference day|parent conferences/i;
+    var DEADLINE = /deadline|due|last day|orders?\b|closes?|ends?\b|final|registration|register|sign[ -]?ups?|rsvp|vote|voting|retake|picture day/i;
+    function shortDay(ymd) { return fmt(ymd, { weekday: 'short', month: 'short', day: 'numeric' }); }
+    function link(e, cls) { return e.href ? '<a class="' + (cls || '') + '" href="' + esc(e.href) + '">' + esc(e.title) + '</a>' : esc(e.title); }
+    function renderWeek() {
+      var mon = addDays(thisMon, weekOffset * 7), sun = addDays(mon, 6);
+      $('#hz-nw-pill').textContent = fmt(mon, { weekday: 'long', month: 'long', day: 'numeric' }) + ' – ' + fmt(addDays(mon, 4), { weekday: 'long', month: 'long', day: 'numeric' });
+      $('#hz-wk-this').setAttribute('aria-selected', weekOffset ? 'false' : 'true');
+      $('#hz-wk-next').setAttribute('aria-selected', weekOffset ? 'true' : 'false');
+      var multi = function (e) { return e.endDate && e.endDate > e.date; };
+      var wk = dedupe(allEvents.filter(function (e) { return e.date <= sun && (e.endDate || e.date) >= mon; }).sort(byStartTime));
+      var span = function (e) { return Math.round((ymdDate(e.endDate) - ymdDate(e.date)) / 864e5) + 1; };
+      var longOnes = wk.filter(function (e) { return multi(e) && span(e) >= 3; });   // run across the week
+      var dayOnes = wk.filter(function (e) { return longOnes.indexOf(e) < 0; });
+
+      // Don't miss: schedule changes, deadlines, and long-running things that END this week.
+      var alerts = [];
+      dayOnes.forEach(function (e) {
+        var kind = SCHEDULE.test(e.title) ? 'school' : DEADLINE.test(e.title) ? 'due' : '';
+        if (kind) alerts.push({ d: e.date < mon ? mon : e.date, kind: kind, html: link(e) });
+      });
+      longOnes.forEach(function (e) {
+        if (SCHEDULE.test(e.title)) alerts.push({ d: e.date < mon ? mon : e.date, kind: 'school', html: link(e) + ' <span>(through ' + esc(fmt(e.endDate, { weekday: 'short' })) + ')</span>' });
+        else if (e.endDate <= sun && span(e) >= 7) alerts.push({ d: e.endDate, kind: 'due', html: 'Last day: ' + link(e) });   // month-long fundraisers/drives, not a 5-day spirit week
+      });
+      alerts.sort(function (a, b) { return a.d < b.d ? -1 : a.d > b.d ? 1 : 0; });
+      var html = '';
+      if (alerts.length) {
+        html += '<div class="hz-wk-alerts" role="note"><p class="hz-wk-alerts-t">⚠️ Don\'t miss</p><ul>' + alerts.slice(0, 6).map(function (x) {
+          return '<li class="is-' + x.kind + '"><b>' + esc(shortDay(x.d)) + '</b><span class="hz-wk-ico" aria-hidden="true">' + (x.kind === 'school' ? '🏫' : '⏰') + '</span><span class="hz-wk-txt">' + x.html + '</span></li>';
+        }).join('') + '</ul></div>';
+      }
+      if (longOnes.length) {
+        html += '<div class="hz-wk-long"><span class="hz-wk-long-t">All week</span>' + longOnes.map(function (e) {
+          var from = e.date < mon ? 'Mon' : fmt(e.date, { weekday: 'short' }), to = e.endDate > sun ? 'Sun' : fmt(e.endDate, { weekday: 'short' });
+          return '<span class="hz-wk-chip" style="--c:' + GROUP_COLOR[e.group] + '">' + link(e) + ' <i>' + esc(from + '–' + to) + '</i></span>';
+        }).join('') + '</div>';
+      }
+      // Day columns: Mon-Fri, plus Sat/Sun only when something is on them.
+      var days = [];
+      for (var i = 0; i < 7; i++) {
+        var d = addDays(mon, i);
+        var list = dayOnes.filter(function (e) { return (e.date < mon ? mon : e.date) === d || (multi(e) && e.date <= d && e.endDate >= d); });
+        if (i < 5 || list.length) days.push({ d: d, list: list });
+      }
+      html += '<div class="hz-wk-days" style="--n:' + days.length + '">' + days.map(function (x) {
+        var isToday = x.d === today, past = x.d < today;
+        return '<div class="hz-wk-day' + (isToday ? ' is-today' : '') + (past ? ' is-past' : '') + '">' +
+          '<p class="hz-wk-dh"><span>' + esc(fmt(x.d, { weekday: 'short' })) + '</span><b>' + ymdDate(x.d).getUTCDate() + '</b>' + (isToday ? '<em>Today</em>' : '') + '</p>' +
+          (DAY_NOTES[x.d] ? '<a class="hz-wk-note" href="/spirit-week">💚 ' + esc(DAY_NOTES[x.d]) + '</a>' : '') +
+          (x.list.length ? '<ul>' + x.list.map(function (e) {
+            return '<li style="--c:' + GROUP_COLOR[e.group] + '">' + link(e) + '<small>' + esc(e.time ? prettyTime(e.time) : 'All day') + '</small></li>';
+          }).join('') + '</ul>' : '<p class="hz-wk-none">Nothing scheduled</p>') + '</div>';
+      }).join('') + '</div>';
+      if (!wk.length && !Object.keys(DAY_NOTES).some(function (d) { return d >= mon && d <= sun; }))
+        html = '<p class="hz-empty">Nothing posted for this week yet — check back soon!</p>';
+      weekList.innerHTML = html;
+    }
+    $('#hz-wk-this').onclick = function () { weekOffset = 0; renderWeek(); };
+    $('#hz-wk-next').onclick = function () { weekOffset = 1; renderWeek(); };
 
     loadEvents().then(function (events) {
       var multi = function (e) { return e.endDate && e.endDate > e.date; };
@@ -574,33 +637,11 @@
             esc(fmt(next.date, { weekday: 'short', month: 'short', day: 'numeric' })) : '') + '</li>';
       }
 
-      // NEXT WEEK: grouped by day. Something that started earlier (a month-long fundraiser)
-      // is listed once, under Monday, as "continuing".
-      var wk = dedupe(events.filter(function (e) { return e.date <= sun && (e.endDate || e.date) >= mon; }).sort(byStartTime));
-      var noteDays = Object.keys(DAY_NOTES).filter(function (d) { return d >= mon && d <= sun; });
-      if (!wk.length && !noteDays.length) {
-        weekList.innerHTML = '<li class="hz-empty">Nothing posted for next week yet — check back soon!</li>';
-        return;
-      }
-      // One block per day, so a day never splits across the card's two columns.
-      var days = {}, order = [], shown = wk.slice(0, 12);
-      shown.forEach(function (e) {
-        var day = e.date < mon ? mon : e.date;
-        if (!days[day]) { days[day] = []; order.push(day); }
-        var meta = multi(e)
-          ? (e.date < mon ? 'Continuing through ' : fmt(e.date, { weekday: 'short' }) + ' – ') + fmt(e.endDate, { weekday: 'short', month: 'short', day: 'numeric' })
-          : (e.time ? prettyTime(e.time) : 'All day');
-        days[day].push(dayEventHTML(e, meta));
-      });
-      noteDays.forEach(function (d) { if (!days[d]) { days[d] = []; order.push(d); } });
-      order.sort();
-      weekList.innerHTML = order.map(function (day) {
-        return '<li class="hz-te-block"><p class="hz-te-day">' + esc(fmt(day, { weekday: 'long', month: 'short', day: 'numeric' })) + '</p>' +
-          dayNoteHTML(day) + (days[day].length ? '<ul class="hz-events hz-te-list">' + days[day].join('') + '</ul>' : '') + '</li>';
-      }).join('') + (wk.length > shown.length ? '<li class="hz-empty">+ ' + (wk.length - shown.length) + ' more on the calendar</li>' : '');
+      allEvents = events;
+      renderWeek();
     }).catch(function () {
       var msg = '<li class="hz-empty">Events couldn\'t be loaded right now. <a class="hz-link" href="events.html">See the events page →</a></li>';
-      todayList.innerHTML = msg; weekList.innerHTML = msg;
+      todayList.innerHTML = msg; weekList.innerHTML = '<p class="hz-empty">Events couldn\'t be loaded right now. <a class="hz-link" href="events.html">See the events page →</a></p>';
     });
   }
 
@@ -619,14 +660,28 @@
     document.querySelectorAll('[data-cal-filter]').forEach(function (a) {
       a.addEventListener('click', function () { setFilter(a.getAttribute('data-cal-filter')); });
     });
-    // The nav's "Events" links (index.html#calendar-jefferson / #calendar-schalmont /
-    // #calendar-district) open the calendar already filtered to that PTO.
+    // Every "Events calendar" link on the site goes to index.html#calendar (all events); the PTO
+    // menus' Events links use #calendar-jefferson / -schalmont / -district to open it pre-filtered.
     function fromHash() {
-      var m = /^#calendar-(jefferson|schalmont|district|all)$/.exec(location.hash);
+      var m = /^#calendar(?:-(jefferson|schalmont|district|all))?$/.exec(location.hash);   // #calendar = everything
       if (!m) return;
-      setFilter(m[1]);
+      setFilter(m[1] || 'all');
       var sec = $('#hz-calendar-section');
-      if (sec) sec.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
+      if (!sec) return;
+      sec.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
+      // The cards above (letter days, lunch, events, photos) fill in after the jump and push the
+      // calendar down -- land on it again once they have, unless the visitor has scrolled away.
+      var start = Date.now(), moved = false;
+      var stop = function () { moved = true; };
+      window.addEventListener('wheel', stop, { once: true, passive: true });
+      window.addEventListener('touchmove', stop, { once: true, passive: true });
+      [700, 1600, 3000].forEach(function (ms) {
+        setTimeout(function () {
+          if (moved || Date.now() - start > 4000) return;
+          var top = sec.getBoundingClientRect().top;
+          if (Math.abs(top - 104) > 24) sec.scrollIntoView({ behavior: 'auto', block: 'start' });
+        }, ms);
+      });
     }
     window.addEventListener('hashchange', fromHash);
     fromHash();

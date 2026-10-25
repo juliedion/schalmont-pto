@@ -1525,7 +1525,7 @@ function initHomePage() {
             <div class="month">${getMonthName(d.getMonth()).slice(0,3)}</div>
           </div>
           <div class="announcement-content">
-            <h4><a href="events.html">${esc(ev.title)}</a></h4>
+            <h4><a href="index.html#calendar">${esc(ev.title)}</a></h4>
             <p>${ev.time ? ev.time + ' · ' : ''}${ev.location || ''}</p>
           </div>
         </div>`;
