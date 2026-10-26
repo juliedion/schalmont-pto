@@ -605,7 +605,7 @@
         var isToday = x.d === today, past = x.d < today;
         return '<div class="hz-wk-day' + (isToday ? ' is-today' : '') + (past ? ' is-past' : '') + '">' +
           '<p class="hz-wk-dh"><span>' + esc(fmt(x.d, { weekday: 'short' })) + '</span><b>' + ymdDate(x.d).getUTCDate() + '</b>' + (isToday ? '<em>Today</em>' : '') + '</p>' +
-          (DAY_NOTES[x.d] ? '<a class="hz-wk-note" href="/spirit-week">💚 ' + esc(DAY_NOTES[x.d]) + '<small>A Sabre Nation initiative</small></a>' : '') +
+          (DAY_NOTES[x.d] ? '<a class="hz-wk-note" href="/spirit-week">💚 MS Spirit Week: <b>' + esc(DAY_NOTES[x.d]) + '</b><small>A Sabre Nation initiative</small></a>' : '') +
           (x.list.length ? '<ul>' + x.list.map(function (e) {
             return '<li style="--c:' + GROUP_COLOR[e.group] + '">' + link(e) + '<small>' + esc(e.time ? prettyTime(e.time) : 'All day') + '</small></li>';
           }).join('') + '</ul>' : '<p class="hz-wk-none">Nothing scheduled</p>') + '</div>';

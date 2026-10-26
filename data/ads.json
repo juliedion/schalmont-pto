@@ -1,11 +1,11 @@
 {
   "_help": "Every ad on the website comes from this file. Three kinds of spots: 'banner' (wide, 728x90 image: the homepage banner under 'Today at Schalmont' and the banner at the bottom of every page), 'square' (300x250-ish image: bottom of the left menu on every page, and the footer). Each ad: img (path to the image in images/Ads/...), href (where a click goes), name (the business, used for screen readers). Several ads in one spot take turns every 10 seconds. An empty list shows an 'Advertise with us' box.",
   "banner": [
-    { "name": "Name Bubbles", "img": "/images/Ads/Banners/Name-bubbles-Schalmont-leader.jpg", "href": "https://www.namebubbles.com/?rfsn=8825780.ef49f8" },
+    { "name": "Rise Up Nutrition", "img": "/images/Ads/Banners/rise-up-nutrition-thank-you.png", "href": "https://www.facebook.com/Riseup518" },
     { "name": "Sponsor", "img": "/images/Ads/Banners/Leaderad-ss-2026.jpg", "href": "https://tinyurl.com/3e4rd8vr" }
   ],
   "square": [
-    { "name": "Name Bubbles", "img": "/images/Ads/Square/Name-Bubbles-Schalmont-Ad1-square.jpg", "href": "https://www.namebubbles.com/?rfsn=8825780.ef49f8" },
+    { "name": "Rise Up Nutrition", "img": "/images/Ads/Banners/rise-up-nutrition-thank-you.png", "href": "https://www.facebook.com/Riseup518" },
     { "name": "Sponsor", "img": "/images/Ads/Square/Squaress-ad2026.jpg", "href": "https://tinyurl.com/3e4rd8vr" }
   ],
   "advertiseLink": "/fundraisers.html#advertise"
