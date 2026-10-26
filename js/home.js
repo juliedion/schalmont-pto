@@ -466,10 +466,10 @@
         var g = GROUP[e.school == null ? '' : e.school] || 'schalmont';
         var key = g + '|' + normTitle(e.title) + '|' + e.date;
         var have = byKey[key];
-        var ev = { title: decode(e.title), date: e.date, endDate: e.endDate || '', time: e.time || '', location: e.location || '', href: e.href || null, group: g };
+        var ev = { title: decode(e.title), date: e.date, endDate: e.endDate || '', time: e.time || '', location: e.location || '', href: e.href || null, group: g, allCals: !!e.allCals };
         if (!have) { byKey[key] = ev; return; }
         have.time = have.time || ev.time; have.location = have.location || ev.location;
-        have.href = have.href || ev.href; have.endDate = have.endDate || ev.endDate;
+        have.href = have.href || ev.href; have.endDate = have.endDate || ev.endDate; have.allCals = have.allCals || ev.allCals;
       });
       return Object.keys(byKey).map(function (k) { return byKey[k]; });
     });
@@ -720,7 +720,7 @@
             ok(events.filter(function (e) {
               if ((e.endDate || e.date) < calToday) return false;   // already over
               if (isList && (e.endDate || e.date) < rangeStart) return false;
-              return calFilter === 'all' || e.group === calFilter;
+              return calFilter === 'all' || e.group === calFilter || (e.allCals && calFilter !== 'district');
             }).map(function (e) {
               if (isList && e.endDate && e.endDate > e.date) {
                 return {

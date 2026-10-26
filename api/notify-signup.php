@@ -69,8 +69,18 @@ function fsVal($doc, $field, $default = '') {
 $sheet = fsGet("$BASE/signups/$sheetId");
 if (!$sheet) bail(404, 'Sign-up sheet not found.');
 $notifyRaw = fsVal($sheet, 'notifyEmails', '');
+// Always alerted about every sign-up on every sheet (Julie, Oct 2026), on top of each
+// sheet's own "notify" list from the back office.
+$ALWAYS_NOTIFY = ['julie@schalmontpto.com'];
 $notifyList = array_values(array_filter(array_map('trim', explode(',', $notifyRaw)), function ($e) {
   return $e !== '' && filter_var($e, FILTER_VALIDATE_EMAIL);
+}));
+$seen = [];
+$notifyList = array_values(array_filter(array_merge($ALWAYS_NOTIFY, $notifyList), function ($e) use (&$seen) {
+  $k = strtolower($e);
+  if (isset($seen[$k])) return false;
+  $seen[$k] = true;
+  return true;
 }));
 
 $entry = fsGet("$BASE/signups/$sheetId/entries/$entryId");
@@ -87,6 +97,9 @@ $orgEmail = fsVal($sheet, 'contactEmail', '');
 $slotLabel = $slot ? fsVal($slot, 'label', '') : '';
 $slotDate = $slot ? fsVal($slot, 'date', '') : '';
 $slotStart = $slot ? fsVal($slot, 'start', '') : '';
+$slotTaken = $slot ? (int)fsVal($slot, 'taken', 0) : 0;
+$slotCap = $slot ? (int)fsVal($slot, 'capacity', 0) : 0;
+$count = (int)fsVal($entry, 'count', 1);
 
 $when = trim(implode(' · ', array_filter([$slotLabel, $slotDate, $slotStart])));
 $headers = "From: Schalmont PTO Sign-Ups <noreply@schalmontpto.com>\r\n" .
@@ -115,7 +128,10 @@ if ($notifyList) {
     "$signerName just signed up for \"$sheetTitle\".",
     '',
     $when ? "Slot: $when" : null,
+    $count > 1 ? "Number of people: $count" : null,
     $item ? "Bringing: $item" : null,
+    $signerEmail ? "Their email: $signerEmail" : null,
+    $slot ? ('Spots filled: ' . $slotTaken . ($slotCap ? " of $slotCap" : '')) : null,
     '',
     "View the full list (Back Office sign-in required): $viewUrl",
   ];

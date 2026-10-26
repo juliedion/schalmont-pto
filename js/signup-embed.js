@@ -269,7 +269,7 @@
     var slotId = slotEl.dataset.slot;
     var name = form.name.value.trim();
     var count = 1;   // one sign-up = one spot; people no longer pick how many
-    var email = form.email.value.trim(), phone = form.phone.value.trim(), comment = form.comment.value.trim();
+    var email = form.email.value.trim().toLowerCase(), phone = form.phone.value.trim(), comment = form.comment.value.trim();
     var item = form.item ? form.item.value.trim() : '';
     var workSchool = form.workSchool ? form.workSchool.value : '';
     var birthdate = form.birthdate ? form.birthdate.value : '';
@@ -321,6 +321,24 @@
     });
   }
 
+  // The email check is exact, and phones often capitalize the first letter typed into the
+  // prompt (or the email was signed up with capitals). Try the email as typed, all
+  // lowercase, and with only the first letter lowered, stopping at the first that matches.
+  function cancelWithEmail(entryRef, email) {
+    var tries = [email, email.toLowerCase(), email.charAt(0).toLowerCase() + email.slice(1)]
+      .filter(function (v, i, a) { return a.indexOf(v) === i; });
+    var i = 0;
+    function next(err) {
+      if (i >= tries.length) return Promise.reject(err);
+      var e = tries[i++];
+      return entryRef.update({ cancelled: true, checkEmail: e }).catch(function (x) {
+        if (x && x.code === 'permission-denied') return next(x);
+        throw x;
+      });
+    }
+    return next({ code: 'permission-denied' });
+  }
+
   // Cancels entryId (rolling its slot's taken count back), verified by re-typing the
   // signup email. If asEdit, re-opens the sign-up form on that slot pre-filled with the
   // old answers once the cancel succeeds, so "editing" is just cancel + resubmit.
@@ -337,7 +355,7 @@
       priorCount = snap.data().count || 1;
       var mine = getMine(id).filter(function (m) { return m.entryId === entryId; })[0];
       priorFields = mine || {};
-      return entryRef.update({ cancelled: true, checkEmail: email });
+      return cancelWithEmail(entryRef, email);
     }).then(function () {
       return slotRef.get();
     }).then(function (slotSnap) {
@@ -354,7 +372,7 @@
       }
     }).catch(function (e) {
       window.alert(e.code === 'permission-denied'
-        ? 'That email doesn\'t match what you signed up with.'
+        ? 'That email doesn\'t match the one used for this sign-up. Check the spelling and try again, or contact the organizer to be removed.'
         : (e.message || 'Something went wrong — please try again.'));
     });
   }

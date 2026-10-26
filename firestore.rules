@@ -236,7 +236,8 @@ service cloud.firestore {
           && request.resource.data.cancelled == true
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['cancelled', 'checkEmail'])
           && request.resource.data.checkEmail is string
-          && get(/databases/$(database)/documents/signups/$(sid)/contacts/$(eid)).data.email == request.resource.data.checkEmail
+          // Case-insensitive: phones capitalize the first letter typed into the prompt.
+          && get(/databases/$(database)/documents/signups/$(sid)/contacts/$(eid)).data.email.lower() == request.resource.data.checkEmail.lower()
         ) || (
           // Marks the slot's taken-count rollback as done, so it can't be replayed.
           resource.data.get('cancelled', false) == true

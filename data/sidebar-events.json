@@ -44,7 +44,7 @@
    "href": "/merry-morning"
   },
   {
-   "title": "Brawl for the Ball Ticket Sales",
+   "title": "Brawl for the Ball Tickets On Sale",
    "date": "2026-10-25",
    "end": "2026-11-13",
    "href": "/brawlfortheball"
@@ -66,6 +66,12 @@
    "date": "2026-11-14",
    "end": "2026-11-14",
    "href": "/event?d=2026-11-14&t=high-school-craft-fair-pto-scouts-support"
+  },
+  {
+   "title": "Holiday Catalog Fundraiser",
+   "date": "2026-10-23",
+   "end": "2026-11-13",
+   "href": "/holiday"
   },
   {
    "title": "Holiday Food Drive: Holiday Boxes",

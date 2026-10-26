@@ -41,7 +41,7 @@
       .then(function (r) {
         var seen = {};
         return (r.events || []).concat(r.district || []).map(function (e) {
-          return { title: e.title, date: e.date, endDate: e.endDate || '', time: e.time || '', location: e.location || '', href: e.href || null, group: GROUP[e.school == null ? '' : e.school] || 'schalmont' };
+          return { title: e.title, date: e.date, endDate: e.endDate || '', time: e.time || '', location: e.location || '', href: e.href || null, allCals: !!e.allCals, group: GROUP[e.school == null ? '' : e.school] || 'schalmont' };
         }).filter(function (e) { var k = e.group + '|' + norm(e.title) + '|' + e.date; if (seen[k]) return false; seen[k] = 1; return true; });
       });
     return dataPromise;
@@ -101,7 +101,7 @@
           ok(events.filter(function (e) {
             if ((e.endDate || e.date) < today) return false;
             if (small && (e.endDate || e.date) < start) return false;
-            return filter === 'all' || e.group === filter;
+            return filter === 'all' || e.group === filter || (e.allCals && filter !== 'district');
           }).map(function (e) {
             var multi = e.endDate && e.endDate > e.date, c = { backgroundColor: COLOR[e.group], borderColor: COLOR[e.group], textColor: TEXT[e.group], extendedProps: e };
             if (small && multi) return Object.assign({ title: e.title + ' (through ' + fmt(e.endDate, { month: 'short', day: 'numeric' }) + ')', allDay: true, start: e.date < start ? start : e.date }, c);
