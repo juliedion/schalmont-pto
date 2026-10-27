@@ -108,6 +108,8 @@
      the shared menus on some pages) are marked and can't be edited here.
      ============================================================ */
   const API = '../api/live-edit.php';
+  const noHtml = (p) => String(p || '').replace(/\.html$/, '');
+  const withHtml = (p) => (p ? (/\.html$/.test(p) ? p : p + '.html') : '');
   const BLOCKED = ['login.html', 'signup.html', 'pending.html', 'p.html', 'admin-users.html', 'send-blast.html',
     'cancel-booking.html', 'massage-signup.html', 'raffle-signup.html', 'tat-teacher-order.html'];
   // Filled in by the page's own code -- shown, but not editable.
@@ -147,7 +149,8 @@
     $('le-publish').onclick = publish;
     $('le-history-btn').onclick = showHistory;
     window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
-    openPage(getParam('page') || 'index.html');
+    // Addresses carry the page without ".html" (Bluehost's firewall blocks "?page=name.html").
+    openPage(withHtml(getParam('page')) || 'index.html');
   });
 
   // Desktop 1366px, tablet 820px, phone 390px -- scaled down if the window is smaller.
@@ -169,7 +172,7 @@
     const t = await token();
     const r = body
       ? await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ idToken: t }, body)) })
-      : await fetch(API + '?' + new URLSearchParams(params), { headers: { Authorization: 'Bearer ' + t } });
+      : await fetch(API + '?' + new URLSearchParams(Object.assign({}, params, params.page ? { page: noHtml(params.page) } : {})), { headers: { Authorization: 'Bearer ' + t } });
     let j = {};
     try { j = await r.json(); } catch (_) { j = { ok: false, error: 'The server didn\'t answer (' + r.status + ').' }; }
     return j;
@@ -191,7 +194,7 @@
     if (BLOCKED.includes(p) || !/^[a-z0-9][a-z0-9-]*\.html$/.test(p)) p = 'index.html';
     page = p;
     $('le-page').value = p;
-    history.replaceState(null, '', '?page=' + encodeURIComponent(p));
+    history.replaceState(null, '', '?page=' + encodeURIComponent(noHtml(p)));
     $('le-view').href = '../' + (p === 'index.html' ? '' : p);
     setStatus('Loading…');
     $('le-publish').disabled = true;

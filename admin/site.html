@@ -233,7 +233,7 @@
           <span class="bo-homemap-n" aria-hidden="true">${i + 1}</span>
           <div class="bo-homemap-main"><b>${esc(t)}</b><p>${esc(d)}</p></div>
           <span class="bo-src ${SRC[src][0]}">${SRC[src][1]}</span>
-          ${src === 'design' && ME.isSuper ? '<a class="bo-btn ghost sm" href="live-edit.html?page=index.html">Edit on page</a>'
+          ${src === 'design' && ME.isSuper ? '<a class="bo-btn ghost sm" href="live-edit.html?page=index">Edit on page</a>'
             : act ? `<a class="bo-btn ${src === 'manage' ? '' : 'ghost'} sm" href="${act[1]}">${esc(act[0])}</a>` : '<span class="bo-homemap-spacer"></span>'}
         </li>`).join('');
     }
@@ -271,7 +271,7 @@
             const mail = 'mailto:julie@schalmontpto.com?subject=' + encodeURIComponent('Website change: ' + p.title) +
               '&body=' + encodeURIComponent('Hi Julie,\n\nPage: ' + p.title + '\n' + link + '\n\nWhat needs to change:\n\n');
             return `<div class="bo-built"><b>${esc(p.title)}</b><small>${esc(SITE + '/' + p.url.replace(/\.html$/, ''))}</small>
-              <span class="bo-built-actions">${ME.isSuper && p.url !== 'p.html' ? `<a href="live-edit.html?page=${encodeURIComponent(p.url)}">Edit on page</a>` : ''}<a href="../${esc(p.url)}" target="_blank" rel="noopener">View ↗</a>${ME.isSuper ? '' : `<a href="${mail}">Request a change</a>`}</span></div>`;
+              <span class="bo-built-actions">${ME.isSuper && p.url !== 'p.html' ? `<a href="live-edit.html?page=${encodeURIComponent(p.url.replace(/\.html$/, ''))}">Edit on page</a>` : ''}<a href="../${esc(p.url)}" target="_blank" rel="noopener">View ↗</a>${ME.isSuper ? '' : `<a href="${mail}">Request a change</a>`}</span></div>`;
           }).join('') + '</div></section>';
       }).join('');
       document.getElementById('built-list').innerHTML = html || '<p class="bo-empty">No built-in pages match.</p>';

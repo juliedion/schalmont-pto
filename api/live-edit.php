@@ -41,6 +41,8 @@ if (!$user) {
 }
 
 $page = (string)($in['page'] ?? '');
+// The editor sends "about" rather than "about.html" (Bluehost's firewall blocks "?page=name.html").
+if ($page !== '' && substr($page, -5) !== '.html') $page .= '.html';
 if (!live_edit_page_ok($page)) out(400, ['ok' => false, 'error' => 'That page can\'t be edited here.']);
 
 function gh($method, $path, $body = null) {
