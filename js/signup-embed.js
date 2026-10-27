@@ -24,7 +24,6 @@
 (function (global) {
   var WORK_SCHOOL_OPTIONS = ['Woestina', 'Jefferson', 'Middle School', 'High School', 'District', 'Other'];
   function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
-  var DEFAULT_AGE_NOTE = 'Volunteers for this role must be high school juniors, seniors, or adults.';
   // Today as YYYY-MM-DD in local time (the latest date of birth allowed).
   function todayYmd() { var t = new Date(); return t.getFullYear() + '-' + ('0' + (t.getMonth() + 1)).slice(-2) + '-' + ('0' + t.getDate()).slice(-2); }
   // The Intro field allows a small safe subset of HTML (bold/italic/underline, a
@@ -184,7 +183,9 @@
     if (sheet.intro) html += '<div class="pg-su-intro">' + sanitizeIntroHtml(sheet.intro) + '</div>';
     // A sheet can require a date of birth (e.g. roles limited to older students); say so up front.
     // A page can turn that off for its embedded sheets with window.SIGNUP_NO_DOB = true (p.html).
-    if (sheet.askBirthdate === true) html += '<div class="pg-su-age">🎂 ' + esc(sheet.ageNote || DEFAULT_AGE_NOTE) + (window.SIGNUP_NO_DOB ? '' : ' A date of birth is required to sign up.') + '</div>';
+    // Only a sheet's own age note is shown (no standard wording); plus the date-of-birth line when that field is asked.
+    var ageBits = [sheet.askBirthdate === true ? (sheet.ageNote || '') : '', (sheet.askBirthdate === true && !window.SIGNUP_NO_DOB) ? 'A date of birth is required to sign up.' : ''].filter(Boolean);
+    if (ageBits.length) html += '<div class="pg-su-age">🎂 ' + esc(ageBits.join(' ')) + '</div>';
     if (ov && ov.note) html += '<div class="pg-su-note" style="margin:8px 0;padding:10px 12px;border-radius:10px;background:#fff4e5;font-weight:700">' + ov.note + '</div>';
     if (sheet.imageUrl) {
       var imgMargin = alignMargin(sheet.imageAlign);
