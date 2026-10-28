@@ -24,7 +24,7 @@
     .pg-topbox-code { font-size:clamp(34px, 5vw, 52px) !important; font-weight:800; letter-spacing:.08em; color:#b3261e; line-height:1.1; }
     .pg-topbox-btn { display:inline-block; background:var(--primary); color:#fff !important; font-weight:800; border-radius:999px; padding:12px 22px; text-decoration:none; margin-top:4px; }
     .pg-topbox a:not(.pg-topbox-btn) { color:var(--primary); font-weight:700; }
-    .tot-flyers { display:grid; grid-template-columns:minmax(0, .7723fr) minmax(0, .7735fr) minmax(0, .6667fr); gap:18px; margin:18px 0 22px; align-items:start; }   /* widths ∝ each flyer's width/height, so all three are the same height */
+    .tot-flyers { display:grid; grid-template-columns:minmax(0, .7723fr) minmax(0, .6667fr); gap:18px; margin:18px 0 22px; align-items:start; }   /* widths ∝ each flyer's width/height, so both are the same height */
     .tot-flyers figure { margin:0; text-align:center; }
     .tot-flyers img { width:100%; height:auto; display:block; border-radius:12px; cursor:zoom-in; box-shadow:0 4px 16px rgba(0,0,0,.15); }
     .tot-flyers figcaption { margin-top:10px; }
@@ -201,13 +201,12 @@
       if (x && typeof x === 'object') { const o = {}; Object.keys(x).forEach(k => { o[k] = noEmoji(x[k]); }); return o; }
       return x;
     }
-    /* Trail of Treats layout (Julie, Oct 2026): "not a drop-off event" first, then the three flyers
+    /* Trail of Treats layout (Julie, Oct 2026): "not a drop-off event" first, then the flyers
        side by side (click = lightbox, link under each to download), the sign-up buttons, a big
        date line, then the page's own content minus the old flyer row, date line and candy flyer. */
     function trailLayout(blocks) {
       const flyers = [
         ['/uploads/pages/pto/20261002-100009-9131affe06.png', 'Haunted Trail of Treats flyer', 'Trail-of-Treats-Flyer.png'],
-        ['/images/flyers/trail-of-treats-danger.jpg', 'Trail of Treats needs you: danger of canceling this event', 'Trail-of-Treats-Needs-You.jpg'],
         ['/uploads/pages/pto/20261007-115513-82ee696148.jpg', 'Feed the Candy Monster: candy donations flyer', 'Feed-the-Candy-Monster.jpg']
       ];
       const row = '<div class="tot-flyers">' + flyers.map(f =>
