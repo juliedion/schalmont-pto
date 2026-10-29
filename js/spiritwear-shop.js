@@ -31,7 +31,7 @@
 
   let SW;
   try {
-    SW = await (await fetch('js/spiritwear-catalog.json?v=12', { cache: 'no-cache' })).json();
+    SW = await (await fetch('js/spiritwear-catalog.json?v=13', { cache: 'no-cache' })).json();
   } catch (e) {
     return;   // the "Coming Soon" notice stays up
   }
