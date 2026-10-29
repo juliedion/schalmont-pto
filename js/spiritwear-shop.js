@@ -60,9 +60,12 @@
     set(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   };
 
-  // How printed gift cards and coupon books get to people. Labels differ a little per item.
+  // How gift cards and coupon books get to people. Labels differ a little per item.
+  // The two email choices make an emailed gift card; the rest make a printed one.
   const DELIVERY = {
     gift: {
+      emailMe: ['📧 Email it to me', 'We’ll email you the code to use or pass along.'],
+      emailThem: ['💌 Email it to someone else', 'Sent straight to their inbox with your message.'],
       school: ['🏫 Deliver to school', 'We’ll send it home with your student.'],
       home: ['🏠 Deliver to a home', 'Local delivery around the Schalmont / Albany area.'],
       ship: ['🎁 Ship it wrapped', 'Mailed fully gift-wrapped and addressed.']
@@ -88,7 +91,8 @@
     group: 'all',
     search: ''
   };
-  const gift = { amount: SW.giftCards.amounts[1] || SW.giftCards.amounts[0], kind: 'print', sendTo: 'me', ship: 'school' };
+  const gift = { amount: SW.giftCards.amounts[1] || SW.giftCards.amounts[0], ship: 'emailMe' };
+  const isEmailShip = (ship) => ship === 'emailMe' || ship === 'emailThem';
   const coupon = { qty: 1, ship: 'school' };
 
   // Drop anything saved from an older version of the menu (and update old delivery names).
@@ -173,7 +177,12 @@
         add('Recipient name', i.toName);
         add('Recipient email', i.toEmail);
         add('Message', i.message);
+        add('From', i.fromName);
         add('__shopify_send_gift_card_to_recipient', 'on');
+      } else if (i.kind === 'email') {
+        add('To', i.toName);
+        add('From', i.fromName);
+        add('Message', i.message);
       }
       if (i.kind === 'print') {
         add('To', i.toName);
@@ -371,9 +380,13 @@
         <strong>${opts[k][0]}</strong><span>${opts[k][1]}</span>
       </button>`).join('');
     wrap.querySelector('.sw-school-fields').hidden = model.ship !== 'school';
-    wrap.querySelector('.sw-hint').textContent = model.ship === 'school'
-      ? 'Tell us who to give it to — no address needed.'
-      : 'You’ll enter the address at checkout.';
+    const emailFields = wrap.querySelector('.sw-email-fields');
+    if (emailFields) emailFields.hidden = model.ship !== 'emailThem';
+    wrap.querySelector('.sw-hint').textContent = {
+      school: 'Tell us who to give it to — no address needed.',
+      emailMe: 'It goes to the email you use at checkout.',
+      emailThem: 'We’ll email it to the person in “To,” with your message.'
+    }[model.ship] || 'You’ll enter the address at checkout.';
   }
 
   function readSchoolFields(kind) {
@@ -390,14 +403,6 @@
   function renderGift() {
     $('#sw-gc-amounts').innerHTML = SW.giftCards.amounts.map((a) =>
       `<button type="button" class="sw-size sw-gc-amount${a === gift.amount ? ' is-on' : ''}" data-gift="amount" data-val="${a}" aria-pressed="${a === gift.amount}">${money(a)}</button>`).join('');
-    root.querySelectorAll('[data-gift="kind"], [data-gift="sendTo"]').forEach((b) => {
-      const on = gift[b.dataset.gift] === b.dataset.val;
-      b.classList.toggle('is-on', on);
-      b.setAttribute('aria-pressed', on);
-    });
-    $('#sw-gc-email').hidden = gift.kind !== 'email';
-    $('#sw-gc-print').hidden = gift.kind !== 'print';
-    $('#sw-gc-recipient').hidden = !(gift.kind === 'email' && gift.sendTo === 'them');
     $('#sw-gc-price').textContent = money(gift.amount);
     renderDelivery('gift', gift);
   }
@@ -411,20 +416,18 @@
 
   function addGift() {
     const val = (id) => $(id).value.trim();
-    const item = { type: 'gift', amount: gift.amount, kind: gift.kind, qty: 1 };
-    if (gift.kind === 'email') {
-      item.sendTo = gift.sendTo;
-      if (gift.sendTo === 'them') {
-        item.toName = val('#sw-gc-to-name');
+    const item = { type: 'gift', amount: gift.amount, kind: isEmailShip(gift.ship) ? 'email' : 'print', ship: gift.ship, qty: 1 };
+    item.toName = val('#sw-gc-p-to');
+    item.fromName = val('#sw-gc-p-from');
+    item.message = val('#sw-gc-p-message');
+    if (item.kind === 'email') {
+      item.sendTo = gift.ship === 'emailThem' ? 'them' : 'me';
+      if (item.sendTo === 'them') {
         item.toEmail = val('#sw-gc-to-email');
-        item.message = val('#sw-gc-message');
-        if (!item.toName || !isEmail(item.toEmail)) return showError('#sw-gc-error', 'Please add the recipient’s name and a valid email address.');
+        if (!item.toName || !item.fromName) return showError('#sw-gc-error', 'Please fill in who the card is to and from.');
+        if (!isEmail(item.toEmail)) return showError('#sw-gc-error', 'Please add a valid email address for the recipient.');
       }
     } else {
-      item.toName = val('#sw-gc-p-to');
-      item.fromName = val('#sw-gc-p-from');
-      item.message = val('#sw-gc-p-message');
-      item.ship = gift.ship;
       if (!item.toName || !item.fromName) return showError('#sw-gc-error', 'Please fill in who the card is to and from.');
       if (gift.ship === 'school') {
         Object.assign(item, readSchoolFields('gift'));

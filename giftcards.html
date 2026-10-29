@@ -181,44 +181,25 @@
         <div class="sw-steps" id="sw-panel-gift">
           <div class="sw-step"><h3><span>1</span> Pick an amount</h3><div class="sw-size-row" id="sw-gc-amounts"></div></div>
           <div class="sw-step">
-            <h3><span>2</span> Printed card or email?</h3>
-            <div class="sw-gc-kinds">
-              <button type="button" class="sw-gc-kind" data-gift="kind" data-val="print"><strong>🎁 Printed gift card</strong><span>Delivered to school, to a home, or shipped wrapped &amp; addressed.</span></button>
-              <button type="button" class="sw-gc-kind" data-gift="kind" data-val="email"><strong>📧 Emailed gift card</strong><span>Arrives by email with a code to use online.</span></button>
+            <h3><span>2</span> Card details</h3>
+            <div class="sw-fields">
+              <label>To<input type="text" id="sw-gc-p-to" maxlength="60" autocomplete="off"></label>
+              <label>From<input type="text" id="sw-gc-p-from" maxlength="60" autocomplete="off"></label>
+              <label class="sw-field-wide">Message for the card <em>(optional)</em><textarea id="sw-gc-p-message" rows="2" maxlength="200"></textarea></label>
             </div>
           </div>
 
-          <div id="sw-gc-print">
           <div class="sw-step sw-delivery" data-for="gift">
             <h3><span>3</span> How should we deliver it?</h3>
             <div class="sw-delivery-opts"></div>
             <p class="sw-hint"></p>
+            <div class="sw-fields sw-email-fields">
+              <label class="sw-field-wide">Recipient's email<input type="email" id="sw-gc-to-email" maxlength="120" autocomplete="off"></label>
+            </div>
             <div class="sw-fields sw-school-fields">
               <label>Student's name<input type="text" name="student" maxlength="80" autocomplete="off"></label>
               <label>School<select name="school"></select></label>
               <label class="sw-field-wide">Teacher <em>(optional)</em><input type="text" name="teacher" maxlength="80" autocomplete="off"></label>
-            </div>
-          </div>
-            <div class="sw-step">
-              <h3><span>4</span> Card details</h3>
-              <div class="sw-fields">
-                <label>To<input type="text" id="sw-gc-p-to" maxlength="60" autocomplete="off"></label>
-                <label>From<input type="text" id="sw-gc-p-from" maxlength="60" autocomplete="off"></label>
-                <label class="sw-field-wide">Message for the card <em>(optional)</em><textarea id="sw-gc-p-message" rows="2" maxlength="200"></textarea></label>
-              </div>
-            </div>
-          </div>
-
-          <div class="sw-step" id="sw-gc-email" hidden>
-            <h3><span>3</span> Who's it for?</h3>
-            <div class="sw-tabs" style="margin-bottom:12px">
-              <button type="button" class="sw-tab" data-gift="sendTo" data-val="me">Email it to me</button>
-              <button type="button" class="sw-tab" data-gift="sendTo" data-val="them">Email it to someone else</button>
-            </div>
-            <div class="sw-fields" id="sw-gc-recipient">
-              <label>Recipient's name<input type="text" id="sw-gc-to-name" maxlength="80" autocomplete="off"></label>
-              <label>Recipient's email<input type="email" id="sw-gc-to-email" maxlength="120" autocomplete="off"></label>
-              <label class="sw-field-wide">Message <em>(optional)</em><textarea id="sw-gc-message" rows="2" maxlength="200"></textarea></label>
             </div>
           </div>
 
@@ -335,7 +316,7 @@
   <script src="js/app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="js/page-menu.js?v=4"></script>
-  <script src="js/spiritwear-shop.js?v=15"></script>
+  <script src="js/spiritwear-shop.js?v=16"></script>
   <script src="js/menus.js?v=5"></script>
 </body>
 </html>
