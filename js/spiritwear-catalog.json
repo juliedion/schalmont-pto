@@ -124,7 +124,7 @@
     "image": "images/spiritwear/giftcard.webp",
     "emailHandle": "gift-card",
     "printedHandle": "printed-gift-card",
-    "printedDelivery": ["school", "home", "ship"]
+    "printedDelivery": ["school", "ship"]
   },
   "couponBook": {
     "name": "SaveAround Coupon Book",

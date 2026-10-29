@@ -31,7 +31,7 @@
 
   let SW;
   try {
-    SW = await (await fetch('js/spiritwear-catalog.json?v=15', { cache: 'no-cache' })).json();
+    SW = await (await fetch('js/spiritwear-catalog.json?v=16', { cache: 'no-cache' })).json();
   } catch (e) {
     return;   // the "Coming Soon" notice stays up
   }
@@ -67,7 +67,6 @@
       emailMe: ['📧 Email it to me', 'We’ll email you the code to use or pass along.'],
       emailThem: ['💌 Email it to someone else', 'Sent straight to their inbox with your message.'],
       school: ['🏫 Deliver to school', 'We’ll send it home with your student.'],
-      home: ['🏠 Deliver to a home', 'Local delivery around the Schalmont / Albany area.'],
       ship: ['🎁 Ship it wrapped', 'Mailed fully gift-wrapped and addressed.']
     },
     coupon: {

@@ -85,7 +85,7 @@ GIFT_CARD_AD = '\n'.join([
     '    <b class="sidenav-gc-soon" data-soon>Coming soon</b>',
     '    <img src="images/spiritwear/giftcard.webp" alt="Schalmont Spiritwear Shoppe gift card">',
     '    <strong>Give the gift of Sabre spirit!</strong>',
-    '    <span>Gift cards delivered to school, to a home, or shipped wrapped &amp; addressed.</span>',
+    '    <span>Gift cards emailed, delivered to school, or shipped wrapped &amp; addressed.</span>',
     '    <em>See gift cards →</em>',
     '  </a>'])
 SIDEBAR_EXTRA = {'shop.html': GIFT_CARD_AD, 'couponbook.html': GIFT_CARD_AD}
