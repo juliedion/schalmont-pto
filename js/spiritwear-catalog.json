@@ -15,7 +15,7 @@
       "shopifyHandle": "short-sleeve-tee",
       "back": [27, 25, 46, 34],
       "front": [29, 28, 42, 30],
-      "chest": [56, 28, 13, 7.7],
+      "chest": [56, 28, 13, 9.5],
       "colors": ["black", "white", "green", "brightgreen", "heather"]
     },
     {
@@ -25,7 +25,7 @@
       "shopifyHandle": "long-sleeve-tee",
       "back": [30, 24, 40, 32],
       "front": [31, 27, 38, 28],
-      "chest": [56, 26, 12, 6.8],
+      "chest": [56, 26, 12, 8.5],
       "colors": ["black", "white", "green", "brightgreen", "heather"]
     },
     {
@@ -35,7 +35,7 @@
       "shopifyHandle": "hoodie",
       "back": [29, 33, 42, 30],
       "front": [31, 31, 38, 20],
-      "chest": [56, 36, 12, 6.8],
+      "chest": [56, 36, 12, 8.5],
       "colors": ["black", "white", "green", "brightgreen", "heather"]
     },
     {
@@ -45,7 +45,7 @@
       "shopifyHandle": "crewneck",
       "back": [29, 25, 42, 32],
       "front": [30, 28, 40, 28],
-      "chest": [56, 27, 12, 6.8],
+      "chest": [56, 27, 12, 8.5],
       "colors": ["black", "white", "green", "brightgreen", "heather"]
     },
     {
@@ -55,7 +55,7 @@
       "shopifyHandle": "performance-hooded-tee",
       "back": [31, 31, 38, 30],
       "front": [32, 30, 36, 26],
-      "chest": [56, 31, 11, 6.8],
+      "chest": [56, 31, 11, 8],
       "colors": ["white", "black", "heather", "mediumgray", "olive"],
       "sizeGroups": ["Adult"]
     },
@@ -66,7 +66,7 @@
       "shopifyHandle": "youth-performance-hooded-tee",
       "back": [31, 31, 38, 30],
       "front": [32, 30, 36, 26],
-      "chest": [56, 31, 11, 6.8],
+      "chest": [56, 31, 11, 8],
       "colors": ["white", "black", "sportforest", "sportgraphite", "sportsilver"],
       "sizeGroups": ["Youth"]
     }
@@ -109,12 +109,14 @@
     {
       "id": "shield",
       "name": "Shield",
-      "price": 0
+      "price": 0,
+      "colors": ["brightgreen", "darkgreen", "black"]
     },
     {
       "id": "sabres",
       "name": "SABRES",
-      "price": 0
+      "price": 0,
+      "colors": ["white", "darkgreen", "black", "brightgreen"]
     }
   ],
   "logoColors": [

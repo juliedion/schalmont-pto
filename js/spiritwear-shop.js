@@ -31,7 +31,7 @@
 
   let SW;
   try {
-    SW = await (await fetch('js/spiritwear-catalog.json?v=17', { cache: 'no-cache' })).json();
+    SW = await (await fetch('js/spiritwear-catalog.json?v=18', { cache: 'no-cache' })).json();
   } catch (e) {
     return;   // the "Coming Soon" notice stays up
   }
@@ -95,12 +95,22 @@
   const isEmailShip = (ship) => ship === 'emailMe' || ship === 'emailThem';
   const coupon = { qty: 1, ship: 'school' };
 
-  // Drop anything saved from an older version of the menu (and update old delivery names).
-  // Shirts saved before front logos came in colors get the default color for their shirt.
-  const defaultLogoColor = (colorId) => ((byId(SW.colors, colorId) || {}).tone === 'light' ? 'darkgreen' : 'white');
+  // Each front logo lists the ink colors it comes in. Default: a logo that comes in white (SABRES)
+  // starts white on dark shirts and dark green on light ones; any other (the shield) starts in
+  // its first color, its own green.
+  const logoColorsFor = (logoId) => (byId(SW.frontLogos, logoId) || {}).colors || [];
+  const defaultLogoColor = (logoId, colorId) => {
+    const allowed = logoColorsFor(logoId);
+    if (!allowed.includes('white')) return allowed[0];
+    return (byId(SW.colors, colorId) || {}).tone === 'light' ? 'darkgreen' : 'white';
+  };
+  // A color picked for one logo carries over to the other only if that logo comes in it.
+  const logoColorOf = (item) => (logoColorsFor(item.logo).includes(item.logoColor) ? item.logoColor : defaultLogoColor(item.logo, item.color));
+  // Drop anything saved from an older version of the menu (and update old delivery names, and give
+  // front logos saved without a color, or in one that logo no longer comes in, its default).
   let cart = (store.get(CART_KEY) || []).map((i) => ({ type: 'shirt', ...i })).map((i) =>
     (i.type === 'gift' && i.ship === 'local' ? { ...i, ship: 'home' } : i)).map((i) =>
-    (i.type === 'shirt' && i.logo && i.logo !== 'none' && !byId(SW.logoColors, i.logoColor) ? { ...i, logoColor: defaultLogoColor(i.color) } : i)).filter((i) => {
+    (i.type === 'shirt' && i.logo && i.logo !== 'none' ? { ...i, logoColor: logoColorOf(i) } : i)).filter((i) => {
     if (i.type === 'gift') return SW.giftCards.amounts.includes(i.amount) && (i.kind === 'email' || (i.kind === 'print' && DELIVERY.gift[i.ship]));
     if (i.type === 'coupon') return !!SW.couponBook && !!DELIVERY.coupon[i.ship];
     const shirt = byId(SW.shirts, i.shirt);
@@ -263,7 +273,6 @@
   // Until a color is picked, previews use the shirt's first color.
   const shownColor = () => state.color || shirtColors(byId(SW.shirts, state.shirt))[0];
   // Front logos come in one ink color each: logos/<logo>-<color>.png
-  const logoColorOf = (item) => item.logoColor || defaultLogoColor(item.color);
   const logoSrc = (logoId, colorId) => `${IMG}logos/${logoId}-${colorId}.png`;
   const logoText = (item) => {
     const logo = byId(SW.frontLogos, item.logo);
@@ -354,15 +363,16 @@
   function renderLogos() {
     $('#sw-logo-step').hidden = state.placement !== 'back';
     const shirtHex = byId(SW.colors, shownColor()).hex;
-    const ink = logoColorOf({ ...state, color: shownColor() });
+    const ink = (logoId) => logoColorOf({ ...state, logo: logoId, color: shownColor() });
     $('#sw-logos').innerHTML = SW.frontLogos.map((l) => `
       <button type="button" class="sw-logo${l.id === state.logo ? ' is-on' : ''}" data-pick="logo" data-id="${l.id}" aria-pressed="${l.id === state.logo}">
-        ${l.id !== 'none' ? `<span class="sw-logo-art" style="background:${shirtHex}"><img src="${logoSrc(l.id, ink)}" alt=""></span>` : '<span class="sw-logo-none">✕</span>'}
+        ${l.id !== 'none' ? `<span class="sw-logo-art" style="background:${shirtHex}"><img src="${logoSrc(l.id, ink(l.id))}" alt=""></span>` : '<span class="sw-logo-none">✕</span>'}
         <span>${esc(l.name)}</span>
       </button>`).join('');
     $('#sw-logo-colors').hidden = state.logo === 'none';
-    $('#sw-logo-color-list').innerHTML = SW.logoColors.map((c) => `
-      <button type="button" class="sw-swatch${c.id === ink ? ' is-on' : ''}" data-pick="logoColor" data-id="${c.id}" aria-pressed="${c.id === ink}">
+    const on = ink(state.logo);
+    $('#sw-logo-color-list').innerHTML = logoColorsFor(state.logo).map((id) => byId(SW.logoColors, id)).map((c) => `
+      <button type="button" class="sw-swatch${c.id === on ? ' is-on' : ''}" data-pick="logoColor" data-id="${c.id}" aria-pressed="${c.id === on}">
         <span style="background:${c.hex}"></span>${esc(c.name)}
       </button>`).join('');
   }

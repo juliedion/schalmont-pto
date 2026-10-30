@@ -162,30 +162,40 @@ for pid, (folder, pat) in prods.items():
             fit(im, 900).save(os.path.join(OUT, 'blanks', f'{pid}-{cid}-{side.lower()}.webp'), 'WEBP', quality=82, method=6)
 print('blanks done')
 
-# Front logo previews cropped from the order form; outside white made transparent.
-# Ink colors match "logoColors" in js/spiritwear-catalog.json.
+# Front logos. Ink colors match "logoColors" in js/spiritwear-catalog.json.
 LOGO_COLORS = {'white': (255, 255, 255), 'darkgreen': (24, 92, 50), 'black': (17, 17, 17), 'brightgreen': (40, 190, 80)}
+
+# SABRES: cropped from the order form, outside white made transparent, printed in one ink.
+# Only its black letters are kept (its white bevel and the white left inside the B and R drop out).
 form = Image.open(os.path.join(SRC, 'Order Form', 'fnl-orderform.png')).convert('RGBA')
-for key, box in (('shield', (54, 786, 194, 903)), ('sabres', (240, 812, 450, 884))):
-    im = form.crop(box)
-    w, h = im.size
-    for pt in ((0,0), (w-1,0), (0,h-1), (w-1,h-1)):
-        ImageDraw.floodfill(im, pt, (255,255,255,0), thresh=60)
-    bbox = im.getchannel('A').getbbox()
-    im = im.crop(bbox)
-    im = im.resize((im.width * 3, im.height * 3), Image.LANCZOS)   # smoother edges once recolored
-    # Each logo prints in one ink color. SABRES keeps only its black letters (its white
-    # bevel and the white left inside the B and R drop out). The shield keeps its green body;
-    # the white S, swords and inner border are cut out so the shirt shows through.
-    a = np.asarray(im).astype(np.float32)
-    lum = a[..., :3] @ np.array([0.299, 0.587, 0.114], np.float32)
-    if key == 'sabres': ink = np.clip((170 - lum) / 90, 0, 1)
-    else:               ink = np.clip((175 - lum) / 70, 0, 1)
-    ink = Image.fromarray((ink * a[..., 3]).astype(np.uint8))
-    for cid, rgb in LOGO_COLORS.items():
-        out = Image.new('RGBA', im.size, rgb + (0,))
-        out.putalpha(ink)
-        out.crop(ink.point(lambda v: 255 if v > 8 else 0).getbbox()).save(os.path.join(OUT, 'logos', f'{key}-{cid}.png'), optimize=True)
+im = form.crop((240, 812, 450, 884))
+w, h = im.size
+for pt in ((0,0), (w-1,0), (0,h-1), (w-1,h-1)):
+    ImageDraw.floodfill(im, pt, (255,255,255,0), thresh=60)
+im = im.crop(im.getchannel('A').getbbox())
+im = im.resize((im.width * 3, im.height * 3), Image.LANCZOS)   # smoother edges once recolored
+a = np.asarray(im).astype(np.float32)
+lum = a[..., :3] @ np.array([0.299, 0.587, 0.114], np.float32)
+ink = Image.fromarray((np.clip((170 - lum) / 90, 0, 1) * a[..., 3]).astype(np.uint8))
+for cid, rgb in LOGO_COLORS.items():
+    out = Image.new('RGBA', im.size, rgb + (0,))
+    out.putalpha(ink)
+    out.crop(ink.point(lambda v: 255 if v > 8 else 0).getbbox()).save(os.path.join(OUT, 'logos', f'sabres-{cid}.png'), optimize=True)
+
+# Shield: the school's artwork, kept whole -- white S, white swords, white inner border and
+# white outline around the outside always stay white; only the green is swapped.
+# Bright Green is the artwork's own green. No white version (the white parts would vanish).
+SHIELD_GREEN = np.array([2, 148, 71], np.float32)
+SHIELD_COLORS = {'brightgreen': None, 'darkgreen': LOGO_COLORS['darkgreen'], 'black': LOGO_COLORS['black']}
+im = Image.open(os.path.join(SRC, 'Current Designs', 'Front Pocket Logos', 'Dark Fabric', 'SCH_logo_shield_whiteback.png')).convert('RGBA')
+im = im.crop(im.getchannel('A').point(lambda v: 255 if v > 8 else 0).getbbox())
+a = np.asarray(im).astype(np.float32)
+d = 255 - SHIELD_GREEN
+t = np.clip(((255 - a[..., :3]) @ d) / (d @ d), 0, 1)[..., None]   # 0 = white, 1 = full green (keeps soft edges)
+for cid, rgb in SHIELD_COLORS.items():
+    color = a[..., :3] if rgb is None else 255 - t * (255 - np.array(rgb, np.float32))
+    out = Image.fromarray(np.dstack([color, a[..., 3]]).astype(np.uint8))
+    fit(out, 400).save(os.path.join(OUT, 'logos', f'shield-{cid}.png'), optimize=True)
 print('logos done')
 
 # Gift card artwork shown in the shop's Gift Cards tab.
