@@ -60,7 +60,7 @@
     set(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   };
 
-  // How gift cards and coupon books get to people. Labels differ a little per item.
+  // How shirts, gift cards and coupon books get to people. Labels differ a little per item.
   // The two email choices make an emailed gift card; the rest make a printed one.
   const DELIVERY = {
     gift: {
@@ -68,6 +68,10 @@
       emailThem: ['💌 Email it to someone else', 'Sent straight to their inbox with your message.'],
       school: ['🏫 Deliver to school', 'We’ll send it home with your student.'],
       ship: ['🎁 Ship it wrapped', 'Mailed fully gift-wrapped and addressed.']
+    },
+    shirt: {
+      school: ['🏫 Send home with my student', 'We’ll deliver it to your student at school. No shipping cost.'],
+      ship: ['📦 Ship it', 'Mailed to the address you enter at checkout.']
     },
     coupon: {
       school: ['🏫 Send home with my student', 'We’ll deliver it to your student at school.'],
@@ -85,6 +89,7 @@
     placement: 'back',
     logo: 'none',
     logoColor: null,  // null until they pick one: white on dark shirts, dark green on light ones
+    ship: 'school',
     logoNote: false,  // true right after moving the design to the front removed their logo
     qty: 1,
     side: 'back',
@@ -109,6 +114,7 @@
   // Drop anything saved from an older version of the menu (and update old delivery names, and give
   // front logos saved without a color, or in one that logo no longer comes in, its default).
   let cart = (store.get(CART_KEY) || []).map((i) => ({ type: 'shirt', ...i })).map((i) =>
+    (i.type === 'shirt' && !DELIVERY.shirt[i.ship] ? { ...i, ship: 'ship' } : i)).map((i) =>
     (i.type === 'gift' && i.ship === 'local' ? { ...i, ship: 'home' } : i)).map((i) =>
     (i.type === 'shirt' && i.logo && i.logo !== 'none' ? { ...i, logoColor: logoColorOf(i) } : i)).filter((i) => {
     if (i.type === 'gift') return SW.giftCards.amounts.includes(i.amount) && (i.kind === 'email' || (i.kind === 'print' && DELIVERY.gift[i.ship]));
@@ -217,6 +223,7 @@
       add('Design placement', byId(SW.placements, i.placement).name);
       add('Print version', tone(i.color) === 'dark' ? 'Dark fabric' : 'Light fabric');
       if (i.placement === 'back') add('Front logo', logoText(i));
+      addDelivery();
     }
     if (!variant || !variant.availableForSale) throw new Error('Something in your order is sold out right now. Please remove it and try again.');
     return { merchandiseId: variant.id, quantity: i.qty, attributes: attrs };
@@ -505,7 +512,7 @@
     }
     const d = byId(SW.designs, i.design);
     const base = `${i.size}${sizeNote(i.size) ? ' (extra shipping time)' : ''} · ${byId(SW.colors, i.color).name} · #${d.number} ${d.name}`;
-    return i.placement === 'front' ? `${base} on Front` : `${base} on Back · Front logo: ${logoText(i)}`;
+    return `${i.placement === 'front' ? `${base} on Front` : `${base} on Back · Front logo: ${logoText(i)}`} · ${deliveryText(i)}`;
   }
 
   const itemName = (i) => (i.type === 'gift'
@@ -554,7 +561,7 @@
 
   function renderShirtBuilder() {
     renderShirts(); renderColors(); renderSizes(); renderDesignFilters(); renderDesigns();
-    renderPlacements(); renderLogos(); renderPreview();
+    renderPlacements(); renderLogos(); renderPreview(); renderDelivery('shirt', state);
   }
 
   /* ---------- Design catalog (shop page, while the store is Coming Soon) ---------- */
@@ -653,8 +660,9 @@
     const t = (sel) => e.target.closest(sel);
     let el;
     if ((el = t('[data-ship]'))) {
-      (el.dataset.ship === 'gift' ? gift : coupon).ship = el.dataset.val;
-      renderDelivery(el.dataset.ship, el.dataset.ship === 'gift' ? gift : coupon);
+      const model = { shirt: state, gift, coupon }[el.dataset.ship];
+      model.ship = el.dataset.val;
+      renderDelivery(el.dataset.ship, model);
       return;
     }
     if ((el = t('[data-gift]'))) {
@@ -710,9 +718,16 @@
     });
     $('#sw-add').addEventListener('click', () => {
       if (!state.size || !state.color) return;
-      const keys = ['shirt', 'size', 'color', 'design', 'placement', 'logo'];
+      const keys = ['shirt', 'size', 'color', 'design', 'placement', 'logo', 'ship'];
       const item = { ...Object.fromEntries(keys.map((k) => [k, state[k]])), logoColor: state.logo === 'none' ? null : logoColorOf(state) };
-      const match = cart.find((i) => i.type === 'shirt' && keys.every((k) => i[k] === item[k]) && (i.logoColor || null) === item.logoColor);
+      if (state.ship === 'school') {
+        Object.assign(item, readSchoolFields('shirt'));
+        if (!item.student || !item.school) return showError('#sw-shirt-error', 'Please add the student’s name and school (step 7) so we can deliver it.');
+      }
+      showError('#sw-shirt-error', '');
+      const same = (i) => keys.every((k) => i[k] === item[k]) && (i.logoColor || null) === item.logoColor &&
+        ['student', 'school', 'teacher'].every((k) => (i[k] || '') === (item[k] || ''));
+      const match = cart.find((i) => i.type === 'shirt' && same(i));
       if (match) match.qty = Math.min(50, match.qty + state.qty);
       else cart.push({ type: 'shirt', ...item, qty: state.qty });
       state.qty = 1;

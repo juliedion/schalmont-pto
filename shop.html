@@ -230,6 +230,16 @@
               <div class="sw-swatches" id="sw-logo-color-list"></div>
             </div>
           </div>
+          <div class="sw-step sw-delivery" data-for="shirt">
+            <h3><span>7</span> How should we get it to you?</h3>
+            <div class="sw-delivery-opts"></div>
+            <p class="sw-hint"></p>
+            <div class="sw-fields sw-school-fields">
+              <label>Student's name<input type="text" name="student" maxlength="80" autocomplete="off"></label>
+              <label>School<select name="school"></select></label>
+              <label class="sw-field-wide">Teacher <em>(optional)</em><input type="text" name="teacher" maxlength="80" autocomplete="off"></label>
+            </div>
+          </div>
         </div>
 
         <div class="sw-side">
@@ -246,6 +256,7 @@
               <div class="sw-price" id="sw-price"></div>
             </div>
             <button type="button" class="btn btn-primary sw-wide" id="sw-add">Add to Order</button>
+            <div class="sw-gc-error" id="sw-shirt-error" hidden></div>
             <div class="sw-added" id="sw-added" hidden>✓ Added to your order</div>
           </div>
 
@@ -353,7 +364,7 @@
   <script src="js/app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="js/page-menu.js?v=4"></script>
-  <script src="js/spiritwear-shop.js?v=19"></script>
+  <script src="js/spiritwear-shop.js?v=20"></script>
   <script src="js/menus.js?v=5"></script>
 </body>
 </html>
