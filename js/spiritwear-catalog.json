@@ -1,9 +1,9 @@
 {
-  "comingSoon": true,
+  "comingSoon": false,
   "designCatalog": false,
   "shopify": {
-    "storeDomain": "",
-    "storefrontToken": "",
+    "storeDomain": "run1bf-57.myshopify.com",
+    "storefrontToken": "874ddf44dbd3f94a1032d01b02b035f6",
     "apiVersion": "2026-07"
   },
   "currency": "usd",
