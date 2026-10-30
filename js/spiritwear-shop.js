@@ -31,7 +31,7 @@
 
   let SW;
   try {
-    SW = await (await fetch('js/spiritwear-catalog.json?v=16', { cache: 'no-cache' })).json();
+    SW = await (await fetch('js/spiritwear-catalog.json?v=17', { cache: 'no-cache' })).json();
   } catch (e) {
     return;   // the "Coming Soon" notice stays up
   }
@@ -84,6 +84,7 @@
     design: SW.designs[0].id,
     placement: 'back',
     logo: 'none',
+    logoColor: null,  // null until they pick one: white on dark shirts, dark green on light ones
     logoNote: false,  // true right after moving the design to the front removed their logo
     qty: 1,
     side: 'back',
@@ -95,8 +96,11 @@
   const coupon = { qty: 1, ship: 'school' };
 
   // Drop anything saved from an older version of the menu (and update old delivery names).
+  // Shirts saved before front logos came in colors get the default color for their shirt.
+  const defaultLogoColor = (colorId) => ((byId(SW.colors, colorId) || {}).tone === 'light' ? 'darkgreen' : 'white');
   let cart = (store.get(CART_KEY) || []).map((i) => ({ type: 'shirt', ...i })).map((i) =>
-    (i.type === 'gift' && i.ship === 'local' ? { ...i, ship: 'home' } : i)).filter((i) => {
+    (i.type === 'gift' && i.ship === 'local' ? { ...i, ship: 'home' } : i)).map((i) =>
+    (i.type === 'shirt' && i.logo && i.logo !== 'none' && !byId(SW.logoColors, i.logoColor) ? { ...i, logoColor: defaultLogoColor(i.color) } : i)).filter((i) => {
     if (i.type === 'gift') return SW.giftCards.amounts.includes(i.amount) && (i.kind === 'email' || (i.kind === 'print' && DELIVERY.gift[i.ship]));
     if (i.type === 'coupon') return !!SW.couponBook && !!DELIVERY.coupon[i.ship];
     const shirt = byId(SW.shirts, i.shirt);
@@ -202,7 +206,7 @@
       add('Design', `#${d.number} ${d.name}`);
       add('Design placement', byId(SW.placements, i.placement).name);
       add('Print version', tone(i.color) === 'dark' ? 'Dark fabric' : 'Light fabric');
-      if (i.placement === 'back') add('Front logo', byId(SW.frontLogos, i.logo).name);
+      if (i.placement === 'back') add('Front logo', logoText(i));
     }
     if (!variant || !variant.availableForSale) throw new Error('Something in your order is sold out right now. Please remove it and try again.');
     return { merchandiseId: variant.id, quantity: i.qty, attributes: attrs };
@@ -258,6 +262,13 @@
   const designSrc = (id, colorId, thumb) => `${IMG}designs/${thumb ? 'thumbs/' : ''}${tone(colorId)}/${id}.webp`;
   // Until a color is picked, previews use the shirt's first color.
   const shownColor = () => state.color || shirtColors(byId(SW.shirts, state.shirt))[0];
+  // Front logos come in one ink color each: logos/<logo>-<color>.png
+  const logoColorOf = (item) => item.logoColor || defaultLogoColor(item.color);
+  const logoSrc = (logoId, colorId) => `${IMG}logos/${logoId}-${colorId}.png`;
+  const logoText = (item) => {
+    const logo = byId(SW.frontLogos, item.logo);
+    return logo.id === 'none' ? logo.name : `${logo.name} (${byId(SW.logoColors, logoColorOf(item)).name})`;
+  };
 
   function mockup(item, side, cls) {
     const shirt = byId(SW.shirts, item.shirt);
@@ -266,8 +277,7 @@
       const d = byId(SW.designs, item.design);
       art = `<img class="sw-art" src="${designSrc(d.id, item.color, cls !== 'sw-mock-lg')}" alt="" style="${box(shirt[side])}">`;
     } else if (side === 'front') {
-      const logo = byId(SW.frontLogos, item.logo);
-      if (logo.image) art = `<img class="sw-art" src="${esc(logo.image)}" alt="" style="${box(shirt.chest)}">`;
+      if (item.logo !== 'none') art = `<img class="sw-art" src="${logoSrc(item.logo, logoColorOf(item))}" alt="" style="${box(shirt.chest)}">`;
     }
     return `<div class="sw-mock ${cls}"><img class="sw-blank" src="${IMG}blanks/${shirt.id}-${item.color}-${side}.webp" alt="">${art}</div>`;
   }
@@ -340,12 +350,20 @@
   }
 
   // Step 6 only appears when the design is on the back.
+  // Logo pictures sit on a patch of the shirt's color, so a white logo still shows.
   function renderLogos() {
     $('#sw-logo-step').hidden = state.placement !== 'back';
+    const shirtHex = byId(SW.colors, shownColor()).hex;
+    const ink = logoColorOf({ ...state, color: shownColor() });
     $('#sw-logos').innerHTML = SW.frontLogos.map((l) => `
       <button type="button" class="sw-logo${l.id === state.logo ? ' is-on' : ''}" data-pick="logo" data-id="${l.id}" aria-pressed="${l.id === state.logo}">
-        ${l.image ? `<img src="${esc(l.image)}" alt="">` : '<span class="sw-logo-none">✕</span>'}
+        ${l.id !== 'none' ? `<span class="sw-logo-art" style="background:${shirtHex}"><img src="${logoSrc(l.id, ink)}" alt=""></span>` : '<span class="sw-logo-none">✕</span>'}
         <span>${esc(l.name)}</span>
+      </button>`).join('');
+    $('#sw-logo-colors').hidden = state.logo === 'none';
+    $('#sw-logo-color-list').innerHTML = SW.logoColors.map((c) => `
+      <button type="button" class="sw-swatch${c.id === ink ? ' is-on' : ''}" data-pick="logoColor" data-id="${c.id}" aria-pressed="${c.id === ink}">
+        <span style="background:${c.hex}"></span>${esc(c.name)}
       </button>`).join('');
   }
 
@@ -363,7 +381,7 @@
       (state.color ? esc(byId(SW.colors, state.color).name) : need('Pick a color')) + ' · ' +
       (state.size ? esc(state.size) + (sizeNote(state.size) ? ` <span class="sw-size-flag">(${esc(sizeNote(state.size))})</span>` : '') : need('Pick a size')) +
       `<br>${state.placement === 'front' ? 'Front' : 'Back'}: #${esc(design.number)} ${esc(design.name)}` +
-      (state.placement === 'back' ? `<br>Front: ${esc(byId(SW.frontLogos, state.logo).name)}` : '');
+      (state.placement === 'back' ? `<br>Front: ${esc(logoText({ ...state, color: shownColor() }))}` : '');
     $('#sw-price').textContent = money(shirt.price * state.qty);
     $('#sw-qty').value = state.qty;
     $('#sw-add').disabled = !state.size || !state.color;
@@ -477,7 +495,7 @@
     }
     const d = byId(SW.designs, i.design);
     const base = `${i.size}${sizeNote(i.size) ? ' (extra shipping time)' : ''} · ${byId(SW.colors, i.color).name} · #${d.number} ${d.name}`;
-    return i.placement === 'front' ? `${base} on Front` : `${base} on Back · Front logo: ${byId(SW.frontLogos, i.logo).name}`;
+    return i.placement === 'front' ? `${base} on Front` : `${base} on Back · Front logo: ${logoText(i)}`;
   }
 
   const itemName = (i) => (i.type === 'gift'
@@ -645,6 +663,7 @@
       }
       if (key === 'design' || key === 'placement') state.side = state.placement;
       if (key === 'logo') state.side = state.logo === 'none' ? 'back' : 'front';
+      if (key === 'logoColor') state.side = 'front';
       if (key === 'shirt') {
         const shirt = byId(SW.shirts, state.shirt);
         if (state.color && !shirtColors(shirt).includes(state.color)) state.color = null;
@@ -682,9 +701,10 @@
     $('#sw-add').addEventListener('click', () => {
       if (!state.size || !state.color) return;
       const keys = ['shirt', 'size', 'color', 'design', 'placement', 'logo'];
-      const match = cart.find((i) => i.type === 'shirt' && keys.every((k) => i[k] === state[k]));
+      const item = { ...Object.fromEntries(keys.map((k) => [k, state[k]])), logoColor: state.logo === 'none' ? null : logoColorOf(state) };
+      const match = cart.find((i) => i.type === 'shirt' && keys.every((k) => i[k] === item[k]) && (i.logoColor || null) === item.logoColor);
       if (match) match.qty = Math.min(50, match.qty + state.qty);
-      else cart.push({ type: 'shirt', ...Object.fromEntries(keys.map((k) => [k, state[k]])), qty: state.qty });
+      else cart.push({ type: 'shirt', ...item, qty: state.qty });
       state.qty = 1;
       saveCart();
       renderCart();

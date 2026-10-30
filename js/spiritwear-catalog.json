@@ -15,7 +15,7 @@
       "shopifyHandle": "short-sleeve-tee",
       "back": [27, 25, 46, 34],
       "front": [29, 28, 42, 30],
-      "chest": [55, 24, 15, 9],
+      "chest": [56, 28, 13, 7.7],
       "colors": ["black", "white", "green", "brightgreen", "heather"]
     },
     {
@@ -25,7 +25,7 @@
       "shopifyHandle": "long-sleeve-tee",
       "back": [30, 24, 40, 32],
       "front": [31, 27, 38, 28],
-      "chest": [55, 22, 14, 8],
+      "chest": [56, 26, 12, 6.8],
       "colors": ["black", "white", "green", "brightgreen", "heather"]
     },
     {
@@ -35,7 +35,7 @@
       "shopifyHandle": "hoodie",
       "back": [29, 33, 42, 30],
       "front": [31, 31, 38, 20],
-      "chest": [55, 33, 14, 8],
+      "chest": [56, 36, 12, 6.8],
       "colors": ["black", "white", "green", "brightgreen", "heather"]
     },
     {
@@ -45,7 +45,7 @@
       "shopifyHandle": "crewneck",
       "back": [29, 25, 42, 32],
       "front": [30, 28, 40, 28],
-      "chest": [55, 23, 14, 8],
+      "chest": [56, 27, 12, 6.8],
       "colors": ["black", "white", "green", "brightgreen", "heather"]
     },
     {
@@ -55,7 +55,7 @@
       "shopifyHandle": "performance-hooded-tee",
       "back": [31, 31, 38, 30],
       "front": [32, 30, 36, 26],
-      "chest": [55, 28, 13, 8],
+      "chest": [56, 31, 11, 6.8],
       "colors": ["white", "black", "heather", "mediumgray", "olive"],
       "sizeGroups": ["Adult"]
     },
@@ -66,7 +66,7 @@
       "shopifyHandle": "youth-performance-hooded-tee",
       "back": [31, 31, 38, 30],
       "front": [32, 30, 36, 26],
-      "chest": [55, 28, 13, 8],
+      "chest": [56, 31, 11, 6.8],
       "colors": ["white", "black", "sportforest", "sportgraphite", "sportsilver"],
       "sizeGroups": ["Youth"]
     }
@@ -109,15 +109,19 @@
     {
       "id": "shield",
       "name": "Shield",
-      "price": 0,
-      "image": "images/spiritwear/logos/shield.png"
+      "price": 0
     },
     {
       "id": "sabres",
       "name": "SABRES",
-      "price": 0,
-      "image": "images/spiritwear/logos/sabres.png"
+      "price": 0
     }
+  ],
+  "logoColors": [
+    { "id": "white", "name": "White", "hex": "#ffffff" },
+    { "id": "darkgreen", "name": "Dark Green", "hex": "#185c32" },
+    { "id": "black", "name": "Black", "hex": "#111111" },
+    { "id": "brightgreen", "name": "Bright Green", "hex": "#28be50" }
   ],
   "giftCards": {
     "amounts": [10, 25, 50, 100],
@@ -178,7 +182,6 @@
     { "id": "gd-036", "name": "Green & Bold" },
     { "id": "gd-037", "name": "The Sabre Standard" },
     { "id": "gd-038", "name": "Always Schalmont" },
-    { "id": "gd-039", "name": "Pride. Power. Purpose." },
     { "id": "gd-040", "name": "Legendary Starts Here" },
     { "id": "gd-041", "name": "Sabres Flag" },
     { "id": "gd-045", "name": "Green Means Go (Stadium)" },
@@ -235,7 +238,6 @@
     { "id": "sg-027", "name": "Schalmont Sabres Collegiate" },
     { "id": "sg-028", "name": "Schalmont Sabres High School" },
     { "id": "sg-029", "name": "Schalmont Sabres Modern" },
-    { "id": "sg-030", "name": "Schalmont Sabres Retro" },
     { "id": "sg-031", "name": "Schalmont Sabres Rotterdam, NY" },
     { "id": "sg-032", "name": "Schalmont Sabres Speed" },
     { "id": "sg-033", "name": "Schalmont Sabres Swords" },

@@ -84,6 +84,41 @@ def white_ink(im):
 # Designs with opaque white baked in around/under the art; it's made transparent first.
 CLEAR_WHITE = {'gd-009', 'gd-039'}
 
+# Designs taken out of the shop. Their numbers stay retired (sg- numbers come from list order below).
+REMOVED = {'gd-039', 'sg-030'}
+
+# Designs that get "SCHALMONT SABRES" in small letters underneath.
+TAGLINE = {f'gd-{n:03d}' for n in (3, 4, 5, 8, 10, 13, 16, 17, 19, 26, 29, 30, 32, 34, 35, 36, 49)} | \
+          {f'sg-{n:03d}' for n in (3, 4, 10, 11, 12, 15, 16, 17, 36)}
+TAGLINE_FONT = '/Library/Fonts/BebasNeue Bold.otf'
+from PIL import ImageFont
+
+def add_tagline(im, fill=(255, 255, 255), stroke=(12, 52, 28)):
+    """Small spaced-out SCHALMONT SABRES centered under the art (white letters, dark green edge)."""
+    text, spacing = 'SCHALMONT SABRES', 0.12          # letter spacing, as a share of the letter height
+    target_w = im.width * 0.5
+    def measure(size):
+        f = ImageFont.truetype(TAGLINE_FONT, size)
+        widths = [f.getlength(c) for c in text]
+        return f, widths, sum(widths) + spacing * size * (len(text) - 1)
+    size = 40
+    f, widths, w = measure(size)
+    size = max(12, round(size * target_w / w))
+    f, widths, w = measure(size)
+    sw = max(2, round(size * 0.07))
+    gap = round(im.height * 0.03)
+    asc, desc = f.getmetrics()
+    th = asc + 2 * sw
+    out = Image.new('RGBA', (im.width, im.height + gap + th + sw), (0, 0, 0, 0))
+    out.paste(im, (0, 0), im)
+    d = ImageDraw.Draw(out)
+    x, y = (im.width - w) / 2, im.height + gap + sw
+    for c, cw in zip(text, widths):
+        d.text((x, y), c, font=f, fill=fill, stroke_width=sw, stroke_fill=stroke)
+        x += cw + spacing * size
+    bbox = out.getchannel('A').point(lambda a: 255 if a > 8 else 0).getbbox()
+    return out.crop(bbox) if bbox else out
+
 skip = {'054'}
 # Designs whose light-fabric version is the plain art, no dark outline (e.g. the distressed
 # flag, where an outline traces every rough edge in black).
@@ -93,11 +128,13 @@ for folder, prefix in (('01-General-Designs', 'gd'), ('02-Simple-Sabres', 'ss'))
     for f in sorted(os.listdir(os.path.join(D, folder))):
         if not f.lower().endswith('.png') or f[:3] in skip: continue
         key = f'{prefix}-{f[:3]}'
+        if key in REMOVED: continue
         im = Image.open(os.path.join(D, folder, f)).convert('RGBA')
         if key in CLEAR_WHITE: im = clear_outer_white(im)
         bbox = im.getchannel('A').point(lambda a: 255 if a > 8 else 0).getbbox()
         if bbox: im = im.crop(bbox)
         im = fit(im, 900)
+        if key in TAGLINE: im = fit(add_tagline(im), 900)
         for tone, color in OUTLINES.items():
             o = im if color is None or (tone == 'light' and key in PLAIN_ON_LIGHT) else outlined(im, color)
             if tone == 'dark': o = brighten_greens(o)   # greens pop more on dark shirts
@@ -126,6 +163,8 @@ for pid, (folder, pat) in prods.items():
 print('blanks done')
 
 # Front logo previews cropped from the order form; outside white made transparent.
+# Ink colors match "logoColors" in js/spiritwear-catalog.json.
+LOGO_COLORS = {'white': (255, 255, 255), 'darkgreen': (24, 92, 50), 'black': (17, 17, 17), 'brightgreen': (40, 190, 80)}
 form = Image.open(os.path.join(SRC, 'Order Form', 'fnl-orderform.png')).convert('RGBA')
 for key, box in (('shield', (54, 786, 194, 903)), ('sabres', (240, 812, 450, 884))):
     im = form.crop(box)
@@ -133,7 +172,20 @@ for key, box in (('shield', (54, 786, 194, 903)), ('sabres', (240, 812, 450, 884
     for pt in ((0,0), (w-1,0), (0,h-1), (w-1,h-1)):
         ImageDraw.floodfill(im, pt, (255,255,255,0), thresh=60)
     bbox = im.getchannel('A').getbbox()
-    im.crop(bbox).save(os.path.join(OUT, 'logos', key + '.png'))
+    im = im.crop(bbox)
+    im = im.resize((im.width * 3, im.height * 3), Image.LANCZOS)   # smoother edges once recolored
+    # Each logo prints in one ink color. SABRES keeps only its black letters (its white
+    # bevel and the white left inside the B and R drop out). The shield keeps its green body;
+    # the white S, swords and inner border are cut out so the shirt shows through.
+    a = np.asarray(im).astype(np.float32)
+    lum = a[..., :3] @ np.array([0.299, 0.587, 0.114], np.float32)
+    if key == 'sabres': ink = np.clip((170 - lum) / 90, 0, 1)
+    else:               ink = np.clip((175 - lum) / 70, 0, 1)
+    ink = Image.fromarray((ink * a[..., 3]).astype(np.uint8))
+    for cid, rgb in LOGO_COLORS.items():
+        out = Image.new('RGBA', im.size, rgb + (0,))
+        out.putalpha(ink)
+        out.crop(ink.point(lambda v: 255 if v > 8 else 0).getbbox()).save(os.path.join(OUT, 'logos', f'{key}-{cid}.png'), optimize=True)
 print('logos done')
 
 # Gift card artwork shown in the shop's Gift Cards tab.
@@ -237,8 +289,12 @@ def remove_white_background(im):
     return out.crop(bbox) if bbox else out
 
 for n, name in enumerate(GENERIC_NEW, 1):
-    im = fit(remove_white_background(Image.open(os.path.join(GENERIC, name + '.jpg'))), 900)
     key = f'sg-{n:03d}'
+    if key in REMOVED: continue
+    im = fit(remove_white_background(Image.open(os.path.join(GENERIC, name + '.jpg'))), 900)
+    if key in TAGLINE:
+        # Flat dark-ink art gets its letters in the same dark ink (it's turned to white ink on dark shirts).
+        im = fit(add_tagline(im, fill=(18, 82, 48), stroke=(18, 82, 48)) if name in NO_LIGHT_OUTLINE else add_tagline(im), 900)
     for tone, color in OUTLINES.items():
         if tone == 'dark' and name in NO_LIGHT_OUTLINE:
             o = white_ink(im)
