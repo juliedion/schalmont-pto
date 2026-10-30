@@ -417,7 +417,7 @@
     const emailFields = wrap.querySelector('.sw-email-fields');
     if (emailFields) emailFields.hidden = model.ship !== 'emailThem';
     wrap.querySelector('.sw-hint').textContent = {
-      school: 'Tell us who to give it to — no address needed.',
+      school: 'Tell us who to give it to. At checkout, enter your home address and choose the free “Local Delivery” option.',
       emailMe: 'It goes to the email you use at checkout.',
       emailThem: 'We’ll email it to the person in “To,” with your message.'
     }[model.ship] || 'You’ll enter the address at checkout.';
