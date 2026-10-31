@@ -1,17 +1,11 @@
 {
- "updated": "2026-10-30",
+ "updated": "2026-10-31",
  "events": [
   {
    "title": "2026 1st Annual Schalmont PTO Brawl for the Ball",
    "date": "2026-11-13",
    "end": "2026-11-13",
    "href": "/brawlfortheball"
-  },
-  {
-   "title": "2026 Schalmont PTO Trail of Treats",
-   "date": "2026-10-30",
-   "end": "2026-10-30",
-   "href": "/trailoftreats"
   },
   {
    "title": "3-4 Dance",
@@ -54,12 +48,6 @@
    "date": "2026-10-01",
    "end": "2026-11-30",
    "href": "/event?d=2026-10-01&t=cheesy-fundraiser-sales"
-  },
-  {
-   "title": "Feed the Trail of Treats Candy Monster at the Middle School",
-   "date": "2026-09-27",
-   "end": "2026-10-30",
-   "href": "/event?d=2026-09-27&t=feed-the-trail-of-treats-candy-monster-at-the-middle-school"
   },
   {
    "title": "High School Craft Fair",
@@ -116,12 +104,6 @@
    "href": "/lightheloop"
   },
   {
-   "title": "Middle School Spirit Week",
-   "date": "2026-10-26",
-   "end": "2026-10-30",
-   "href": "/spirit-week"
-  },
-  {
    "title": "Picture Retake Day",
    "date": "2026-11-06",
    "end": "2026-11-06",
@@ -129,9 +111,9 @@
   },
   {
    "title": "School Spirit Friday",
-   "date": "2026-10-30",
+   "date": "2026-11-20",
    "end": "2027-06-18",
-   "href": "/event?d=2026-10-30&t=school-spirit-friday"
+   "href": "/event?d=2026-11-20&t=school-spirit-friday"
   },
   {
    "title": "Spring Spiritwear Drop",
@@ -144,12 +126,6 @@
    "date": "2026-11-07",
    "end": "2026-12-05",
    "href": "/storytime-at-the-shelter"
-  },
-  {
-   "title": "Trail of Treats Volunteer Crew",
-   "date": "2026-10-30",
-   "end": "2026-10-30",
-   "href": "/trail-of-treats-volunteers"
   },
   {
    "title": "Veterans Day Student Council Event",
