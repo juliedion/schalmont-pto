@@ -6,20 +6,20 @@
   <meta name="robots" content="noindex">
   <title>Today at Schalmont — Schalmont PTO</title>
   <!-- For a DAKboard (or any wall display): just the homepage's top three cards -- letter days,
-       lunch menus and weather -- always in the desktop (three-across) layout, whatever the
-       screen width. Same scripts as the homepage (js/home.js), so it updates whenever they do. -->
+       lunch menus and weather -- as large cards stacked one above the other, at every screen
+       width. Same scripts as the homepage (js/home.js), so it updates whenever they do. -->
   <link rel="stylesheet" href="css/styles.css?v=6">
   <link rel="stylesheet" href="css/home.css?v=24">
   <link rel="icon" href="images/favicon.svg">
   <style>
     html, body { margin: 0; }
     body.home2.dak { background: var(--hz-forest); min-height: 100vh; }
-    .dak .hz-wrap { max-width: 1280px; padding: 16px 24px 20px; }
+    /* Everything drawn 1.4x larger so it reads from across a room. */
+    .dak .hz-wrap { zoom: 1.4; max-width: 820px; padding: 14px 20px 18px; }
     .dak .hz-band-head { margin: 2px 0 12px; }
-    /* The homepage's desktop layout (three cards side by side), kept at every width --
-       its smaller-screen rules (max-width: 1100px / 640px) are overridden here. */
-    .dak .hz-dash { grid-template-columns: 1.25fr 1.1fr 1fr; gap: 16px; margin-top: 0; }
-    .dak .hz-dash .hz-card { min-height: 236px; padding: 16px 18px; }
+    /* One card per row, full width (the homepage's smaller-screen rules are overridden here). */
+    .dak .hz-dash { grid-template-columns: 1fr; gap: 16px; margin-top: 0; }
+    .dak .hz-dash .hz-card { min-height: 0; padding: 18px 20px; }
     .dak .hz-dash .hz-card-letters { grid-column: auto; order: 0; }
     .dak .hz-ld-tile { min-height: 112px; padding: 10px 8px 9px; }
     .dak .hz-ld-tile .hz-ld-letter { font-size: 52px; }
