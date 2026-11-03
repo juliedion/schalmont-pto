@@ -6,25 +6,25 @@
   <meta name="robots" content="noindex">
   <title>Today at Schalmont — Schalmont PTO</title>
   <!-- For a DAKboard (or any wall display): just the homepage's top three cards -- letter days,
-       lunch menus and weather -- always in the phone (one-column) layout, whatever the screen
-       width. Same scripts as the homepage (js/home.js), so it updates whenever they do. -->
+       lunch menus and weather -- always in the desktop (three-across) layout, whatever the
+       screen width. Same scripts as the homepage (js/home.js), so it updates whenever they do. -->
   <link rel="stylesheet" href="css/styles.css?v=6">
   <link rel="stylesheet" href="css/home.css?v=24">
   <link rel="icon" href="images/favicon.svg">
   <style>
     html, body { margin: 0; }
     body.home2.dak { background: var(--hz-forest); min-height: 100vh; }
-    .dak .hz-wrap { max-width: 440px; padding: 14px 16px 18px; }
-    .dak .hz-band-head { margin: 2px 0 10px; }
-    /* The homepage's phone layout (its max-width: 640px rules), applied at every width */
-    .dak .hz-dash { grid-template-columns: 1fr; gap: 12px; margin-top: 0; }
-    .dak .hz-dash .hz-card { min-height: 0; padding: 14px; }
+    .dak .hz-wrap { max-width: 1280px; padding: 16px 24px 20px; }
+    .dak .hz-band-head { margin: 2px 0 12px; }
+    /* The homepage's desktop layout (three cards side by side), kept at every width --
+       its smaller-screen rules (max-width: 1100px / 640px) are overridden here. */
+    .dak .hz-dash { grid-template-columns: 1.25fr 1.1fr 1fr; gap: 16px; margin-top: 0; }
+    .dak .hz-dash .hz-card { min-height: 236px; padding: 16px 18px; }
     .dak .hz-dash .hz-card-letters { grid-column: auto; order: 0; }
-    .dak .hz-ld-tile { min-height: 96px; padding: 8px 4px; }
-    .dak .hz-ld-tile .hz-ld-letter { font-size: 42px; }
-    .dak .hz-ld-tile .hz-ld-school { font-size: 11px; }
-    .dak .hz-wx-temp, .dak .hz-wx-icon { font-size: 38px; }
-    .dak .hz-tab { font-size: 12px; }
+    .dak .hz-ld-tile { min-height: 112px; padding: 10px 8px 9px; }
+    .dak .hz-ld-tile .hz-ld-letter { font-size: 52px; }
+    .dak .hz-ld-tile .hz-ld-school { font-size: 12px; }
+    .dak .hz-wx-temp, .dak .hz-wx-icon { font-size: 44px; }
   </style>
 </head>
 <body class="home2 dak">
