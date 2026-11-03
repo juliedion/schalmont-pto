@@ -339,6 +339,12 @@
     { key: 'high', label: 'High', name: 'Schalmont High School' },
     { key: 'woestina', label: 'Pre-K', name: 'Woestina Pre-K (Jefferson)' }
   ];
+  // A page can limit the letter-day and lunch cards to some schools by setting
+  // window.HZ_SCHOOLS before this script, e.g. ['jefferson', 'middle'] (dakboard.html).
+  if (Array.isArray(window.HZ_SCHOOLS)) {
+    LD_SCHOOLS = LD_SCHOOLS.filter(function (s) { return window.HZ_SCHOOLS.indexOf(s.key) >= 0; });
+    LUNCH_TABS = LUNCH_TABS.filter(function (t) { return window.HZ_SCHOOLS.indexOf(t.key) >= 0; });
+  }
   var FOOD_PAGE = 'https://www.schalmont.org/district-office-services/food-services/';
   // Today's lunch comes from data/lunch-menus.json, built daily from the district's menu
   // PDFs by tools/lunch_menus.py (a GitHub Action). If a school's month couldn't be read
@@ -349,7 +355,7 @@
     var data = null, links = null, failed = false, current = 'jefferson';
     var today = etYMD();
     try { current = localStorage.getItem('hzLunchTab') || current; } catch (_) {}
-    if (!LUNCH_TABS.some(function (t) { return t.key === current; })) current = 'jefferson';
+    if (!LUNCH_TABS.some(function (t) { return t.key === current; })) current = LUNCH_TABS[0].key;
 
     tabsEl.innerHTML = LUNCH_TABS.map(function (t) {
       return '<button type="button" role="tab" class="hz-tab" id="hz-tab-' + t.key + '" aria-controls="hz-lunch-panel" data-k="' + t.key + '">' + esc(t.label) + '</button>';

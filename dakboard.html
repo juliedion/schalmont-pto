@@ -5,15 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
   <title>Today at Schalmont — Schalmont PTO</title>
-  <!-- For a DAKboard (or any wall display): just the homepage's letter days and lunch menu cards,
-       as large cards stacked one above the other, at every screen
+  <!-- For a DAKboard (or any wall display): just the homepage's letter days and lunch menu cards for Jefferson
+       and the Middle School, as large cards stacked one above the other, at every screen
        width. Same scripts as the homepage (js/home.js), so it updates whenever they do. -->
   <link rel="stylesheet" href="css/styles.css?v=6">
   <link rel="stylesheet" href="css/home.css?v=24">
   <link rel="icon" href="images/favicon.svg">
   <style>
     html, body { margin: 0; }
-    body.home2.dak { background: var(--hz-forest); min-height: 100vh; }
+    /* No green backdrop: plain white page, cards outlined so they still stand apart. */
+    body.home2.dak { background: #fff; min-height: 100vh; }
+    .dak .hz-band-head h2 { color: var(--hz-forest); }
+    .dak .hz-band-head h2 span { color: var(--hz-emerald-text); }
+    .dak .hz-dash .hz-card { border: 1px solid var(--hz-line); box-shadow: 0 2px 10px rgba(0, 47, 32, .08); }
+    /* Jefferson and the Middle School only (window.HZ_SCHOOLS below): two letter tiles. */
+    .dak .hz-ld-tiles { grid-template-columns: repeat(2, 1fr); }
     /* Everything drawn 1.4x larger so it reads from across a room. */
     .dak .hz-wrap { zoom: 1.4; max-width: 820px; padding: 14px 20px 18px; }
     .dak .hz-band-head { margin: 2px 0 12px; }
@@ -77,7 +83,8 @@
     </div>
   </div>
 
-  <script src="js/home.js?v=26"></script>
+  <script>window.HZ_SCHOOLS = ['jefferson', 'middle'];</script>
+  <script src="js/home.js?v=27"></script>
   <script>
     // A wall display stays open for days: reload every 30 minutes, and just after midnight,
     // so the date, letter days and lunch roll over on their own.
@@ -85,6 +92,14 @@
       var now = new Date(), midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 2);
       setTimeout(function () { location.reload(); }, Math.min(30 * 60000, midnight - now));
     })();
+    // Nobody can tap the lunch tabs on a wall display, so they take turns: Jefferson, then the
+    // Middle School, switching every 15 seconds.
+    setInterval(function () {
+      var tabs = [].slice.call(document.querySelectorAll('#hz-lunch-tabs .hz-tab'));
+      if (tabs.length < 2) return;
+      var on = tabs.findIndex(function (t) { return t.getAttribute('aria-selected') === 'true'; });
+      tabs[(on + 1) % tabs.length].click();
+    }, 15000);
   </script>
 </body>
 </html>
