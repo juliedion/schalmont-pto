@@ -18,7 +18,12 @@
     .page-hero h1 { margin:0; }
     .page-hero p { margin:10px 0 0; }
     #pg-body { max-width:none; }
-    .pg-vol { background:#f2fbeb; border:2px solid #63E629; border-radius:18px; padding:22px 24px; margin:28px 0 8px; }
+    .pg-fb-row { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin:14px 0; }
+    .pg-fb-btn { display:inline-flex; align-items:center; gap:6px; font-weight:800; font-size:16px; text-decoration:none; border-radius:999px; padding:12px 22px; background:#fff; color:var(--primary-dark) !important; border:2px solid var(--primary); }
+    .pg-fb-btn:hover { background:#eef7e6; }
+    .pg-fb-btn.is-main { background:#0bc151; border-color:#0bc151; color:#fff !important; }
+    .pg-fb-btn.is-main:hover { filter:brightness(.95); }
+    .pg-vol { background:#f2fbeb; border:2px solid #63E629; border-radius:18px; padding:22px 24px; margin:28px 0 8px; scroll-margin-top:100px; }
     .pg-vol h2 { margin:0 0 6px; font-size:clamp(22px, 2.6vw, 28px); color:var(--primary-dark); }
     .pg-vol > p { margin:0 0 14px; font-size:16px; line-height:1.6; }
     .pg-vol-roles { list-style:none; margin:0 0 18px !important; padding:0 !important; display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:10px; }
@@ -194,14 +199,9 @@
     function pageBottom() { return {
       // 2026 1st Annual Brawl for the Ball (/brawlfortheball): volunteers needed (Julie, Nov 2026)
       'n5D1Nvb2dwiLO0bqxaNx': '<section class="pg-vol" id="volunteer"><h2>Volunteers Needed!</h2>' +
-        '<p>We need about <strong>10–20 volunteers</strong> across the evening on <strong>Friday, November 13</strong>. Pick a role (or two!) and let us know you can help.</p>' +
-        '<ul class="pg-vol-roles">' +
-          ['Setup',
-           'Concessions<small>Pizza, popcorn, bottled water and drinks</small>', '50/50 raffle sales', 'Spiritwear table',
-           'Scoreboard / clock', 'Photography / video', 'Halftime activities', 'Cleanup']
-            .map(function (r) { return '<li>' + r + '</li>'; }).join('') +
-        '</ul>' +
-        '<p style="margin:0"><a class="pg-vol-btn" href="mailto:julie@schalmontpto.com?subject=Brawl%20for%20the%20Ball%20volunteer&body=Hi%20Julie%2C%20I%20can%20help%20at%20Brawl%20for%20the%20Ball%20on%20Nov.%2013.%0A%0AName%3A%0ARole(s)%20I%27d%20like%3A%0APhone%3A">Volunteer: email Julie →</a></p>' +
+        '<p>We need about <strong>10–20 volunteers</strong> across the evening on <strong>Friday, November 13</strong>. Pick a spot below and sign up. Thank you!</p>' +
+        // The live sign-up sheet (back office: "Brawl for the Ball", /signup/brawlfortheball)
+        '<div class="pg-su-embed" data-signup-id="0uzfLcnwKgkebPzI5huR"><p><a class="pg-vol-btn" href="/signup/brawlfortheball">Open the volunteer sign-up sheet →</a></p></div>' +
         '</section>'
     }; }
     function pageTop() { return {
@@ -219,7 +219,12 @@
         '/uploads/pages/pto/20261004-115722-8f9dc5d68b.jpg': '/images/flyers/brawl-for-the-ball-2026.jpg',
         'https://www.dropbox.com/scl/fi/fequ5s2d3r9bltxlo4r0w/zeffy-qr-code.png?rlkey=drzssu000w3rcb8w6o9h51ekt&dl=0': '/images/flyers/brawl-for-the-ball-2026.jpg',
         'https://www.dropbox.com/scl/fi/ju3zf0kvzux6lc5x6jhb5/brawl-for-the-ball-flyer.jpg?rlkey=60ip675vqz4n2xb0it042arnb&dl=0': '/images/flyers/brawl-for-the-ball-2026.jpg'
-      } }
+      },
+      // A row of buttons placed right above and right below the flyer (Julie, Nov 2026).
+      flyerButtons: { img: '/images/flyers/brawl-for-the-ball-2026.jpg', html:
+        '<a class="pg-fb-btn is-main" href="https://www.zeffy.com/en-US/ticketing/brawl-for-the-ball" target="_blank" rel="noopener">🎟️ Buy Tickets</a>' +
+        '<a class="pg-fb-btn" href="#volunteer">🙋 Volunteer</a>' +
+        '<a class="pg-fb-btn" href="/images/flyers/brawl-for-the-ball-2026.jpg" download="Brawl-for-the-Ball-2026-flyer.jpg">⬇ Download the Flyer</a>' } }
     }; }
     function sendTo() { return { 'trail-of-treats-volunteers': '/trailoftreats#volunteer' }; }
 
@@ -349,7 +354,7 @@
           const blocks = (p.blocks || [])
             .filter(b => !(b.type === 'image' && !b.url))   // drop empty "flyer goes here" photo blocks
             .map(b => (sw[b.url] || sw[b.href]) ? Object.assign({}, b, sw[b.url] ? { url: sw[b.url] } : {}, sw[b.href] ? { href: sw[b.href] } : {}) : b);
-          const fields = Object.assign({}, pf); delete fields.swap;
+          const fields = Object.assign({}, pf); delete fields.swap; delete fields.flyerButtons;
           p = Object.assign({}, p, fields, { blocks });
         }
 
@@ -360,6 +365,22 @@
         if ((mergeCfg()[pId] || {}).sheets) window.SIGNUP_OVERRIDES = mergeCfg()[pId].sheets;
         body.innerHTML = (pageTop()[pId] || '') + renderPageHeader(p) + await mergedBody(p, pId) + (pageBottom()[pId] || '');
         mountSignupEmbeds(db);
+        // Button rows above and below a page's flyer (pageFix flyerButtons).
+        const fb = (pageFix()[pId] || {}).flyerButtons;
+        if (fb) {
+          const img = body.querySelector('img[src="' + fb.img + '"]');
+          let blk = img;
+          while (blk && blk.parentElement && blk.parentElement !== body) blk = blk.parentElement;
+          if (blk && blk.parentElement === body) {
+            const row = () => { const d = document.createElement('div'); d.className = 'pg-fb-row'; d.innerHTML = fb.html; return d; };
+            body.insertBefore(row(), blk);
+            const below = row();
+            blk.after(below);
+            // The page's own lone "Download the Flyer" button right under it is now a duplicate.
+            const nx = below.nextElementSibling;
+            if (nx && /^\s*download the flyer\s*$/i.test(nx.textContent) && nx.querySelectorAll('a').length === 1) nx.hidden = true;
+          }
+        }
         // Emoji-free pages: the sign-up sheets draw themselves in afterwards, so clean their text as it arrives.
         if ((mergeCfg()[pId] || {}).layout) {
           const clean = () => {
