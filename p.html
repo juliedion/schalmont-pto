@@ -18,6 +18,15 @@
     .page-hero h1 { margin:0; }
     .page-hero p { margin:10px 0 0; }
     #pg-body { max-width:none; }
+    .pg-vol { background:#f2fbeb; border:2px solid #63E629; border-radius:18px; padding:22px 24px; margin:28px 0 8px; }
+    .pg-vol h2 { margin:0 0 6px; font-size:clamp(22px, 2.6vw, 28px); color:var(--primary-dark); }
+    .pg-vol > p { margin:0 0 14px; font-size:16px; line-height:1.6; }
+    .pg-vol-roles { list-style:none; margin:0 0 18px !important; padding:0 !important; display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:10px; }
+    .pg-vol-roles li { background:#fff; border:1px solid #d7ebcb; border-radius:12px; padding:10px 14px; font-weight:800; color:var(--primary-dark); font-size:15.5px; }
+    .pg-vol-roles li { list-style:none; margin:0; }
+    .pg-vol-roles li::before, .pg-vol-roles li::marker { content:none; display:none; }
+    .pg-vol-roles li small { display:block; font-weight:500; color:var(--text-light); font-size:13.5px; margin-top:2px; }
+    .pg-vol-btn { display:inline-block; background:var(--primary); color:#fff !important; font-weight:800; border-radius:999px; padding:12px 24px; text-decoration:none; }
     .pg-topbox { background:#fff8ec; border:2px solid #e6a23c; border-radius:16px; padding:18px 22px; margin:0 0 24px; text-align:center; }
     .pg-topbox p { margin:0 0 8px; font-size:16px; }
     .pg-topbox-t { font-size:clamp(20px, 2.4vw, 26px) !important; font-weight:800; color:var(--primary-dark); }
@@ -181,6 +190,20 @@
         } }
     }; }
     // A box placed at the very top of a back-office page (site-kept, until it's in the page itself).
+    // A section added at the very bottom of a back-office page (site-kept, until it's in the page itself).
+    function pageBottom() { return {
+      // 2026 1st Annual Brawl for the Ball (/brawlfortheball): volunteers needed (Julie, Nov 2026)
+      'n5D1Nvb2dwiLO0bqxaNx': '<section class="pg-vol" id="volunteer"><h2>Volunteers Needed!</h2>' +
+        '<p>We need about <strong>10–20 volunteers</strong> across the evening on <strong>Friday, November 13</strong>. Pick a role (or two!) and let us know you can help.</p>' +
+        '<ul class="pg-vol-roles">' +
+          ['Setup',
+           'Concessions<small>Pizza, popcorn, bottled water and drinks</small>', '50/50 raffle sales', 'Spiritwear table',
+           'Scoreboard / clock', 'Photography / video', 'Halftime activities', 'Cleanup']
+            .map(function (r) { return '<li>' + r + '</li>'; }).join('') +
+        '</ul>' +
+        '<p style="margin:0"><a class="pg-vol-btn" href="mailto:julie@schalmontpto.com?subject=Brawl%20for%20the%20Ball%20volunteer&body=Hi%20Julie%2C%20I%20can%20help%20at%20Brawl%20for%20the%20Ball%20on%20Nov.%2013.%0A%0AName%3A%0ARole(s)%20I%27d%20like%3A%0APhone%3A">Volunteer: email Julie →</a></p>' +
+        '</section>'
+    }; }
     function pageTop() { return {
       // Jefferson's Charleston Wrap Fall Fundraiser (/jefferson/fallfr)
       'VDCBMdcGa02H5zyDnoqt': '<div class="pg-topbox"><p class="pg-topbox-t">Shop the Charleston Wrap fundraiser online</p>' +
@@ -189,7 +212,14 @@
         '<p><a class="pg-topbox-btn" href="https://registercw.com/registrant/registration" target="_blank" rel="noopener">Register &amp; shop at registercw.com →</a></p></div>'
     }; }
     function pageFix() { return {
-      'OtQ77G5nO29JBGYySusM': { flyerUrl: '/images/flyers/light-the-loop.png' }   // Light the Loop - Class of 2028 (Julie, Oct 2026)
+      'OtQ77G5nO29JBGYySusM': { flyerUrl: '/images/flyers/light-the-loop.png' },   // Light the Loop - Class of 2028 (Julie, Oct 2026)
+      // Brawl for the Ball: the updated flyer (Nov 2026) replaces the old one -- the picture, its
+      // link and the "Download the Flyer" button. `swap` maps an old block url/href to the new one.
+      'n5D1Nvb2dwiLO0bqxaNx': { swap: {
+        '/uploads/pages/pto/20261004-115722-8f9dc5d68b.jpg': '/images/flyers/brawl-for-the-ball-2026.jpg',
+        'https://www.dropbox.com/scl/fi/fequ5s2d3r9bltxlo4r0w/zeffy-qr-code.png?rlkey=drzssu000w3rcb8w6o9h51ekt&dl=0': '/images/flyers/brawl-for-the-ball-2026.jpg',
+        'https://www.dropbox.com/scl/fi/ju3zf0kvzux6lc5x6jhb5/brawl-for-the-ball-flyer.jpg?rlkey=60ip675vqz4n2xb0it042arnb&dl=0': '/images/flyers/brawl-for-the-ball-2026.jpg'
+      } }
     }; }
     function sendTo() { return { 'trail-of-treats-volunteers': '/trailoftreats#volunteer' }; }
 
@@ -314,14 +344,21 @@
         if (!p) { notFound(); return; }
         // Site-kept fixes to a page's own fields (until they're made in the back office).
         const pf = pageFix()[pId];
-        if (pf) p = Object.assign({}, p, pf, { blocks: (p.blocks || []).filter(b => !(b.type === 'image' && !b.url)) });   // drop empty "flyer goes here" photo blocks
+        if (pf) {
+          const sw = pf.swap || {};
+          const blocks = (p.blocks || [])
+            .filter(b => !(b.type === 'image' && !b.url))   // drop empty "flyer goes here" photo blocks
+            .map(b => (sw[b.url] || sw[b.href]) ? Object.assign({}, b, sw[b.url] ? { url: sw[b.url] } : {}, sw[b.href] ? { href: sw[b.href] } : {}) : b);
+          const fields = Object.assign({}, pf); delete fields.swap;
+          p = Object.assign({}, p, fields, { blocks });
+        }
 
         document.title = p.title + ' — Schalmont PTO';
         hero.textContent = p.title || 'Untitled page';
         if (preview && p.status !== 'published') document.getElementById('preview-banner').hidden = false;
         if ((mergeCfg()[pId] || {}).noBirthdate) window.SIGNUP_NO_DOB = true;   // no date-of-birth step on this page's sheets
         if ((mergeCfg()[pId] || {}).sheets) window.SIGNUP_OVERRIDES = mergeCfg()[pId].sheets;
-        body.innerHTML = (pageTop()[pId] || '') + renderPageHeader(p) + await mergedBody(p, pId);
+        body.innerHTML = (pageTop()[pId] || '') + renderPageHeader(p) + await mergedBody(p, pId) + (pageBottom()[pId] || '');
         mountSignupEmbeds(db);
         // Emoji-free pages: the sign-up sheets draw themselves in afterwards, so clean their text as it arrives.
         if ((mergeCfg()[pId] || {}).layout) {
