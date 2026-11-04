@@ -23,6 +23,8 @@
     .pg-fb-btn:hover { background:#eef7e6; }
     .pg-fb-btn.is-main { background:#0bc151; border-color:#0bc151; color:#fff !important; }
     .pg-fb-btn.is-main:hover { filter:brightness(.95); }
+    .pg-vol-hours { background:#eef7e6; border:1px solid #cfe6bf; border-radius:12px; padding:10px 14px; font-size:16px; }
+    .pg-fb-img { display:block; width:100% !important; max-width:520px !important; height:auto !important; margin:0 auto !important; border-radius:12px; box-shadow:0 6px 24px rgba(0,0,0,.15); }
     .pg-vol { background:#f2fbeb; border:2px solid #63E629; border-radius:18px; padding:22px 24px; margin:28px 0 8px; scroll-margin-top:100px; }
     .pg-vol h2 { margin:0 0 6px; font-size:clamp(22px, 2.6vw, 28px); color:var(--primary-dark); }
     .pg-vol > p { margin:0 0 14px; font-size:16px; line-height:1.6; }
@@ -198,8 +200,13 @@
     // A section added at the very bottom of a back-office page (site-kept, until it's in the page itself).
     function pageBottom() { return {
       // 2026 1st Annual Brawl for the Ball (/brawlfortheball): volunteers needed (Julie, Nov 2026)
-      'n5D1Nvb2dwiLO0bqxaNx': '<section class="pg-vol" id="volunteer"><h2>Volunteers Needed!</h2>' +
+      'n5D1Nvb2dwiLO0bqxaNx': '<section class="pg-vol" id="raffle"><h2>Donate a Gift Card or Raffle Basket</h2>' +
+         '<p>Help make the night a success! We are collecting <strong>raffle baskets, gift cards, products and services</strong>. All proceeds support the Schalmont Central PTO. Sign up below to let us know what you can give. Questions? Email Amy Camelo at <a href="mailto:amy@schalmontpto.com">amy@schalmontpto.com</a>.</p>' +
+         '<div class="pg-su-embed" data-signup-slug="brawlraffle"><p><a class="pg-vol-btn" href="/signup/brawlraffle">Open the raffle donation sign-up sheet →</a></p></div>' +
+         '</section>' +
+         '<section class="pg-vol" id="volunteer"><h2>Volunteers Needed!</h2>' +
         '<p>We need about <strong>10–20 volunteers</strong> across the evening on <strong>Friday, November 13</strong>. Pick a spot below and sign up. Thank you!</p>' +
+         '<p class="pg-vol-hours"><strong>Students:</strong> you can earn <strong>volunteer hours</strong> for helping out!</p>' +
         // The live sign-up sheet (back office: "Brawl for the Ball", /signup/brawlfortheball)
         '<div class="pg-su-embed" data-signup-id="0uzfLcnwKgkebPzI5huR"><p><a class="pg-vol-btn" href="/signup/brawlfortheball">Open the volunteer sign-up sheet →</a></p></div>' +
         '</section>'
@@ -216,15 +223,16 @@
       // Brawl for the Ball: the updated flyer (Nov 2026) replaces the old one -- the picture, its
       // link and the "Download the Flyer" button. `swap` maps an old block url/href to the new one.
       'n5D1Nvb2dwiLO0bqxaNx': { swap: {
-        '/uploads/pages/pto/20261004-115722-8f9dc5d68b.jpg': '/images/flyers/brawl-for-the-ball-2026.jpg',
-        'https://www.dropbox.com/scl/fi/fequ5s2d3r9bltxlo4r0w/zeffy-qr-code.png?rlkey=drzssu000w3rcb8w6o9h51ekt&dl=0': '/images/flyers/brawl-for-the-ball-2026.jpg',
-        'https://www.dropbox.com/scl/fi/ju3zf0kvzux6lc5x6jhb5/brawl-for-the-ball-flyer.jpg?rlkey=60ip675vqz4n2xb0it042arnb&dl=0': '/images/flyers/brawl-for-the-ball-2026.jpg'
+        '/uploads/pages/pto/20261004-115722-8f9dc5d68b.jpg': '/images/flyers/brawl-for-the-ball-2026-v2.jpg',
+        'https://www.dropbox.com/scl/fi/fequ5s2d3r9bltxlo4r0w/zeffy-qr-code.png?rlkey=drzssu000w3rcb8w6o9h51ekt&dl=0': '/images/flyers/brawl-for-the-ball-2026-v2.jpg',
+        'https://www.dropbox.com/scl/fi/ju3zf0kvzux6lc5x6jhb5/brawl-for-the-ball-flyer.jpg?rlkey=60ip675vqz4n2xb0it042arnb&dl=0': '/images/flyers/brawl-for-the-ball-2026-v2.jpg'
       },
       // A row of buttons placed right above and right below the flyer (Julie, Nov 2026).
-      flyerButtons: { img: '/images/flyers/brawl-for-the-ball-2026.jpg', html:
+      flyerButtons: { img: '/images/flyers/brawl-for-the-ball-2026-v2.jpg', html:
         '<a class="pg-fb-btn is-main" href="https://www.zeffy.com/en-US/ticketing/brawl-for-the-ball" target="_blank" rel="noopener">🎟️ Buy Tickets</a>' +
         '<a class="pg-fb-btn" href="#volunteer">🙋 Volunteer</a>' +
-        '<a class="pg-fb-btn" href="/images/flyers/brawl-for-the-ball-2026.jpg" download="Brawl-for-the-Ball-2026-flyer.jpg">⬇ Download the Flyer</a>' } }
+        '<a class="pg-fb-btn" href="#raffle">🎁 Donate a Gift Card or Raffle Basket</a>' +
+        '<a class="pg-fb-btn" href="/images/flyers/brawl-for-the-ball-2026-v2.jpg" download="Brawl-for-the-Ball-2026-flyer.jpg">⬇ Download the Flyer</a>' } }
     }; }
     function sendTo() { return { 'trail-of-treats-volunteers': '/trailoftreats#volunteer' }; }
 
@@ -373,6 +381,11 @@
           while (blk && blk.parentElement && blk.parentElement !== body) blk = blk.parentElement;
           if (blk && blk.parentElement === body) {
             const row = () => { const d = document.createElement('div'); d.className = 'pg-fb-row'; d.innerHTML = fb.html; return d; };
+            // Keep the flyer a comfortable size instead of the full page width (Julie: "not so huge").
+            img.classList.add('pg-fb-img');
+            // The page's own lone "Purchase Tickets" button right above the flyer is a duplicate of the row (Julie).
+            const pv = blk.previousElementSibling;
+            if (pv && /^\s*(purchase|buy) tickets\s*$/i.test(pv.textContent) && pv.querySelectorAll('a').length === 1) pv.hidden = true;
             body.insertBefore(row(), blk);
             const below = row();
             blk.after(below);
