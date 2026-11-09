@@ -39,7 +39,6 @@ MAIN_ITEMS = [
     ('Brawl for the Ball', '/brawlfortheball', r'brawl'),
     ('Box Tops for Education', 'box-tops.html', r'box tops'),
     ('Cheesy Fundraiser', '/event?t=cheesy-fundraiser', r'cheesy'),
-    ('Charleston Wrap Fundraiser', '/jefferson/fallfr', r'charleston'),
     ('Coupon Books', 'couponbook.html', r'coupon'),
     ('Dances', 'dances.html', r'dance'),
     ('Directory', 'directory.html', ''),
