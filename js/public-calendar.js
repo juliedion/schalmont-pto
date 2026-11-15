@@ -41,7 +41,7 @@
   // loadAll() also keeps the district's own synced entries (school closings, early
   // release, board meetings) as a separate `district` list -- the homepage's combined
   // calendar has a District filter; everything else only wants `events`.
-  var CACHE_KEY = 'pcalEvents17', CACHE_MS = 10 * 60000;
+  var CACHE_KEY = 'pcalEvents18', CACHE_MS = 10 * 60000;
   // Events kept in the site code, for things that need to be on the calendar before anyone
   // adds them in the back office. A back-office entry with the same title and date wins.
   var SITE_EVENTS = [
@@ -83,7 +83,7 @@
       // Dances (Julie, Oct 2026): one entry each, on the right date
       'grade 5 dance|2027-01-08': { title: '5th Grade Dance', date: '2027-01-22', time: '19:00', forceTime: true, location: 'Schalmont Middle School', href: '/5th-grade-dance' },
       'grades 6/7 dance|2027-03-19': { title: '6th & 7th Grade Dance', date: '2027-03-12', time: '19:00', forceTime: true, location: 'Schalmont Middle School', href: '/6th-7th-grade-dance' },
-      '8th grade dance|2027-06-11': { title: '8th Grade Dance (June 11 or 12, TBD)', time: '19:00', forceTime: true, location: 'Schalmont Middle School', href: '/8th-grade-dance' },
+      '8th grade dance|2027-06-12': { title: '8th Grade Dance: A Night Under the Stars', time: '18:00', forceTime: true, location: 'Schalmont High School', forceLocation: true, href: '/8th-grade-dance' },   // Julie, Nov 2026
       'cheesy fundraiser': { title: 'Cheesy Fundraiser Sales', allCals: true },
       'holiday food drive starts': { title: 'Holiday Food Drive: Holiday Boxes', location: 'Drop off at the Jefferson main office', href: '/holiday-boxes' }
     };
@@ -93,7 +93,7 @@
     // Removed from the public site entirely (Julie, Oct 2026), whatever calendar/page it comes from.
     var REMOVED = { 'trunk or treat 2026': true, 'light up schalmont with santa': true,   // cancelled (Julie, Oct 2026)
       // duplicate dance entries on the wrong dates (the right ones are fixed in FIXES)
-      '5th grade dance|2027-06-04': true, '6/7 grade dance|2027-05-21': true, '8th grade dance|2027-06-12': true };
+      '5th grade dance|2027-06-04': true, '6/7 grade dance|2027-05-21': true, '8th grade dance|2027-06-11': true };
     var removed = function (t, d) { t = String(t || '').trim().toLowerCase(); return !!(REMOVED[t] || REMOVED[t + '|' + d]); };
     function applyFix(e, school) {
       var t = String(e.title || '').trim().toLowerCase();
@@ -102,7 +102,7 @@
       if (f.title) e.title = f.title;
       if (f.date) e.date = f.date;
       if (f.time && (!e.time || f.forceTime)) e.time = f.time;
-      if (f.location && !e.location) e.location = f.location;
+      if (f.location && (!e.location || f.forceLocation)) e.location = f.location;
       if (f.href && !e.href) e.href = f.href;
       if (f.allCals) e.allCals = true;
       return e;
