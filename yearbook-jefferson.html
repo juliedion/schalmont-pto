@@ -12,8 +12,17 @@
   <meta name="description" content="Order your Jefferson Elementary yearbook and upload photos for the 2025–2026 school year.">
   <link rel="stylesheet" href="css/styles.css?v=5">
   <link rel="icon" href="images/favicon.svg">
-  <link rel="stylesheet" href="css/yearbook-form.css?v=7">
   <link rel="stylesheet" href="css/menus.css?v=12">
+  <style>
+    .yb-tr { display:grid; grid-template-columns:1fr minmax(0,380px); gap:32px; padding:32px; align-items:start; }
+    .yb-tr-btn { display:inline-block; background:#3a7a1e; color:#fff !important; font-weight:800; font-size:17px; text-decoration:none; border-radius:999px; padding:14px 28px; box-shadow:0 6px 18px rgba(58,122,30,.25); }
+    .yb-tr-btn:hover { background:#2f6518; }
+    .yb-tr ol { margin:20px 0 0; padding-left:22px; font-size:15px; line-height:1.7; color:var(--text); }
+    .yb-tr-tip { font-size:14px; color:var(--text-light); margin:14px 0 0; }
+    .yb-tr-pdf { display:inline-block; margin-top:14px; font-weight:700; font-size:14px; color:var(--primary); }
+    .yb-tr-flyer img { display:block; width:100%; height:auto; border:1px solid var(--border); border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,.08); }
+    @media (max-width: 800px) { .yb-tr { grid-template-columns:1fr; padding:22px; } .yb-tr-flyer { max-width:420px; } }
+  </style>
 </head>
 <body>
 
@@ -180,18 +189,24 @@
 
       </div>
 
-      <!-- PHOTO UPLOADS -->
+      <!-- PHOTO UPLOADS: Jefferson + Woestina photos go straight to TreeRing (Julie, Nov 2026) -->
       <div id="upload-photos" style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;scroll-margin-top:100px">
         <div style="background:linear-gradient(135deg,#3a7a1e 0%,#6bb044 100%);padding:28px 32px">
-          <h2 style="color:#fff;font-size:22px;margin-bottom:6px">📸 Upload Photos for the Yearbook</h2>
-          <p style="color:rgba(255,255,255,0.8);font-size:14px;line-height:1.6;margin:0">Have photos from a school event or activity? Send them to the yearbook team here, and tell us who&rsquo;s in them.</p>
+          <h2 style="color:#fff;font-size:22px;margin-bottom:6px">Upload Photos for the Yearbook</h2>
+          <p style="color:rgba(255,255,255,0.85);font-size:14px;line-height:1.6;margin:0">Jefferson and Woestina families: help fill the yearbook with memories from this school year! Upload your photos right to our TreeRing yearbook.</p>
         </div>
-
-        <div style="padding:32px" id="submit-photos">
-          <h3 style="font-size:16px;margin:0 0 4px;color:var(--primary-dark)">Pick the event</h3>
-          <p style="font-size:13.5px;color:var(--text-light);margin:0 0 12px">Tap the event your photos are from, then fill in the form below. Don't see it? Use the form and choose "Other event".</p>
-          <div data-yearbook-events data-school="jefferson" style="margin-bottom:28px"></div>
-          <div data-yearbook-form data-school="jefferson"></div>
+        <div class="yb-tr">
+          <div class="yb-tr-text">
+            <a class="yb-tr-btn" href="https://web.treering.com/school/251517/2026/school-content/school-photos" target="_blank" rel="noopener">Upload photos on TreeRing</a>
+            <ol>
+              <li>Tap the button above (or scan a QR code on the flyer).</li>
+              <li>Pick the event folder your photos are from: Pumpkin Patch / Trunk or Treat, First Day of School, Go Pink Day, School Spirit, and more.</li>
+              <li>Add your photos. That&rsquo;s it!</li>
+            </ol>
+            <p class="yb-tr-tip"><strong>Tip:</strong> bookmark the link so you can add memories all year long.</p>
+            <a class="yb-tr-pdf" href="images/flyers/jefferson-yearbook-photo-request.pdf" target="_blank" rel="noopener">Download the flyer (PDF)</a>
+          </div>
+          <a class="yb-tr-flyer" href="images/flyers/jefferson-yearbook-photo-request.pdf" target="_blank" rel="noopener"><img src="images/flyers/jefferson-yearbook-photo-request.jpg" alt="Jefferson Elementary Yearbook: We need your help! Send us your pictures to help fill the yearbook with memories from this school year. Scan the QR codes to submit photos: Pumpkin Patch / Trunk or Treat, First Day of School, Go Pink Day, School Spirit, and All Photo Folders." width="1313" height="1700" loading="lazy"></a>
         </div>
       </div>
 
@@ -259,7 +274,6 @@
     </div>
   </footer>
 
-  <script src="js/yearbook-form.js?v=16"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="js/firebase-config.js"></script>

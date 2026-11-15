@@ -113,7 +113,6 @@
       min-width: 56px;
     }
   </style>
-  <link rel="stylesheet" href="css/yearbook-form.css?v=7">
   <link rel="stylesheet" href="css/school-calendar.css?v=1">
   <link rel="stylesheet" href="css/menus.css?v=12">
 </head>
@@ -282,16 +281,18 @@
     </div>
   </section>
 
-  <!-- SHARE EVENT PHOTOS: one button per event folder in the Jefferson Google Drive folder
-       (js/yearbook-form.js); each opens the photo form with Jefferson + that event picked. -->
+  <!-- SHARE EVENT PHOTOS: Jefferson + Woestina yearbook photos go to TreeRing (Julie, Nov 2026) -->
   <section class="section" id="share-photos">
     <div class="container" style="max-width:960px;margin:0 auto">
       <div class="section-heading">
         <h2>📸 Share Your Event Photos</h2>
-        <p>Took pictures at a Jefferson event? Tap the event to send them to the yearbook team.</p>
+        <p>Took pictures at a Jefferson or Woestina event? Upload them to our TreeRing yearbook and help fill it with memories from this school year.</p>
         <div class="accent-line"></div>
       </div>
-      <div data-yearbook-events data-school="jefferson"></div>
+      <div style="text-align:center">
+        <a href="https://web.treering.com/school/251517/2026/school-content/school-photos" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:16px;padding:13px 28px">Upload photos on TreeRing</a>
+        <p style="font-size:14px;margin:12px 0 0"><a href="yearbook-jefferson.html#upload-photos" style="color:var(--primary);font-weight:700">See the flyer and how it works</a></p>
+      </div>
     </div>
   </section>
 
@@ -516,7 +517,6 @@
     </div>
   </footer>
 
-  <script src="js/yearbook-form.js?v=16"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>

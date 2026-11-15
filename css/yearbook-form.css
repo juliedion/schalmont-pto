@@ -84,3 +84,7 @@
 .ybf .ybf-bad { border-color: #d93025 !important; box-shadow: 0 0 0 3px rgba(217, 48, 37, 0.18) !important; background: #fff6f5; }
 .ybf .ybf-drop.ybf-bad { border-style: solid; }
 .ybf-fieldmsg { margin: 6px 0 4px; color: #b3261e; font-size: 14px; font-weight: 700; }
+
+/* Jefferson/Woestina note: their photos go to TreeRing (Nov 2026) */
+.ybf-tr { background:#eef7e8; border:1px solid #cfe6c0; border-radius:10px; padding:10px 14px; font-size:14px; margin:0 0 16px; }
+.ybf-tr a { color:#3a7a1e; font-weight:700; }

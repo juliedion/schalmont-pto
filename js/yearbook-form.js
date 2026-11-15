@@ -6,7 +6,9 @@
    submission details are saved to Firestore `yearbook_photos` for the back office's
    yearbook review (admin/yearbook.html). */
 (function () {
-  var SCHOOLS = [['jefferson', 'Jefferson (incl. Woestina Pre-K)'], ['middle', 'Middle School'], ['high', 'High School']];
+  // Jefferson + Woestina photos go to TreeRing now (Julie, Nov 2026), so this form only takes Middle + High School.
+  var TREERING = 'https://web.treering.com/school/251517/2026/school-content/school-photos';
+  var SCHOOLS = [['middle', 'Middle School'], ['high', 'High School']];
   var GRADES = {
     jefferson: ['Pre-K', 'K', '1', '2', '3', '4'],   // Pre-K = Woestina
     middle: ['5', '6', '7', '8'],
@@ -58,10 +60,11 @@
     var school = root.getAttribute('data-school');
     // A page with no school of its own (share-photos) can be linked with ?school=jefferson etc.
     if (!school) { try { school = new URLSearchParams(location.search).get('school') || ''; } catch (_) {} }
-    if (!GRADES[school]) school = '';
+    if (!GRADES[school] || school === 'jefferson') school = '';
     var uid = 'ybf-' + (school || 'x');
     root.classList.add('ybf');
     root.innerHTML =
+      '<p class="ybf-tr">Jefferson or Woestina photos? Upload them to the <a href="' + TREERING + '" target="_blank" rel="noopener">Jefferson yearbook on TreeRing</a> instead.</p>' +
       '<form novalidate>' +
         '<fieldset class="ybf-group"><legend>About the photo</legend>' +
           '<div class="ybf-field"><span class="ybf-label">Student(s) in the photo <b class="ybf-req">*</b></span>' +
