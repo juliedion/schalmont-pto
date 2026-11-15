@@ -62,6 +62,41 @@
     .g5-names { list-style:none; margin:0 !important; padding:0 !important; display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:8px; }
     .g5-names li { margin:0; background:#fff; border:1px solid var(--border); border-radius:10px; padding:8px 12px; font-weight:700; font-size:14.5px; color:var(--primary-dark); }
     .g5-names li::before, .g5-names li::marker { content:none; display:none; }
+    /* Share photos of your 8th grader (Julie, Nov 2026) */
+    .g5-photos { margin-top:24px; border:2px solid #1f2a5a; background:linear-gradient(180deg,#f4f6ff 0%,#fff 60%); }
+    .g5-photos .g5-kicker { color:#1f2a5a; }
+    .g5-pf { display:grid; gap:14px; margin-top:6px; }
+    .g5-pf-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .g5-pf label { display:block; font-weight:800; font-size:14px; color:var(--primary-dark); margin-bottom:5px; }
+    .g5-pf label small { font-weight:500; color:var(--text-light); }
+    .g5-pf input[type=text], .g5-pf input[type=email], .g5-pf textarea { width:100%; box-sizing:border-box; font:inherit; font-size:15.5px; border:1.5px solid var(--border); border-radius:10px; padding:11px 12px; background:#fff; }
+    .g5-pf textarea { min-height:120px; resize:vertical; line-height:1.5; }
+    .g5-pf input:focus, .g5-pf textarea:focus { outline:none; border-color:#1f2a5a; box-shadow:0 0 0 3px rgba(31,42,90,.12); }
+    .g5-folder { display:flex; align-items:center; gap:10px; background:#fff; border:1.5px dashed #1f2a5a; border-radius:12px; padding:10px 14px; font-size:14.5px; color:#1f2a5a; }
+    .g5-folder svg { flex:none; }
+    .g5-folder[hidden] { display:none; }
+    .g5-drop { display:block; text-align:center; border:2px dashed #9aa6d6; border-radius:14px; padding:22px 16px; background:#fff; cursor:pointer; }
+    .g5-drop.is-over { background:#eef1ff; border-color:#1f2a5a; }
+    .g5-drop b { display:block; font-size:16px; color:#1f2a5a; margin-bottom:4px; }
+    .g5-drop span { font-size:13.5px; color:var(--text-light); }
+    .g5-drop input { display:none; }
+    .g5-thumbs { display:grid; grid-template-columns:repeat(auto-fill, minmax(84px, 1fr)); gap:8px; }
+    .g5-thumbs:empty { display:none; }
+    .g5-thumb { position:relative; aspect-ratio:1; border-radius:10px; overflow:hidden; background:#eef0f5; }
+    .g5-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+    .g5-thumb span { position:absolute; inset:auto 0 0 0; font-size:11px; background:rgba(0,0,0,.55); color:#fff; padding:2px 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .g5-thumb button { position:absolute; top:4px; right:4px; width:24px; height:24px; border-radius:50%; border:0; background:rgba(0,0,0,.6); color:#fff; font-size:15px; line-height:24px; cursor:pointer; padding:0; }
+    .g5-thumb.is-done::after { content:""; position:absolute; inset:0; background:rgba(31,122,70,.35); }
+    .g5-count { font-size:13px; color:var(--text-light); text-align:right; margin-top:4px; }
+    .g5-consent { font-size:13px; color:var(--text-light); line-height:1.55; margin:0; }
+    .g5-pf-msg { border-radius:12px; padding:12px 14px; font-size:15px; font-weight:700; }
+    .g5-pf-msg:empty { display:none; }
+    .g5-pf-msg.is-err { background:#fdecea; color:#a32019; }
+    .g5-pf-msg.is-ok { background:#e8f6ee; color:#14532d; }
+    .g5-pf-msg.is-busy { background:#eef1ff; color:#1f2a5a; }
+    .g5-pf-btn { justify-self:start; font:inherit; font-weight:800; font-size:16.5px; color:#fff; background:#1f2a5a; border:0; border-radius:999px; padding:14px 30px; cursor:pointer; }
+    .g5-pf-btn:disabled { opacity:.6; cursor:default; }
+    @media (max-width: 640px) { .g5-pf-row { grid-template-columns:1fr; } .g5-pf-btn { justify-self:stretch; } }
     .g5-kicker { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--primary); margin-bottom: 6px; }
     .g5-themes { display: flex; align-items: stretch; gap: 10px; }
     .g5-theme { flex: 1; border: 2px solid var(--g5); border-radius: var(--radius-lg); padding: 16px 14px; text-align: center; display: flex; flex-direction: column; gap: 4px; background: color-mix(in srgb, var(--g5) 8%, white); }
@@ -250,6 +285,37 @@
         </details>
       </div>
 
+      <!-- Share photos of your 8th grader: each student gets a Drive folder; optional family message (Julie, Nov 2026) -->
+      <div class="g5-card g5-photos" id="photos">
+        <div class="g5-kicker">Families</div>
+        <h2>Share photos of your 8th grader</h2>
+        <p>Help us celebrate the Class of 2031! Upload photos of your 8th grader, from baby pictures to today, and add a special message from your family if you'd like. Each student gets their own folder, so grandparents, siblings and friends can add to the same one by entering the same student name.</p>
+        <form class="g5-pf" id="g5-pf" novalidate>
+          <div class="g5-pf-row">
+            <div><label for="pf-first">8th grader's first name</label><input type="text" id="pf-first" autocomplete="off" maxlength="40" required></div>
+            <div><label for="pf-last">8th grader's last name</label><input type="text" id="pf-last" autocomplete="off" maxlength="40" required></div>
+          </div>
+          <div class="g5-folder" id="pf-folder" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Photos and your message will go into <strong id="pf-folder-name"></strong>'s folder.</span></div>
+          <div class="g5-pf-row">
+            <div><label for="pf-name">Your name</label><input type="text" id="pf-name" autocomplete="name" maxlength="80" required></div>
+            <div><label for="pf-email">Your email</label><input type="email" id="pf-email" autocomplete="email" maxlength="120" required></div>
+          </div>
+          <div>
+            <label for="pf-files">Photos <small>(up to 20, 20 MB each)</small></label>
+            <label class="g5-drop" id="pf-drop"><input type="file" id="pf-files" accept="image/*,.heic,.heif" multiple><b>Tap to choose photos</b><span>or drag them here</span></label>
+          </div>
+          <div class="g5-thumbs" id="pf-thumbs"></div>
+          <div>
+            <label for="pf-msg">A special message from your family <small>(optional)</small></label>
+            <textarea id="pf-msg" maxlength="2000" placeholder="We are so proud of you…"></textarea>
+            <div class="g5-count"><span id="pf-msg-n">0</span> / 2000</div>
+          </div>
+          <p class="g5-consent">By sharing, you're giving the Schalmont PTO permission to use these photos and your message to celebrate the 8th grade class at the dance and in PTO communications. To have something removed, email <a href="mailto:julie@schalmontpto.com">julie@schalmontpto.com</a>.</p>
+          <div class="g5-pf-msg" id="pf-status" role="status" aria-live="polite"></div>
+          <button type="submit" class="g5-pf-btn" id="pf-send">Share with the PTO</button>
+        </form>
+      </div>
+
       <!-- Contacts (Julie, Nov 2026) -->
       <div class="g5-card" id="contacts" style="margin-top:24px">
         <div class="g5-kicker">Questions?</div>
@@ -417,6 +483,96 @@
       }
       box.addEventListener('toggle', function () { if (box.open) load(); });
       if (location.hash === '#all-volunteers') { box.open = true; load(); }
+    })();
+  </script>
+  <script>
+    // "Share photos of your 8th grader": one photo per request to api/dance-upload.php (shared batchId);
+    // the family message rides along with the first request (or goes alone if there are no photos).
+    (function () {
+      var MAX = 20, MAX_BYTES = 20 * 1024 * 1024;
+      var $ = function (id) { return document.getElementById(id); };
+      var form = $('g5-pf'); if (!form) return;
+      var files = [], busy = false;
+      function name() { return ($('pf-first').value.trim() + ' ' + $('pf-last').value.trim()).trim(); }
+      function showFolder() {
+        var f = $('pf-first').value.trim(), l = $('pf-last').value.trim();
+        $('pf-folder').hidden = !(f && l);
+        $('pf-folder-name').textContent = name().replace(/\S+/g, function (w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); });
+      }
+      $('pf-first').addEventListener('input', showFolder); $('pf-last').addEventListener('input', showFolder);
+      $('pf-msg').addEventListener('input', function () { $('pf-msg-n').textContent = this.value.length; });
+      function status(t, kind) { var m = $('pf-status'); m.className = 'g5-pf-msg' + (kind ? ' is-' + kind : ''); m.textContent = t || ''; if (t) m.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+      function draw() {
+        var box = $('pf-thumbs'); box.innerHTML = '';
+        files.forEach(function (f, i) {
+          var d = document.createElement('div'); d.className = 'g5-thumb' + (f.done ? ' is-done' : '');
+          var img = document.createElement('img'); img.alt = '';
+          if (/^image\/(jpeg|png|gif|webp)/.test(f.file.type)) { img.src = URL.createObjectURL(f.file); d.appendChild(img); }
+          var s = document.createElement('span'); s.textContent = f.file.name; d.appendChild(s);
+          if (!busy && !f.done) { var b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', 'Remove ' + f.file.name); b.textContent = '×';
+            b.onclick = function () { files.splice(i, 1); draw(); }; d.appendChild(b); }
+          box.appendChild(d);
+        });
+      }
+      function add(list) {
+        var skipped = 0;
+        [].slice.call(list || []).forEach(function (file) {
+          if (!/^image\//.test(file.type) && !/\.(heic|heif)$/i.test(file.name)) { skipped++; return; }
+          if (file.size > MAX_BYTES) { skipped++; return; }
+          if (files.length >= MAX) { skipped++; return; }
+          if (files.some(function (f) { return f.file.name === file.name && f.file.size === file.size; })) return;
+          files.push({ file: file, done: false });
+        });
+        draw();
+        status(skipped ? skipped + ' file' + (skipped === 1 ? ' was' : 's were') + ' skipped (photos only, under 20 MB, up to ' + MAX + ' at a time).' : '', skipped ? 'err' : '');
+      }
+      $('pf-files').addEventListener('change', function () { add(this.files); this.value = ''; });
+      var drop = $('pf-drop');
+      ['dragenter', 'dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('is-over'); }); });
+      ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('is-over'); }); });
+      drop.addEventListener('drop', function (e) { add(e.dataTransfer && e.dataTransfer.files); });
+
+      function post(fd) {
+        return fetch('/api/dance-upload.php', { method: 'POST', body: fd }).then(function (r) {
+          return r.json().catch(function () { return { ok: false, error: 'The server had a problem (' + r.status + '). Please try again.' }; });
+        }).then(function (j) { if (!j.ok) throw new Error(j.error || 'Upload failed.'); return j; });
+      }
+      form.addEventListener('submit', function (e) {
+        e.preventDefault(); if (busy) return;
+        var first = $('pf-first').value.trim(), last = $('pf-last').value.trim(), fam = $('pf-name').value.trim(), email = $('pf-email').value.trim(), msg = $('pf-msg').value.trim();
+        if (!first || !last) return status("Please enter your 8th grader's first and last name.", 'err');
+        if (!fam) return status('Please enter your name.', 'err');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return status('Please enter a valid email address.', 'err');
+        var todo = files.filter(function (f) { return !f.done; });
+        if (!todo.length && !msg) return status('Please add at least one photo or a message.', 'err');
+        showFolder();
+        busy = true; $('pf-send').disabled = true; draw();
+        var batch = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+        var base = function () { var fd = new FormData(); fd.append('studentFirst', first); fd.append('studentLast', last); fd.append('familyName', fam); fd.append('email', email); fd.append('batchId', batch); return fd; };
+        var msgSent = false, n = 0;
+        var chain = Promise.resolve();
+        todo.forEach(function (f) {
+          chain = chain.then(function () {
+            n++; status('Uploading photo ' + n + ' of ' + todo.length + '… please keep this page open.', 'busy');
+            $('pf-send').textContent = 'Uploading ' + n + ' of ' + todo.length + '…';
+            var fd = base(); fd.append('photo', f.file, f.file.name);
+            if (msg && !msgSent) fd.append('message', msg);
+            return post(fd).then(function () { msgSent = msgSent || !!msg; f.done = true; draw(); });
+          });
+        });
+        chain.then(function () {
+          if (msg && !msgSent) { status('Sending your message…', 'busy'); var fd = base(); fd.append('message', msg); return post(fd); }
+        }).then(function () {
+          try { fetch('/api/yearbook-drive.php', { method: 'POST', keepalive: true }); } catch (_) {}   // copy to Drive in the background
+          var who = $('pf-folder-name').textContent || name();
+          status('Thank you! ' + (todo.length ? todo.length + ' photo' + (todo.length === 1 ? '' : 's') : '') + (todo.length && msg ? ' and your message' : (msg ? 'Your message' : '')) + ' ' + (todo.length + (msg ? 1 : 0) > 1 ? 'were' : 'was') + ' added to ' + who + "'s folder.", 'ok');
+          files = []; $('pf-msg').value = ''; $('pf-msg-n').textContent = '0'; draw();
+        }).catch(function (err) {
+          status((err && err.message) || 'Something went wrong. Please try again.', 'err');
+        }).then(function () {
+          busy = false; $('pf-send').disabled = false; $('pf-send').textContent = 'Share with the PTO'; draw();
+        });
+      });
     })();
   </script>
   <script src="js/signup-embed.js?v=7"></script>

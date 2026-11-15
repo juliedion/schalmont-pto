@@ -35,6 +35,9 @@
    To file photos in a different folder you already have: Project Settings
    (gear) → Script Properties → set ROOT_ID to the folder's id (the part after
    /folders/). The PTO Google account needs Editor access to that folder.
+   8TH GRADE DANCE PHOTOS (Nov 2026): the dance page (8thgradedance.html, api/dance-upload.php)
+   sends `folderPath` instead of a school/event, e.g. ["8th Grade Dance 2027", "Jane Doe"], so
+   each 8th grader gets their own folder, and a family's message arrives as a .txt file there.
    If you ever change this code: Deploy → Manage deployments → edit (pencil) →
    Version: New version → Deploy. The URL stays the same.
    ============================================================ */
@@ -86,9 +89,15 @@ function doPost(e) {
     lock.waitLock(30000);
     var folder;
     try {
-      var school = child_(rootFolder_(), SCHOOL_NAMES[req.school] || 'Other');
-      // An event picked from the list is one of this school's folders; anything typed in goes to "Other events".
-      folder = child_(school, clean_(req.eventFolder) || (req.eventLabel ? OTHER_EVENTS : NO_EVENT));
+      if (req.folderPath && req.folderPath.length) {
+        // A set folder path under the top folder (8th Grade Dance: one folder per student).
+        folder = rootFolder_();
+        req.folderPath.slice(0, 4).forEach(function (n) { folder = child_(folder, clean_(n) || 'Unnamed'); });
+      } else {
+        var school = child_(rootFolder_(), SCHOOL_NAMES[req.school] || 'Other');
+        // An event picked from the list is one of this school's folders; anything typed in goes to "Other events".
+        folder = child_(school, clean_(req.eventFolder) || (req.eventLabel ? OTHER_EVENTS : NO_EVENT));
+      }
     } finally { lock.releaseLock(); }
 
     var blob = Utilities.newBlob(Utilities.base64Decode(req.data), req.mimeType || 'application/octet-stream', clean_(req.filename) || 'photo.jpg');
@@ -99,7 +108,7 @@ function doPost(e) {
       '\nSent by: ' + (req.uploaderName || '') + ' <' + (req.uploaderEmail || '') + '>' +
       '\nOriginal file: ' + (req.original || ''));
 
-    logSheet_().appendRow([new Date(), SCHOOL_NAMES[req.school] || req.school, req.eventLabel || NO_EVENT,
+    logSheet_().appendRow([new Date(), req.folderPath && req.folderPath.length ? req.folderPath[0] : (SCHOOL_NAMES[req.school] || req.school), req.eventLabel || NO_EVENT,
       req.students || '', req.grades || '', req.uploaderName || '', req.uploaderEmail || '', file.getUrl(), req.batchId || '']);
     return json_({ ok: true, id: file.getId(), url: file.getUrl() });
   } catch (err) {
