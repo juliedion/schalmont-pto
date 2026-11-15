@@ -125,6 +125,21 @@
     .g5-fallback { background: #f2f9f0; border: 1px dashed var(--primary-light); border-radius: var(--radius-lg); padding: 16px 18px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
     @media (max-width: 800px) { .g5-grid { grid-template-columns: 1fr; } }
     @media (max-width: 480px) { .g5-themes { flex-direction: column; } .g5-or { padding: 2px 0; } }
+    /* ---- Night sky behind the whole content area (Julie, Nov 2026): navy gradient + twinkling + falling stars ---- */
+    .homepage-main.g5-night { position:relative; isolation:isolate; overflow:hidden; background:linear-gradient(180deg,#050b20 0%,#0b1636 35%,#101f4a 75%,#1a2a5c 100%); }
+    .g5-night .section, .g5-night .top-banner-ad { background:transparent !important; }
+    .g5-sky { position:absolute; inset:0; z-index:-1; pointer-events:none; overflow:hidden; }
+    .g5-sky::before { content:""; position:absolute; inset:0; background:radial-gradient(ellipse 60% 30% at 70% 8%, rgba(90,110,220,.22), transparent 70%), radial-gradient(ellipse 50% 25% at 15% 45%, rgba(120,90,200,.14), transparent 70%); }
+    .g5-star { position:absolute; border-radius:50%; background:#fff; box-shadow:0 0 6px 1px rgba(255,255,255,.7); animation:g5-twinkle var(--d,3s) ease-in-out var(--dl,0s) infinite; }
+    .g5-star.is-gold { background:#ffe7a8; box-shadow:0 0 8px 2px rgba(255,214,120,.6); }
+    @keyframes g5-twinkle { 0%,100% { opacity:.25; transform:scale(.7); } 50% { opacity:1; transform:scale(1.15); } }
+    .g5-fall { position:absolute; width:140px; height:2px; border-radius:2px; background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.95)); transform:rotate(25deg); opacity:0; animation:g5-fall var(--d,1.4s) ease-in var(--dl,0s) infinite; }
+    .g5-fall::after { content:""; position:absolute; right:-2px; top:-2px; width:6px; height:6px; border-radius:50%; background:#fff; box-shadow:0 0 10px 3px rgba(255,255,255,.8); }
+    @keyframes g5-fall { 0% { opacity:0; transform:rotate(25deg) translateX(0); } 4% { opacity:1; } 12% { opacity:0; transform:rotate(25deg) translateX(420px); } 100% { opacity:0; transform:rotate(25deg) translateX(420px); } }
+    .g5-night .g5-card { box-shadow:0 10px 34px rgba(0,0,0,.35); }
+    .g5-night .g5-banner { background:transparent; }
+    .g5-night .top-banner-ad .ad-label { color:rgba(255,255,255,.7) !important; }
+    @media (prefers-reduced-motion: reduce) { .g5-star, .g5-fall { animation:none; } .g5-fall { display:none; } .g5-star { opacity:.8; } }
   </style>
   <link rel="stylesheet" href="css/menus.css?v=12">
 </head>
@@ -254,7 +269,8 @@
     </aside>
 
     <!-- MAIN CONTENT -->
-    <div class="homepage-main">
+    <div class="homepage-main g5-night">
+      <div class="g5-sky" aria-hidden="true"></div>
 
   <!-- PAGE HERO: the "A Night Under the Stars" graphic (Julie, Nov 2026) -->
   <section class="g5-banner">
@@ -333,7 +349,7 @@
       <div class="g5-card g5-photos" id="photos">
         <div class="g5-kicker">Families</div>
         <h2>Share photos of your 8th grader</h2>
-        <p>Help us celebrate the Class of 2031! Upload photos of your 8th grader, from baby pictures to today, and add a special message from your family if you'd like. Each student gets their own folder, so grandparents, siblings and friends can add to the same one by entering the same student name.</p>
+        <p>Help us celebrate the Class of 2031! Upload photos of your 8th grader, from baby pictures to today, and add a special message from family and/or friends if you'd like. Each student gets their own folder, so grandparents, siblings and friends can add to the same one by entering the same student name.</p>
         <form class="g5-pf" id="g5-pf" novalidate>
           <div class="g5-pf-row">
             <div><label for="pf-first">8th grader's first name</label><input type="text" id="pf-first" autocomplete="off" maxlength="40" required></div>
@@ -350,7 +366,7 @@
           </div>
           <div class="g5-thumbs" id="pf-thumbs"></div>
           <div>
-            <label for="pf-msg">A special message from your family <small>(optional)</small></label>
+            <label for="pf-msg">A special message from family and/or friends <small>(optional)</small></label>
             <textarea id="pf-msg" maxlength="2000" placeholder="We are so proud of you…"></textarea>
             <div class="g5-count"><span id="pf-msg-n">0</span> / 2000</div>
           </div>
@@ -635,5 +651,26 @@
   </script>
   <script src="js/page-menu.js?v=4"></script>
   <script src="js/menus.js?v=5"></script>
+  <script>
+  /* Night sky: scatter twinkling stars and a few falling (shooting) stars behind the page. */
+  (function () {
+    var sky = document.querySelector('.g5-sky'); if (!sky) return;
+    var h = sky.parentNode.offsetHeight || 3000, n = Math.min(260, Math.round(h / 12)), frag = document.createDocumentFragment();
+    for (var i = 0; i < n; i++) {
+      var st = document.createElement('span'), sz = Math.random() < .12 ? 3 : (Math.random() < .5 ? 2 : 1.4);
+      st.className = 'g5-star' + (Math.random() < .15 ? ' is-gold' : '');
+      st.style.cssText = 'left:' + (Math.random() * 100).toFixed(2) + '%;top:' + (Math.random() * 100).toFixed(2) + '%;width:' + sz + 'px;height:' + sz + 'px;--d:' + (2 + Math.random() * 4).toFixed(2) + 's;--dl:-' + (Math.random() * 6).toFixed(2) + 's';
+      frag.appendChild(st);
+    }
+    var falls = Math.max(4, Math.min(10, Math.round(h / 500)));
+    for (var j = 0; j < falls; j++) {
+      var f = document.createElement('span');
+      f.className = 'g5-fall';
+      f.style.cssText = 'left:' + (Math.random() * 85).toFixed(2) + '%;top:' + (Math.random() * 95).toFixed(2) + '%;--d:' + (6 + Math.random() * 8).toFixed(2) + 's;--dl:' + (Math.random() * 10).toFixed(2) + 's';
+      frag.appendChild(f);
+    }
+    sky.appendChild(frag);
+  })();
+  </script>
 </body>
 </html>
