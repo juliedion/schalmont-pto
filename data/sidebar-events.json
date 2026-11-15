@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-14",
+ "updated": "2026-11-15",
  "events": [
   {
    "title": "3-4 Dance",
@@ -36,12 +36,6 @@
    "date": "2026-10-01",
    "end": "2026-11-30",
    "href": "/event?d=2026-10-01&t=cheesy-fundraiser-sales"
-  },
-  {
-   "title": "High School Craft Fair",
-   "date": "2026-11-14",
-   "end": "2026-11-14",
-   "href": "/event?d=2026-11-14&t=high-school-craft-fair-pto-scouts-support"
   },
   {
    "title": "Holiday Food Drive: Holiday Boxes",
