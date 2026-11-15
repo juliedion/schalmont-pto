@@ -98,6 +98,21 @@
     .g5-pf-btn { justify-self:start; font:inherit; font-weight:800; font-size:16.5px; color:#fff; background:#1f2a5a; border:0; border-radius:999px; padding:14px 30px; cursor:pointer; }
     .g5-pf-btn:disabled { opacity:.6; cursor:default; }
     @media (max-width: 640px) { .g5-pf-row { grid-template-columns:1fr; } .g5-pf-btn { justify-self:stretch; } }
+    /* Tickets: payment option cards (Julie, Nov 2026) */
+    .g5-tix { margin-bottom:24px; }
+    .g5-tix-head { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:14px; }
+    .g5-tix-head h2 { margin:0; }
+    .g5-tix-when { font-weight:800; font-size:14px; color:#1f2a5a; background:#eef1ff; border-radius:999px; padding:6px 14px; }
+    .g5-pay { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:16px; }
+    .g5-pay-card { display:flex; flex-direction:column; align-items:center; text-align:center; gap:10px; background:#fff; border:1px solid var(--border); border-radius:var(--radius-lg); padding:22px 18px; }
+    .g5-pay-card.is-main { border:2px solid #1f2a5a; box-shadow:0 6px 20px rgba(31,42,90,.10); }
+    .g5-pay-card h3 { font-size:18px; color:var(--primary-dark); margin:0; }
+    .g5-pay-card p { font-size:14.5px; line-height:1.55; color:var(--text-light); margin:0; }
+    .g5-pay-card img { width:150px; height:150px; display:block; }
+    .g5-pay-btn { display:inline-block; font-weight:800; font-size:15.5px; text-decoration:none; border-radius:999px; padding:12px 24px; background:#1f2a5a; color:#fff !important; }
+    .g5-pay-btn.is-soon { background:#e7e9f2; color:#1f2a5a !important; cursor:default; }
+    .g5-pay-card.is-soon { border-style:dashed; background:#fafbfd; justify-content:center; min-height:180px; }
+    @media (max-width: 800px) { .g5-pay { grid-template-columns:1fr; } }
     .g5-kicker { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--primary); margin-bottom: 6px; }
     .g5-themes { display: flex; align-items: stretch; gap: 10px; }
     .g5-theme { flex: 1; border: 2px solid var(--g5); border-radius: var(--radius-lg); padding: 16px 14px; text-align: center; display: flex; flex-direction: column; gap: 4px; background: color-mix(in srgb, var(--g5) 8%, white); }
@@ -267,6 +282,21 @@
           <p><strong>The votes are in!</strong> We asked the 8th grade class to help plan their dance, and they chose <strong>A Night Under the Stars</strong> over Hollywood / Red Carpet, Black &amp; Gold and Masquerade.</p>
           <p>Join us as we celebrate the Class of 2031 on <strong>Saturday, June 12, 2027</strong>, from <strong>6:00 to 9:00 PM</strong> in the <strong>Schalmont Middle School Gymnasium</strong> (2 Sabre Lane, Schenectady, NY 12306).</p>
           <p>The dance is run by the Schalmont PTO this year, led by co-chairs <strong><a href="mailto:amber@schalmontpto.com?subject=8th%20Grade%20Dance">Amber Szady</a></strong> and <strong><a href="mailto:4girlsmom33@gmail.com?subject=8th%20Grade%20Dance">Sharon Moriarty</a></strong>. Thank you to every 8th grader who shared their ideas!</p>
+        </div>
+      </div>
+
+      <!-- Tickets: payment options as cards. Card 1 = Zeffy; cards 2-3 to come (Julie, Nov 2026) -->
+      <div class="g5-card g5-tix" id="tickets">
+        <div class="g5-tix-head"><h2>Tickets</h2><span class="g5-tix-when">On sale January 1, 2027</span></div>
+        <div class="g5-pay">
+          <div class="g5-pay-card is-main">
+            <h3>Buy online</h3>
+            <p>Pay by card through Zeffy. Tap the button or scan the code with your phone.</p>
+            <img src="images/flyers/8th-grade-dance-tickets-qr.png" alt="QR code to buy 8th Grade Dance tickets on Zeffy" width="150" height="150">
+            <a class="g5-pay-btn is-soon" id="g5-tix-btn" href="https://www.zeffy.com/en-US/ticketing/schalmont-2027-8th-grade-dance" target="_blank" rel="noopener" data-open="2027-01-01">On sale January 1, 2027</a>
+          </div>
+          <div class="g5-pay-card is-soon"><h3>More ways to pay</h3><p>Coming soon.</p></div>
+          <div class="g5-pay-card is-soon"><h3>More ways to pay</h3><p>Coming soon.</p></div>
         </div>
       </div>
 
@@ -574,6 +604,15 @@
           busy = false; $('pf-send').disabled = false; $('pf-send').textContent = 'Share with the PTO'; draw();
         });
       });
+    })();
+  </script>
+  <script>
+    // Ticket button: "On sale January 1" until then, then a live "Buy Tickets" button (no update needed on Jan 1).
+    (function () {
+      var b = document.getElementById('g5-tix-btn'); if (!b) return;
+      var today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+      if (today >= b.getAttribute('data-open')) { b.classList.remove('is-soon'); b.textContent = 'Buy Tickets'; var w = document.querySelector('.g5-tix-when'); if (w) w.textContent = 'On sale now'; }
+      else b.addEventListener('click', function (e) { e.preventDefault(); });
     })();
   </script>
   <script src="js/signup-embed.js?v=7"></script>
