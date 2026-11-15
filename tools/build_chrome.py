@@ -102,7 +102,7 @@ YEARBOOK = {'jefferson': 'yearbook-jefferson.html', 'middle': 'yearbook-middle.h
 # Extra pages listed under a school in the sidebar (after Yearbook).
 EXTRA_LINKS = {'jefferson': [('Student Banking', 'school-banking.html')],
                'middle': [('5th Grade Dance', '5th-grade-dance.html'), ('6th & 7th Grade Dance', '6th-7th-grade-dance.html'),
-                          ('8th Grade Dance', '8th-grade-dance.html')]}
+                          ('8th Grade Dance', '8thgradedance.html')]}
 
 TOP_MENUS = [
     ('Families', [('Picture days', 'picture-days.html'), ('Yearbooks', 'yearbooks.html'),

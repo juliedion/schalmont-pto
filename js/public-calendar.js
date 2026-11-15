@@ -41,7 +41,7 @@
   // loadAll() also keeps the district's own synced entries (school closings, early
   // release, board meetings) as a separate `district` list -- the homepage's combined
   // calendar has a District filter; everything else only wants `events`.
-  var CACHE_KEY = 'pcalEvents18', CACHE_MS = 10 * 60000;
+  var CACHE_KEY = 'pcalEvents19', CACHE_MS = 10 * 60000;
   // Events kept in the site code, for things that need to be on the calendar before anyone
   // adds them in the back office. A back-office entry with the same title and date wins.
   var SITE_EVENTS = [
@@ -83,7 +83,7 @@
       // Dances (Julie, Oct 2026): one entry each, on the right date
       'grade 5 dance|2027-01-08': { title: '5th Grade Dance', date: '2027-01-22', time: '19:00', forceTime: true, location: 'Schalmont Middle School', href: '/5th-grade-dance' },
       'grades 6/7 dance|2027-03-19': { title: '6th & 7th Grade Dance', date: '2027-03-12', time: '19:00', forceTime: true, location: 'Schalmont Middle School', href: '/6th-7th-grade-dance' },
-      '8th grade dance|2027-06-12': { title: '8th Grade Dance: A Night Under the Stars', time: '18:00', forceTime: true, location: 'Schalmont High School', forceLocation: true, href: '/8th-grade-dance' },   // Julie, Nov 2026
+      '8th grade dance|2027-06-12': { title: '8th Grade Dance: A Night Under the Stars', time: '18:00', forceTime: true, location: 'Schalmont Middle School Gymnasium, 2 Sabre Lane, Schenectady, NY 12306', forceLocation: true, href: '/8thgradedance' },   // Julie, Nov 2026
       'cheesy fundraiser': { title: 'Cheesy Fundraiser Sales', allCals: true },
       'holiday food drive starts': { title: 'Holiday Food Drive: Holiday Boxes', location: 'Drop off at the Jefferson main office', href: '/holiday-boxes' }
     };

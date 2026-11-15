@@ -608,7 +608,7 @@ const PROGRAM_CARDS_DEFAULTS = {
       "actions": [
         {
           "label": "Details & Volunteer →",
-          "href": "8th-grade-dance.html",
+          "href": "8thgradedance.html",
           "cls": "btn btn-primary"
         }
       ],
