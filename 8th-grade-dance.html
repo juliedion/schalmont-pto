@@ -24,6 +24,13 @@
     .g5-fact > span { font-size: 20px; }
     .g5-fact small { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; opacity: .75; }
     .g5-fact strong { font-size: 15px; }
+    .g5-team { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:16px; margin-top:6px; }
+    .g5-person { text-align:center; border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px 14px; background:#fff; }
+    .g5-person img { width:120px; height:120px; border-radius:50%; object-fit:cover; object-position:center top; display:block; margin:0 auto 10px; border:3px solid #1f7a46; }
+    .g5-person strong { display:block; font-size:17px; color:var(--primary-dark); }
+    .g5-person small { display:block; font-size:13px; color:var(--text-light); margin:2px 0 8px; }
+    .g5-person a { display:block; font-size:14.5px; font-weight:700; color:var(--primary); text-decoration:none; word-break:break-word; line-height:1.6; }
+    @media (max-width: 700px) { .g5-team { grid-template-columns:1fr; } }
     .g5-kicker { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--primary); margin-bottom: 6px; }
     .g5-themes { display: flex; align-items: stretch; gap: 10px; }
     .g5-theme { flex: 1; border: 2px solid var(--g5); border-radius: var(--radius-lg); padding: 16px 14px; text-align: center; display: flex; flex-direction: column; gap: 4px; background: color-mix(in srgb, var(--g5) 8%, white); }
@@ -206,6 +213,17 @@
         <!-- Amber Szady's volunteer sign-up sheet (Google Sheets), Nov 2026 -->
         <p style="margin:0"><a class="btn btn-primary" href="https://docs.google.com/spreadsheets/d/1naZsBPKT6JelpN1ZZRyf-r7oB6NcZ0yzZqnJPNHIv8Y/edit?usp=sharing" target="_blank" rel="noopener" style="font-size:16px;padding:12px 26px">🙋 Open the volunteer sign-up sheet →</a></p>
         <p style="font-size:13.5px;color:var(--text-light);margin:10px 0 0">The sheet opens in Google Sheets. Questions? Email <a href="mailto:julie@schalmontpto.com?subject=8th%20Grade%20Dance%20volunteer">julie@schalmontpto.com</a>.</p>
+      </div>
+
+      <!-- Contacts (Julie, Nov 2026) -->
+      <div class="g5-card" id="contacts" style="margin-top:24px">
+        <div class="g5-kicker">✉️ Questions?</div>
+        <h2>Contact the dance team</h2>
+        <div class="g5-team">
+          <div class="g5-person"><img src="images/board/Amber-Szady.jpg" alt="Amber Szady" width="120" height="120" loading="lazy"><strong>Amber Szady</strong><small>Dance Co-chair</small><a href="tel:+15184799997">518.479.9997</a><a href="mailto:amber@schalmontpto.com?subject=8th%20Grade%20Dance">amber@schalmontpto.com</a></div>
+          <div class="g5-person"><img src="images/board/Sharon-Moriarty.jpg" alt="Sharon Moriarty" width="120" height="120" loading="lazy"><strong>Sharon Moriarty</strong><small>Dance Co-chair</small><a href="tel:+15186698474">518.669.8474</a><a href="mailto:4girlsmom33@gmail.com?subject=8th%20Grade%20Dance">4girlsmom33@gmail.com</a></div>
+          <div class="g5-person"><img src="images/board/Julie-Dion.png" alt="Julie Dion" width="120" height="120" loading="lazy"><strong>Julie Dion</strong><small>Schalmont PTO President</small><a href="tel:+15188927495">518.892.7495</a><a href="mailto:julie@schalmontpto.com?subject=8th%20Grade%20Dance">julie@schalmontpto.com</a></div>
+        </div>
       </div>
 
       <div style="margin-top:28px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
