@@ -57,7 +57,7 @@
     .g5-banner { background:#0d1838; margin:0; padding:0; text-align:center; }
     .g5-banner img { display:block; width:100%; height:auto; }
     .g5-when { padding:26px 16px 34px; text-align:center; }
-    .g5-when-date { display:flex; align-items:center; justify-content:center; gap:18px; font-family:'Great Vibes', cursive; font-weight:400; font-size:clamp(40px, 6vw, 68px); line-height:1.1; background:linear-gradient(180deg,#fff6d8 10%,#f2c95b 60%,#c9952f 100%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(255,205,110,.35)); padding:0 6px; }
+    .g5-when-date { display:flex; align-items:center; justify-content:center; gap:18px; font-family:'Great Vibes', cursive; font-weight:400; font-size:clamp(40px, 6vw, 68px); line-height:1.6; background:linear-gradient(180deg,#fff6d8 10%,#f2c95b 60%,#c9952f 100%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(255,205,110,.35)); padding:.12em .4em; margin:-.3em 0 -.2em; }
     .g5-when-line { flex:0 1 120px; height:1px; background:linear-gradient(90deg,transparent,#e9c26a); }
     .g5-when-line:last-child { background:linear-gradient(90deg,#e9c26a,transparent); }
     .g5-when-row { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px 16px; margin-top:10px; font-family:'Cinzel', Georgia, serif; font-weight:600; font-size:clamp(17px, 2.1vw, 24px); letter-spacing:.08em; color:#f8f1dc; text-shadow:0 0 12px rgba(255,255,255,.25); }
@@ -98,6 +98,14 @@
     .g5-thumb span { position:absolute; inset:auto 0 0 0; font-size:11px; background:rgba(0,0,0,.55); color:#fff; padding:2px 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .g5-thumb button { position:absolute; top:4px; right:4px; width:24px; height:24px; border-radius:50%; border:0; background:rgba(0,0,0,.6); color:#fff; font-size:15px; line-height:24px; cursor:pointer; padding:0; }
     .g5-thumb.is-done::after { content:""; position:absolute; inset:0; background:rgba(31,122,70,.35); }
+    .g5-facts { border:1.5px solid #c9d0ef; border-radius:14px; padding:14px 16px 16px; margin:0; display:grid; gap:12px; background:#fff; }
+    .g5-facts legend { font-weight:800; font-size:16px; color:#1f2a5a; padding:0 6px; }
+    .g5-facts legend small { font-weight:500; font-size:13px; color:var(--text-light); }
+    .g5-mems { display:grid; gap:8px; }
+    .g5-pf textarea.g5-mem { min-height:70px; }
+    .g5-add-mem { justify-self:start; margin-top:8px; font:inherit; font-weight:800; font-size:14px; color:#1f2a5a; background:#eef1ff; border:1.5px solid #1f2a5a; border-radius:999px; padding:7px 16px; cursor:pointer; }
+    .g5-add-mem[hidden] { display:none; }
+    @media (max-width: 640px) { .g5-pf-row { grid-template-columns:1fr; } }
     .g5-count { font-size:13px; color:var(--text-light); text-align:right; margin-top:4px; }
     .g5-consent { font-size:13px; color:var(--text-light); line-height:1.55; margin:0; }
     .g5-pf-msg { border-radius:12px; padding:12px 14px; font-size:15px; font-weight:700; }
@@ -362,14 +370,14 @@
       <!-- Share photos of your 8th grader: each student gets a Drive folder; optional family message (Julie, Nov 2026) -->
       <div class="g5-card g5-photos" id="photos">
         <div class="g5-kicker">Families</div>
-        <h2>Share photos of your 8th grader</h2>
-        <p>Help us celebrate the Class of 2031! Upload photos of your 8th grader, from baby pictures to today, and add a special message from family and/or friends if you'd like. <strong>The photos will be shown in a slideshow during the dance and at graduation.</strong> Each student gets their own folder, so grandparents, siblings and friends can add to the same one by entering the same student name.</p>
+        <h2>Share your Sabre&#8217;s Story</h2>
+        <p>Help us celebrate the Class of 2031! Upload photos of your 8th grader, from baby pictures to today, add a special message from family and/or friends, and share a few fun facts about them if you'd like. <strong>The photos will be shown in a slideshow during the dance and at graduation.</strong> Each student gets their own folder, so grandparents, siblings and friends can add to the same one by entering the same student name.</p>
         <form class="g5-pf" id="g5-pf" novalidate>
           <div class="g5-pf-row">
             <div><label for="pf-first">8th grader's first name</label><input type="text" id="pf-first" autocomplete="off" maxlength="40" required></div>
             <div><label for="pf-last">8th grader's last name</label><input type="text" id="pf-last" autocomplete="off" maxlength="40" required></div>
           </div>
-          <div class="g5-folder" id="pf-folder" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Photos and your message will go into <strong id="pf-folder-name"></strong>'s folder.</span></div>
+          <div class="g5-folder" id="pf-folder" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Photos and your story will go into <strong id="pf-folder-name"></strong>'s folder.</span></div>
           <div class="g5-pf-row">
             <div><label for="pf-name">Your name</label><input type="text" id="pf-name" autocomplete="name" maxlength="80" required></div>
             <div><label for="pf-email">Your email</label><input type="email" id="pf-email" autocomplete="email" maxlength="120" required></div>
@@ -384,7 +392,23 @@
             <textarea id="pf-msg" maxlength="2000" placeholder="We are so proud of you…"></textarea>
             <div class="g5-count"><span id="pf-msg-n">0</span> / 2000</div>
           </div>
-          <p class="g5-consent">By sharing, you're giving the Schalmont PTO permission to use these photos and your message to celebrate the 8th grade class, including in the slideshow shown during the dance and at graduation, and in PTO communications. To have something removed, email <a href="mailto:julie@schalmontpto.com">julie@schalmontpto.com</a>.</p>
+          <fieldset class="g5-facts">
+            <legend>Fun facts about your 8th grader <small>(all optional)</small></legend>
+            <div class="g5-pf-row">
+              <div><label for="pf-nick">Special nickname</label><input type="text" id="pf-nick" maxlength="150" autocomplete="off"></div>
+              <div><label for="pf-food">Favorite food</label><input type="text" id="pf-food" maxlength="150" autocomplete="off"></div>
+            </div>
+            <div class="g5-pf-row">
+              <div><label for="pf-place">Favorite place to be</label><input type="text" id="pf-place" maxlength="150" autocomplete="off"></div>
+              <div><label for="pf-hero">If they were a superhero, who would they be?</label><input type="text" id="pf-hero" maxlength="150" autocomplete="off"></div>
+            </div>
+            <div>
+              <label for="pf-mem-1">Favorite memories of them</label>
+              <div class="g5-mems" id="pf-mems"><textarea class="g5-mem" id="pf-mem-1" maxlength="1000" placeholder="The time they…"></textarea></div>
+              <button type="button" class="g5-add-mem" id="pf-add-mem">+ Add another memory</button>
+            </div>
+          </fieldset>
+          <p class="g5-consent">By sharing, you're giving the Schalmont PTO permission to use these photos, your message and fun facts to celebrate the 8th grade class, including in the slideshow shown during the dance and at graduation, and in PTO communications. To have something removed, email <a href="mailto:julie@schalmontpto.com">julie@schalmontpto.com</a>.</p>
           <div class="g5-pf-msg" id="pf-status" role="status" aria-live="polite"></div>
           <button type="submit" class="g5-pf-btn" id="pf-send">Share with the PTO</button>
         </form>
@@ -560,8 +584,8 @@
     })();
   </script>
   <script>
-    // "Share photos of your 8th grader": one photo per request to api/dance-upload.php (shared batchId);
-    // the family message rides along with the first request (or goes alone if there are no photos).
+    // "Share your Sabre's Story": one photo per request to api/dance-upload.php (shared batchId);
+    // the family message + fun facts ride along with the first request (or goes alone if there are no photos).
     (function () {
       var MAX = 20, MAX_BYTES = 20 * 1024 * 1024;
       var $ = function (id) { return document.getElementById(id); };
@@ -575,6 +599,25 @@
       }
       $('pf-first').addEventListener('input', showFolder); $('pf-last').addEventListener('input', showFolder);
       $('pf-msg').addEventListener('input', function () { $('pf-msg-n').textContent = this.value.length; });
+      var FACTS = { nickname: 'pf-nick', food: 'pf-food', place: 'pf-place', hero: 'pf-hero' }, MAX_MEM = 10;
+      $('pf-add-mem').addEventListener('click', function () {
+        var box = $('pf-mems'), n = box.children.length + 1; if (n > MAX_MEM) return;
+        var t = document.createElement('textarea'); t.className = 'g5-mem'; t.id = 'pf-mem-' + n; t.maxLength = 1000; t.placeholder = 'Another favorite memory…';
+        t.setAttribute('aria-label', 'Favorite memory ' + n); box.appendChild(t); t.focus();
+        if (n >= MAX_MEM) this.hidden = true;
+      });
+      function memories() { return [].slice.call(document.querySelectorAll('#pf-mems .g5-mem')).map(function (t) { return t.value.trim(); }).filter(Boolean); }
+      function hasFacts() { return memories().length > 0 || Object.keys(FACTS).some(function (k) { return $(FACTS[k]).value.trim(); }); }
+      function addStory(fd, msg) {
+        if (msg) fd.append('message', msg);
+        Object.keys(FACTS).forEach(function (k) { var v = $(FACTS[k]).value.trim(); if (v) fd.append(k, v); });
+        memories().forEach(function (m) { fd.append('memories[]', m); });
+      }
+      function clearStory() {
+        Object.keys(FACTS).forEach(function (k) { $(FACTS[k]).value = ''; });
+        var box = $('pf-mems'); while (box.children.length > 1) box.removeChild(box.lastChild);
+        box.firstElementChild.value = ''; $('pf-add-mem').hidden = false;
+      }
       function status(t, kind) { var m = $('pf-status'); m.className = 'g5-pf-msg' + (kind ? ' is-' + kind : ''); m.textContent = t || ''; if (t) m.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
       function draw() {
         var box = $('pf-thumbs'); box.innerHTML = '';
@@ -613,12 +656,12 @@
       }
       form.addEventListener('submit', function (e) {
         e.preventDefault(); if (busy) return;
-        var first = $('pf-first').value.trim(), last = $('pf-last').value.trim(), fam = $('pf-name').value.trim(), email = $('pf-email').value.trim(), msg = $('pf-msg').value.trim();
+        var first = $('pf-first').value.trim(), last = $('pf-last').value.trim(), fam = $('pf-name').value.trim(), email = $('pf-email').value.trim(), msgText = $('pf-msg').value.trim(), msg = msgText || hasFacts();
         if (!first || !last) return status("Please enter your 8th grader's first and last name.", 'err');
         if (!fam) return status('Please enter your name.', 'err');
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return status('Please enter a valid email address.', 'err');
         var todo = files.filter(function (f) { return !f.done; });
-        if (!todo.length && !msg) return status('Please add at least one photo or a message.', 'err');
+        if (!todo.length && !msg) return status('Please add at least one photo, a message or a fun fact.', 'err');
         showFolder();
         busy = true; $('pf-send').disabled = true; draw();
         var batch = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
@@ -630,17 +673,17 @@
             n++; status('Uploading photo ' + n + ' of ' + todo.length + '… please keep this page open.', 'busy');
             $('pf-send').textContent = 'Uploading ' + n + ' of ' + todo.length + '…';
             var fd = base(); fd.append('photo', f.file, f.file.name);
-            if (msg && !msgSent) fd.append('message', msg);
+            if (msg && !msgSent) addStory(fd, msgText);
             return post(fd).then(function () { msgSent = msgSent || !!msg; f.done = true; draw(); });
           });
         });
         chain.then(function () {
-          if (msg && !msgSent) { status('Sending your message…', 'busy'); var fd = base(); fd.append('message', msg); return post(fd); }
+          if (msg && !msgSent) { status('Sending your story…', 'busy'); var fd = base(); addStory(fd, msgText); return post(fd); }
         }).then(function () {
           try { fetch('/api/yearbook-drive.php', { method: 'POST', keepalive: true }); } catch (_) {}   // copy to Drive in the background
           var who = $('pf-folder-name').textContent || name();
-          status('Thank you! ' + (todo.length ? todo.length + ' photo' + (todo.length === 1 ? '' : 's') : '') + (todo.length && msg ? ' and your message' : (msg ? 'Your message' : '')) + ' ' + (todo.length + (msg ? 1 : 0) > 1 ? 'were' : 'was') + ' added to ' + who + "'s folder.", 'ok');
-          files = []; $('pf-msg').value = ''; $('pf-msg-n').textContent = '0'; draw();
+          status('Thank you! ' + (todo.length ? todo.length + ' photo' + (todo.length === 1 ? '' : 's') : '') + (todo.length && msg ? ' and your story' : (msg ? 'Your story' : '')) + ' ' + (todo.length + (msg ? 1 : 0) > 1 ? 'were' : 'was') + ' added to ' + who + "'s folder.", 'ok');
+          files = []; clearStory(); $('pf-msg').value = ''; $('pf-msg-n').textContent = '0'; draw();
         }).catch(function (err) {
           status((err && err.message) || 'Something went wrong. Please try again.', 'err');
         }).then(function () {

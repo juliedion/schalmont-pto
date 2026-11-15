@@ -6,7 +6,8 @@
    Saved here under /uploads/dance8/<student>/ and queued for the PTO's Google Drive
    (same queue + Apps Script as the yearbook photos: tools/yearbook-drive-script.gs),
    where each student gets a folder:  <top folder> / 8th Grade Dance 2027 / <First Last> /
-   The family message goes into that folder as "Message from <family>.txt".
+   The family message + optional fun facts (nickname, favorite food/place, superhero, favorite
+   memories) go into that folder as "Sabre's Story from <family>.txt".
    ============================================================ */
 
 header('Content-Type: application/json');
@@ -30,6 +31,18 @@ $last    = title_name(clean($_POST['studentLast']  ?? '', 40));
 $family  = clean($_POST['familyName'] ?? '', 80);
 $email   = clean($_POST['email'] ?? '', 120);
 $message = mb_substr(trim(strip_tags((string)($_POST['message'] ?? ''))), 0, 2000);
+// Sabre's Story fun facts (all optional)
+$facts = [];
+foreach (['nickname' => 'Special nickname', 'food' => 'Favorite food', 'place' => 'Favorite place to be', 'hero' => 'If they were a superhero'] as $k => $label) {
+  $v = clean($_POST[$k] ?? '', 150);
+  if ($v !== '') $facts[$label] = $v;
+}
+$memories = [];
+foreach ((array)($_POST['memories'] ?? []) as $m) {
+  $m = mb_substr(trim(strip_tags((string)$m)), 0, 1000);
+  if ($m !== '' && count($memories) < 10) $memories[] = $m;
+}
+$hasStory = $message !== '' || $facts || $memories;
 $batchIn = preg_replace('/[^a-z0-9-]/i', '', $_POST['batchId'] ?? '');
 $batchId = ($batchIn !== '' && strlen($batchIn) <= 40) ? $batchIn : date('Ymd-His') . '-' . bin2hex(random_bytes(4));
 
@@ -37,7 +50,7 @@ if ($first === '' || $last === '') fail("Please enter your 8th grader's first an
 if ($family === '') fail('Please enter your name.');
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) fail('Please enter a valid email address.');
 $hasPhoto = !empty($_FILES['photo']) && ($_FILES['photo']['error'] ?? 4) !== 4;
-if (!$hasPhoto && $message === '') fail('Please add at least one photo or a message.');
+if (!$hasPhoto && !$hasStory) fail('Please add at least one photo, a message or a fun fact.');
 
 /* ---- per-IP hourly rate limit ---- */
 $baseDir = __DIR__ . '/../uploads/dance8';
@@ -92,12 +105,15 @@ if ($hasPhoto) {
 /* ---- the family message (once per submission) ----
    Kept as .json on the server (uploads/.htaccess keeps .json private); sent to Drive as a .txt. */
 $msgFile = "$destDir/.meta/$batchId-message.json";
-if ($message !== '' && !is_file($msgFile)) {
-  $txt = "For: $student\nFrom: $family <$email>\nSent: " . date('F j, Y g:i A') . "\n\n" . $message . "\n";
+if ($hasStory && !is_file($msgFile)) {
+  $txt = "SABRE'S STORY\nFor: $student\nFrom: $family <$email>\nSent: " . date('F j, Y g:i A') . "\n";
+  if ($message !== '') $txt .= "\nMESSAGE FROM FAMILY AND/OR FRIENDS\n" . $message . "\n";
+  if ($facts) { $txt .= "\nFUN FACTS\n"; foreach ($facts as $label => $v) $txt .= "$label: $v\n"; }
+  if ($memories) { $txt .= "\nFAVORITE MEMORIES\n"; foreach ($memories as $i => $m) $txt .= ($i + 1) . ". $m\n"; }
   @file_put_contents($msgFile, $txt, LOCK_EX);
   $jobs[] = [$msgFile, $common + [
     'mimeType' => 'text/plain', 'original' => 'family message',
-    'filename' => "Message from $safeFamily - " . date('Ymd-His') . '.txt',
+    'filename' => "Sabre's Story from $safeFamily - " . date('Ymd-His') . '.txt',
   ]];
 }
 
@@ -107,6 +123,8 @@ $prev = is_file($metaFile) ? (json_decode((string)file_get_contents($metaFile), 
 @file_put_contents($metaFile, json_encode([
   'batchId' => $batchId, 'student' => $student, 'familyName' => $family, 'email' => $email,
   'message' => $message !== '' ? $message : ($prev['message'] ?? ''),
+  'funFacts' => $facts ?: ($prev['funFacts'] ?? new stdClass()),
+  'memories' => $memories ?: ($prev['memories'] ?? []),
   'photos' => array_values(array_filter(array_merge($prev['photos'] ?? [], [$saved]))),
   'submittedAt' => $prev['submittedAt'] ?? date('c'), 'ip' => $ip,
 ], JSON_PRETTY_PRINT), LOCK_EX);
