@@ -36,10 +36,10 @@ SCHOOLS = [
 # data/sidebar-events.json (every other upcoming PTO event is added, alphabetically).
 # No backslashes in these: the menu is also stored inside a JavaScript string (js/site-chrome.js).
 MAIN_ITEMS = [
-    ('Brawl for the Ball', '/brawlfortheball', r'brawl'),
     ('Box Tops for Education', 'box-tops.html', r'box tops'),
     ('Cheesy Fundraiser', '/event?t=cheesy-fundraiser', r'cheesy'),
     ('Coupon Books', 'couponbook.html', r'coupon'),
+    ('8th Grade Dance', '/8thgradedance', r'8th grade dance'),
     ('Dances', 'dances.html', r'dance'),
     ('Directory', 'directory.html', ''),
     ('Donate', 'donate.html', ''),

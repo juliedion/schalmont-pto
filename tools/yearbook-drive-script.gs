@@ -38,6 +38,7 @@
    8TH GRADE DANCE PHOTOS (Nov 2026): the dance page (8thgradedance.html, api/dance-upload.php)
    sends `folderPath` instead of a school/event, e.g. ["8th Grade Dance 2027", "Jane Doe"], so
    each 8th grader gets their own folder, and a family's message arrives as a .txt file there.
+   Folder names are matched loosely (see looseChild_), so a family's spelling finds the class-list folder.
    If you ever change this code: Deploy → Manage deployments → edit (pencil) →
    Version: New version → Deploy. The URL stays the same.
    ============================================================ */
@@ -92,7 +93,7 @@ function doPost(e) {
       if (req.folderPath && req.folderPath.length) {
         // A set folder path under the top folder (8th Grade Dance: one folder per student).
         folder = rootFolder_();
-        req.folderPath.slice(0, 4).forEach(function (n) { folder = child_(folder, clean_(n) || 'Unnamed'); });
+        req.folderPath.slice(0, 4).forEach(function (n) { folder = looseChild_(folder, clean_(n) || 'Unnamed'); });
       } else {
         var school = child_(rootFolder_(), SCHOOL_NAMES[req.school] || 'Other');
         // An event picked from the list is one of this school's folders; anything typed in goes to "Other events".
@@ -122,6 +123,24 @@ function clean_(s) { return String(s || '').replace(/[\/\\:*?"<>|\u0000-\u001f]+
 function child_(parent, name) {
   var it = parent.getFoldersByName(name);
   return it.hasNext() ? it.next() : parent.createFolder(name);
+}
+// Student folders: "Henry Disanto" or "Katieana Juarbe" finds the roster's "Henry DiSanto" / "Katieana Mary Juarbe"
+// (ignores capitals, spaces, punctuation, middle names and Jr./Sr./II/III), so families don't make duplicates.
+function nameKeys_(name) {
+  var t = String(name || '').toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(Boolean);
+  while (t.length > 2 && /^(jr|sr|ii|iii|iv)$/.test(t[t.length - 1])) t.pop();
+  return { all: t.join(''), ends: t.length > 1 ? t[0] + '|' + t[t.length - 1] : '' };
+}
+function looseChild_(parent, name) {
+  var exact = parent.getFoldersByName(name);
+  if (exact.hasNext()) return exact.next();
+  var k = nameKeys_(name), it = parent.getFolders(), byEnds = null;
+  while (it.hasNext()) {
+    var f = it.next(), fk = nameKeys_(f.getName());
+    if (fk.all === k.all) return f;
+    if (!byEnds && k.ends && fk.ends === k.ends) byEnds = f;
+  }
+  return byEnds || parent.createFolder(name);
 }
 function rootFolder_() {
   var props = PropertiesService.getScriptProperties(), id = props.getProperty('ROOT_ID');

@@ -16,7 +16,8 @@ header('X-Content-Type-Options: nosniff');
 function out($code, $arr) { http_response_code($code); echo json_encode($arr); exit; }
 function fail($msg) { out(400, ['ok' => false, 'error' => $msg]); }
 function clean($s, $max) { return mb_substr(trim(preg_replace('/\s+/u', ' ', strip_tags((string)$s))), 0, $max); }
-function title_name($s) { return mb_convert_case(mb_strtolower($s), MB_CASE_TITLE, 'UTF-8'); }
+// all-lowercase or ALL-CAPS gets capitalized; anything else (DiSanto, McDaniel, O'Brien) is kept as typed.
+function title_name($s) { return ($s === mb_strtolower($s) || $s === mb_strtoupper($s)) ? mb_convert_case(mb_strtolower($s), MB_CASE_TITLE, 'UTF-8') : $s; }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') out(405, ['ok' => false, 'error' => 'POST only']);
 

@@ -203,10 +203,10 @@
       </form>
       <a class="sn-item" href="index.html">Home</a>
       <nav class="sn-main" aria-label="PTO events and pages">
-        <a class="sn-item" href="/brawlfortheball" data-match="brawl">Brawl for the Ball</a>
         <a class="sn-item" href="box-tops.html" data-match="box tops">Box Tops for Education</a>
         <a class="sn-item" href="/event?t=cheesy-fundraiser" data-match="cheesy">Cheesy Fundraiser</a>
         <a class="sn-item" href="couponbook.html" data-match="coupon">Coupon Books</a>
+        <a class="sn-item" href="/8thgradedance" data-match="8th grade dance">8th Grade Dance</a>
         <a class="sn-item" href="dances.html" data-match="dance">Dances</a>
         <a class="sn-item" href="directory.html">Directory</a>
         <a class="sn-item" href="donate.html">Donate</a>
@@ -595,7 +595,7 @@
       function showFolder() {
         var f = $('pf-first').value.trim(), l = $('pf-last').value.trim();
         $('pf-folder').hidden = !(f && l);
-        $('pf-folder-name').textContent = name().replace(/\S+/g, function (w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); });
+        $('pf-folder-name').textContent = name().replace(/\S+/g, function (w) { return (w === w.toLowerCase() || w === w.toUpperCase()) ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : w; });
       }
       $('pf-first').addEventListener('input', showFolder); $('pf-last').addEventListener('input', showFolder);
       $('pf-msg').addEventListener('input', function () { $('pf-msg-n').textContent = this.value.length; });
@@ -707,7 +707,6 @@
     try { mountSignupEmbeds(firebase.firestore()); } catch (e) { /* the fallback text stays */ }
   </script>
   <script src="js/page-menu.js?v=4"></script>
-  <script src="js/menus.js?v=5"></script>
   <script>
   /* Night sky: scatter twinkling stars and a few falling (shooting) stars behind the page. */
   (function () {
@@ -729,5 +728,6 @@
     sky.appendChild(frag);
   })();
   </script>
+  <script src="js/menus.js?v=5"></script>
 </body>
 </html>
