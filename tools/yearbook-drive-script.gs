@@ -36,7 +36,7 @@
    (gear) → Script Properties → set ROOT_ID to the folder's id (the part after
    /folders/). The PTO Google account needs Editor access to that folder.
    8TH GRADE DANCE PHOTOS (Nov 2026): the dance page (8thgradedance.html, api/dance-upload.php)
-   sends `folderPath` instead of a school/event, e.g. ["8th Grade Dance 2027", "Jane Doe"], so
+   sends `folderPath` instead of a school/event, e.g. ["8th Grade Dance 2027", "Doe, Jane"], so
    each 8th grader gets their own folder, and a family's message arrives as a .txt file there.
    Folder names are matched loosely (see looseChild_), so a family's spelling finds the class-list folder.
    If you ever change this code: Deploy → Manage deployments → edit (pencil) →
@@ -124,12 +124,21 @@ function child_(parent, name) {
   var it = parent.getFoldersByName(name);
   return it.hasNext() ? it.next() : parent.createFolder(name);
 }
-// Student folders: "Henry Disanto" or "Katieana Juarbe" finds the roster's "Henry DiSanto" / "Katieana Mary Juarbe"
-// (ignores capitals, spaces, punctuation, middle names and Jr./Sr./II/III), so families don't make duplicates.
+// Student folders are "Last, First" (e.g. "DiSanto, Henry"). Matching ignores capitals, spaces, punctuation,
+// word order (Last, First vs First Last), middle names and Jr./Sr./II/III, so "Disanto, Henry" or
+// "Juarbe, Katieana" finds "DiSanto, Henry" / "Juarbe, Katieana Mary" and families don't make duplicates.
+var SUFFIX_ = /^(jr|sr|ii|iii|iv)$/;
 function nameKeys_(name) {
-  var t = String(name || '').toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(Boolean);
-  while (t.length > 2 && /^(jr|sr|ii|iii|iv)$/.test(t[t.length - 1])) t.pop();
-  return { all: t.join(''), ends: t.length > 1 ? t[0] + '|' + t[t.length - 1] : '' };
+  var s = String(name || '').toLowerCase(), first, last, i = s.indexOf(',');
+  var toks = function (x) { return x.replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(Boolean); };
+  if (i >= 0) { last = toks(s.slice(0, i)); first = toks(s.slice(i + 1)); }
+  else {
+    var t = toks(s);
+    while (t.length > 2 && SUFFIX_.test(t[t.length - 1])) t.pop();
+    first = t.length > 1 ? t.slice(0, -1) : t; last = t.length > 1 ? t.slice(-1) : [];
+  }
+  while (last.length > 1 && SUFFIX_.test(last[last.length - 1])) last.pop();
+  return { all: first.join('') + last.join(''), ends: first.length && last.length ? first[0] + '|' + last[last.length - 1] : '' };
 }
 function looseChild_(parent, name) {
   var exact = parent.getFoldersByName(name);

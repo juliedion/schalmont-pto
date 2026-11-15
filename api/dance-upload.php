@@ -5,7 +5,7 @@
    Each request carries ONE photo (or just the message), with a shared batchId.
    Saved here under /uploads/dance8/<student>/ and queued for the PTO's Google Drive
    (same queue + Apps Script as the yearbook photos: tools/yearbook-drive-script.gs),
-   where each student gets a folder:  <top folder> / 8th Grade Dance 2027 / <First Last> /
+   where each student gets a folder:  <top folder> / 8th Grade Dance 2027 / <Last, First> /
    The family message + optional fun facts (nickname, favorite food/place, superhero, favorite
    memories) go into that folder as "Sabre's Story from <family>.txt".
    ============================================================ */
@@ -65,6 +65,7 @@ $rate['count']++; @file_put_contents($rateFile, json_encode($rate), LOCK_EX);
 
 /* ---- the student's folder ---- */
 $student = "$first $last";
+$folderName = "$last, $first";   // Drive folders are "Last, First" (Julie, Nov 2026)
 $slug = strtolower(trim(preg_replace('/[^a-z0-9]+/i', '-', "$last-$first"), '-')) ?: 'student';
 $destDir = "$baseDir/$slug";
 if (!is_dir($destDir) && !@mkdir($destDir, 0755, true)) out(500, ['ok' => false, 'error' => 'Server could not create the upload folder.']);
@@ -74,9 +75,9 @@ $cfg = @include __DIR__ . '/config.php';
 if (!is_array($cfg)) $cfg = [];
 $jobs = [];
 $common = [
-  'folderPath' => [$DRIVE_TOP, $student],
+  'folderPath' => [$DRIVE_TOP, $folderName],
   // Fallback for an Apps Script that hasn't been updated yet: lands in <top>/Other/<student>.
-  'school' => 'dance8', 'eventFolder' => $student, 'eventLabel' => "8th Grade Dance - $student",
+  'school' => 'dance8', 'eventFolder' => $folderName, 'eventLabel' => "8th Grade Dance - $student",
   'students' => $student, 'grades' => '8th grade',
   'uploaderName' => $family, 'uploaderEmail' => $email, 'batchId' => $batchId,
 ];
