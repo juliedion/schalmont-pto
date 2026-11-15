@@ -31,6 +31,26 @@
     .g5-person small { display:block; font-size:13px; color:var(--text-light); margin:2px 0 8px; }
     .g5-person a { display:block; font-size:14.5px; font-weight:700; color:var(--primary); text-decoration:none; word-break:break-word; line-height:1.6; }
     @media (max-width: 700px) { .g5-team { grid-template-columns:1fr; } }
+    .g5-all { margin-top:18px; border-top:1px solid var(--border); padding-top:16px; }
+    .g5-all > summary { cursor:pointer; list-style:none; display:inline-flex; align-items:center; gap:8px; font-weight:800; font-size:16px; color:var(--primary-dark); background:color-mix(in srgb, var(--g5, #1f7a46) 10%, white); border:2px solid #1f7a46; border-radius:999px; padding:10px 20px; }
+    .g5-all > summary::-webkit-details-marker { display:none; }
+    .g5-all[open] > summary .g5-chev { transform:rotate(180deg); }
+    .g5-all-note { font-size:13.5px; color:var(--text-light); margin:12px 0 4px; }
+    .g5-com { margin:16px 0 0; }
+    .g5-com h3 { font-size:17px; color:var(--primary-dark); margin:0 0 8px; display:flex; align-items:center; gap:8px; }
+    .g5-com h3 span { font-size:12.5px; font-weight:800; background:#1f7a46; color:#fff; border-radius:999px; padding:2px 10px; }
+    .g5-vt { width:100%; border-collapse:collapse; font-size:14.5px; }
+    .g5-vt th { text-align:left; font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-light); padding:6px 10px; border-bottom:2px solid var(--border); }
+    .g5-vt td { padding:8px 10px; border-bottom:1px solid var(--border); vertical-align:top; word-break:break-word; }
+    .g5-vt a { color:var(--primary); font-weight:700; text-decoration:none; }
+    .g5-empty { font-size:14px; color:var(--text-light); background:#f7f8f7; border-radius:10px; padding:10px 14px; margin:0; }
+    @media (max-width: 640px) {
+      .g5-vt thead { display:none; }
+      .g5-vt tr { display:block; border:1px solid var(--border); border-radius:12px; padding:8px 12px; margin-bottom:8px; }
+      .g5-vt td { display:block; border:0; padding:2px 0; }
+      .g5-vt td:first-child { font-weight:800; }
+      .g5-vt td[data-l]::before { content:attr(data-l) ": "; color:var(--text-light); font-size:12.5px; }
+    }
     .g5-kicker { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--primary); margin-bottom: 6px; }
     .g5-themes { display: flex; align-items: stretch; gap: 10px; }
     .g5-theme { flex: 1; border: 2px solid var(--g5); border-radius: var(--radius-lg); padding: 16px 14px; text-align: center; display: flex; flex-direction: column; gap: 4px; background: color-mix(in srgb, var(--g5) 8%, white); }
@@ -213,6 +233,12 @@
         <!-- Amber Szady's volunteer sign-up sheet (Google Sheets), Nov 2026 -->
         <p style="margin:0"><a class="btn btn-primary" href="https://docs.google.com/spreadsheets/d/1naZsBPKT6JelpN1ZZRyf-r7oB6NcZ0yzZqnJPNHIv8Y/edit?usp=sharing" target="_blank" rel="noopener" style="font-size:16px;padding:12px 26px">🙋 Open the volunteer sign-up sheet →</a></p>
         <p style="font-size:13.5px;color:var(--text-light);margin:10px 0 0">The sheet opens in Google Sheets. Questions? Email <a href="mailto:julie@schalmontpto.com?subject=8th%20Grade%20Dance%20volunteer">julie@schalmontpto.com</a>.</p>
+        <!-- View all volunteers: read live from Amber's Google Sheet, one table per tab (Julie, Nov 2026) -->
+        <details class="g5-all" id="all-volunteers">
+          <summary>👀 View all volunteers <svg class="g5-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+          <p class="g5-all-note">Everyone who has signed up on the volunteer sheet, by committee. This list updates on its own as people add their names.</p>
+          <div id="g5-vol-list"><p class="g5-empty">Loading…</p></div>
+        </details>
       </div>
 
       <!-- Contacts (Julie, Nov 2026) -->
@@ -303,6 +329,64 @@
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script>
+    // "View all volunteers": each tab of Amber's sheet, read as CSV when the list is opened.
+    (function () {
+      var ID = '1naZsBPKT6JelpN1ZZRyf-r7oB6NcZ0yzZqnJPNHIv8Y';
+      var TABS = [['Fundraising', '0'], ['Entertainment and Activities', '1533290961'], ['Decorations', '806582475'],
+        ['Food and Refreshments', '1508255086'], ['Welcoming and Gifts', '1174347598'], ['Quiet Room and Extra Activities', '1381918574']];
+      var box = document.getElementById('all-volunteers'), list = document.getElementById('g5-vol-list'), loaded = false;
+      function csv(t) {
+        var rows = [], row = [], f = '', q = false;
+        for (var i = 0; i < t.length; i++) {
+          var c = t[i];
+          if (q) { if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+          else if (c === '"') q = true;
+          else if (c === ',') { row.push(f); f = ''; }
+          else if (c === '\n' || c === '\r') { if (c === '\r' && t[i + 1] === '\n') i++; row.push(f); rows.push(row); row = []; f = ''; }
+          else f += c;
+        }
+        if (f || row.length) { row.push(f); rows.push(row); }
+        return rows;
+      }
+      function esc(x) { return String(x || '').replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+      function people(rows) {
+        var h = rows.findIndex(function (r) { return /name/i.test(r[0] || '') && /email/i.test(r.join(' ')); });
+        return rows.slice(h + 1).filter(function (r) { return String(r[0] || '').trim(); })
+          .map(function (r) { return { name: r[0].trim(), email: (r[1] || '').trim(), phone: (r[2] || '').trim(), pref: (r[3] || '').trim() }; });
+      }
+      function table(ps) {
+        if (!ps.length) return '<p class="g5-empty">No one yet. Be the first to sign up!</p>';
+        return '<table class="g5-vt"><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Prefers</th></tr></thead><tbody>' +
+          ps.map(function (p) {
+            var tel = p.phone.replace(/[^0-9+]/g, '');
+            return '<tr><td>' + esc(p.name) + '</td>' +
+              '<td data-l="Email">' + (p.email ? '<a href="mailto:' + esc(p.email) + '">' + esc(p.email) + '</a>' : '') + '</td>' +
+              '<td data-l="Phone">' + (p.phone ? (tel ? '<a href="tel:' + esc(tel) + '">' + esc(p.phone) + '</a>' : esc(p.phone)) : '') + '</td>' +
+              '<td data-l="Prefers">' + esc(p.pref) + '</td></tr>';
+          }).join('') + '</tbody></table>';
+      }
+      function load() {
+        if (loaded) return; loaded = true;
+        Promise.all(TABS.map(function (t) {
+          return fetch('https://docs.google.com/spreadsheets/d/' + ID + '/gviz/tq?tqx=out:csv&gid=' + t[1])
+            .then(function (r) { if (!r.ok) throw 0; return r.text(); })
+            .then(function (x) { return people(csv(x)); });
+        })).then(function (all) {
+          var total = all.reduce(function (n, ps) { return n + ps.length; }, 0);
+          list.innerHTML = '<p class="g5-all-note" style="margin-top:0"><strong>' + total + '</strong> volunteer' + (total === 1 ? '' : 's') + ' so far.</p>' +
+            TABS.map(function (t, i) {
+              return '<div class="g5-com"><h3>' + esc(t[0]) + ' <span>' + all[i].length + '</span></h3>' + table(all[i]) + '</div>';
+            }).join('');
+        }).catch(function () {
+          loaded = false;
+          list.innerHTML = '<p class="g5-empty">The list couldn\'t load right now. <a href="https://docs.google.com/spreadsheets/d/' + ID + '/edit?usp=sharing" target="_blank" rel="noopener">Open the sign-up sheet</a> to see everyone.</p>';
+        });
+      }
+      box.addEventListener('toggle', function () { if (box.open) load(); });
+      if (location.hash === '#all-volunteers') { box.open = true; load(); }
+    })();
+  </script>
   <script src="js/signup-embed.js?v=7"></script>
   <script>
     // Volunteer interest sign-up (see the #volunteer section).
