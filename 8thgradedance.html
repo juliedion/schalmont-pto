@@ -111,6 +111,7 @@
     .g5-pay-card img { width:150px; height:150px; display:block; }
     .g5-pay-btn { display:inline-block; font-weight:800; font-size:15.5px; text-decoration:none; border-radius:999px; padding:12px 24px; background:#1f2a5a; color:#fff !important; }
     .g5-pay-btn.is-soon { background:#e7e9f2; color:#1f2a5a !important; cursor:default; }
+    .g5-pay-card img.g5-pay-art { width:100%; max-width:260px; height:auto; aspect-ratio:1/1; border-radius:12px; }
     .g5-pay-card.is-soon { border-style:dashed; background:#fafbfd; justify-content:center; min-height:180px; }
     @media (max-width: 800px) { .g5-pay { grid-template-columns:1fr; } }
     .g5-kicker { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--primary); margin-bottom: 6px; }
@@ -287,7 +288,7 @@
 
       <!-- Tickets: payment options as cards. Card 1 = Zeffy; cards 2-3 to come (Julie, Nov 2026) -->
       <div class="g5-card g5-tix" id="tickets">
-        <div class="g5-tix-head"><h2>Tickets</h2><span class="g5-tix-when">On sale January 1, 2027</span></div>
+        <div class="g5-tix-head"><h2>Tickets &amp; Sponsorships</h2><span class="g5-tix-when">Tickets on sale January 1, 2027</span></div>
         <div class="g5-pay">
           <div class="g5-pay-card is-main">
             <h3>Buy online</h3>
@@ -295,7 +296,13 @@
             <img src="images/flyers/8th-grade-dance-tickets-qr.png" alt="QR code to buy 8th Grade Dance tickets on Zeffy" width="150" height="150">
             <a class="g5-pay-btn is-soon" id="g5-tix-btn" href="https://www.zeffy.com/en-US/ticketing/schalmont-2027-8th-grade-dance" target="_blank" rel="noopener" data-open="2027-01-01">On sale January 1, 2027</a>
           </div>
-          <div class="g5-pay-card is-soon"><h3>More ways to pay</h3><p>Coming soon.</p></div>
+          <div class="g5-pay-card is-sponsor">
+            <img class="g5-pay-art" src="images/flyers/8th-grade-dance-sponsors.jpg" alt="Schalmont 8th Grade Class, A Night Under the Stars: Become a proud sponsor" width="800" height="800" loading="lazy">
+            <h3>Become a sponsor</h3>
+            <p>Support the Class of 2031's big night. Choose a sponsorship level and pay online through Zeffy.</p>
+            <img src="images/flyers/8th-grade-dance-sponsors-qr.png" alt="QR code to become an 8th Grade Dance sponsor on Zeffy" width="150" height="150">
+            <a class="g5-pay-btn" href="https://www.zeffy.com/en-US/ticketing/schalmont-8th-grade-dance-sponsors" target="_blank" rel="noopener">Become a Sponsor</a>
+          </div>
           <div class="g5-pay-card is-soon"><h3>More ways to pay</h3><p>Coming soon.</p></div>
         </div>
       </div>
@@ -611,7 +618,7 @@
     (function () {
       var b = document.getElementById('g5-tix-btn'); if (!b) return;
       var today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
-      if (today >= b.getAttribute('data-open')) { b.classList.remove('is-soon'); b.textContent = 'Buy Tickets'; var w = document.querySelector('.g5-tix-when'); if (w) w.textContent = 'On sale now'; }
+      if (today >= b.getAttribute('data-open')) { b.classList.remove('is-soon'); b.textContent = 'Buy Tickets'; var w = document.querySelector('.g5-tix-when'); if (w) w.textContent = 'Tickets on sale now'; }
       else b.addEventListener('click', function (e) { e.preventDefault(); });
     })();
   </script>
