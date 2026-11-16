@@ -273,7 +273,7 @@ def add_assets(src, slash):
     """css/menus.css in <head>, js/menus.js before </body> -- exactly once each."""
     src = ASSETS_CSS.sub('', src)
     src = ASSETS_JS.sub('', src)
-    src = re.sub(r'(\n[ \t]*)</head>', lambda m: m.group(1) + f'  <link rel="stylesheet" href="{slash}css/menus.css?v=12">' + m.group(1) + '</head>', src, count=1)
+    src = re.sub(r'(\n[ \t]*)</head>', lambda m: m.group(1) + f'  <link rel="stylesheet" href="{slash}css/menus.css?v=13">' + m.group(1) + '</head>', src, count=1)
     return re.sub(r'(\n[ \t]*)</body>', lambda m: m.group(1) + f'  <script src="{slash}js/menus.js?v=7"></script>' + m.group(1) + '</body>', src, count=1)
 
 
