@@ -37,7 +37,7 @@ SCHOOLS = [
 # No backslashes in these: the menu is also stored inside a JavaScript string (js/site-chrome.js).
 MAIN_ITEMS = [
     ('Box Tops for Education', 'box-tops.html', r'box tops'),
-    ('Cheesy Fundraiser', '/event?t=cheesy-fundraiser', r'cheesy'),
+    ('Cheesy Fundraiser', '/cheesy-fundraiser', r'cheesy'),
     ('Coupon Books', 'couponbook.html', r'coupon'),
     ('8th Grade Dance', '/8thgradedance', r'8th grade dance'),
     ('Dances', 'dances.html', r'dance'),
@@ -72,7 +72,7 @@ SCHOOL_MENUS = [
     ('jefferson', 'Woestina/Jefferson', 'Pre-K–4', '#6bb044', [
         ('Banking', 'school-banking.html'), ('Book Fairs', 'book-fairs.html'), ('Box Tops/Tools for Schools', 'box-tops.html'),
         ('Calendar', 'jefferson.html#school-calendar'), ('Craft Fair', 'craft-fair.html'), ('Charleston Wrap', '/jefferson/fallfr'),
-        ('Cheesy Fundraiser', '/event?t=cheesy-fundraiser'), ('Clubs', 'clubs.html'), ('Coin Wars', '/event?t=coin-wars'),
+        ('Cheesy Fundraiser', '/cheesy-fundraiser'), ('Clubs', 'clubs.html'), ('Coin Wars', '/event?t=coin-wars'),
         ('Dances', 'dances.html'), ('Donations', 'donate.html'), ('Family Scouts', 'family-scouts.html'),
         ('Field Day', '/event?t=field-day'), ('Food Drive', 'holiday-boxes.html'), ('Girl Scouts', 'girl-scouts.html'),
         ('Giving Tree', 'index.html?q=giving+tree'), ('Homeroom Parents', 'index.html?q=homeroom+parents'),
@@ -98,7 +98,7 @@ SCHOOL_MENUS = [
         ('Senior Ball', 'high-school.html#senior-ball'), ('Sports', 'sports.html'), ('Student Council', 'student-council.html'),
         ('Teacher/Staff Appreciation', APPRECIATION), ('Yearbook', 'yearbook-high.html')]),
 ]
-SHOP_LINKS = [('Catalog Fundraiser', 'holiday.html'), ('Charleston Wrap', '/jefferson/fallfr'), ('Cheesy Fundraiser', '/event?t=cheesy-fundraiser'),
+SHOP_LINKS = [('Catalog Fundraiser', 'holiday.html'), ('Charleston Wrap', '/jefferson/fallfr'), ('Cheesy Fundraiser', '/cheesy-fundraiser'),
               ('Coupon Books', 'couponbook.html'), ('Gertrude Hawk Chocolate', 'gertrude-hawk-chocolate.html'), ('Spiritwear', 'shop.html')]
 # Shown under "Partners" (no arrows, Julie). Full addresses open in a new tab.
 PARTNER_GROUPS = [('Student Council', 'student-council.html'), ('Sabre Nation', 'partners.html#sabre-nation'),
@@ -270,7 +270,7 @@ def add_assets(src, slash):
     src = ASSETS_CSS.sub('', src)
     src = ASSETS_JS.sub('', src)
     src = re.sub(r'(\n[ \t]*)</head>', lambda m: m.group(1) + f'  <link rel="stylesheet" href="{slash}css/menus.css?v=12">' + m.group(1) + '</head>', src, count=1)
-    return re.sub(r'(\n[ \t]*)</body>', lambda m: m.group(1) + f'  <script src="{slash}js/menus.js?v=5"></script>' + m.group(1) + '</body>', src, count=1)
+    return re.sub(r'(\n[ \t]*)</body>', lambda m: m.group(1) + f'  <script src="{slash}js/menus.js?v=6"></script>' + m.group(1) + '</body>', src, count=1)
 
 
 def indent_block(block, indent):

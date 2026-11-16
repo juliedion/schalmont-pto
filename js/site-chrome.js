@@ -61,7 +61,7 @@
       <a class="sn-subitem" href="/jefferson.html#school-calendar">Calendar</a>
       <a class="sn-subitem" href="/craft-fair.html">Craft Fair</a>
       <a class="sn-subitem" href="/jefferson/fallfr">Charleston Wrap</a>
-      <a class="sn-subitem" href="/event?t=cheesy-fundraiser">Cheesy Fundraiser</a>
+      <a class="sn-subitem" href="/cheesy-fundraiser">Cheesy Fundraiser</a>
       <a class="sn-subitem" href="/clubs.html">Clubs</a>
       <a class="sn-subitem" href="/event?t=coin-wars">Coin Wars</a>
       <a class="sn-subitem" href="/dances.html">Dances</a>
@@ -151,7 +151,7 @@
   <div class="sn-label">Shop</div>
   <a class="sn-item" href="/holiday.html">Catalog Fundraiser</a>
   <a class="sn-item" href="/jefferson/fallfr">Charleston Wrap</a>
-  <a class="sn-item" href="/event?t=cheesy-fundraiser">Cheesy Fundraiser</a>
+  <a class="sn-item" href="/cheesy-fundraiser">Cheesy Fundraiser</a>
   <a class="sn-item" href="/couponbook.html">Coupon Books</a>
   <a class="sn-item" href="/gertrude-hawk-chocolate.html">Gertrude Hawk Chocolate</a>
   <a class="sn-item" href="/shop.html">Spiritwear</a>

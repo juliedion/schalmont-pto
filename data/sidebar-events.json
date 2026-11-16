@@ -32,10 +32,16 @@
    "href": "/merry-morning"
   },
   {
+   "title": "Cheesy Fundraiser Order Pickup",
+   "date": "2026-11-17",
+   "end": "2026-11-17",
+   "href": "/cheesy-fundraiser"
+  },
+  {
    "title": "Cheesy Fundraiser Sales",
    "date": "2026-10-01",
    "end": "2026-11-30",
-   "href": "/event?d=2026-10-01&t=cheesy-fundraiser-sales"
+   "href": "/cheesy-fundraiser"
   },
   {
    "title": "Holiday Food Drive: Holiday Boxes",
