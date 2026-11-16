@@ -133,6 +133,14 @@
     @media (max-width: 640px) { .g5-pf-row { grid-template-columns:1fr; } }
     .g5-count { font-size:13px; color:var(--text-light); text-align:right; margin-top:4px; }
     .g5-consent { font-size:13px; color:var(--text-light); line-height:1.55; margin:0; }
+    .g5-pf[hidden] { display:none; }
+    .g5-done { text-align:center; background:#fff; border:2px solid #1f2a5a; border-radius:16px; padding:26px 20px; margin-top:6px; display:grid; gap:8px; justify-items:center; }
+    .g5-done[hidden] { display:none; }
+    .g5-done h3 { margin:4px 0 0; font-size:22px; color:#1f2a5a; }
+    .g5-done p { margin:0; font-size:15.5px; line-height:1.6; max-width:620px; }
+    .g5-done-btn { display:inline-block; margin-top:8px; background:#1f2a5a; color:#fff !important; font-weight:800; font-size:16px; text-decoration:none; border-radius:999px; padding:13px 26px; }
+    .g5-done-btn[hidden] { display:none; }
+    .g5-done-note { font-size:13.5px !important; color:var(--text-light); }
     .g5-pf-msg { border-radius:12px; padding:12px 14px; font-size:15px; font-weight:700; }
     .g5-pf-msg:empty { display:none; }
     .g5-pf-msg.is-err { background:#fdecea; color:#a32019; }
@@ -451,6 +459,15 @@
           <button type="submit" class="g5-pf-btn" id="pf-send">Submit</button>
           </fieldset>
         </form>
+        <div class="g5-done" id="pf-done" hidden role="status" aria-live="polite">
+          <svg width="44" height="44" viewBox="0 0 24 24" aria-hidden="true"><path fill="#f2c95b" d="M12 0c.6 6.2 5.8 11.4 12 12-6.2.6-11.4 5.8-12 12-.6-6.2-5.8-11.4-12-12C6.2 11.4 11.4 6.2 12 0z"/></svg>
+          <h3>Thank you for sharing your Sabre&#8217;s Story!</h3>
+          <p id="pf-done-line"></p>
+          <p>Your photos and story will be part of the slideshow at the dance and at graduation.</p>
+          <a class="g5-done-btn" id="pf-done-link" href="#">View or edit your answers</a>
+          <p class="g5-done-note" id="pf-done-email"></p>
+          <button type="button" class="g5-linkbtn" id="pf-again" style="margin:6px auto 0">Sharing for another 8th grader? Start a new form</button>
+        </div>
       </div>
 
       <!-- Contacts (Julie, Nov 2026) -->
@@ -745,6 +762,23 @@
       ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('is-over'); }); });
       drop.addEventListener('drop', function (e) { add(e.dataTransfer && e.dataTransfer.files); });
 
+      var pendingBatch = null, slug = '';
+      // After a submission: the form goes away and the thank-you (with the private link) stays.
+      function showDone(line, fin) {
+        form.hidden = true;
+        var d = $('pf-done'); d.hidden = false;
+        $('pf-done-line').textContent = line;
+        var link = fin.link || '';
+        $('pf-done-link').hidden = !link; if (link) $('pf-done-link').href = link;
+        $('pf-done-email').textContent = fin.emailed ? 'We also emailed this link to ' + (fin.email || 'you') + '. Keep it to yourself: anyone with the link can see and change your answers.'
+          : (link ? 'Save this link (bookmark it) so you can come back. Keep it to yourself: anyone with the link can see and change your answers.' : '');
+        d.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
+      $('pf-again').addEventListener('click', function () {
+        $('pf-done').hidden = true; form.hidden = false; status('');
+        picked = null; $('pf-search').value = ''; $('pf-results').innerHTML = ''; $('pf-new').hidden = true; $('pf-first').value = ''; $('pf-last').value = '';
+        $('pf-certify').checked = false; showFolder(); $('photos').scrollIntoView({ behavior: 'smooth' });
+      });
       function post(fd) {
         return fetch('/api/dance-upload.php', { method: 'POST', body: fd }).then(function (r) {
           return r.json().catch(function () { return { ok: false, error: 'The server had a problem (' + r.status + '). Please try again.' }; });
@@ -761,7 +795,8 @@
         if (!todo.length && !msg) return status('Please add at least one photo, a message or a fun fact.', 'err');
         showFolder();
         busy = true; $('pf-send').disabled = true; draw();
-        var batch = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+        // Same submission id if they retry after a failed upload, so it all stays one submission.
+        var batch = pendingBatch = pendingBatch || (Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8));
         var base = function () { var fd = new FormData(); fd.append('studentFirst', first); fd.append('studentLast', last); if (st && st.folder) fd.append('folder', st.folder); fd.append('certify', '1'); fd.append('familyName', fam); fd.append('email', email); fd.append('batchId', batch); return fd; };
         var msgSent = false, n = 0;
         var chain = Promise.resolve();
@@ -771,16 +806,22 @@
             $('pf-send').textContent = 'Uploading ' + n + ' of ' + todo.length + '…';
             var fd = base(); fd.append('photo', f.file, f.file.name);
             if (msg && !msgSent) addStory(fd, msgText);
-            return post(fd).then(function () { msgSent = msgSent || !!msg; f.done = true; draw(); });
+            return post(fd).then(function (j) { slug = j.slug || slug; msgSent = msgSent || !!msg; f.done = true; draw(); });
           });
         });
         chain.then(function () {
-          if (msg && !msgSent) { status('Sending your story…', 'busy'); var fd = base(); addStory(fd, msgText); return post(fd); }
+          if (msg && !msgSent) { status('Sending your story…', 'busy'); var fd = base(); addStory(fd, msgText); return post(fd).then(function (j) { slug = j.slug || slug; }); }
         }).then(function () {
           try { fetch('/api/yearbook-drive.php', { method: 'POST', keepalive: true }); } catch (_) {}   // copy to Drive in the background
-          var who = 'the ' + ($('pf-folder-name').textContent || name()) + ' folder';
-          status('Thank you! ' + (todo.length ? todo.length + ' photo' + (todo.length === 1 ? '' : 's') : '') + (todo.length && msg ? ' and your story' : (msg ? 'Your story' : '')) + ' ' + (todo.length + (msg ? 1 : 0) > 1 ? 'were' : 'was') + ' added to ' + who + '.', 'ok');
-          files = []; clearStory(); $('pf-msg').value = ''; $('pf-msg-n').textContent = '0'; draw();
+          // Finish: the server emails the thank-you with the private view/edit link and hands it back here.
+          status('Almost done…', 'busy');
+          var fd = new FormData(); fd.append('action', 'finish'); fd.append('slug', slug); fd.append('batchId', batch);
+          return post(fd).catch(function () { return {}; });
+        }).then(function (fin) {
+          var who = $('pf-folder-name').textContent || name();
+          var what = (todo.length ? todo.length + ' photo' + (todo.length === 1 ? '' : 's') : '') + (todo.length && msg ? ' and your Sabre\u2019s Story' : (msg ? 'Your Sabre\u2019s Story' : ''));
+          showDone(what.charAt(0).toUpperCase() + what.slice(1) + ' ' + (todo.length + (msg ? 1 : 0) > 1 ? 'were' : 'was') + ' added to the ' + who + ' folder.', fin || {});
+          pendingBatch = null; files = []; clearStory(); $('pf-msg').value = ''; $('pf-msg-n').textContent = '0'; draw();
         }).catch(function (err) {
           status((err && err.message) || 'Something went wrong. Please try again.', 'err');
         }).then(function () {

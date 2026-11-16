@@ -12,6 +12,7 @@ function out($code, $arr) { http_response_code($code); echo json_encode($arr); e
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') out(405, ['ok' => false, 'error' => 'POST only']);
 
 require __DIR__ . '/lib-firebase-user.php';
+require __DIR__ . '/lib-dance.php';
 $user = firebase_user($_POST['idToken'] ?? '');
 if (!$user) out(401, ['ok' => false, 'error' => 'Please sign in again.']);
 if (!$user['verified']) out(403, ['ok' => false, 'error' => 'Please verify your email address first.']);
@@ -44,6 +45,7 @@ if ($base) foreach (glob("$base/*/.meta/*.json") ?: [] as $file) {
     'funFacts' => (object)(is_array($m['funFacts'] ?? null) ? $m['funFacts'] : []),
     'memories' => array_values(array_filter((array)($m['memories'] ?? []), 'is_string')),
     'photos' => $photos,
+    'edit' => !empty($m['batchId']) ? d_story_url($slug, (string)$m['batchId']) : '',
   ];
 }
 usort($subs, function ($a, $b) { return strcmp($b['submittedAt'], $a['submittedAt']); });

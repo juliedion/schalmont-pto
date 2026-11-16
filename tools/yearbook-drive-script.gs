@@ -39,6 +39,8 @@
    sends `folderPath` instead of a school/event, e.g. ["8th Grade Dance 2027", "Doe, Jane"], so
    each 8th grader gets their own folder, and a family's message arrives as a .txt file there.
    Folder names are matched loosely (see looseChild_), so a family's spelling finds the class-list folder.
+   When a family edits their story (sabres-story.html), the new .txt comes with replaceId and the
+   old .txt in that same folder goes to the trash.
    If you ever change this code: Deploy → Manage deployments → edit (pencil) →
    Version: New version → Deploy. The URL stays the same.
    ============================================================ */
@@ -117,6 +119,15 @@ function doPost(e) {
       '\nEvent: ' + (req.eventLabel || NO_EVENT) +
       '\nSent by: ' + (req.uploaderName || '') + ' <' + (req.uploaderEmail || '') + '>' +
       '\nOriginal file: ' + (req.original || ''));
+
+    // An edited Sabre's Story replaces the earlier version: trash the old file, but only if it
+    // sits in this same folder (so this can never touch anything else in Drive).
+    if (req.replaceId) {
+      try {
+        var old = DriveApp.getFileById(String(req.replaceId)), ps = old.getParents();
+        while (ps.hasNext()) { if (ps.next().getId() === folder.getId()) { old.setTrashed(true); break; } }
+      } catch (_) { /* already gone */ }
+    }
 
     logSheet_().appendRow([new Date(), req.folderPath && req.folderPath.length ? req.folderPath[0] : (SCHOOL_NAMES[req.school] || req.school), req.eventLabel || NO_EVENT,
       req.students || '', req.grades || '', req.uploaderName || '', req.uploaderEmail || '', file.getUrl(), req.batchId || '']);

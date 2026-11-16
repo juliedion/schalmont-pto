@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Your Sabre&#8217;s Story — Schalmont PTO</title>
+  <link rel="stylesheet" href="/css/styles.css?v=6">
+  <link rel="icon" href="/images/favicon.svg">
+  <style>
+    /* Private view/edit page for an 8th Grade Dance "Sabre's Story" (Julie, Nov 2026).
+       Opened from the thank-you email / thank-you message: /sabres-story?d=…&b=…&k=… */
+    .ss-wrap { max-width:860px; margin:0 auto; display:grid; gap:20px; }
+    .ss-card { background:#fff; border:1px solid var(--border); border-radius:var(--radius-lg); padding:clamp(18px,3.5vw,28px); }
+    .ss-card h2 { font-size:20px; margin:0 0 4px; color:#1f2a5a; }
+    .ss-sub { font-size:14px; color:var(--text-light); margin:0 0 14px; line-height:1.55; }
+    .ss-f label { display:block; font-weight:800; font-size:14px; color:#1f2a5a; margin-bottom:5px; }
+    .ss-f input, .ss-f textarea { width:100%; box-sizing:border-box; font:inherit; font-size:15.5px; border:1.5px solid var(--border); border-radius:10px; padding:11px 12px; background:#fff; }
+    .ss-f textarea { min-height:110px; resize:vertical; line-height:1.5; }
+    .ss-f input:focus, .ss-f textarea:focus { outline:none; border-color:#1f2a5a; box-shadow:0 0 0 3px rgba(31,42,90,.12); }
+    .ss-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .ss-form { display:grid; gap:14px; }
+    .ss-mems { display:grid; gap:8px; }
+    .ss-mems textarea { min-height:70px; }
+    .ss-btn { font:inherit; font-weight:800; font-size:15px; border-radius:999px; padding:11px 24px; cursor:pointer; border:2px solid #1f2a5a; background:#1f2a5a; color:#fff; justify-self:start; }
+    .ss-btn.is-ghost { background:#eef1ff; color:#1f2a5a; padding:7px 16px; font-size:14px; }
+    .ss-btn:disabled { opacity:.55; cursor:default; }
+    .ss-msg { border-radius:12px; padding:12px 14px; font-size:15px; font-weight:700; }
+    .ss-msg:empty { display:none; }
+    .ss-msg.err { background:#fdecea; color:#a32019; } .ss-msg.ok { background:#e8f6ee; color:#14532d; } .ss-msg.busy { background:#eef1ff; color:#1f2a5a; }
+    .ss-photos { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:8px; }
+    .ss-photos a { display:block; aspect-ratio:1; border-radius:10px; overflow:hidden; background:#eef0f5; position:relative; }
+    .ss-photos img { width:100%; height:100%; object-fit:cover; display:block; }
+    .ss-photos span { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; font-size:12px; font-weight:700; color:#1f2a5a; padding:6px; }
+    .ss-drop { display:block; text-align:center; border:2px dashed #9aa6d6; border-radius:14px; padding:18px 16px; background:#fff; cursor:pointer; margin-top:12px; }
+    .ss-drop b { display:block; color:#1f2a5a; }
+    .ss-drop span { font-size:13.5px; color:var(--text-light); }
+    .ss-drop input { display:none; }
+    .ss-loading { text-align:center; color:var(--text-light); padding:30px 0; }
+    [hidden] { display:none !important; }
+    @media (max-width:640px) { .ss-grid { grid-template-columns:1fr; } }
+  </style>
+  <link rel="stylesheet" href="/css/menus.css?v=12">
+</head>
+<body>
+
+  <div id="sc-header"></div>
+
+  <div class="homepage-layout">
+    <div id="sc-sidenav"></div>
+    <div class="homepage-main">
+
+      <section class="page-hero" style="background:linear-gradient(160deg,#050b20 0%,#101f4a 70%,#1a2a5c 100%)">
+        <div class="container">
+          <h1 style="margin:0">Your Sabre&#8217;s Story</h1>
+          <p style="margin:10px 0 0" id="ss-hello">8th Grade Dance: A Night Under the Stars</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="ss-wrap">
+            <div class="ss-loading" id="ss-loading">Loading your story…</div>
+            <div class="ss-card" id="ss-error" hidden>
+              <h2>We couldn&#8217;t open this link</h2>
+              <p class="ss-sub" id="ss-error-text"></p>
+              <p class="ss-sub">Need help? Email <a href="mailto:julie@schalmontpto.com">julie@schalmontpto.com</a>, or go back to the <a href="/8thgradedance#photos">8th Grade Dance page</a>.</p>
+            </div>
+
+            <div class="ss-card" id="ss-photos-card" hidden>
+              <h2>Your photos</h2>
+              <p class="ss-sub">Tap a photo to see it full size. To remove a photo, email <a href="mailto:julie@schalmontpto.com?subject=8th%20Grade%20Dance%20photo">julie@schalmontpto.com</a>.</p>
+              <div class="ss-photos" id="ss-photos"></div>
+              <label class="ss-drop"><input type="file" id="ss-files" accept="image/*,.heic,.heif" multiple><b>Add more photos</b><span>Up to 20 at a time, 20 MB each</span></label>
+              <div class="ss-msg" id="ss-photo-msg" role="status" aria-live="polite" style="margin-top:10px"></div>
+            </div>
+
+            <div class="ss-card" id="ss-story-card" hidden>
+              <h2>Your answers</h2>
+              <p class="ss-sub">Change anything you like and press Save. The PTO gets your updated story.</p>
+              <form class="ss-form" id="ss-form" novalidate>
+                <div class="ss-f"><label for="ss-msg">A special message from family and/or friends</label><textarea id="ss-msg" maxlength="2000"></textarea></div>
+                <div class="ss-grid">
+                  <div class="ss-f"><label for="ss-nickname">Special nickname</label><input type="text" id="ss-nickname" maxlength="150"></div>
+                  <div class="ss-f"><label for="ss-food">Favorite food</label><input type="text" id="ss-food" maxlength="150"></div>
+                  <div class="ss-f"><label for="ss-place">Favorite place to be</label><input type="text" id="ss-place" maxlength="150"></div>
+                  <div class="ss-f"><label for="ss-hero">If they were a superhero, who would they be?</label><input type="text" id="ss-hero" maxlength="150"></div>
+                </div>
+                <div class="ss-f"><label>Favorite memories of them</label><div class="ss-mems" id="ss-mems"></div></div>
+                <button type="button" class="ss-btn is-ghost" id="ss-add-mem">+ Add another memory</button>
+                <div class="ss-msg" id="ss-save-msg" role="status" aria-live="polite"></div>
+                <button type="submit" class="ss-btn" id="ss-save">Save</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <div id="sc-footer"></div>
+
+  <script src="/js/site-chrome.js?v=17"></script>
+  <script>renderSiteChrome();</script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var q = new URLSearchParams(location.search), auth = { d: q.get('d') || '', b: q.get('b') || '', k: q.get('k') || '' };
+    var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+    var FACT_IDS = { nickname: 'ss-nickname', food: 'ss-food', place: 'ss-place', hero: 'ss-hero' };
+    function msg(id, t, kind) { var m = $(id); m.className = 'ss-msg' + (kind ? ' ' + kind : ''); m.textContent = t || ''; }
+    function api(fd) {
+      var url = '/api/dance-story.php';
+      if (!fd) url += '?' + new URLSearchParams(auth).toString();
+      else Object.keys(auth).forEach(function (k) { fd.append(k, auth[k]); });
+      return fetch(url, fd ? { method: 'POST', body: fd } : {}).then(function (r) {
+        return r.json().catch(function () { return { ok: false, error: 'The server had a problem (' + r.status + '). Please try again.' }; });
+      }).then(function (j) { if (!j.ok) throw new Error(j.error || 'Something went wrong.'); return j; });
+    }
+    function addMem(v) {
+      var box = $('ss-mems'); if (box.children.length >= 10) return;
+      var t = document.createElement('textarea'); t.maxLength = 1000; t.value = v || ''; t.placeholder = 'The time they…';
+      t.setAttribute('aria-label', 'Favorite memory ' + (box.children.length + 1));
+      box.appendChild(t); $('ss-add-mem').hidden = box.children.length >= 10; return t;
+    }
+    function render(j) {
+      $('ss-hello').textContent = 'For ' + j.student + ' · shared by ' + j.familyName + (j.submittedAt ? ' on ' + new Date(j.submittedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '');
+      $('ss-photos').innerHTML = j.photos.length ? j.photos.map(function (p, i) {
+        return '<a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + (p.viewable ? '<img src="' + esc(p.url) + '" alt="Photo ' + (i + 1) + '" loading="lazy">' : '<span>' + esc(p.ext.toUpperCase()) + ' photo<br>(tap to download)</span>') + '</a>';
+      }).join('') : '<p class="ss-sub" style="margin:0">No photos yet.</p>';
+    }
+    function fill(j) {
+      $('ss-msg').value = j.message || '';
+      Object.keys(FACT_IDS).forEach(function (k) { $(FACT_IDS[k]).value = (j.funFacts || {})[j.factLabels[k]] || ''; });
+      $('ss-mems').innerHTML = '';
+      (j.memories.length ? j.memories : ['']).forEach(addMem);
+    }
+
+    api().then(function (j) {
+      $('ss-loading').hidden = true; $('ss-photos-card').hidden = false; $('ss-story-card').hidden = false;
+      render(j); fill(j);
+    }).catch(function (e) {
+      $('ss-loading').hidden = true; $('ss-error').hidden = false; $('ss-error-text').textContent = e.message;
+    });
+
+    $('ss-add-mem').onclick = function () { var t = addMem(''); if (t) t.focus(); };
+    $('ss-form').onsubmit = function (e) {
+      e.preventDefault();
+      var fd = new FormData(); fd.append('action', 'save'); fd.append('message', $('ss-msg').value.trim());
+      Object.keys(FACT_IDS).forEach(function (k) { fd.append(k, $(FACT_IDS[k]).value.trim()); });
+      [].forEach.call($('ss-mems').querySelectorAll('textarea'), function (t) { if (t.value.trim()) fd.append('memories[]', t.value.trim()); });
+      $('ss-save').disabled = true; msg('ss-save-msg', 'Saving…', 'busy');
+      api(fd).then(function (j) {
+        fill(j); msg('ss-save-msg', 'Saved! The PTO has your updated Sabre’s Story.', 'ok');
+        try { fetch('/api/yearbook-drive.php', { method: 'POST', keepalive: true }); } catch (_) {}
+      }).catch(function (x) { msg('ss-save-msg', x.message, 'err'); })
+        .then(function () { $('ss-save').disabled = false; });
+    };
+    $('ss-files').onchange = function () {
+      var list = [].slice.call(this.files || []).filter(function (f) { return (/^image\//.test(f.type) || /\.(heic|heif)$/i.test(f.name)) && f.size <= 20 * 1024 * 1024; }).slice(0, 20);
+      this.value = '';
+      if (!list.length) return msg('ss-photo-msg', 'Please choose photos under 20 MB each.', 'err');
+      var n = 0, chain = Promise.resolve(), last = null;
+      list.forEach(function (f) {
+        chain = chain.then(function () {
+          n++; msg('ss-photo-msg', 'Uploading photo ' + n + ' of ' + list.length + '… please keep this page open.', 'busy');
+          var fd = new FormData(); fd.append('action', 'photo'); fd.append('photo', f, f.name);
+          return api(fd).then(function (j) { last = j; });
+        });
+      });
+      chain.then(function () {
+        if (last) render(last);
+        msg('ss-photo-msg', list.length + ' photo' + (list.length === 1 ? ' was' : 's were') + ' added. Thank you!', 'ok');
+        try { fetch('/api/yearbook-drive.php', { method: 'POST', keepalive: true }); } catch (_) {}
+      }).catch(function (x) { if (last) render(last); msg('ss-photo-msg', x.message, 'err'); });
+    };
+  })();
+  </script>
+  <script src="/js/menus.js?v=5"></script>
+</body>
+</html>

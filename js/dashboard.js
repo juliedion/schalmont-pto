@@ -275,6 +275,7 @@
       var when = s.submittedAt ? new Date(s.submittedAt).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
       return '<div class="db-story"><h3>' + esc(s.student) + '</h3>' +
         '<div class="db-meta" style="font-size:13.5px;color:var(--text-light)">Shared by ' + esc(s.familyName) + (when ? ' on ' + esc(when) : '') + '</div>' +
+        (s.edit ? '<div style="margin-top:8px"><a class="db-btn is-ghost" style="border-color:#1f2a5a;color:#1f2a5a" href="' + esc(s.edit) + '">View or edit your answers</a></div>' : '') +
         (s.message ? '<blockquote>' + esc(s.message) + '</blockquote>' : '') +
         (facts ? '<dl>' + facts + '</dl>' : '') +
         (s.memories && s.memories.length ? '<div style="margin-top:10px;font-weight:800;color:#1f2a5a;font-size:14.5px">Favorite memories</div><ol>' + s.memories.map(function (m) { return '<li>' + esc(m) + '</li>'; }).join('') + '</ol>' : '') +
