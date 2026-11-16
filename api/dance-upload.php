@@ -52,7 +52,7 @@ $pickedFolder = clean($_POST['folder'] ?? '', 120);
 if ($pickedFolder !== '' && strpos($pickedFolder, ',') === false) { $first = ''; $last = $pickedFolder; }
 else $pickedFolder = '';
 if ($last === '' || ($first === '' && $pickedFolder === '')) fail("Please enter your 8th grader's first and last name.");
-if ($family === '') fail('Please enter your name.');
+if ($family === '') fail('Please enter the parent/guardian name.');
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) fail('Please enter a valid email address.');
 if (($_POST['certify'] ?? '') !== '1') fail("Please confirm you are this student's parent or guardian.");
 $hasPhoto = !empty($_FILES['photo']) && ($_FILES['photo']['error'] ?? 4) !== 4;
