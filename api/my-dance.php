@@ -41,7 +41,7 @@ if ($base) foreach (glob("$base/*/.meta/*.json") ?: [] as $file) {
   }
   $subs[] = [
     'student' => (string)($m['student'] ?? ''), 'familyName' => (string)($m['familyName'] ?? ''),
-    'submittedAt' => (string)($m['submittedAt'] ?? ''), 'message' => (string)($m['message'] ?? ''),
+    'submittedAt' => (string)($m['submittedAt'] ?? ''), 'message' => (string)($m['message'] ?? ''), 'shirtSize' => (string)($m['shirtSize'] ?? ''),
     'funFacts' => (object)(is_array($m['funFacts'] ?? null) ? $m['funFacts'] : []),
     'memories' => array_values(array_filter((array)($m['memories'] ?? []), 'is_string')),
     'photos' => $photos,

@@ -7,6 +7,7 @@ if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === basename(__FILE__)) { http_r
 const DANCE_DRIVE_TOP = '8th Grade Dance 2027';
 const DANCE_MAX_BYTES = 20 * 1024 * 1024;   // 20 MB per photo (see api/.user.ini)
 const DANCE_EXT_OK = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic', 'heif'];
+const DANCE_SHIRTS = ['Youth Small', 'Youth Medium', 'Youth Large', 'Youth XL', 'Adult Small', 'Adult Medium', 'Adult Large', 'Adult XL', 'Adult 2XL', 'Adult 3XL'];
 const DANCE_FACTS = ['nickname' => 'Special nickname', 'food' => 'Favorite food', 'place' => 'Favorite place to be', 'hero' => 'If they were a superhero'];
 
 function d_out($code, $arr) { http_response_code($code); echo json_encode($arr); exit; }
@@ -27,6 +28,8 @@ function d_answers($post) {
   }
   return [$message, $facts, $memories];
 }
+/* Shirt size from a POST: one of DANCE_SHIRTS, or ''. */
+function d_shirt($post) { $v = (string)($post['shirtSize'] ?? ''); return in_array($v, DANCE_SHIRTS, true) ? $v : ''; }
 
 /* The private view/edit link for one submission (no account needed; the key is an HMAC). */
 function d_story_key($slug, $batch) {
@@ -55,6 +58,7 @@ function d_story_text($m, $updated = false) {
   $txt = "SABRE'S STORY" . ($updated ? ' (UPDATED ' . date('F j, Y g:i A') . ')' : '') . "\nFor: " . ($m['student'] ?? '') .
     "\nFrom: " . ($m['familyName'] ?? '') . ' <' . ($m['email'] ?? '') . "> (certified parent/guardian)\nSent: " .
     date('F j, Y g:i A', strtotime($m['submittedAt'] ?? 'now')) . "\n";
+  if (($m['shirtSize'] ?? '') !== '') $txt .= 'Shirt size: ' . $m['shirtSize'] . "\n";
   if (($m['message'] ?? '') !== '') $txt .= "\nMESSAGE FROM FAMILY AND/OR FRIENDS\n" . $m['message'] . "\n";
   $facts = (array)($m['funFacts'] ?? []);
   if ($facts) { $txt .= "\nFUN FACTS\n"; foreach ($facts as $label => $v) $txt .= "$label: $v\n"; }

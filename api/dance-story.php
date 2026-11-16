@@ -23,7 +23,7 @@ $m = d_meta_read($metaFile);
 function view($slug, $m) {
   return ['ok' => true, 'student' => $m['student'] ?? '', 'familyName' => $m['familyName'] ?? '', 'email' => $m['email'] ?? '',
     'submittedAt' => $m['submittedAt'] ?? '', 'updatedAt' => $m['updatedAt'] ?? '',
-    'message' => $m['message'] ?? '', 'funFacts' => (object)(array)($m['funFacts'] ?? []), 'memories' => array_values((array)($m['memories'] ?? [])),
+    'message' => $m['message'] ?? '', 'funFacts' => (object)(array)($m['funFacts'] ?? []), 'memories' => array_values((array)($m['memories'] ?? [])), 'shirtSize' => $m['shirtSize'] ?? '', 'shirtSizes' => DANCE_SHIRTS,
     'factLabels' => DANCE_FACTS, 'photos' => d_photo_list($slug, $m)];
 }
 
@@ -35,8 +35,9 @@ if ($action === 'save') {
   // The Drive copy being replaced: the latest one the queue noted for this story file.
   $replace = '';
   foreach ((array)($m['drive'] ?? []) as $d) if (($d['file'] ?? '') === "$batch-message.json") $replace = (string)($d['drive'] ?? '');
-  $m = d_meta_merge($metaFile, ['message' => $message, 'funFacts' => $facts ?: new stdClass(), 'memories' => $memories, 'updatedAt' => date('c')]);
-  if ($message !== '' || $facts || $memories) d_queue([d_story_job($destDir, $m, true, $replace)], $metaFile);
+  $shirt = d_shirt($_POST);
+  $m = d_meta_merge($metaFile, ['shirtSize' => $shirt, 'message' => $message, 'funFacts' => $facts ?: new stdClass(), 'memories' => $memories, 'updatedAt' => date('c')]);
+  if ($message !== '' || $facts || $memories || $shirt !== '') d_queue([d_story_job($destDir, $m, true, $replace)], $metaFile);
   d_out(200, view($slug, $m) + ['saved' => true]);
 }
 if ($action === 'photo') {

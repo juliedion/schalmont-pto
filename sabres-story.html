@@ -80,6 +80,7 @@
               <h2>Your answers</h2>
               <p class="ss-sub">Change anything you like and press Save. The PTO gets your updated story.</p>
               <form class="ss-form" id="ss-form" novalidate>
+                <div class="ss-f"><label for="ss-shirt">8th grader&#8217;s shirt size</label><select id="ss-shirt" style="width:100%;max-width:340px;box-sizing:border-box;font:inherit;font-size:15.5px;border:1.5px solid var(--border);border-radius:10px;padding:11px 12px;background:#fff"><option value="">Choose a size…</option><optgroup label="Youth"><option>Youth Small</option><option>Youth Medium</option><option>Youth Large</option><option>Youth XL</option></optgroup><optgroup label="Adult"><option>Adult Small</option><option>Adult Medium</option><option>Adult Large</option><option>Adult XL</option><option>Adult 2XL</option><option>Adult 3XL</option></optgroup></select></div>
                 <div class="ss-f"><label for="ss-msg">A special message from family and/or friends</label><textarea id="ss-msg" maxlength="2000"></textarea></div>
                 <div class="ss-grid">
                   <div class="ss-f"><label for="ss-nickname">Special nickname</label><input type="text" id="ss-nickname" maxlength="150"></div>
@@ -133,6 +134,7 @@
     }
     function fill(j) {
       $('ss-msg').value = j.message || '';
+      $('ss-shirt').value = j.shirtSize || '';
       Object.keys(FACT_IDS).forEach(function (k) { $(FACT_IDS[k]).value = (j.funFacts || {})[j.factLabels[k]] || ''; });
       $('ss-mems').innerHTML = '';
       (j.memories.length ? j.memories : ['']).forEach(addMem);
@@ -148,7 +150,7 @@
     $('ss-add-mem').onclick = function () { var t = addMem(''); if (t) t.focus(); };
     $('ss-form').onsubmit = function (e) {
       e.preventDefault();
-      var fd = new FormData(); fd.append('action', 'save'); fd.append('message', $('ss-msg').value.trim());
+      var fd = new FormData(); fd.append('action', 'save'); fd.append('message', $('ss-msg').value.trim()); fd.append('shirtSize', $('ss-shirt').value);
       Object.keys(FACT_IDS).forEach(function (k) { fd.append(k, $(FACT_IDS[k]).value.trim()); });
       [].forEach.call($('ss-mems').querySelectorAll('textarea'), function (t) { if (t.value.trim()) fd.append('memories[]', t.value.trim()); });
       $('ss-save').disabled = true; msg('ss-save-msg', 'Saving…', 'busy');

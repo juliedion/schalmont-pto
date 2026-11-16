@@ -274,6 +274,7 @@
     }
     box.innerHTML = danceSubs.map(function (s) {
       var facts = Object.keys(s.funFacts || {}).map(function (k) { return '<dt>' + esc(k) + '</dt><dd>' + esc(s.funFacts[k]) + '</dd>'; }).join('');
+      if (s.shirtSize) facts = '<dt>Shirt size</dt><dd>' + esc(s.shirtSize) + '</dd>' + facts;
       var when = s.submittedAt ? new Date(s.submittedAt).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
       return '<div class="db-story"><h3>' + esc(s.student) + '</h3>' +
         '<div class="db-meta" style="font-size:13.5px;color:var(--text-light)">Shared by ' + esc(s.familyName) + (when ? ' on ' + esc(when) : '') + '</div>' +

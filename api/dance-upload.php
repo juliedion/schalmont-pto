@@ -67,7 +67,8 @@ $last   = title_name(d_clean($_POST['studentLast']  ?? '', 40));
 $family = d_clean($_POST['familyName'] ?? '', 80);
 $email  = d_clean($_POST['email'] ?? '', 120);
 [$message, $facts, $memories] = d_answers($_POST);
-$hasStory = $message !== '' || $facts || $memories;
+$shirt = d_shirt($_POST);
+$hasStory = $message !== '' || $facts || $memories || $shirt !== '';
 $batchIn = preg_replace('/[^a-z0-9-]/i', '', $_POST['batchId'] ?? '');
 $batchId = ($batchIn !== '' && strlen($batchIn) <= 40) ? $batchIn : date('Ymd-His') . '-' . bin2hex(random_bytes(4));
 
@@ -80,7 +81,7 @@ if ($family === '') d_fail('Please enter the parent/guardian name.');
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) d_fail('Please enter a valid email address.');
 if (($_POST['certify'] ?? '') !== '1') d_fail("Please confirm you are this student's parent or guardian.");
 $hasPhoto = !empty($_FILES['photo']) && ($_FILES['photo']['error'] ?? 4) !== 4;
-if (!$hasPhoto && !$hasStory) d_fail('Please add at least one photo, a message or a fun fact.');
+if (!$hasPhoto && !$hasStory) d_fail('Please add at least one photo, a message, a fun fact or a shirt size.');
 
 /* ---- per-IP hourly rate limit ---- */
 @mkdir("$baseDir/.rate", 0755, true);
@@ -108,6 +109,7 @@ $m = d_meta_merge($metaFile, [
   'message' => $message !== '' ? $message : ($prev['message'] ?? ''),
   'funFacts' => $facts ?: ($prev['funFacts'] ?? new stdClass()),
   'memories' => $memories ?: ($prev['memories'] ?? []),
+  'shirtSize' => $shirt !== '' ? $shirt : ($prev['shirtSize'] ?? ''),
   'photos' => $prev['photos'] ?? [],
   'certifiedParentOrGuardian' => true,
   'submittedAt' => $prev['submittedAt'] ?? date('c'), 'ip' => $ip,

@@ -134,6 +134,7 @@
     .g5-count { font-size:13px; color:var(--text-light); text-align:right; margin-top:4px; }
     .g5-consent { font-size:13px; color:var(--text-light); line-height:1.55; margin:0; }
     .g5-pf[hidden] { display:none; }
+    .g5-shirt select { width:100%; max-width:340px; box-sizing:border-box; font:inherit; font-size:15.5px; border:1.5px solid var(--border); border-radius:10px; padding:11px 12px; background:#fff; }
     .g5-done { text-align:center; background:#fff; border:2px solid #1f2a5a; border-radius:16px; padding:26px 20px; margin-top:6px; display:grid; gap:8px; justify-items:center; }
     .g5-done[hidden] { display:none; }
     .g5-done h3 { margin:4px 0 0; font-size:22px; color:#1f2a5a; }
@@ -428,6 +429,7 @@
             <div><label for="pf-name">Parent/Guardian name</label><input type="text" id="pf-name" autocomplete="name" maxlength="80" required></div>
             <div><label for="pf-email">Parent/Guardian email</label><input type="email" id="pf-email" autocomplete="email" maxlength="120" required></div>
           </div>
+          <div class="g5-shirt"><label for="pf-shirt">8th grader&#8217;s shirt size <small>(optional)</small></label><select id="pf-shirt"><option value="">Choose a size…</option><optgroup label="Youth"><option>Youth Small</option><option>Youth Medium</option><option>Youth Large</option><option>Youth XL</option></optgroup><optgroup label="Adult"><option>Adult Small</option><option>Adult Medium</option><option>Adult Large</option><option>Adult XL</option><option>Adult 2XL</option><option>Adult 3XL</option></optgroup></select></div>
           <div>
             <label for="pf-files">Photos <small>(up to 20, 20 MB each)</small></label>
             <label class="g5-drop" id="pf-drop"><input type="file" id="pf-files" accept="image/*,.heic,.heif" multiple><b>Tap to choose photos</b><span>or drag them here</span></label>
@@ -719,13 +721,15 @@
         if (n >= MAX_MEM) this.hidden = true;
       });
       function memories() { return [].slice.call(document.querySelectorAll('#pf-mems .g5-mem')).map(function (t) { return t.value.trim(); }).filter(Boolean); }
-      function hasFacts() { return memories().length > 0 || Object.keys(FACTS).some(function (k) { return $(FACTS[k]).value.trim(); }); }
+      function hasFacts() { return memories().length > 0 || !!$('pf-shirt').value || Object.keys(FACTS).some(function (k) { return $(FACTS[k]).value.trim(); }); }
       function addStory(fd, msg) {
         if (msg) fd.append('message', msg);
         Object.keys(FACTS).forEach(function (k) { var v = $(FACTS[k]).value.trim(); if (v) fd.append(k, v); });
         memories().forEach(function (m) { fd.append('memories[]', m); });
+        if ($('pf-shirt').value) fd.append('shirtSize', $('pf-shirt').value);
       }
       function clearStory() {
+        $('pf-shirt').value = '';
         Object.keys(FACTS).forEach(function (k) { $(FACTS[k]).value = ''; });
         var box = $('pf-mems'); while (box.children.length > 1) box.removeChild(box.lastChild);
         box.firstElementChild.value = ''; $('pf-add-mem').hidden = false;
@@ -792,7 +796,7 @@
         if (!fam) return status('Please enter the parent/guardian name.', 'err');
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return status('Please enter a valid email address.', 'err');
         var todo = files.filter(function (f) { return !f.done; });
-        if (!todo.length && !msg) return status('Please add at least one photo, a message or a fun fact.', 'err');
+        if (!todo.length && !msg) return status('Please add at least one photo, a message, a fun fact or a shirt size.', 'err');
         showFolder();
         busy = true; $('pf-send').disabled = true; draw();
         // Same submission id if they retry after a failed upload, so it all stays one submission.
