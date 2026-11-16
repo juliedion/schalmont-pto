@@ -78,7 +78,7 @@ SCHOOL_MENUS = [
         ('Giving Tree', 'index.html?q=giving+tree'), ('Holiday Shoppe', 'holiday-shoppe.html'), ('Homeroom Parents', 'index.html?q=homeroom+parents'),
         ('Homecoming', '/event?t=homecoming'), ('Incoming Kindergarteners', 'incoming-kindergarten.html'),
         ('Merry Morning', 'merry-morning.html'), ('Newsletters', 'index.html?q=newsletter'), ('Open House', '/k1open'),
-        ('Picture Day', 'picture-days.html'), ('PTO Meetings', 'meetings.html'), ('Spirit Fridays', '/event?t=school-spirit-friday'),
+        ('Picture Day', 'picture-days.html'), ('Polar Express Movie Night', '/polar-express'), ('PTO Meetings', 'meetings.html'), ('Spirit Fridays', '/event?t=school-spirit-friday'),
         ('Sports', 'sports.html'), ('Storytime Shelter Days', 'storytime-at-the-shelter.html'), ('Student Council', 'student-council.html'),
         ('Teacher/Staff Appreciation', APPRECIATION), ('Tournament of Champions', '/event?t=tournament-of-champions'),
         ('Trunk or Treat', 'trunk-or-treat.html'), ('Turn off the Screen', 'turn-off-screens.html'), ('Yearbook', 'yearbook-jefferson.html')]),
