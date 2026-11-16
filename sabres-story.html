@@ -45,6 +45,16 @@
     .ss-drop input { display:none; }
     .ss-loading { text-align:center; color:var(--text-light); padding:30px 0; }
     [hidden] { display:none !important; }
+    body:not(.ss-editing) .ss-edit-only, body:not(.ss-editing) .ss-rm { display:none !important; }
+    body.ss-editing .ss-view-only { display:none !important; }
+    .ss-answers dl { display:grid; grid-template-columns:max-content 1fr; gap:6px 16px; margin:0; font-size:15px; }
+    .ss-answers dt { font-weight:800; color:#1f2a5a; }
+    .ss-answers dd { margin:0; }
+    .ss-answers blockquote { margin:0 0 12px; padding:10px 14px; border-left:3px solid #c9952f; background:#fffaf0; border-radius:8px; white-space:pre-wrap; font-size:15px; }
+    .ss-answers ol { margin:6px 0 0; padding-left:20px; font-size:15px; }
+    .ss-dialog { position:fixed; inset:0; margin:auto; height:fit-content; border:0; border-radius:18px; padding:26px 24px; max-width:440px; width:calc(100% - 32px); text-align:center; box-shadow:0 20px 60px rgba(0,0,0,.35); }
+    .ss-dialog::backdrop { background:rgba(5,11,32,.6); }
+    .ss-dialog h2 { font-size:20px; color:#1f2a5a; margin:0 0 8px; }
     @media (max-width:640px) { .ss-grid { grid-template-columns:1fr; } }
   </style>
   <link rel="stylesheet" href="/css/menus.css?v=12">
@@ -76,16 +86,21 @@
 
             <div class="ss-card" id="ss-photos-card" hidden>
               <h2>Your photos</h2>
-              <p class="ss-sub">Tap a photo to see it full size. Changed your mind about one? Press Remove under it.</p>
+              <p class="ss-sub">Tap a photo to see it full size.<span class="ss-edit-only"> Changed your mind about one? Press Remove under it.</span></p>
               <div class="ss-photos" id="ss-photos"></div>
-              <label class="ss-drop"><input type="file" id="ss-files" accept="image/*,.heic,.heif" multiple><b>Add more photos</b><span>Up to 20 at a time, 20 MB each</span></label>
+              <label class="ss-drop ss-edit-only"><input type="file" id="ss-files" accept="image/*,.heic,.heif" multiple><b>Add more photos</b><span>Up to 20 at a time, 20 MB each</span></label>
               <div class="ss-msg" id="ss-photo-msg" role="status" aria-live="polite" style="margin-top:10px"></div>
             </div>
 
             <div class="ss-card" id="ss-story-card" hidden>
               <h2>Your answers</h2>
-              <p class="ss-sub">Change anything you like and press Save. The PTO gets your updated story.</p>
-              <form class="ss-form" id="ss-form" novalidate>
+              <div class="ss-view-only">
+                <div class="ss-answers" id="ss-answers"></div>
+                <div class="ss-msg" id="ss-view-msg" role="status" aria-live="polite" style="margin-top:12px"></div>
+                <button type="button" class="ss-btn" id="ss-edit" style="margin-top:16px">Edit my answers</button>
+              </div>
+              <p class="ss-sub ss-edit-only">Change anything you like and press Save. The PTO gets your updated story.</p>
+              <form class="ss-form ss-edit-only" id="ss-form" novalidate>
                 <div class="ss-f"><label for="ss-shirt">8th grader&#8217;s shirt size</label><select id="ss-shirt" style="width:100%;max-width:340px;box-sizing:border-box;font:inherit;font-size:15.5px;border:1.5px solid var(--border);border-radius:10px;padding:11px 12px;background:#fff"><option value="">Choose a size…</option><optgroup label="Youth"><option>Youth Small</option><option>Youth Medium</option><option>Youth Large</option><option>Youth XL</option></optgroup><optgroup label="Adult"><option>Adult Small</option><option>Adult Medium</option><option>Adult Large</option><option>Adult XL</option><option>Adult 2XL</option><option>Adult 3XL</option></optgroup></select></div>
                 <div class="ss-f"><label for="ss-msg">A special message from family and/or friends</label><textarea id="ss-msg" maxlength="2000"></textarea></div>
                 <div class="ss-grid">
@@ -97,16 +112,25 @@
                 <div class="ss-f"><label>Favorite memories of them</label><div class="ss-mems" id="ss-mems"></div></div>
                 <button type="button" class="ss-btn is-ghost" id="ss-add-mem">+ Add another memory</button>
                 <div class="ss-msg" id="ss-save-msg" role="status" aria-live="polite"></div>
-                <button type="submit" class="ss-btn" id="ss-save">Save</button>
+                <div style="display:flex;gap:10px;flex-wrap:wrap"><button type="submit" class="ss-btn" id="ss-save">Save</button><button type="button" class="ss-btn is-ghost" id="ss-cancel" style="padding:11px 22px;font-size:15px">Cancel</button></div>
               </form>
             </div>
 
-            <div class="ss-card" id="ss-delete-card" hidden>
+            <div class="ss-card ss-edit-only" id="ss-delete-card" hidden>
               <h2>Delete this submission</h2>
               <p class="ss-sub">Removes all of these photos and answers from the PTO&#8217;s files and the slideshow folder. This can&#8217;t be undone.</p>
               <button type="button" class="ss-btn ss-del" id="ss-delete">Delete this entire submission</button>
               <div class="ss-msg" id="ss-delete-msg" role="status" aria-live="polite" style="margin-top:10px"></div>
             </div>
+
+            <dialog class="ss-dialog" id="ss-confirm" aria-labelledby="ss-confirm-title">
+              <h2 id="ss-confirm-title">Are you sure you want to alter your answers?</h2>
+              <p class="ss-sub">You can change your answers, add or remove photos, or delete this submission. Nothing changes until you press Save.</p>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+                <button type="button" class="ss-btn" id="ss-confirm-yes">Yes, edit my answers</button>
+                <button type="button" class="ss-btn is-ghost" id="ss-confirm-no" style="padding:11px 22px;font-size:15px">No, keep them</button>
+              </div>
+            </dialog>
 
             <div class="ss-card" id="ss-deleted" hidden>
               <h2>Your submission was deleted</h2>
@@ -151,7 +175,29 @@
           '<button type="button" class="ss-rm" data-photo="' + esc(p.id) + '" aria-label="Remove photo ' + (i + 1) + '">Remove</button></div>';
       }).join('') : '<p class="ss-sub" style="margin:0">No photos yet.</p>';
     }
+    function view(j) {
+      var labels = j.factLabels || {}, facts = j.funFacts || {}, rows = '';
+      if (j.shirtSize) rows += '<dt>Shirt size</dt><dd>' + esc(j.shirtSize) + '</dd>';
+      Object.keys(labels).forEach(function (k) { var v = facts[labels[k]]; if (v) rows += '<dt>' + esc(labels[k]) + '</dt><dd>' + esc(v) + '</dd>'; });
+      var html = (j.message ? '<blockquote>' + esc(j.message) + '</blockquote>' : '') + (rows ? '<dl>' + rows + '</dl>' : '') +
+        (j.memories.length ? '<div style="margin-top:12px;font-weight:800;color:#1f2a5a;font-size:15px">Favorite memories</div><ol>' + j.memories.map(function (m) { return '<li>' + esc(m) + '</li>'; }).join('') + '</ol>' : '');
+      $('ss-answers').innerHTML = html || '<p class="ss-sub" style="margin:0">No answers yet.</p>';
+    }
+    var current = null;
+    function editing(on) {
+      document.body.classList.toggle('ss-editing', on);
+      if (!on && current) { fill(current); msg('ss-save-msg', ''); }
+    }
+    function askToEdit() {
+      var d = $('ss-confirm');
+      if (d.showModal) d.showModal(); else if (window.confirm('Are you sure you want to alter your answers?')) editing(true);
+    }
+    $('ss-edit').onclick = askToEdit;
+    $('ss-confirm-yes').onclick = function () { $('ss-confirm').close(); editing(true); msg('ss-view-msg', ''); $('ss-story-card').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+    $('ss-confirm-no').onclick = function () { $('ss-confirm').close(); };
+    $('ss-cancel').onclick = function () { editing(false); };
     function fill(j) {
+      current = j; view(j);
       $('ss-msg').value = j.message || '';
       $('ss-shirt').value = j.shirtSize || '';
       Object.keys(FACT_IDS).forEach(function (k) { $(FACT_IDS[k]).value = (j.funFacts || {})[j.factLabels[k]] || ''; });
@@ -162,6 +208,7 @@
     api().then(function (j) {
       $('ss-loading').hidden = true; $('ss-photos-card').hidden = false; $('ss-story-card').hidden = false; $('ss-delete-card').hidden = false;
       render(j); fill(j);
+      if (q.get('edit') === '1') askToEdit();   // from the dashboard's "Edit my answers" button
     }).catch(function (e) {
       $('ss-loading').hidden = true; $('ss-error').hidden = false; $('ss-error-text').textContent = e.message;
     });
@@ -195,7 +242,7 @@
       [].forEach.call($('ss-mems').querySelectorAll('textarea'), function (t) { if (t.value.trim()) fd.append('memories[]', t.value.trim()); });
       $('ss-save').disabled = true; msg('ss-save-msg', 'Saving…', 'busy');
       api(fd).then(function (j) {
-        fill(j); msg('ss-save-msg', 'Saved! The PTO has your updated Sabre’s Story.', 'ok');
+        fill(j); editing(false); msg('ss-view-msg', 'Saved! The PTO has your updated Sabre\u2019s Story.', 'ok');
         try { fetch('/api/yearbook-drive.php', { method: 'POST', keepalive: true }); } catch (_) {}
       }).catch(function (x) { msg('ss-save-msg', x.message, 'err'); })
         .then(function () { $('ss-save').disabled = false; });
