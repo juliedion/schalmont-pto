@@ -99,7 +99,7 @@ SCHOOL_MENUS = [
         ('Teacher/Staff Appreciation', APPRECIATION), ('Yearbook', 'yearbook-high.html')]),
 ]
 SHOP_LINKS = [('Catalog Fundraiser', 'holiday.html'), ('Charleston Wrap', '/jefferson/fallfr'), ('Cheesy Fundraiser', '/cheesy-fundraiser'),
-              ('Coupon Books', 'couponbook.html'), ('Gertrude Hawk Chocolate', 'gertrude-hawk-chocolate.html'), ('Spiritwear', 'shop.html')]
+              ('Coupon Books', 'couponbook.html'), ('Gertrude Hawk Chocolate', 'gertrude-hawk-chocolate.html'), ('Gift Cards', 'giftcards.html'), ('Spiritwear', 'shop.html')]
 # Shown under "Partners" (no arrows, Julie). Full addresses open in a new tab.
 PARTNER_GROUPS = [('Student Council', 'student-council.html'), ('Sabre Nation', 'partners.html#sabre-nation'),
                   ('Schalmont Athletic Association', 'https://www.schalmont.org/middle-school/schalmont-athletic-association/'),
