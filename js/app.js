@@ -668,6 +668,9 @@ function initDirectoryPage() {
     renderDirectory($('#dir-search')?.value || '');
   });
 
+  // Students move up a grade each school year (js/grade-rollover.js); strip the display-only flag before saving.
+  const advance = m => (window.advanceDirectoryGrades ? window.advanceDirectoryGrades(m) : m);
+
   // ── Firestore real-time listener ──────────────────────────────────────────
   function startDirectoryListener() {
     if (directoryUnsub) directoryUnsub();
@@ -675,7 +678,7 @@ function initDirectoryPage() {
     // One-time fetch so existing entries appear immediately on load
     db.collection('directory').get().then(snap => {
       allMembers = [];
-      snap.forEach(doc => allMembers.push({ id: doc.id, ...doc.data() }));
+      snap.forEach(doc => allMembers.push(advance({ id: doc.id, ...doc.data() })));
       renderDirectory($('#dir-search')?.value || '');
     }).catch(err => {
       console.error('Directory get() error:', err.code, err.message);
@@ -684,7 +687,7 @@ function initDirectoryPage() {
     // Real-time listener keeps the list in sync with future writes
     directoryUnsub = db.collection('directory').onSnapshot(snap => {
       allMembers = [];
-      snap.forEach(doc => allMembers.push({ id: doc.id, ...doc.data() }));
+      snap.forEach(doc => allMembers.push(advance({ id: doc.id, ...doc.data() })));
       renderDirectory($('#dir-search')?.value || '');
     }, err => {
       console.error('Directory onSnapshot error:', err.code, err.message);
@@ -704,7 +707,7 @@ function initDirectoryPage() {
     try {
       const doc = await db.collection('directory').doc(user.uid).get();
       if (doc.exists) {
-        showProfilePanel({ id: doc.id, ...doc.data() });
+        showProfilePanel(advance({ id: doc.id, ...doc.data() }));
       } else {
         showFormPanel();
       }
