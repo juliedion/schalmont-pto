@@ -41,7 +41,7 @@
   // loadAll() also keeps the district's own synced entries (school closings, early
   // release, board meetings) as a separate `district` list -- the homepage's combined
   // calendar has a District filter; everything else only wants `events`.
-  var CACHE_KEY = 'pcalEvents23', CACHE_MS = 10 * 60000;
+  var CACHE_KEY = 'pcalEvents24', CACHE_MS = 10 * 60000;
   // Events kept in the site code, for things that need to be on the calendar before anyone
   // adds them in the back office. A back-office entry with the same title and date wins.
   var SITE_EVENTS = [
@@ -50,6 +50,13 @@
     { title: 'Brawl for the Ball Tickets On Sale', date: '2026-10-25', endDate: '2026-11-13', time: '', location: 'Buy online', school: 'pto', href: '/brawlfortheball', allCals: true },
     { title: 'Holiday Catalog Fundraiser', date: '2026-10-23', endDate: '2026-11-13', time: '', location: 'Order from the catalogs online', school: 'pto', href: '/holiday', allCals: true },
     { title: 'Cheesy Fundraiser Order Pickup', date: '2026-11-17', time: '18:45', location: 'Jefferson Elementary (right after the PTO meeting, until about 7:45 PM)', school: 'jefferson', href: '/cheesy-fundraiser' },   // Julie, Nov 2026
+    // School announcements (Julie, Nov 2026)
+    { title: 'Mystic Pizza Music Workshop (Drama Club)', date: '2026-11-16', time: '14:30', location: 'Schalmont High School Band Room', school: 'high', href: '/high-school#ann-musical' },
+    { title: 'Interfaith Club Launch', date: '2026-11-19', time: '14:20', location: "Schalmont High School, Ms. Hoskins' Room 211", school: 'high', href: '/high-school#ann-interfaith' },
+    { title: 'Ukulele Club', date: '2026-11-16', time: '', location: 'Schalmont Middle School (after school)', school: 'middle', href: '/middle-school#ann-ukulele' },
+    { title: 'Ukulele Club', date: '2026-11-19', time: '', location: 'Schalmont Middle School (after school)', school: 'middle', href: '/middle-school#ann-ukulele' },
+    { title: 'Middle School Picture Retakes', date: '2026-11-20', time: '', location: 'Schalmont Middle School', school: 'middle', href: '/middle-school#ann-retakes' },
+    { title: "Modified Girls' Basketball Tryouts", date: '2026-11-30', endDate: '2026-12-01', time: '14:30', location: 'Schalmont Middle School Gym', school: 'middle', href: '/middle-school#ann-girls-bball' },
     { title: 'Polar Express Movie Night', date: '2026-11-19', time: '18:00', location: 'Jefferson Elementary School (gym next to the cafeteria)', school: 'jefferson', href: '/polar-express' },   // Julie, Nov 2026
     { title: 'Holiday Shoppe', date: '2026-12-07', endDate: '2026-12-09', time: '', location: 'Jefferson Elementary', school: 'jefferson', href: '/holiday-shoppe' },   // Julie, Nov 2026
     { title: 'Storytime at the Shelter (APF)', date: '2026-11-07', time: '10:30', location: 'Animal Protective Foundation', school: 'pto', href: '/storytime-at-the-shelter' },
