@@ -41,7 +41,7 @@
   // loadAll() also keeps the district's own synced entries (school closings, early
   // release, board meetings) as a separate `district` list -- the homepage's combined
   // calendar has a District filter; everything else only wants `events`.
-  var CACHE_KEY = 'pcalEvents24', CACHE_MS = 10 * 60000;
+  var CACHE_KEY = 'pcalEvents25', CACHE_MS = 10 * 60000;
   // Events kept in the site code, for things that need to be on the calendar before anyone
   // adds them in the back office. A back-office entry with the same title and date wins.
   var SITE_EVENTS = [
@@ -101,6 +101,7 @@
     var HIDE_TITLES = { 'jes pto meeting': true };
     // Removed from the public site entirely (Julie, Oct 2026), whatever calendar/page it comes from.
     var REMOVED = { 'trunk or treat 2026': true, 'light up schalmont with santa': true,   // cancelled (Julie, Oct 2026)
+      'cheesy fundraiser': true,   // sales are over; only the Nov 17 order pickup stays (Julie, Nov 2026)
       // duplicate dance entries on the wrong dates (the right ones are fixed in FIXES)
       '5th grade dance|2027-06-04': true, '6/7 grade dance|2027-05-21': true, '8th grade dance|2027-06-11': true };
     var removed = function (t, d) { t = String(t || '').trim().toLowerCase(); return !!(REMOVED[t] || REMOVED[t + '|' + d]); };

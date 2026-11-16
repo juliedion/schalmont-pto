@@ -224,6 +224,15 @@
       document.querySelectorAll('.sn-dash-name').forEach(function (el) { el.textContent = first ? first + '\u2019s' : 'My'; });
     }
     try { show(localStorage.getItem(KEY) || ''); } catch (_) { show(''); }
+    // "Join the Directory" (top bar): hidden once this person has a directory listing.
+    var DKEY = 'ptoInDirectory';
+    function dirBtn(inDir, signedIn) {
+      document.querySelectorAll('.sh-dir').forEach(function (a) {
+        a.hidden = !!inDir;
+        a.setAttribute('href', signedIn ? '/directory.html' : '/directory.html#register');
+      });
+    }
+    try { dirBtn(localStorage.getItem(DKEY) === '1', false); } catch (_) { dirBtn(false, false); }
     var tries = 0;
     (function hook() {
       var auth = null;
@@ -234,6 +243,14 @@
         if (u) { first = String(u.displayName || u.email.split('@')[0]).trim().split(/[\s._-]+/)[0]; first = first.charAt(0).toUpperCase() + first.slice(1); }
         try { if (first) localStorage.setItem(KEY, first); else localStorage.removeItem(KEY); } catch (_) {}
         show(first);
+        if (!u) { try { localStorage.removeItem(DKEY); } catch (_) {} dirBtn(false, false); return; }
+        var fs = null;
+        try { if (firebase.firestore) fs = firebase.firestore(); } catch (_) {}
+        if (!fs) return;   // no Firestore on this page: keep what we remembered
+        fs.collection('directory').doc(u.uid).get().then(function (d) {
+          try { if (d.exists) localStorage.setItem(DKEY, '1'); else localStorage.removeItem(DKEY); } catch (_) {}
+          dirBtn(d.exists, true);
+        }).catch(function () {});
       });
     })();
   }

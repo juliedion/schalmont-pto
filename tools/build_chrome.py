@@ -196,6 +196,8 @@ def header(p, style=''):
         '      <div class="sh-actions">',
         f'        <form class="sh-search" action="{p}index.html" role="search"><label class="sn-sr" for="sh-q">Search the site</label>'
         f'{ICON["search"]}<input id="sh-q" name="q" type="search" placeholder="Search" autocomplete="off"></form>',
+        # Join the Parent Directory: shown until someone has a listing (js/menus.js hides it) -- Julie, Nov 2026.
+        f'        <a class="sh-dir" href="{p}directory.html#register" title="Sign up for the Schalmont parent directory">Join the Directory</a>',
         f'        <a class="sh-login" id="nav-login-btn" href="{p}login.html">Login</a>',
         '        ' + social,
         f'        <a class="sh-cta" href="{p}donate.html">Donate</a>',
@@ -273,8 +275,8 @@ def add_assets(src, slash):
     """css/menus.css in <head>, js/menus.js before </body> -- exactly once each."""
     src = ASSETS_CSS.sub('', src)
     src = ASSETS_JS.sub('', src)
-    src = re.sub(r'(\n[ \t]*)</head>', lambda m: m.group(1) + f'  <link rel="stylesheet" href="{slash}css/menus.css?v=13">' + m.group(1) + '</head>', src, count=1)
-    return re.sub(r'(\n[ \t]*)</body>', lambda m: m.group(1) + f'  <script src="{slash}js/menus.js?v=7"></script>' + m.group(1) + '</body>', src, count=1)
+    src = re.sub(r'(\n[ \t]*)</head>', lambda m: m.group(1) + f'  <link rel="stylesheet" href="{slash}css/menus.css?v=14">' + m.group(1) + '</head>', src, count=1)
+    return re.sub(r'(\n[ \t]*)</body>', lambda m: m.group(1) + f'  <script src="{slash}js/menus.js?v=8"></script>' + m.group(1) + '</body>', src, count=1)
 
 
 def indent_block(block, indent):
