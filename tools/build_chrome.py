@@ -250,9 +250,17 @@ def sidebar(p, extra=''):
             '  </div>']
     out.append('  <hr class="sn-div">')
     out.append('  <div class="sn-label">Class of pages</div>')
+    # Plain links like the rest of the menu (Julie, Nov 2026): a small school heading, then
+    # "Class of 2031 - 8th Grade" etc.
+    GRADE_NAME = {'Pre-K': 'Pre-K', 'K': 'Kindergarten', '1st': '1st Grade', '2nd': '2nd Grade', '3rd': '3rd Grade',
+                  '4th': '4th Grade', '5th': '5th Grade', '6th': '6th Grade', '7th': '7th Grade', '8th': '8th Grade',
+                  'Fr': '9th Grade', 'So': '10th Grade', 'Jr': '11th Grade', 'Sr': '12th Grade'}
+    SCHOOL_HEAD = {'jefferson': 'Woestina/Jefferson', 'middle': 'Middle School', 'high': 'High School'}
     for key, name, grades, colour, page, classes in SCHOOLS:
-        chips = ''.join(f'<a href="{p}{href}">{e(lbl)}</a>' for lbl, href in classes)
-        out.append(f'  <div class="sn-classes" style="--sc:{colour}" aria-label="{e(name)} class pages"><span>{e(name.split()[0])}</span>{chips}</div>')
+        out.append(f'  <div class="sn-sublabel">{e(SCHOOL_HEAD.get(key, name))}</div>')
+        for lbl, href in classes:
+            year = re.search(r'(\d{4})', href).group(1)
+            out.append('  ' + link(f'Class of {year} – {GRADE_NAME.get(lbl, lbl)}', href))
     out.append('  <hr class="sn-div">')
     out.append('  <div class="sn-label">School apps</div>')
     out += ['  ' + link(t, h) for t, h in SCHOOL_APPS]
@@ -281,7 +289,7 @@ def add_assets(src, slash):
     """css/menus.css in <head>, js/menus.js before </body> -- exactly once each."""
     src = ASSETS_CSS.sub('', src)
     src = ASSETS_JS.sub('', src)
-    src = re.sub(r'(\n[ \t]*)</head>', lambda m: m.group(1) + f'  <link rel="stylesheet" href="{slash}css/menus.css?v=15">' + m.group(1) + '</head>', src, count=1)
+    src = re.sub(r'(\n[ \t]*)</head>', lambda m: m.group(1) + f'  <link rel="stylesheet" href="{slash}css/menus.css?v=16">' + m.group(1) + '</head>', src, count=1)
     return re.sub(r'(\n[ \t]*)</body>', lambda m: m.group(1) + f'  <script src="{slash}js/menus.js?v=9"></script>' + m.group(1) + '</body>', src, count=1)
 
 
