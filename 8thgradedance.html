@@ -84,6 +84,21 @@
     .g5-pf input[type=text], .g5-pf input[type=email], .g5-pf textarea { width:100%; box-sizing:border-box; font:inherit; font-size:15.5px; border:1.5px solid var(--border); border-radius:10px; padding:11px 12px; background:#fff; }
     .g5-pf textarea { min-height:120px; resize:vertical; line-height:1.5; }
     .g5-pf input:focus, .g5-pf textarea:focus { outline:none; border-color:#1f2a5a; box-shadow:0 0 0 3px rgba(31,42,90,.12); }
+    .g5-find input[type=search] { width:100%; box-sizing:border-box; font:inherit; font-size:15.5px; border:1.5px solid var(--border); border-radius:10px; padding:11px 12px; background:#fff; }
+    .g5-find input[type=search]:focus { outline:none; border-color:#1f2a5a; box-shadow:0 0 0 3px rgba(31,42,90,.12); }
+    .g5-find-hint { font-size:13px; color:var(--text-light); margin-top:5px; }
+    .g5-results { display:grid; gap:6px; margin-top:8px; }
+    .g5-results:empty { display:none; }
+    .g5-result { display:flex; align-items:center; gap:10px; width:100%; text-align:left; font:inherit; font-size:15px; font-weight:700; color:#1f2a5a; background:#fff; border:1.5px solid #c9d0ef; border-radius:10px; padding:10px 14px; cursor:pointer; }
+    .g5-result:hover, .g5-result:focus { border-color:#1f2a5a; background:#eef1ff; outline:none; }
+    .g5-result svg { flex:none; color:#9aa6d6; }
+    .g5-results p { margin:0; font-size:14px; color:var(--text-light); }
+    .g5-newbtn { margin-top:10px; font:inherit; font-weight:800; font-size:14px; color:#1f2a5a; background:#eef1ff; border:1.5px dashed #1f2a5a; border-radius:999px; padding:8px 16px; cursor:pointer; }
+    .g5-new { border:1.5px solid #c9d0ef; border-radius:14px; padding:14px 16px; background:#fff; display:grid; gap:10px; }
+    .g5-new[hidden], .g5-find[hidden] { display:none; }
+    .g5-new-head { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; color:#1f2a5a; }
+    .g5-linkbtn { font:inherit; font-size:13.5px; font-weight:700; color:#1f2a5a; background:none; border:0; text-decoration:underline; cursor:pointer; padding:0; margin-left:auto; }
+    .g5-linkbtn[hidden] { display:none; }
     .g5-folder { display:flex; align-items:center; gap:10px; background:#fff; border:1.5px dashed #1f2a5a; border-radius:12px; padding:10px 14px; font-size:14.5px; color:#1f2a5a; }
     .g5-folder svg { flex:none; }
     .g5-folder[hidden] { display:none; }
@@ -372,13 +387,23 @@
       <div class="g5-card g5-photos" id="photos">
         <div class="g5-kicker">Families</div>
         <h2>Share your Sabre&#8217;s Story</h2>
-        <p>Help us celebrate the Class of 2031! Upload photos of your 8th grader, from baby pictures to today, add a special message from family and/or friends, and share a few fun facts about them if you'd like. <strong>The photos will be shown in a slideshow during the dance and at graduation.</strong> Each student gets their own folder, so grandparents, siblings and friends can add to the same one by entering the same student name.</p>
+        <p>Help us celebrate the Class of 2031! Upload photos of your 8th grader, from baby pictures to today, add a special message from family and/or friends, and share a few fun facts about them if you'd like. <strong>The photos will be shown in a slideshow during the dance and at graduation.</strong> Each student gets their own folder, so grandparents, siblings and friends can add to the same one: just find your 8th grader&#8217;s folder below. Not there yet? Create one for them.</p>
         <form class="g5-pf" id="g5-pf" novalidate>
-          <div class="g5-pf-row">
-            <div><label for="pf-first">8th grader's first name</label><input type="text" id="pf-first" autocomplete="off" maxlength="40" required></div>
-            <div><label for="pf-last">8th grader's last name</label><input type="text" id="pf-last" autocomplete="off" maxlength="40" required></div>
+          <div class="g5-find" id="pf-find">
+            <label for="pf-search">Find your 8th grader&#8217;s folder</label>
+            <input type="search" id="pf-search" autocomplete="off" maxlength="40" placeholder="Start typing their last or first name" aria-controls="pf-results" aria-describedby="pf-find-hint">
+            <div class="g5-find-hint" id="pf-find-hint">Type at least 2 letters. Folders are listed as Last, First.</div>
+            <div class="g5-results" id="pf-results" role="listbox" aria-label="Student folders"></div>
+            <button type="button" class="g5-newbtn" id="pf-new-btn">Don&#8217;t see your 8th grader? Create a folder for them</button>
           </div>
-          <div class="g5-folder" id="pf-folder" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Photos and your story will go into <strong id="pf-folder-name"></strong>'s folder.</span></div>
+          <div class="g5-new" id="pf-new" hidden>
+            <div class="g5-new-head"><strong>Create a folder for your 8th grader</strong><button type="button" class="g5-linkbtn" id="pf-back">Back to search</button></div>
+            <div class="g5-pf-row">
+              <div><label for="pf-first">8th grader&#8217;s first name</label><input type="text" id="pf-first" autocomplete="off" maxlength="40"></div>
+              <div><label for="pf-last">8th grader&#8217;s last name</label><input type="text" id="pf-last" autocomplete="off" maxlength="40"></div>
+            </div>
+          </div>
+          <div class="g5-folder" id="pf-folder" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span id="pf-folder-text">Photos and your story will go into the <strong id="pf-folder-name"></strong> folder.</span><button type="button" class="g5-linkbtn" id="pf-change" hidden>Change</button></div>
           <div class="g5-pf-row">
             <div><label for="pf-name">Your name</label><input type="text" id="pf-name" autocomplete="name" maxlength="80" required></div>
             <div><label for="pf-email">Your email</label><input type="email" id="pf-email" autocomplete="email" maxlength="120" required></div>
@@ -592,13 +617,52 @@
       var $ = function (id) { return document.getElementById(id); };
       var form = $('g5-pf'); if (!form) return;
       var files = [], busy = false;
-      function name() { return ($('pf-first').value.trim() + ' ' + $('pf-last').value.trim()).trim(); }
-      function showFolder() {
+      // Student folder: pick one from the search (folders in Drive, "Last, First"), or create a new one.
+      var picked = null;   // {first, last} from a chosen folder; null = typing a new one
+      function cap(v) { return v.replace(/\S+/g, function (w) { return (w === w.toLowerCase() || w === w.toUpperCase()) ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : w; }); }
+      function student() {
+        if (picked) return picked;
         var f = $('pf-first').value.trim(), l = $('pf-last').value.trim();
-        $('pf-folder').hidden = !(f && l);
-        $('pf-folder-name').textContent = name().replace(/\S+/g, function (w) { return (w === w.toLowerCase() || w === w.toUpperCase()) ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : w; });
+        return (!$('pf-new').hidden && f && l) ? { first: cap(f), last: cap(l), isNew: true } : null;
+      }
+      function name() { var st = student(); return st ? st.first + ' ' + st.last : ''; }
+      function showFolder() {
+        var st = student();
+        $('pf-folder').hidden = !st;
+        if (st) $('pf-folder-name').textContent = st.last + ', ' + st.first;
+        $('pf-change').hidden = !picked;
+        $('pf-find').hidden = !!picked || !$('pf-new').hidden;
       }
       $('pf-first').addEventListener('input', showFolder); $('pf-last').addEventListener('input', showFolder);
+      var FOLDER_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
+      var searchT = null, searchN = 0;
+      function openNew() { picked = null; $('pf-new').hidden = false; showFolder(); $('pf-first').focus(); }
+      $('pf-new-btn').addEventListener('click', openNew);
+      $('pf-back').addEventListener('click', function () { $('pf-new').hidden = true; showFolder(); $('pf-search').focus(); });
+      $('pf-change').addEventListener('click', function () { picked = null; $('pf-search').value = ''; $('pf-results').innerHTML = ''; showFolder(); $('pf-search').focus(); });
+      $('pf-search').addEventListener('input', function () {
+        var q = this.value.trim(), box = $('pf-results');
+        clearTimeout(searchT);
+        if (q.replace(/[^a-z]/gi, '').length < 2) { box.innerHTML = ''; return; }
+        searchT = setTimeout(function () {
+          var n = ++searchN;
+          fetch('/api/dance-students.php?q=' + encodeURIComponent(q)).then(function (r) { return r.json(); }).then(function (j) {
+            if (n !== searchN) return;   // an older search finishing late
+            if (!j.ok) { box.innerHTML = '<p>Search isn&#8217;t working right now. Use &#8220;Create a folder&#8221; below and type their name; it will still find their folder.</p>'; return; }
+            box.innerHTML = j.names.length ? '' : '<p>No folder found for &#8220;' + q.replace(/[<>&"]/g, '') + '&#8221;. Try another spelling, or create a folder below.</p>';
+            j.names.forEach(function (nm) {
+              var b = document.createElement('button'); b.type = 'button'; b.className = 'g5-result'; b.setAttribute('role', 'option');
+              b.innerHTML = FOLDER_ICON; b.appendChild(document.createTextNode(nm));
+              b.onclick = function () {
+                var i = nm.indexOf(',');
+                picked = i > 0 ? { last: nm.slice(0, i).trim(), first: nm.slice(i + 1).trim() } : { last: nm, first: '' };
+                box.innerHTML = ''; showFolder();
+              };
+              box.appendChild(b);
+            });
+          }).catch(function () { if (n === searchN) box.innerHTML = '<p>Search isn&#8217;t working right now. Use &#8220;Create a folder&#8221; below.</p>'; });
+        }, 250);
+      });
       $('pf-msg').addEventListener('input', function () { $('pf-msg-n').textContent = this.value.length; });
       var FACTS = { nickname: 'pf-nick', food: 'pf-food', place: 'pf-place', hero: 'pf-hero' }, MAX_MEM = 10;
       $('pf-add-mem').addEventListener('click', function () {
@@ -657,8 +721,8 @@
       }
       form.addEventListener('submit', function (e) {
         e.preventDefault(); if (busy) return;
-        var first = $('pf-first').value.trim(), last = $('pf-last').value.trim(), fam = $('pf-name').value.trim(), email = $('pf-email').value.trim(), msgText = $('pf-msg').value.trim(), msg = msgText || hasFacts();
-        if (!first || !last) return status("Please enter your 8th grader's first and last name.", 'err');
+        var st = student(), first = st ? st.first : '', last = st ? st.last : '', fam = $('pf-name').value.trim(), email = $('pf-email').value.trim(), msgText = $('pf-msg').value.trim(), msg = msgText || hasFacts();
+        if (!first || !last) return status(!$('pf-new').hidden ? "Please enter your 8th grader's first and last name." : "Please find your 8th grader's folder, or create one for them.", 'err');
         if (!fam) return status('Please enter your name.', 'err');
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return status('Please enter a valid email address.', 'err');
         var todo = files.filter(function (f) { return !f.done; });
@@ -682,8 +746,8 @@
           if (msg && !msgSent) { status('Sending your story…', 'busy'); var fd = base(); addStory(fd, msgText); return post(fd); }
         }).then(function () {
           try { fetch('/api/yearbook-drive.php', { method: 'POST', keepalive: true }); } catch (_) {}   // copy to Drive in the background
-          var who = $('pf-folder-name').textContent || name();
-          status('Thank you! ' + (todo.length ? todo.length + ' photo' + (todo.length === 1 ? '' : 's') : '') + (todo.length && msg ? ' and your story' : (msg ? 'Your story' : '')) + ' ' + (todo.length + (msg ? 1 : 0) > 1 ? 'were' : 'was') + ' added to ' + who + "'s folder.", 'ok');
+          var who = 'the ' + ($('pf-folder-name').textContent || name()) + ' folder';
+          status('Thank you! ' + (todo.length ? todo.length + ' photo' + (todo.length === 1 ? '' : 's') : '') + (todo.length && msg ? ' and your story' : (msg ? 'Your story' : '')) + ' ' + (todo.length + (msg ? 1 : 0) > 1 ? 'were' : 'was') + ' added to ' + who + '.', 'ok');
           files = []; clearStory(); $('pf-msg').value = ''; $('pf-msg-n').textContent = '0'; draw();
         }).catch(function (err) {
           status((err && err.message) || 'Something went wrong. Please try again.', 'err');

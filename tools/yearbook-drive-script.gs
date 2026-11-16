@@ -61,6 +61,15 @@ function setup() {
 
 // The website asks for each school's event folders (folder names only) to fill the form's list.
 function doGet(e) {
+  // 8th Grade Dance: student folder names for the website's folder search (api/dance-students.php).
+  // Needs the secret, so only the website can ask for the class list.
+  if (e && e.parameter && e.parameter.list === 'dance') {
+    var secret = PropertiesService.getScriptProperties().getProperty('SECRET');
+    if (!secret || e.parameter.secret !== secret) return json_({ ok: false, error: 'Not allowed' });
+    var names = [], fit = child_(rootFolder_(), '8th Grade Dance 2027').getFolders();
+    while (fit.hasNext()) { var fn = fit.next().getName(); if (!/^test delete me$/i.test(fn)) names.push(fn); }
+    return json_({ ok: true, names: names.sort(function (a, b) { return a.localeCompare(b); }) });
+  }
   var cache = CacheService.getScriptCache(), hit = cache.get('events');
   if (hit) return ContentService.createTextOutput(hit).setMimeType(ContentService.MimeType.JSON);
   var root = rootFolder_(), events = {};
