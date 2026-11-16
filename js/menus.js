@@ -216,7 +216,29 @@
     update();
   }
 
-  function initAll(root) { initHeader(root); init(root); initAds(); initMenuEvents(root); initMoreHint(root); }
+  /* "<First name>'s Dashboard" at the top of the left menu. The name comes from the sign-in (on
+     pages that load it) and is remembered on this device for pages that don't. */
+  function initDashName() {
+    var KEY = 'ptoFirstName';
+    function show(first) {
+      document.querySelectorAll('.sn-dash-name').forEach(function (el) { el.textContent = first ? first + '\u2019s' : 'My'; });
+    }
+    try { show(localStorage.getItem(KEY) || ''); } catch (_) { show(''); }
+    var tries = 0;
+    (function hook() {
+      var auth = null;
+      try { if (window.firebase && firebase.apps && firebase.apps.length && firebase.auth) auth = firebase.auth(); } catch (_) {}
+      if (!auth) { if (++tries < 20) setTimeout(hook, 500); return; }
+      auth.onAuthStateChanged(function (u) {
+        var first = '';
+        if (u) { first = String(u.displayName || u.email.split('@')[0]).trim().split(/[\s._-]+/)[0]; first = first.charAt(0).toUpperCase() + first.slice(1); }
+        try { if (first) localStorage.setItem(KEY, first); else localStorage.removeItem(KEY); } catch (_) {}
+        show(first);
+      });
+    })();
+  }
+
+  function initAll(root) { initHeader(root); init(root); initAds(); initMenuEvents(root); initMoreHint(root); initDashName(); }
   window.initSidenav = initAll;
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { initAll(); });
   else initAll();

@@ -244,3 +244,10 @@
 }
 @media (min-width: 901px) { .sh-mobile-sn { display: none; } }   /* the real left menu is showing */
 
+
+/* "<First name>'s Dashboard" at the top of the left menu (Nov 2026) */
+.sn .sn-dash { display:flex; align-items:center; gap:6px; margin:4px 0 6px; padding:10px 12px; border-radius:12px; background:#e8f4ec; color:#14532d; font-weight:800; }
+.sn .sn-dash::before { content:""; width:18px; height:18px; flex:none; background:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 13h8V3H3zm0 8h8v-6H3zm10 0h8V11h-8zm0-18v6h8V3z'/%3E%3C/svg%3E") center/contain no-repeat;
+          mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 13h8V3H3zm0 8h8v-6H3zm10 0h8V11h-8zm0-18v6h8V3z'/%3E%3C/svg%3E") center/contain no-repeat; }
+.sn .sn-dash:hover { background:#d6ecdd; }

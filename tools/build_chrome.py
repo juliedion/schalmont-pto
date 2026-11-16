@@ -64,7 +64,7 @@ MAIN_ITEMS = [
     ('Yearbooks', 'yearbooks.html', r'yearbook'),
 ]
 # ---- Left menu (Julie, Nov 2026) ----
-QUICK_LINKS = [('Dashboard', 'dashboard.html'), ('Directory', 'directory.html'), ('Contact', 'contact.html'),
+QUICK_LINKS = [('Directory', 'directory.html'), ('Contact', 'contact.html'),
                ('Home', 'index.html'), ('Shop', 'shop.html'), ('Social Media', 'social.html')]
 APPRECIATION = 'appreciation-days.html'
 # Each school: (key, name, small line, colour, [(label, link), ...]) -- shown as an open/close group.
@@ -221,6 +221,8 @@ def sidebar(p, extra=''):
         ext = ' target="_blank" rel="noopener"' if href.startswith('http') else ''
         m = f' data-match="{e(match)}"' if match else ''
         return f'<a class="{cls}" href="{e(full)}"{ext}{m}>{e(t)}</a>'
+    # "<First name>'s Dashboard" above Quick links (Julie, Nov 2026); js/menus.js fills in the name.
+    out.append(f'  <a class="sn-item sn-dash" href="{p}dashboard.html"><span class="sn-dash-name">My</span> Dashboard</a>')
     out.append('  <div class="sn-label">Quick links</div>')
     out += ['  ' + link(t, h) for t, h in QUICK_LINKS]
     out.append('  <hr class="sn-div">')
@@ -270,7 +272,7 @@ def add_assets(src, slash):
     src = ASSETS_CSS.sub('', src)
     src = ASSETS_JS.sub('', src)
     src = re.sub(r'(\n[ \t]*)</head>', lambda m: m.group(1) + f'  <link rel="stylesheet" href="{slash}css/menus.css?v=12">' + m.group(1) + '</head>', src, count=1)
-    return re.sub(r'(\n[ \t]*)</body>', lambda m: m.group(1) + f'  <script src="{slash}js/menus.js?v=6"></script>' + m.group(1) + '</body>', src, count=1)
+    return re.sub(r'(\n[ \t]*)</body>', lambda m: m.group(1) + f'  <script src="{slash}js/menus.js?v=7"></script>' + m.group(1) + '</body>', src, count=1)
 
 
 def indent_block(block, indent):

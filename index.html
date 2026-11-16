@@ -16,6 +16,18 @@
   <link rel="stylesheet" href="css/home.css?v=24">
   <link rel="preload" as="image" href="images/hero-wide/hero-01.jpg" fetchpriority="high">
   <link rel="icon" href="images/favicon.svg">
+  <style>
+    /* Homepage alert banner (Light the Loop sign-ups, Julie Nov 2026) */
+    .hz-alert { display:flex; flex-wrap:wrap; align-items:center; gap:12px 16px; margin:22px 0 4px; padding:16px 20px; border-radius:16px;
+      background:linear-gradient(120deg,#7f1d1d 0%,#b91c1c 45%,#166534 100%); color:#fff; box-shadow:0 8px 24px rgba(127,29,29,.22); }
+    .hz-alert-icon { font-size:30px; line-height:1; }
+    .hz-alert-text { flex:1 1 320px; display:grid; gap:2px; }
+    .hz-alert-text strong { font-size:18px; }
+    .hz-alert-text span { font-size:15px; opacity:.95; }
+    .hz-alert-btn { background:#fff; color:#7f1d1d !important; font-weight:800; font-size:15px; text-decoration:none; border-radius:999px; padding:11px 20px; white-space:nowrap; }
+    .hz-alert-btn:hover { background:#fef3c7; }
+    .hz-alert-more { color:#fff !important; font-weight:700; font-size:14px; text-decoration:underline; white-space:nowrap; }
+  </style>
   <link rel="stylesheet" href="css/menus.css?v=12">
 </head>
 <body class="home2">
@@ -54,8 +66,8 @@
       <label class="sn-sr" for="sn-q">Search the site</label>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><input id="sn-q" name="q" type="search" placeholder="Search the site" autocomplete="off">
     </form>
+    <a class="sn-item sn-dash" href="dashboard.html"><span class="sn-dash-name">My</span> Dashboard</a>
     <div class="sn-label">Quick links</div>
-    <a class="sn-item" href="dashboard.html">Dashboard</a>
     <a class="sn-item" href="directory.html">Directory</a>
     <a class="sn-item" href="contact.html">Contact</a>
     <a class="sn-item" href="index.html">Home</a>
@@ -220,6 +232,17 @@
     </section>
 
     <div class="hz-wrap">
+      <!-- ALERT: Light the Loop car sign-ups (Julie, Nov 2026). Hides itself after Dec 5, 2026. -->
+      <aside class="hz-alert" id="hz-ltl" data-until="2026-12-05" aria-label="Light the Loop sign-ups">
+        <span class="hz-alert-icon" aria-hidden="true">🎄</span>
+        <div class="hz-alert-text">
+          <strong>Light the Loop is Saturday, December 5!</strong>
+          <span>Decorate your car, light it up and compete for the Grand Prize. Sign up to be a Loop participant.</span>
+        </div>
+        <a class="hz-alert-btn" href="https://docs.google.com/forms/d/1XokQ5PLa4oyzu-CdXT4z2bJVnQAwGZOYu5fYXIKK6zo/viewform?ts=6ac50257&amp;edit_requested=true" target="_blank" rel="noopener">Sign up to decorate a car</a>
+        <a class="hz-alert-more" href="/lightheloop">Event details</a>
+      </aside>
+      <script>(function () { var a = document.getElementById('hz-ltl'), t = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); if (a && t > a.getAttribute('data-until')) a.remove(); })();</script>
       <!-- DAILY INFORMATION DASHBOARD: letter days, lunch, weather -->
       <div class="hz-band-head" id="today">
         <h2>Today at Schalmont <span id="hz-today-date"></span></h2>
@@ -772,6 +795,6 @@
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
   <script src="js/public-calendar.js?v=21"></script>
-  <script src="js/menus.js?v=6"></script>
+  <script src="js/menus.js?v=7"></script>
 </body>
 </html>
