@@ -180,7 +180,9 @@
           // The contact record (with the email) is private; this only succeeds for the signer's own.
           return Promise.all(live.map(function (d) {
             return sref.collection('contacts').doc(d.id).get().then(function (c) {
-              if (c.exists) found.push({ sheet: sheet, entry: d, contact: c.data() });
+              // Admins can read every contact record, so also check the email really is this person's.
+              var ce = c.exists ? String(c.data().email || '').trim().toLowerCase() : '';
+              if (ce && ce === me.email.toLowerCase()) found.push({ sheet: sheet, entry: d, contact: c.data() });
             }).catch(function () { /* someone else's sign-up */ });
           }));
         }).then(function () {
