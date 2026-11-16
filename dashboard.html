@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <meta name="description" content="Your Schalmont PTO dashboard: your account, directory listing, sign-ups and shared photos.">
+  <title>My Dashboard — Schalmont PTO</title>
+  <link rel="stylesheet" href="/css/styles.css?v=6">
+  <link rel="icon" href="/images/favicon.svg">
+  <style>
+    /* Parent dashboard (Julie, Nov 2026) */
+    .db-wrap { max-width:980px; margin:0 auto; display:grid; gap:22px; }
+    .db-card { background:var(--white); border:1px solid var(--border); border-radius:var(--radius-lg); padding:clamp(18px,3.5vw,28px); }
+    .db-card h2 { font-size:20px; margin:0 0 4px; color:var(--primary-dark); display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .db-sub { font-size:14px; color:var(--text-light); margin:0 0 16px; line-height:1.55; }
+    .db-pill { font-size:12px; font-weight:800; border-radius:999px; padding:3px 10px; background:#e8f4ec; color:#1f7a46; }
+    .db-pill.is-wait { background:#fff4e5; color:#8a5300; }
+    .db-pill.is-bad { background:#fde8e6; color:#8b1a14; }
+    .db-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .db-f label { display:block; font-weight:800; font-size:13.5px; color:var(--primary-dark); margin-bottom:5px; }
+    .db-f input[type=text], .db-f input[type=tel], .db-f input[type=email], .db-f select { width:100%; box-sizing:border-box; font:inherit; font-size:15px; border:1.5px solid var(--border); border-radius:10px; padding:10px 12px; background:#fff; }
+    .db-f input[readonly] { background:#f4f6f5; color:var(--text-light); }
+    .db-checks { display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:12px; font-size:14px; }
+    .db-checks label { display:flex; gap:8px; align-items:center; cursor:pointer; }
+    .db-actions { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:16px; }
+    .db-btn { font:inherit; font-weight:800; font-size:14.5px; border-radius:999px; padding:10px 20px; cursor:pointer; border:2px solid var(--primary); background:var(--primary); color:#fff; text-decoration:none; display:inline-block; }
+    .db-btn.is-ghost { background:#fff; color:var(--primary); }
+    .db-btn.is-danger { background:#fff; color:#8b1a14; border-color:#d98a83; }
+    .db-btn:disabled { opacity:.55; cursor:default; }
+    .db-btn[hidden], .db-card[hidden] { display:none; }
+    .db-msg { font-size:14px; font-weight:700; }
+    .db-msg.ok { color:#1f7a46; } .db-msg.err { color:#8b1a14; }
+    .db-kid { border:1px solid var(--border); border-radius:14px; padding:14px; margin-top:12px; display:grid; gap:10px; background:#fbfcfb; }
+    .db-kid-row { display:grid; grid-template-columns:1.4fr 1fr 1.4fr; gap:10px; }
+    .db-kid-row2 { display:grid; grid-template-columns:1.4fr 1fr auto; gap:10px; align-items:end; }
+    .db-rm { font:inherit; font-size:13px; font-weight:700; color:#8b1a14; background:none; border:0; text-decoration:underline; cursor:pointer; padding:10px 0; }
+    .db-add { font:inherit; font-weight:800; font-size:14px; color:var(--primary); background:#eef7f1; border:1.5px dashed var(--primary); border-radius:999px; padding:8px 16px; cursor:pointer; margin-top:12px; }
+    .db-note { font-size:13px; color:var(--text-light); margin-top:8px; }
+    .db-su { border:1px solid var(--border); border-radius:14px; padding:14px 16px; display:grid; gap:4px; }
+    .db-su + .db-su { margin-top:10px; }
+    .db-su h3 { margin:0; font-size:16px; color:var(--primary-dark); }
+    .db-su .db-when { font-size:14px; color:var(--text); }
+    .db-su .db-meta { font-size:13.5px; color:var(--text-light); }
+    .db-su .db-actions { margin-top:8px; }
+    .db-su.is-past { opacity:.7; }
+    .db-empty { font-size:14.5px; color:var(--text-light); background:#f7f8f7; border-radius:12px; padding:14px 16px; margin:0; }
+    .db-dance { border:2px solid #1f2a5a; background:linear-gradient(180deg,#f4f6ff 0%,#fff 50%); }
+    .db-dance h2 { color:#1f2a5a; }
+    .db-story { border:1px solid #c9d0ef; border-radius:14px; padding:16px; background:#fff; }
+    .db-story + .db-story { margin-top:14px; }
+    .db-story h3 { margin:0 0 4px; font-size:17px; color:#1f2a5a; }
+    .db-story dl { display:grid; grid-template-columns:max-content 1fr; gap:4px 14px; margin:10px 0 0; font-size:14.5px; }
+    .db-story dt { font-weight:800; color:#1f2a5a; }
+    .db-story dd { margin:0; }
+    .db-story blockquote { margin:10px 0 0; padding:10px 14px; border-left:3px solid #c9952f; background:#fffaf0; border-radius:8px; white-space:pre-wrap; font-size:14.5px; }
+    .db-story ol { margin:6px 0 0; padding-left:20px; font-size:14.5px; }
+    .db-photos { display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:8px; margin-top:12px; }
+    .db-photos a { display:block; aspect-ratio:1; border-radius:10px; overflow:hidden; background:#eef0f5; position:relative; }
+    .db-photos img { width:100%; height:100%; object-fit:cover; display:block; }
+    .db-photos span { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; font-size:12px; font-weight:700; color:#1f2a5a; padding:6px; }
+    .db-gate { text-align:center; }
+    .db-loading { text-align:center; color:var(--text-light); padding:30px 0; }
+    @media (max-width:700px) { .db-grid2, .db-kid-row, .db-kid-row2 { grid-template-columns:1fr; } }
+  </style>
+  <link rel="stylesheet" href="/css/menus.css?v=12">
+</head>
+<body>
+
+  <div id="sc-header"></div>
+
+  <div class="homepage-layout">
+    <div id="sc-sidenav"></div>
+    <div class="homepage-main">
+
+      <section class="page-hero" style="background:linear-gradient(135deg,#002F20 0%,#007A3D 100%)">
+        <div class="container">
+          <h1 style="margin:0">My Dashboard</h1>
+          <p style="margin:10px 0 0" id="db-hello">Your account, directory listing, sign-ups and shared photos, all in one place.</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="db-wrap" id="db-app">
+            <div class="db-loading" id="db-loading">Loading your dashboard…</div>
+
+            <!-- Not signed in / not verified -->
+            <div class="db-card db-gate" id="db-gate" hidden>
+              <h2 style="justify-content:center">Please sign in</h2>
+              <p class="db-sub" id="db-gate-text">Sign in to see your account, directory listing and sign-ups.</p>
+              <div class="db-actions" style="justify-content:center">
+                <a class="db-btn" href="/login.html?next=dashboard.html">Sign in or register</a>
+                <button type="button" class="db-btn is-ghost" id="db-resend" hidden>Resend verification email</button>
+              </div>
+              <p class="db-msg" id="db-gate-msg"></p>
+            </div>
+
+            <!-- Account -->
+            <div class="db-card" id="db-account" hidden>
+              <h2>My account <span class="db-pill" id="db-status"></span></h2>
+              <p class="db-sub" id="db-status-text"></p>
+              <div class="db-grid2">
+                <div class="db-f"><label for="db-name">Your name</label><input type="text" id="db-name" maxlength="80" autocomplete="name"></div>
+                <div class="db-f"><label for="db-email">Email (used to sign in)</label><input type="email" id="db-email" readonly></div>
+              </div>
+              <div class="db-actions">
+                <button type="button" class="db-btn" id="db-save-account">Save</button>
+                <button type="button" class="db-btn is-ghost" id="db-pass">Change my password</button>
+                <button type="button" class="db-btn is-ghost" onclick="signOut()">Sign out</button>
+                <span class="db-msg" id="db-account-msg" role="status"></span>
+              </div>
+            </div>
+
+            <!-- Directory listing -->
+            <div class="db-card" id="db-dir" hidden>
+              <h2>My directory listing</h2>
+              <p class="db-sub">What other registered Schalmont families see in the <a href="/directory.html">parent directory</a>. Keep your children&#8217;s grades and teachers up to date each school year.</p>
+              <div id="db-dir-none" hidden>
+                <p class="db-empty">You&#8217;re not in the parent directory yet. <a href="/directory.html">Add your family to the directory</a>.</p>
+              </div>
+              <form id="db-dir-form" hidden novalidate>
+                <div class="db-grid2">
+                  <div class="db-f"><label for="db-first">First name</label><input type="text" id="db-first" maxlength="60" autocomplete="given-name"></div>
+                  <div class="db-f"><label for="db-last">Last name</label><input type="text" id="db-last" maxlength="60" autocomplete="family-name"></div>
+                  <div class="db-f"><label for="db-dir-email">Email in the directory</label><input type="email" id="db-dir-email" maxlength="120" autocomplete="email"></div>
+                  <div class="db-f"><label for="db-phone">Phone</label><input type="tel" id="db-phone" maxlength="20" autocomplete="tel"></div>
+                </div>
+                <div class="db-checks">
+                  <label><input type="checkbox" id="db-show-email"> Show my email to other families</label>
+                  <label><input type="checkbox" id="db-show-phone"> Show my phone to other families</label>
+                  <label><input type="checkbox" id="db-texts"> Send me PTO text reminders</label>
+                </div>
+                <h3 style="font-size:16px;margin:20px 0 0;color:var(--primary-dark)">My children</h3>
+                <div id="db-kids"></div>
+                <button type="button" class="db-add" id="db-add-kid">+ Add a child</button>
+                <p class="db-note">To change your photo or a second parent/guardian, use <a href="/directory.html">Edit My Listing</a> in the directory.</p>
+                <div class="db-actions">
+                  <button type="submit" class="db-btn" id="db-save-dir">Save my listing</button>
+                  <span class="db-msg" id="db-dir-msg" role="status"></span>
+                </div>
+              </form>
+            </div>
+
+            <!-- Sign-ups -->
+            <div class="db-card" id="db-signups" hidden>
+              <h2>My sign-ups</h2>
+              <p class="db-sub">Volunteer spots and events you signed up for with <strong class="db-me"></strong>. Cancel a spot, or switch to a different one.</p>
+              <div id="db-su-list"><p class="db-loading">Looking up your sign-ups…</p></div>
+            </div>
+
+            <!-- 8th Grade Dance -->
+            <div class="db-card db-dance" id="db-dance" hidden>
+              <h2>8th Grade Dance: Sabre&#8217;s Story</h2>
+              <p class="db-sub">What you shared for the slideshow (sent with <strong class="db-me"></strong>). <a href="/8thgradedance#photos">Share more photos or another story</a>.</p>
+              <div id="db-dance-list"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <div id="sc-footer"></div>
+
+  <script src="/js/site-chrome.js?v=17"></script>
+  <script>renderSiteChrome();</script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/grade-rollover.js?v=1"></script>
+  <script src="/js/app.js?v=3"></script>
+  <script src="/js/dashboard.js?v=1"></script>
+  <script src="/js/menus.js?v=5"></script>
+</body>
+</html>

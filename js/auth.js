@@ -100,7 +100,7 @@ function initLoginPage() {
   auth.onAuthStateChanged(async user => {
     if (await canEnter(user)) {
       const params  = new URLSearchParams(window.location.search);
-      const next    = params.get('next') || 'directory.html';
+      const next    = params.get('next') || 'dashboard.html';   // the parent dashboard (Nov 2026)
       window.location.href = next;
     }
   });

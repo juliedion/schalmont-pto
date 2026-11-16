@@ -249,7 +249,13 @@ service cloud.firestore {
       // Contact details for the organiser only (also the private record an anonymous
       // signer's cancel/edit request is checked against — see entries above).
       match /contacts/{eid} {
-        allow read: if isAnyAdmin();
+        // Organisers read all. A signed-in parent with a VERIFIED email may read only the
+        // contact record whose email is theirs -- that's how the parent dashboard
+        // (dashboard.html) finds "my sign-ups" and shows what they entered.
+        allow read: if isAnyAdmin() || (
+          signedIn() && request.auth.token.email_verified == true
+          && resource.data.email.lower() == request.auth.token.email.lower()
+        );
         // Email is required; phone is always optional. A sheet with "Require a date of
         // birth" also sends birthdate (YYYY-MM-DD) -- kept here, admin-only, never in the
         // public entries.

@@ -1551,7 +1551,8 @@ function initNavAuth() {
   dropdown.style.cssText = 'display:none;position:fixed;z-index:9999;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.14);min-width:180px;overflow:hidden';
   dropdown.innerHTML = `
     <div id="nav-auth-email" style="padding:12px 16px;font-size:12px;color:var(--text-light);border-bottom:1px solid var(--border);word-break:break-all"></div>
-    <a href="directory.html" style="display:block;padding:10px 16px;font-size:14px;color:var(--text);text-decoration:none;font-weight:600" onmouseover="this.style.background='var(--light-bg)'" onmouseout="this.style.background=''">My Directory Listing</a>
+    <a href="/dashboard.html" style="display:block;padding:10px 16px;font-size:14px;color:var(--text);text-decoration:none;font-weight:600" onmouseover="this.style.background='var(--light-bg)'" onmouseout="this.style.background=''">My Dashboard</a>
+    <a href="/directory.html" style="display:block;padding:10px 16px;font-size:14px;color:var(--text);text-decoration:none;font-weight:600" onmouseover="this.style.background='var(--light-bg)'" onmouseout="this.style.background=''">Parent Directory</a>
     <button onclick="signOut()" style="width:100%;text-align:left;padding:10px 16px;font-size:14px;color:var(--error);font-weight:600;border:none;background:none;cursor:pointer;font-family:inherit" onmouseover="this.style.background='var(--light-bg)'" onmouseout="this.style.background=''">Sign Out</button>
   `;
   document.body.appendChild(dropdown);
