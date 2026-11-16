@@ -75,7 +75,7 @@ SCHOOL_MENUS = [
         ('Cheesy Fundraiser', '/cheesy-fundraiser'), ('Clubs', 'clubs.html'), ('Coin Wars', '/event?t=coin-wars'),
         ('Dances', 'dances.html'), ('Donations', 'donate.html'), ('Family Scouts', 'family-scouts.html'),
         ('Field Day', '/event?t=field-day'), ('Food Drive', 'holiday-boxes.html'), ('Girl Scouts', 'girl-scouts.html'),
-        ('Giving Tree', 'index.html?q=giving+tree'), ('Homeroom Parents', 'index.html?q=homeroom+parents'),
+        ('Giving Tree', 'index.html?q=giving+tree'), ('Holiday Shoppe', 'holiday-shoppe.html'), ('Homeroom Parents', 'index.html?q=homeroom+parents'),
         ('Homecoming', '/event?t=homecoming'), ('Incoming Kindergarteners', 'incoming-kindergarten.html'),
         ('Merry Morning', 'merry-morning.html'), ('Newsletters', 'index.html?q=newsletter'), ('Open House', '/k1open'),
         ('Picture Day', 'picture-days.html'), ('PTO Meetings', 'meetings.html'), ('Spirit Fridays', '/event?t=school-spirit-friday'),

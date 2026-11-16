@@ -23,6 +23,10 @@
     .ev-card ul { margin: 0; padding-left: 20px; }
     .ev-card a { color: var(--primary); font-weight: 700; }
     .ev-big { display: inline-block; background: var(--c); color: #fff; font-weight: 900; border-radius: 12px; padding: 6px 14px; font-size: 18px; }
+    .ev-vol { border: 2px solid var(--c); background: linear-gradient(180deg,#fff5f5 0%,#fff 70%); }
+    .ev-vol h2 { color: #7a0f17; }
+    .ev-card a.ev-vol-btn { display: inline-block; margin-top: 6px; background: var(--c); color: #fff; font-weight: 800; font-size: 16px; text-decoration: none; border-radius: 999px; padding: 12px 24px; }
+    .ev-card a.ev-vol-btn:hover { background: #8f1820; }
     .ev-flyer { margin: 0; }
     .ev-flyer img { width: 100%; height: auto; display: block; border-radius: 14px; box-shadow: 0 8px 30px rgba(0,0,0,.18); }
     @media (max-width: 860px) { .ev-wrap { grid-template-columns: 1fr; } .ev-flyer { max-width: 560px; } }
@@ -49,10 +53,16 @@
           <div class="ev-wrap">
             <div>
               <div class="ev-when"><b>Saturday, December 5</b><span>10:00 AM – 3:00 PM · Jefferson Elementary</span></div>
+              <!-- Volunteer call (Julie, Nov 2026) -->
+              <div class="ev-card ev-vol">
+                <h2>🎅🥞 We need helping hands!</h2>
+                <p>Join us for a magical day filled with Breakfast with Santa, holiday fun, crafts, and more! We need helping hands to make this special event memorable for our Jefferson families!</p>
+                <a class="ev-vol-btn" href="https://signup.com/go/NpHTOnr" target="_blank" rel="noopener">Sign up to volunteer</a>
+              </div>
               <div class="ev-card">
                 <h2>What's happening</h2>
                 <ul>
-                  <li><strong>Pancakes with Santa:</strong> delicious pancakes to start the morning.</li>
+                  <li><strong>Breakfast with Santa:</strong> delicious pancakes to start the morning.</li>
                   <li><strong>Photos with Santa:</strong> memories to last!</li>
                   <li><strong>Holiday Craft Fair:</strong> handmade gifts made with love. <a href="/craft-fair">Craft fair details →</a></li>
                   <li><strong>Shop local:</strong> holiday shopping with local vendors, supporting our community.</li>
