@@ -39,7 +39,7 @@ if (($_POST['action'] ?? '') === 'finish') {
     $body = implode("\n", [
       'Hi ' . ($m['familyName'] ?? '') . ',',
       '',
-      "Thank you for sharing $student's Sabre's Story with the Schalmont PTO! We received $what for the 8th Grade Dance: A Night Under the Stars.",
+      "Thank you for sharing $student's Sabre's Story with the 8th Grade Dance Team Leadership! We received $what for the 8th Grade Dance: A Night Under the Stars.",
       'Your photos and story will be part of the slideshow at the dance and at graduation.',
       '',
       'To view or edit your answers, or add more photos, use your private link:',
@@ -50,10 +50,10 @@ if (($_POST['action'] ?? '') === 'finish') {
       'The dance is Saturday, June 12, 2027, 6:00 to 9:00 PM in the Schalmont Middle School Gymnasium.',
       'Questions? Reply to this email or write to julie@schalmontpto.com.',
       '',
-      '— Schalmont PTO',
+      '— 8th Grade Dance Team Leadership',
       'https://schalmontpto.com/8thgradedance',
     ]);
-    $headers = "From: Schalmont PTO <noreply@schalmontpto.com>\r\nReply-To: julie@schalmontpto.com\r\nContent-Type: text/plain; charset=UTF-8";
+    $headers = "From: 8th Grade Dance Team Leadership <noreply@schalmontpto.com>\r\nReply-To: julie@schalmontpto.com\r\nContent-Type: text/plain; charset=UTF-8";
     $subject = '=?UTF-8?B?' . base64_encode("Thank you for sharing $student's Sabre's Story") . '?=';
     $sent = @mail($m['email'], $subject, $body, $headers);
     if ($sent) d_meta_merge($metaFile, ['emailedAt' => date('c')]);
