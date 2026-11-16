@@ -54,6 +54,7 @@ else $pickedFolder = '';
 if ($last === '' || ($first === '' && $pickedFolder === '')) fail("Please enter your 8th grader's first and last name.");
 if ($family === '') fail('Please enter your name.');
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) fail('Please enter a valid email address.');
+if (($_POST['certify'] ?? '') !== '1') fail("Please confirm you are this student's parent or guardian.");
 $hasPhoto = !empty($_FILES['photo']) && ($_FILES['photo']['error'] ?? 4) !== 4;
 if (!$hasPhoto && !$hasStory) fail('Please add at least one photo, a message or a fun fact.');
 
@@ -112,7 +113,7 @@ if ($hasPhoto) {
    Kept as .json on the server (uploads/.htaccess keeps .json private); sent to Drive as a .txt. */
 $msgFile = "$destDir/.meta/$batchId-message.json";
 if ($hasStory && !is_file($msgFile)) {
-  $txt = "SABRE'S STORY\nFor: $student\nFrom: $family <$email>\nSent: " . date('F j, Y g:i A') . "\n";
+  $txt = "SABRE'S STORY\nFor: $student\nFrom: $family <$email> (certified parent/guardian)\nSent: " . date('F j, Y g:i A') . "\n";
   if ($message !== '') $txt .= "\nMESSAGE FROM FAMILY AND/OR FRIENDS\n" . $message . "\n";
   if ($facts) { $txt .= "\nFUN FACTS\n"; foreach ($facts as $label => $v) $txt .= "$label: $v\n"; }
   if ($memories) { $txt .= "\nFAVORITE MEMORIES\n"; foreach ($memories as $i => $m) $txt .= ($i + 1) . ". $m\n"; }
@@ -132,6 +133,7 @@ $prev = is_file($metaFile) ? (json_decode((string)file_get_contents($metaFile), 
   'funFacts' => $facts ?: ($prev['funFacts'] ?? new stdClass()),
   'memories' => $memories ?: ($prev['memories'] ?? []),
   'photos' => array_values(array_filter(array_merge($prev['photos'] ?? [], [$saved]))),
+  'certifiedParentOrGuardian' => true,
   'submittedAt' => $prev['submittedAt'] ?? date('c'), 'ip' => $ip,
 ], JSON_PRETTY_PRINT), LOCK_EX);
 

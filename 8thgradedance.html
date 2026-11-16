@@ -99,6 +99,15 @@
     .g5-new-head { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; color:#1f2a5a; }
     .g5-linkbtn { font:inherit; font-size:13.5px; font-weight:700; color:#1f2a5a; background:none; border:0; text-decoration:underline; cursor:pointer; padding:0; margin-left:auto; }
     .g5-linkbtn[hidden] { display:none; }
+    .g5-certify { display:flex; gap:10px; align-items:flex-start; background:#fff; border:1.5px solid #1f2a5a; border-radius:12px; padding:12px 14px; font-size:15px; color:#1f2a5a; cursor:pointer; }
+    .g5-pf label.g5-certify { display:flex; margin:0; font-weight:500; font-size:15px; color:#1f2a5a; }
+    .g5-certify input { width:20px; height:20px; margin:1px 0 0; flex:none; accent-color:#1f2a5a; }
+    .g5-certify.is-off { opacity:.5; cursor:not-allowed; }
+    .g5-lock-note { margin:0; font-size:14px; font-weight:700; color:#1f2a5a; background:#eef1ff; border-radius:10px; padding:10px 14px; }
+    .g5-lock-note[hidden] { display:none; }
+    .g5-rest { border:0; padding:0; margin:0; min-width:0; display:grid; gap:14px; transition:opacity .2s; }
+    .g5-rest:disabled { opacity:.4; }
+    .g5-rest:disabled .g5-drop { cursor:not-allowed; }
     .g5-folder { display:flex; align-items:center; gap:10px; background:#fff; border:1.5px dashed #1f2a5a; border-radius:12px; padding:10px 14px; font-size:14.5px; color:#1f2a5a; }
     .g5-folder svg { flex:none; }
     .g5-folder[hidden] { display:none; }
@@ -387,7 +396,7 @@
       <div class="g5-card g5-photos" id="photos">
         <div class="g5-kicker">Families</div>
         <h2>Share your Sabre&#8217;s Story</h2>
-        <p>Help us celebrate the Class of 2031! Upload photos of your 8th grader, from baby pictures to today, add a special message from family and/or friends, and share a few fun facts about them if you'd like. <strong>The photos will be shown in a slideshow during the dance and at graduation.</strong> Each student gets their own folder, so grandparents, siblings and friends can add to the same one: just find your 8th grader&#8217;s folder below. Not there yet? Create one for them.</p>
+        <p>Help us celebrate the Class of 2031! Upload photos of your 8th grader, from baby pictures to today, add a special message from family and/or friends, and share a few fun facts about them if you'd like. <strong>The photos will be shown in a slideshow during the dance and at graduation.</strong> Each student has their own folder. Parents and guardians: find your 8th grader&#8217;s folder below (not there yet? create one for them), confirm you&#8217;re their parent or guardian, and you can share as many times as you like. Messages from grandparents, siblings and friends are welcome in your message.</p>
         <form class="g5-pf" id="g5-pf" novalidate>
           <div class="g5-find" id="pf-find">
             <label for="pf-search">Find your 8th grader&#8217;s folder</label>
@@ -404,6 +413,9 @@
             </div>
           </div>
           <div class="g5-folder" id="pf-folder" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span id="pf-folder-text">Photos and your story will go into the <strong id="pf-folder-name"></strong> folder.</span><button type="button" class="g5-linkbtn" id="pf-change" hidden>Change</button></div>
+          <label class="g5-certify" id="pf-certify-wrap"><input type="checkbox" id="pf-certify"><span>I certify that I am this student&#8217;s <strong>parent or legal guardian</strong>.</span></label>
+          <p class="g5-lock-note" id="pf-lock-note">Choose your 8th grader&#8217;s folder and check the box above to fill out the rest of the form.</p>
+          <fieldset class="g5-rest" id="pf-rest" disabled>
           <div class="g5-pf-row">
             <div><label for="pf-name">Your name</label><input type="text" id="pf-name" autocomplete="name" maxlength="80" required></div>
             <div><label for="pf-email">Your email</label><input type="email" id="pf-email" autocomplete="email" maxlength="120" required></div>
@@ -436,7 +448,8 @@
           </fieldset>
           <p class="g5-consent">By sharing, you're giving the Schalmont PTO permission to use these photos, your message and fun facts to celebrate the 8th grade class, including in the slideshow shown during the dance and at graduation, and in PTO communications. To have something removed, email <a href="mailto:julie@schalmontpto.com">julie@schalmontpto.com</a>.</p>
           <div class="g5-pf-msg" id="pf-status" role="status" aria-live="polite"></div>
-          <button type="submit" class="g5-pf-btn" id="pf-send">Share with the PTO</button>
+          <button type="submit" class="g5-pf-btn" id="pf-send">Submit</button>
+          </fieldset>
         </form>
       </div>
 
@@ -632,8 +645,23 @@
         if (st) $('pf-folder-name').textContent = st.folder || (st.last + ', ' + st.first);
         $('pf-change').hidden = !picked;
         $('pf-find').hidden = !!picked || !$('pf-new').hidden;
+        lockForm();
+      }
+      // The rest of the form opens only once a student is chosen AND the parent/guardian box is checked.
+      function unlocked() { return !!student() && $('pf-certify').checked; }
+      function lockForm() {
+        var st = !!student();
+        $('pf-certify').disabled = !st;
+        $('pf-certify-wrap').classList.toggle('is-off', !st);
+        if (!st) $('pf-certify').checked = false;
+        var open = unlocked();
+        $('pf-rest').disabled = !open;
+        $('pf-lock-note').hidden = open;
+        $('pf-lock-note').textContent = st ? 'Check the box above to fill out the rest of the form.' : 'Choose your 8th grader\u2019s folder and check the box above to fill out the rest of the form.';
       }
       $('pf-first').addEventListener('input', showFolder); $('pf-last').addEventListener('input', showFolder);
+      $('pf-certify').addEventListener('change', lockForm);
+      lockForm();
       var FOLDER_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
       var searchT = null, searchN = 0;
       function openNew() { picked = null; $('pf-new').hidden = false; showFolder(); $('pf-first').focus(); }
@@ -697,6 +725,7 @@
         });
       }
       function add(list) {
+        if (!unlocked()) return;
         var skipped = 0;
         [].slice.call(list || []).forEach(function (file) {
           if (!/^image\//.test(file.type) && !/\.(heic|heif)$/i.test(file.name)) { skipped++; return; }
@@ -722,6 +751,7 @@
       form.addEventListener('submit', function (e) {
         e.preventDefault(); if (busy) return;
         var st = student(), first = st ? st.first : '', last = st ? st.last : '', fam = $('pf-name').value.trim(), email = $('pf-email').value.trim(), msgText = $('pf-msg').value.trim(), msg = msgText || hasFacts();
+        if (st && !$('pf-certify').checked) return status('Please check the box to confirm you are this student\u2019s parent or guardian.', 'err');
         if (!last || (!first && !(st && st.folder))) return status(!$('pf-new').hidden ? "Please enter your 8th grader's first and last name." : "Please find your 8th grader's folder, or create one for them.", 'err');
         if (!fam) return status('Please enter your name.', 'err');
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return status('Please enter a valid email address.', 'err');
@@ -730,7 +760,7 @@
         showFolder();
         busy = true; $('pf-send').disabled = true; draw();
         var batch = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
-        var base = function () { var fd = new FormData(); fd.append('studentFirst', first); fd.append('studentLast', last); if (st && st.folder) fd.append('folder', st.folder); fd.append('familyName', fam); fd.append('email', email); fd.append('batchId', batch); return fd; };
+        var base = function () { var fd = new FormData(); fd.append('studentFirst', first); fd.append('studentLast', last); if (st && st.folder) fd.append('folder', st.folder); fd.append('certify', '1'); fd.append('familyName', fam); fd.append('email', email); fd.append('batchId', batch); return fd; };
         var msgSent = false, n = 0;
         var chain = Promise.resolve();
         todo.forEach(function (f) {
@@ -752,7 +782,7 @@
         }).catch(function (err) {
           status((err && err.message) || 'Something went wrong. Please try again.', 'err');
         }).then(function () {
-          busy = false; $('pf-send').disabled = false; $('pf-send').textContent = 'Share with the PTO'; draw();
+          busy = false; $('pf-send').disabled = false; $('pf-send').textContent = 'Submit'; draw();
         });
       });
     })();
