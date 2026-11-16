@@ -232,6 +232,7 @@ def sidebar(p, extra=''):
     out.append('  <div class="sn-label">Shop</div>')
     out += ['  ' + link(t, h) for t, h in SHOP_LINKS]
     out.append('  <hr class="sn-div">')
+    out.append('  <div class="sn-label">Schools</div>')
     for key, name, small, colour, items in SCHOOL_MENUS:
         out += [
             # Open by default (Julie, Nov 2026); clicking the school name still closes it.
@@ -240,7 +241,11 @@ def sidebar(p, extra=''):
             f'      <span class="sn-dot" aria-hidden="true"></span><span class="sn-school-name">{e(name)}<small>{e(small)}</small></span>{ICON["chev"]}',
             '    </button>',
             f'    <div class="sn-sub" id="snm-{key}">',
-            *['      ' + link(t, h, 'sn-subitem') for t, h in items],
+            # First 3 links, then "See more..." for the rest (Julie, Nov 2026; js/menus.js opens/closes it).
+            *['      ' + link(t, h, 'sn-subitem') for t, h in items[:3]],
+            *([f'      <div class="sn-extra" id="snx-{key}" hidden>'] + ['        ' + link(t, h, 'sn-subitem') for t, h in items[3:]] +
+              ['      </div>', f'      <button type="button" class="sn-seemore" aria-expanded="false" aria-controls="snx-{key}">See more…</button>']
+              if len(items) > 3 else []),
             '    </div>',
             '  </div>']
     out.append('  <hr class="sn-div">')
@@ -276,8 +281,8 @@ def add_assets(src, slash):
     """css/menus.css in <head>, js/menus.js before </body> -- exactly once each."""
     src = ASSETS_CSS.sub('', src)
     src = ASSETS_JS.sub('', src)
-    src = re.sub(r'(\n[ \t]*)</head>', lambda m: m.group(1) + f'  <link rel="stylesheet" href="{slash}css/menus.css?v=14">' + m.group(1) + '</head>', src, count=1)
-    return re.sub(r'(\n[ \t]*)</body>', lambda m: m.group(1) + f'  <script src="{slash}js/menus.js?v=8"></script>' + m.group(1) + '</body>', src, count=1)
+    src = re.sub(r'(\n[ \t]*)</head>', lambda m: m.group(1) + f'  <link rel="stylesheet" href="{slash}css/menus.css?v=15">' + m.group(1) + '</head>', src, count=1)
+    return re.sub(r'(\n[ \t]*)</body>', lambda m: m.group(1) + f'  <script src="{slash}js/menus.js?v=9"></script>' + m.group(1) + '</body>', src, count=1)
 
 
 def indent_block(block, indent):

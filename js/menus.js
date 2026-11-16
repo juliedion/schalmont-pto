@@ -57,7 +57,20 @@
         if (g) setOpen(g, true);
       }
     }
+    // "See more..." under each school: shows the rest of that school's links.
+    function setMore(btn, open) {
+      var box = document.getElementById(btn.getAttribute('aria-controls'));
+      if (box) box.hidden = !open;
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.textContent = open ? 'See less' : 'See more\u2026';
+    }
+    nav.querySelectorAll('.sn-seemore').forEach(function (b) {
+      b.addEventListener('click', function () { setMore(b, b.getAttribute('aria-expanded') !== 'true'); });
+    });
     mark();
+    // The page you're on is one of the hidden links: show them.
+    var cur = nav.querySelector('.sn-extra a[aria-current]');
+    if (cur) { var bx = cur.closest('.sn-extra'), sb = bx && nav.querySelector('.sn-seemore[aria-controls="' + bx.id + '"]'); if (sb) setMore(sb, true); }
     // js/page-menu.js adds each school's event pages a moment later -- re-check then.
     nav.addEventListener('sn:links', mark);
   }

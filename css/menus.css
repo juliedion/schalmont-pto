@@ -256,3 +256,8 @@
 .sh-dir { color: #1a3d24 !important; background: #e2f3d5; font-size: 14px; font-weight: 800; text-decoration: none; padding: 7px 14px; border-radius: 999px; white-space: nowrap; }
 .sh-dir:hover { background: #fff; }
 .sh-dir[hidden] { display: none !important; }
+
+/* School groups: first 3 links, then "See more..." (Nov 2026) */
+.sn .sn-extra[hidden] { display: none; }
+.sn .sn-seemore { display: block; margin: 2px 0 6px 30px; padding: 4px 0; font: inherit; font-size: 13.5px; font-weight: 800; color: #1f7a46; background: none; border: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.sn .sn-seemore:hover { color: #14532d; }
