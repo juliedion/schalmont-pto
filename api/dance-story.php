@@ -7,6 +7,7 @@
      POST action=save    -> new message / fun facts / memories; the Drive .txt is replaced
      POST action=photo   -> adds one more photo to the student's folder
      POST action=remove  -> removes one of their photos (server + Drive)
+     POST action=delete  -> deletes the whole submission (photos, story, record; Drive copies trashed)
    ============================================================ */
 header('Content-Type: application/json');
 header('Cache-Control: no-store');
@@ -52,5 +53,9 @@ if ($action === 'photo') {
 if ($action === 'remove') {
   $m = d_remove_photo($slug, $metaFile, $m, (string)($_POST['photo'] ?? ''));
   d_out(200, view($slug, $m) + ['removed' => true]);
+}
+if ($action === 'delete') {
+  d_delete_submission($slug, $metaFile, $m);
+  d_out(200, ['ok' => true, 'deleted' => true]);
 }
 d_fail('Unknown request.');

@@ -157,3 +157,26 @@ function d_remove_photo($slug, $metaFile, $m, $f) {
   return d_meta_merge($metaFile, ['photos' => array_values(array_diff($photos, [$f])),
     'removedPhotos' => array_merge((array)($m['removedPhotos'] ?? []), [['file' => $f, 'at' => date('c')]]), 'updatedAt' => date('c')]);
 }
+
+/* Delete a whole submission: every photo (as above), the story file (and its Drive copy),
+   then the record itself, so the private link stops working. */
+function d_delete_submission($slug, $metaFile, $m) {
+  foreach (array_values((array)($m['photos'] ?? [])) as $f) $m = d_remove_photo($slug, $metaFile, $m, $f);
+  $batch = (string)($m['batchId'] ?? '');
+  $msgFile = d_base() . "/$slug/.meta/$batch-message.json";
+  $q = __DIR__ . '/../uploads/yearbook/.queue';
+  foreach (glob("$q/*.json") ?: [] as $qf) {
+    $job = json_decode((string)@file_get_contents($qf), true);
+    if (is_array($job) && ($job['path'] ?? '') === $msgFile) @unlink($qf);
+  }
+  $ids = [];
+  foreach ((array)($m['drive'] ?? []) as $d)
+    if (($d['file'] ?? '') === "$batch-message.json" && preg_match('#/d/([A-Za-z0-9_-]{10,})#', (string)($d['drive'] ?? ''), $mm)) $ids[] = $mm[1];
+  if ($ids && !empty(d_cfg()['yearbook_drive_url'])) {
+    @mkdir($q, 0755, true);
+    foreach (array_unique($ids) as $id)
+      @file_put_contents("$q/" . date('Ymd-His') . '-' . bin2hex(random_bytes(4)) . '.json', json_encode(['trashId' => $id, 'tries' => 0]), LOCK_EX);
+  }
+  if (is_file($msgFile)) @unlink($msgFile);
+  @unlink($metaFile);
+}
