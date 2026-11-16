@@ -27,6 +27,11 @@ sort($files);
 foreach ($files as $qf) {
   if (time() - $start > 230) break;
   $job = json_decode((string)@file_get_contents($qf), true);
+  if (is_array($job) && !empty($job['trashId'])) {   // a family removed a photo that's already in Drive
+    if (drive_trash($cfg, $job['trashId'])) { @unlink($qf); $sent++; }
+    else { $job['tries'] = ($job['tries'] ?? 0) + 1; if ($job['tries'] >= 6) { @file_put_contents(substr($qf, 0, -5) . '.failed.json', json_encode($job)); @unlink($qf); } else @file_put_contents($qf, json_encode($job), LOCK_EX); }
+    continue;
+  }
   if (!is_array($job) || empty($job['path'])) { @unlink($qf); continue; }
   $link = to_drive($cfg, $job['path'], $job['fields'] ?? []);
   if ($link !== '') {

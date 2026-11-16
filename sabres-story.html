@@ -30,6 +30,10 @@
     .ss-msg:empty { display:none; }
     .ss-msg.err { background:#fdecea; color:#a32019; } .ss-msg.ok { background:#e8f6ee; color:#14532d; } .ss-msg.busy { background:#eef1ff; color:#1f2a5a; }
     .ss-photos { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:8px; }
+    .ss-ph { display:grid; gap:4px; }
+    .ss-rm { font:inherit; font-size:12.5px; font-weight:800; color:#a32019; background:#fff; border:1.5px solid #e3b3ae; border-radius:999px; padding:4px 8px; cursor:pointer; }
+    .ss-rm:hover { background:#a32019; color:#fff; border-color:#a32019; }
+    .ss-rm:disabled { opacity:.5; cursor:default; }
     .ss-photos a { display:block; aspect-ratio:1; border-radius:10px; overflow:hidden; background:#eef0f5; position:relative; }
     .ss-photos img { width:100%; height:100%; object-fit:cover; display:block; }
     .ss-photos span { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; font-size:12px; font-weight:700; color:#1f2a5a; padding:6px; }
@@ -70,7 +74,7 @@
 
             <div class="ss-card" id="ss-photos-card" hidden>
               <h2>Your photos</h2>
-              <p class="ss-sub">Tap a photo to see it full size. To remove a photo, email <a href="mailto:julie@schalmontpto.com?subject=8th%20Grade%20Dance%20photo">julie@schalmontpto.com</a>.</p>
+              <p class="ss-sub">Tap a photo to see it full size. Changed your mind about one? Press Remove under it.</p>
               <div class="ss-photos" id="ss-photos"></div>
               <label class="ss-drop"><input type="file" id="ss-files" accept="image/*,.heic,.heif" multiple><b>Add more photos</b><span>Up to 20 at a time, 20 MB each</span></label>
               <div class="ss-msg" id="ss-photo-msg" role="status" aria-live="polite" style="margin-top:10px"></div>
@@ -129,7 +133,8 @@
     function render(j) {
       $('ss-hello').textContent = 'For ' + j.student + ' · shared by ' + j.familyName + (j.submittedAt ? ' on ' + new Date(j.submittedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '');
       $('ss-photos').innerHTML = j.photos.length ? j.photos.map(function (p, i) {
-        return '<a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + (p.viewable ? '<img src="' + esc(p.url) + '" alt="Photo ' + (i + 1) + '" loading="lazy">' : '<span>' + esc(p.ext.toUpperCase()) + ' photo<br>(tap to download)</span>') + '</a>';
+        return '<div class="ss-ph"><a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + (p.viewable ? '<img src="' + esc(p.url) + '" alt="Photo ' + (i + 1) + '" loading="lazy">' : '<span>' + esc(p.ext.toUpperCase()) + ' photo<br>(tap to download)</span>') + '</a>' +
+          '<button type="button" class="ss-rm" data-photo="' + esc(p.id) + '" aria-label="Remove photo ' + (i + 1) + '">Remove</button></div>';
       }).join('') : '<p class="ss-sub" style="margin:0">No photos yet.</p>';
     }
     function fill(j) {
@@ -147,6 +152,16 @@
       $('ss-loading').hidden = true; $('ss-error').hidden = false; $('ss-error-text').textContent = e.message;
     });
 
+    $('ss-photos').addEventListener('click', function (e) {
+      var b = e.target.closest('.ss-rm'); if (!b) return;
+      if (!window.confirm('Remove this photo? It will be taken out of your Sabre\u2019s Story and the slideshow folder.')) return;
+      b.disabled = true; msg('ss-photo-msg', 'Removing…', 'busy');
+      var fd = new FormData(); fd.append('action', 'remove'); fd.append('photo', b.dataset.photo);
+      api(fd).then(function (j) {
+        render(j); msg('ss-photo-msg', 'Photo removed.', 'ok');
+        try { fetch('/api/yearbook-drive.php', { method: 'POST', keepalive: true }); } catch (_) {}
+      }).catch(function (x) { b.disabled = false; msg('ss-photo-msg', x.message, 'err'); });
+    });
     $('ss-add-mem').onclick = function () { var t = addMem(''); if (t) t.focus(); };
     $('ss-form').onsubmit = function (e) {
       e.preventDefault();

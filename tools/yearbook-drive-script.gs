@@ -40,7 +40,8 @@
    each 8th grader gets their own folder, and a family's message arrives as a .txt file there.
    Folder names are matched loosely (see looseChild_), so a family's spelling finds the class-list folder.
    When a family edits their story (sabres-story.html), the new .txt comes with replaceId and the
-   old .txt in that same folder goes to the trash.
+   old .txt in that same folder goes to the trash. A photo the family removes comes as
+   action 'trash' and is trashed only if it's inside the 8th Grade Dance 2027 folders.
    If you ever change this code: Deploy → Manage deployments → edit (pencil) →
    Version: New version → Deploy. The URL stays the same.
    ============================================================ */
@@ -94,6 +95,19 @@ function doPost(e) {
     var req = JSON.parse(e.postData.contents);
     var secret = PropertiesService.getScriptProperties().getProperty('SECRET');
     if (!secret || req.secret !== secret) return json_({ ok: false, error: 'Not allowed' });
+
+    // A family removed one of their 8th Grade Dance photos: trash it, but ONLY if it sits in a
+    // student folder inside "8th Grade Dance 2027" (so this can't touch anything else in Drive).
+    if (req.action === 'trash') {
+      var danceTop = child_(rootFolder_(), '8th Grade Dance 2027').getId(), tf;
+      try { tf = DriveApp.getFileById(String(req.fileId)); } catch (_) { return json_({ ok: true, gone: true }); }
+      var fp = tf.getParents();
+      while (fp.hasNext()) {
+        var sf = fp.next(), gp = sf.getParents();
+        while (gp.hasNext()) if (gp.next().getId() === danceTop) { tf.setTrashed(true); return json_({ ok: true }); }
+      }
+      return json_({ ok: false, error: 'Not a dance photo' });
+    }
 
     // One at a time while finding/creating folders, so two photos sent at once
     // don't make two copies of the same event folder.

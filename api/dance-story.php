@@ -6,6 +6,7 @@
      GET                 -> the answers + photos (short-lived signed photo links)
      POST action=save    -> new message / fun facts / memories; the Drive .txt is replaced
      POST action=photo   -> adds one more photo to the student's folder
+     POST action=remove  -> removes one of their photos (server + Drive)
    ============================================================ */
 header('Content-Type: application/json');
 header('Cache-Control: no-store');
@@ -47,5 +48,9 @@ if ($action === 'photo') {
   $m = d_meta_merge($metaFile, ['photos' => array_values(array_merge((array)($m['photos'] ?? []), [$saved])), 'updatedAt' => date('c')]);
   d_queue([$job], $metaFile);
   d_out(200, view($slug, $m) + ['added' => true]);
+}
+if ($action === 'remove') {
+  $m = d_remove_photo($slug, $metaFile, $m, (string)($_POST['photo'] ?? ''));
+  d_out(200, view($slug, $m) + ['removed' => true]);
 }
 d_fail('Unknown request.');

@@ -129,7 +129,31 @@ function d_photo_list($slug, $m) {
   foreach ((array)($m['photos'] ?? []) as $f) {
     if (!is_string($f) || !preg_match('/^[A-Za-z0-9._-]+$/', $f) || !is_file(d_base() . "/$slug/$f")) continue;
     $ext = strtolower(pathinfo($f, PATHINFO_EXTENSION));
-    $out[] = ['url' => d_photo_url($slug, $f), 'viewable' => in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'], true), 'ext' => $ext];
+    $out[] = ['id' => $f, 'url' => d_photo_url($slug, $f), 'viewable' => in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'], true), 'ext' => $ext];
   }
   return $out;
+}
+
+/* Remove one photo: off the record, off the server, out of the Drive queue if it hasn't gone yet,
+   and (if it already reached Drive) a "trash it" request for the Apps Script. */
+function d_remove_photo($slug, $metaFile, $m, $f) {
+  $photos = array_values((array)($m['photos'] ?? []));
+  if (!is_string($f) || !in_array($f, $photos, true)) d_fail('That photo was already removed.');
+  $path = d_base() . "/$slug/$f";
+  $q = __DIR__ . '/../uploads/yearbook/.queue';
+  foreach (glob("$q/*.json") ?: [] as $qf) {   // not sent yet: just drop it from the queue
+    $job = json_decode((string)@file_get_contents($qf), true);
+    if (is_array($job) && ($job['path'] ?? '') === $path) @unlink($qf);
+  }
+  $driveId = '';
+  foreach ((array)($m['drive'] ?? []) as $d)
+    if (($d['file'] ?? '') === $f && preg_match('#/d/([A-Za-z0-9_-]{10,})#', (string)($d['drive'] ?? ''), $mm)) $driveId = $mm[1];
+  if ($driveId !== '' && !empty(d_cfg()['yearbook_drive_url'])) {
+    @mkdir($q, 0755, true);
+    @file_put_contents("$q/" . date('Ymd-His') . '-' . bin2hex(random_bytes(4)) . '.json',
+      json_encode(['trashId' => $driveId, 'meta' => $metaFile, 'fields' => d_common($m), 'tries' => 0]), LOCK_EX);
+  }
+  if (is_file($path)) @unlink($path);
+  return d_meta_merge($metaFile, ['photos' => array_values(array_diff($photos, [$f])),
+    'removedPhotos' => array_merge((array)($m['removedPhotos'] ?? []), [['file' => $f, 'at' => date('c')]]), 'updatedAt' => date('c')]);
 }
