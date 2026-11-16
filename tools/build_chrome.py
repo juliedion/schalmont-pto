@@ -227,6 +227,10 @@ def sidebar(p, extra=''):
     out.append(f'  <a class="sn-item sn-dash" href="{p}dashboard.html"><span class="sn-dash-name">My</span> Dashboard</a>')
     out.append('  <div class="sn-label">Quick links</div>')
     out += ['  ' + link(t, h) for t, h in QUICK_LINKS]
+    # SHOP right under Quick links (Julie, Nov 2026)
+    out.append('  <hr class="sn-div">')
+    out.append('  <div class="sn-label">Shop</div>')
+    out += ['  ' + link(t, h) for t, h in SHOP_LINKS]
     out.append('  <hr class="sn-div">')
     for key, name, small, colour, items in SCHOOL_MENUS:
         out += [
@@ -244,9 +248,6 @@ def sidebar(p, extra=''):
     for key, name, grades, colour, page, classes in SCHOOLS:
         chips = ''.join(f'<a href="{p}{href}">{e(lbl)}</a>' for lbl, href in classes)
         out.append(f'  <div class="sn-classes" style="--sc:{colour}" aria-label="{e(name)} class pages"><span>{e(name.split()[0])}</span>{chips}</div>')
-    out.append('  <hr class="sn-div">')
-    out.append('  <div class="sn-label">Shop</div>')
-    out += ['  ' + link(t, h) for t, h in SHOP_LINKS]
     out.append('  <hr class="sn-div">')
     out.append('  <div class="sn-label">School apps</div>')
     out += ['  ' + link(t, h) for t, h in SCHOOL_APPS]
