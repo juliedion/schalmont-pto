@@ -155,6 +155,9 @@ TOP_MENUS = [
 SOCIAL = [
     ('Facebook', 'https://www.facebook.com/groups/schalmontpto/', 'background:#1877F2',
      '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>'),
+    # Jefferson PTO's own Facebook group: same blue button, bright green "f" (Julie, Nov 2026).
+    ('Jefferson PTO Facebook group', 'https://www.facebook.com/groups/jeffersonelementarypto', 'background:#1877F2;--fg:#63E629',
+     '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>'),
     ('Instagram', 'https://www.instagram.com/schalmontpto/', 'background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%)',
      '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>'),
 ]
@@ -172,7 +175,7 @@ def header(p, style=''):
         f'<li class="sh-has"><button type="button" class="sh-top" aria-expanded="false">{e(label)}{down}</button>'
         f'<div class="sh-drop">' + ''.join(f'<a href="{p}{href}">{e(t)}</a>' for t, href in links) + '</div></li>'
         for label, links in TOP_MENUS)
-    social = ''.join(f'<a class="sh-social" href="{u}" target="_blank" rel="noopener" aria-label="{n}" style="{st};color:#fff">{svg}</a>'
+    social = ''.join(f'<a class="sh-social" href="{u}" target="_blank" rel="noopener" aria-label="{n}" title="{n}" style="{st};color:var(--fg,#fff)">{svg}</a>'
                      for n, u, st, svg in SOCIAL)
     st = f' style="{style}"' if style else ''
     return '\n'.join([
