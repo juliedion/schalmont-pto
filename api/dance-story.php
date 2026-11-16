@@ -16,6 +16,8 @@ require __DIR__ . '/lib-dance.php';
 
 $in = $_SERVER['REQUEST_METHOD'] === 'POST' ? $_POST : $_GET;
 $slug = (string)($in['d'] ?? ''); $batch = (string)($in['b'] ?? ''); $key = (string)($in['k'] ?? '');
+if (preg_match('/^[a-z0-9-]{1,90}$/', $slug) && preg_match('/^[A-Za-z0-9-]{1,40}$/', $batch) && hash_equals(d_story_key($slug, $batch), $key)
+    && is_file(d_base() . "/$slug/.meta/$batch.deleted")) d_out(410, ['ok' => false, 'error' => 'This submission was deleted. To share again, go to the 8th Grade Dance page.']);
 if (!d_check_link($slug, $batch, $key)) d_out(403, ['ok' => false, 'error' => 'This link is not valid. Please use the link from your thank-you email.']);
 
 $destDir = d_base() . "/$slug";

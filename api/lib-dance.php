@@ -179,4 +179,5 @@ function d_delete_submission($slug, $metaFile, $m) {
   }
   if (is_file($msgFile)) @unlink($msgFile);
   @unlink($metaFile);
+  @file_put_contents(substr($metaFile, 0, -5) . '.deleted', date('c'));   // so the old link can say it was deleted
 }
