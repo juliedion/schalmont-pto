@@ -22,14 +22,15 @@
   function norm(href) {
     var a = document.createElement('a');
     a.href = href;
-    return (a.pathname.replace(/\/index(\.html)?$/, '/').replace(/\.html$/, '').replace(/\/$/, '') || '/') + a.hash;
+    // The ?query counts too, so /event?t=coin-wars and /event?t=field-day are different pages.
+    return (a.pathname.replace(/\/index(\.html)?$/, '/').replace(/\.html$/, '').replace(/\/$/, '') || '/') + a.search + a.hash;
   }
 
   function init(root) {
     var nav = (root || document).querySelector('.sn');
     if (!nav || nav.dataset.ready) return;
     nav.dataset.ready = '1';
-    var here = norm(location.pathname), hereHash = norm(location.pathname + location.hash);
+    var here = norm(location.pathname + location.search), hereHash = norm(location.pathname + location.search + location.hash);
 
     function setOpen(group, open) {
       var btn = group.querySelector('.sn-school-btn'), panel = group.querySelector('.sn-sub');
@@ -112,7 +113,7 @@
       else if (head.classList.contains('menu-open') && toggle) { toggle.click(); toggle.focus(); }
     });
     // Highlight the page you're on, and the menu that holds it.
-    var here = norm(location.pathname), hereHash = norm(location.pathname + location.hash);
+    var here = norm(location.pathname + location.search), hereHash = norm(location.pathname + location.search + location.hash);
     head.querySelectorAll('.sh-menu a[href]').forEach(function (a) {
       var h = norm(a.getAttribute('href'));
       if (h === hereHash || (h === here && a.getAttribute('href').indexOf('#') < 0)) {
