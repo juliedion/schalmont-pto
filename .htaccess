@@ -19,6 +19,8 @@ RewriteRule ^chocolate(\.html)?/?$ /gertrude-hawk-chocolate [R=301,L]
 RewriteRule ^craft-fair-santa(\.html)?/?$ /merry-morning [R=301,L]
 # 8th Grade Dance moved to /8thgradedance (Julie, Nov 2026)
 RewriteRule ^(ms/)?8th-grade-dance(\.html)?/?$ /8thgradedance [R=301,L]
+# Merry Morning was combined with the Craft Fair as "Breakfast with Santa & Craft Fair" (Julie, Nov 2026)
+RewriteRule ^merry-morning(\.html)?/?$ /craft-fair [R=301,L]
 
 # The printed spirit wear order form says /spiritwear -- the store lives on the shop page
 RewriteRule ^spiritwear/?$ /shop [R=301,L]

@@ -41,7 +41,7 @@
   // loadAll() also keeps the district's own synced entries (school closings, early
   // release, board meetings) as a separate `district` list -- the homepage's combined
   // calendar has a District filter; everything else only wants `events`.
-  var CACHE_KEY = 'pcalEvents22', CACHE_MS = 10 * 60000;
+  var CACHE_KEY = 'pcalEvents23', CACHE_MS = 10 * 60000;
   // Events kept in the site code, for things that need to be on the calendar before anyone
   // adds them in the back office. A back-office entry with the same title and date wins.
   var SITE_EVENTS = [
@@ -52,7 +52,6 @@
     { title: 'Cheesy Fundraiser Order Pickup', date: '2026-11-17', time: '18:45', location: 'Jefferson Elementary (right after the PTO meeting, until about 7:45 PM)', school: 'jefferson', href: '/cheesy-fundraiser' },   // Julie, Nov 2026
     { title: 'Polar Express Movie Night', date: '2026-11-19', time: '18:00', location: 'Jefferson Elementary School (gym next to the cafeteria)', school: 'jefferson', href: '/polar-express' },   // Julie, Nov 2026
     { title: 'Holiday Shoppe', date: '2026-12-07', endDate: '2026-12-09', time: '', location: 'Jefferson Elementary', school: 'jefferson', href: '/holiday-shoppe' },   // Julie, Nov 2026
-    { title: "Jefferson's Annual Craft Fair", date: '2026-12-05', time: '10:00', location: 'Jefferson Elementary', school: 'jefferson', href: '/craft-fair' },
     { title: 'Storytime at the Shelter (APF)', date: '2026-11-07', time: '10:30', location: 'Animal Protective Foundation', school: 'pto', href: '/storytime-at-the-shelter' },
     { title: 'Storytime at the Shelter (APF)', date: '2026-12-05', time: '10:30', location: 'Animal Protective Foundation', school: 'pto', href: '/storytime-at-the-shelter' }
   ];
@@ -77,7 +76,7 @@
     // Details kept up to date from the PTOs' Facebook posts until they're fixed in the back office.
     // Key: lowercased title, optionally '|YYYY-MM-DD'. Only blank fields are filled, except title.
     var FIXES = {
-      'craft fair & santa|2026-12-05': { title: 'A Very Merry Morning at Jefferson', time: '10:00', location: 'Jefferson Elementary', href: '/merry-morning' },
+      'craft fair & santa|2026-12-05': { title: 'Breakfast with Santa & Craft Fair', time: '10:00', location: 'Jefferson Elementary', href: '/craft-fair' },   // Merry Morning + Craft Fair combined (Julie, Nov 2026)
       'picture retake day|2026-11-06': { time: '08:00', location: 'Jefferson Elementary', href: '/picture-days' },
       'pto meeting|jefferson': { title: 'Jefferson PTO Meeting', time: '18:00', location: 'Jefferson Elementary Library', href: '/meetings#jefferson-pto', forceTime: true },
       'pto meeting?|jefferson': { title: 'Jefferson PTO Meeting', time: '18:00', location: 'Jefferson Elementary Library', href: '/meetings#jefferson-pto', forceTime: true },

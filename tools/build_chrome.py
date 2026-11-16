@@ -71,13 +71,13 @@ APPRECIATION = 'appreciation-days.html'
 SCHOOL_MENUS = [
     ('jefferson', 'Woestina/Jefferson', 'Pre-K–4', '#6bb044', [
         ('Banking', 'school-banking.html'), ('Book Fairs', 'book-fairs.html'), ('Box Tops/Tools for Schools', 'box-tops.html'),
-        ('Calendar', 'jefferson.html#school-calendar'), ('Craft Fair', 'craft-fair.html'), ('Charleston Wrap', '/jefferson/fallfr'),
+        ('Breakfast with Santa & Craft Fair', 'craft-fair.html'), ('Calendar', 'jefferson.html#school-calendar'), ('Charleston Wrap', '/jefferson/fallfr'),
         ('Cheesy Fundraiser', '/cheesy-fundraiser'), ('Clubs', 'clubs.html'), ('Coin Wars', '/event?t=coin-wars'),
         ('Dances', 'dances.html'), ('Donations', 'donate.html'), ('Family Scouts', 'family-scouts.html'),
         ('Field Day', '/event?t=field-day'), ('Food Drive', 'holiday-boxes.html'), ('Girl Scouts', 'girl-scouts.html'),
         ('Giving Tree', 'index.html?q=giving+tree'), ('Holiday Shoppe', 'holiday-shoppe.html'), ('Homeroom Parents', 'index.html?q=homeroom+parents'),
         ('Homecoming', '/event?t=homecoming'), ('Incoming Kindergarteners', 'incoming-kindergarten.html'),
-        ('Merry Morning', 'merry-morning.html'), ('Newsletters', 'index.html?q=newsletter'), ('Open House', '/k1open'),
+        ('Newsletters', 'index.html?q=newsletter'), ('Open House', '/k1open'),
         ('Picture Day', 'picture-days.html'), ('Polar Express Movie Night', '/polar-express'), ('PTO Meetings', 'meetings.html'), ('Spirit Fridays', '/event?t=school-spirit-friday'),
         ('Sports', 'sports.html'), ('Storytime Shelter Days', 'storytime-at-the-shelter.html'), ('Student Council', 'student-council.html'),
         ('Teacher/Staff Appreciation', APPRECIATION), ('Tournament of Champions', '/event?t=tournament-of-champions'),

@@ -830,15 +830,17 @@ const PROGRAM_CARDS_EXTRA = {
     {
       "id": "jes-merry-morning-2026",
       "icon": "🎅",
-      "title": "A Very Merry Morning & Craft Fair",
+      "title": "Breakfast with Santa & Craft Fair",
+      "image": "/images/flyers/craft-fair-2026.jpg?v=2",
+      "imageAlt": "Jefferson's Annual Craft Fair flyer: Saturday, December 5, 10 AM to 3 PM. Shop local, raffles, bake sale. Looking for vendors!",
+      "imageHref": "craft-fair.html",
       "eventDate": "2026-12-05",
       "eventEndDate": "2026-12-05",
       "badgeType": "active",
       "badgeText": "Sat, Dec 5",
-      "desc": "<strong>A Very Merry Morning</strong> from 10 AM: pancakes, photos with Santa, holiday craft fair and shopping local.<br><strong>Jefferson's Craft Fair</strong> 10 AM – 3 PM, with a raffle.",
+      "desc": "<strong>Breakfast with Santa</strong>: pancakes and photos with Santa.<br><strong>Jefferson's Annual Craft Fair</strong> 10 AM – 3 PM: local vendors, raffles and a bake sale. Volunteers needed!",
       "actions": [
-        { "label": "Merry Morning →", "href": "merry-morning.html", "cls": "btn btn-primary" },
-        { "label": "Craft Fair →", "href": "craft-fair.html", "cls": "btn btn-primary" }
+        { "label": "Details & volunteer sign-up →", "href": "craft-fair.html", "cls": "btn btn-primary" }
       ]
     }
   ],
@@ -902,6 +904,8 @@ const PROGRAM_CARDS_EXTRA = {
     return '<div class="program-card"' + (c.id ? ' id="' + esc(c.id) + '"' : '') + '>' +
       '<div class="program-card-header"><div class="program-card-icon" aria-hidden="true">' + (c.icon || '') + '</div>' +
       '<h3 class="program-card-title">' + (c.title || '') + '</h3></div>' +
+      // Optional flyer image on a card (Julie, Nov 2026).
+      (c.image ? '<a class="program-card-img" href="' + esc(c.imageHref || '#') + '"><img src="' + esc(c.image) + '" alt="' + esc(c.imageAlt || '') + '" loading="lazy" style="display:block;width:100%;height:auto;border-radius:12px;margin:0 0 12px"></a>' : '') +
       '<div class="program-card-body">' +
       (when ? '<p class="program-card-date"><span aria-hidden="true">📅</span> ' + esc(when) + '</p>' : '') + badge +
       '<p class="program-card-desc">' + (c.desc || '') + '</p>' +
