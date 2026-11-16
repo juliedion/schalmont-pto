@@ -625,11 +625,11 @@
         var f = $('pf-first').value.trim(), l = $('pf-last').value.trim();
         return (!$('pf-new').hidden && f && l) ? { first: cap(f), last: cap(l), isNew: true } : null;
       }
-      function name() { var st = student(); return st ? st.first + ' ' + st.last : ''; }
+      function name() { var st = student(); return st ? (st.folder || st.first + ' ' + st.last) : ''; }
       function showFolder() {
         var st = student();
         $('pf-folder').hidden = !st;
-        if (st) $('pf-folder-name').textContent = st.last + ', ' + st.first;
+        if (st) $('pf-folder-name').textContent = st.folder || (st.last + ', ' + st.first);
         $('pf-change').hidden = !picked;
         $('pf-find').hidden = !!picked || !$('pf-new').hidden;
       }
@@ -655,7 +655,7 @@
               b.innerHTML = FOLDER_ICON; b.appendChild(document.createTextNode(nm));
               b.onclick = function () {
                 var i = nm.indexOf(',');
-                picked = i > 0 ? { last: nm.slice(0, i).trim(), first: nm.slice(i + 1).trim() } : { last: nm, first: '' };
+                picked = i > 0 ? { last: nm.slice(0, i).trim(), first: nm.slice(i + 1).trim() } : { last: nm, first: '', folder: nm };
                 box.innerHTML = ''; showFolder();
               };
               box.appendChild(b);
@@ -722,7 +722,7 @@
       form.addEventListener('submit', function (e) {
         e.preventDefault(); if (busy) return;
         var st = student(), first = st ? st.first : '', last = st ? st.last : '', fam = $('pf-name').value.trim(), email = $('pf-email').value.trim(), msgText = $('pf-msg').value.trim(), msg = msgText || hasFacts();
-        if (!first || !last) return status(!$('pf-new').hidden ? "Please enter your 8th grader's first and last name." : "Please find your 8th grader's folder, or create one for them.", 'err');
+        if (!last || (!first && !(st && st.folder))) return status(!$('pf-new').hidden ? "Please enter your 8th grader's first and last name." : "Please find your 8th grader's folder, or create one for them.", 'err');
         if (!fam) return status('Please enter your name.', 'err');
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return status('Please enter a valid email address.', 'err');
         var todo = files.filter(function (f) { return !f.done; });
@@ -730,7 +730,7 @@
         showFolder();
         busy = true; $('pf-send').disabled = true; draw();
         var batch = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
-        var base = function () { var fd = new FormData(); fd.append('studentFirst', first); fd.append('studentLast', last); fd.append('familyName', fam); fd.append('email', email); fd.append('batchId', batch); return fd; };
+        var base = function () { var fd = new FormData(); fd.append('studentFirst', first); fd.append('studentLast', last); if (st && st.folder) fd.append('folder', st.folder); fd.append('familyName', fam); fd.append('email', email); fd.append('batchId', batch); return fd; };
         var msgSent = false, n = 0;
         var chain = Promise.resolve();
         todo.forEach(function (f) {

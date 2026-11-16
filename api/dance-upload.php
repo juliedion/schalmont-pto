@@ -47,7 +47,11 @@ $hasStory = $message !== '' || $facts || $memories;
 $batchIn = preg_replace('/[^a-z0-9-]/i', '', $_POST['batchId'] ?? '');
 $batchId = ($batchIn !== '' && strlen($batchIn) <= 40) ? $batchIn : date('Ymd-His') . '-' . bin2hex(random_bytes(4));
 
-if ($first === '' || $last === '') fail("Please enter your 8th grader's first and last name.");
+// A folder picked from the search can have a name that isn't "Last, First" (e.g. "Schalmont PTO Test Folder").
+$pickedFolder = clean($_POST['folder'] ?? '', 120);
+if ($pickedFolder !== '' && strpos($pickedFolder, ',') === false) { $first = ''; $last = $pickedFolder; }
+else $pickedFolder = '';
+if ($last === '' || ($first === '' && $pickedFolder === '')) fail("Please enter your 8th grader's first and last name.");
 if ($family === '') fail('Please enter your name.');
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) fail('Please enter a valid email address.');
 $hasPhoto = !empty($_FILES['photo']) && ($_FILES['photo']['error'] ?? 4) !== 4;
@@ -64,8 +68,8 @@ if ($rate['count'] >= $RATE_MAX) out(429, ['ok' => false, 'error' => 'Too many u
 $rate['count']++; @file_put_contents($rateFile, json_encode($rate), LOCK_EX);
 
 /* ---- the student's folder ---- */
-$student = "$first $last";
-$folderName = "$last, $first";   // Drive folders are "Last, First" (Julie, Nov 2026)
+$student = $pickedFolder !== '' ? $pickedFolder : "$first $last";
+$folderName = $pickedFolder !== '' ? $pickedFolder : "$last, $first";   // Drive folders are "Last, First" (Julie, Nov 2026)
 $slug = strtolower(trim(preg_replace('/[^a-z0-9]+/i', '-', "$last-$first"), '-')) ?: 'student';
 $destDir = "$baseDir/$slug";
 if (!is_dir($destDir) && !@mkdir($destDir, 0755, true)) out(500, ['ok' => false, 'error' => 'Server could not create the upload folder.']);
