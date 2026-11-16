@@ -63,6 +63,43 @@ MAIN_ITEMS = [
     ('Trail of Treats', '/trailoftreats', r'trail of treats'),
     ('Yearbooks', 'yearbooks.html', r'yearbook'),
 ]
+# ---- Left menu (Julie, Nov 2026) ----
+QUICK_LINKS = [('Dashboard', 'dashboard.html'), ('Directory', 'directory.html'), ('Contact', 'contact.html'),
+               ('Home', 'index.html'), ('Shop', 'shop.html'), ('Social Media', 'social.html')]
+APPRECIATION = 'appreciation-days.html'
+# Each school: (key, name, small line, colour, [(label, link), ...]) -- shown as an open/close group.
+SCHOOL_MENUS = [
+    ('jefferson', 'Woestina/Jefferson', 'Pre-K–4', '#6bb044', [
+        ('Banking', 'school-banking.html'), ('Book Fairs', 'book-fairs.html'), ('Box Tops/Tools for Schools', 'box-tops.html'),
+        ('Calendar', 'jefferson.html#school-calendar'), ('Craft Fair', 'craft-fair.html'), ('Charleston Wrap', '/jefferson/fallfr'),
+        ('Cheesy Fundraiser', '/event?t=cheesy-fundraiser'), ('Clubs', 'clubs.html'), ('Coin Wars', '/event?t=coin-wars'),
+        ('Dances', 'dances.html'), ('Donations', 'donate.html'), ('Family Scouts', 'family-scouts.html'),
+        ('Field Day', '/event?t=field-day'), ('Food Drive', 'holiday-boxes.html'), ('Girl Scouts', 'girl-scouts.html'),
+        ('Giving Tree', 'index.html?q=giving+tree'), ('Homeroom Parents', 'index.html?q=homeroom+parents'),
+        ('Homecoming', '/event?t=homecoming'), ('Incoming Kindergarteners', 'incoming-kindergarten.html'),
+        ('Merry Morning', 'merry-morning.html'), ('Newsletters', 'index.html?q=newsletter'), ('Open House', '/k1open'),
+        ('Picture Day', 'picture-days.html'), ('PTO Meetings', 'meetings.html'), ('Spirit Fridays', '/event?t=school-spirit-friday'),
+        ('Sports', 'sports.html'), ('Storytime Shelter Days', 'storytime-at-the-shelter.html'), ('Student Council', 'student-council.html'),
+        ('Teacher/Staff Appreciation', APPRECIATION), ('Tournament of Champions', '/event?t=tournament-of-champions'),
+        ('Trunk or Treat', 'trunk-or-treat.html'), ('Turn off the Screen', 'turn-off-screens.html'), ('Yearbook', 'yearbook-jefferson.html')]),
+    ('middle', 'Middle School', 'Grades 5–8', '#087d40', [
+        ('Book Fairs', 'book-fairs-middle.html'), ('Brawl for the Ball', '/brawlfortheball'), ('Calendar', 'middle-school.html#school-calendar'),
+        ('Catalog Fundraiser', 'holiday.html'), ('Dances', 'dances.html'), ('Donations', 'donate.html'), ('8th Grade Dance', '/8thgradedance'),
+        ('Family Scouts', 'family-scouts.html'), ('Homecoming', '/event?t=homecoming'), ('Open House', '/event?t=middle-school-open-house'), ('Picture Day', 'picture-days.html'),
+        ('PTO Meetings', 'meetings.html'), ('Sports', 'sports.html'), ('Student Council', 'student-council.html'),
+        ('Teacher/Staff Appreciation', APPRECIATION), ('Tournament of Champions', '/event?t=tournament-of-champions'),
+        ('Trail of Treats', '/trailoftreats'), ('Yearbook', 'yearbook-middle.html')]),
+    ('high', 'High School', 'Grades 9–12', '#044d2a', [
+        ('Book Fairs', 'book-fairs-high.html'), ('Calendar', 'high-school.html#school-calendar'), ('Catalog Fundraiser', 'holiday.html'),
+        ('Craft Fairs', '/event?t=high-school-craft-fair-pto-scouts-support'), ('Clubs', 'clubs.html'), ('Dances', 'dances.html'),
+        ('Donations', 'donate.html'), ('Food Drive', 'holiday-boxes.html'), ('Homecoming', '/event?t=homecoming'),
+        ('Incoming Kindergarteners', 'incoming-kindergarten.html'), ('Junior Prom', 'high-school.html#junior-prom'), ('Light the Loop', '/lightheloop'),
+        ('Open House', '/event?t=high-school-open-house'), ('Picture Day', 'picture-days.html'), ('PTO Meetings', 'meetings.html'),
+        ('Senior Ball', 'high-school.html#senior-ball'), ('Sports', 'sports.html'), ('Student Council', 'student-council.html'),
+        ('Teacher/Staff Appreciation', APPRECIATION), ('Yearbook', 'yearbook-high.html')]),
+]
+SHOP_LINKS = [('Catalog Fundraiser', 'holiday.html'), ('Charleston Wrap', '/jefferson/fallfr'), ('Cheesy Fundraiser', '/event?t=cheesy-fundraiser'),
+              ('Coupon Books', 'couponbook.html'), ('Gertrude Hawk Chocolate', 'gertrude-hawk-chocolate.html'), ('Spiritwear', 'shop.html')]
 # Shown under "Partners" (no arrows, Julie). Full addresses open in a new tab.
 PARTNER_GROUPS = [('Student Council', 'student-council.html'), ('Sabre Nation', 'partners.html#sabre-nation'),
                   ('Schalmont Athletic Association', 'https://www.schalmont.org/middle-school/schalmont-athletic-association/'),
@@ -170,48 +207,44 @@ def header(p, style=''):
 
 def sidebar(p, extra=''):
     """p = '' for pages at the site root, '/' for js/site-chrome.js (absolute links).
-    extra = a page's SIDEBAR_EXTRA block, placed just under the search box."""
+    extra = a page's SIDEBAR_EXTRA block, placed just under the search box.
+    Order (Julie, Nov 2026): search, QUICK LINKS, the three schools (open/close groups with their
+    pages), CLASS OF PAGES, SHOP, School apps, Our Friends, Proud Sponsors."""
     e = html.escape
     out = ['<aside class="homepage-sidenav sn" aria-label="Site menu">',
            f'  <form class="sn-search" action="{p}index.html" role="search">',
            '    <label class="sn-sr" for="sn-q">Search the site</label>',
            f'    {ICON["search"]}<input id="sn-q" name="q" type="search" placeholder="Search the site" autocomplete="off">',
-           '  </form>'] + ([extra] if extra else []) + [
-           f'  <a class="sn-item" href="{p}index.html">Home</a>']
+           '  </form>'] + ([extra] if extra else [])
     def link(t, href, cls='sn-item', match=''):
         full = href if href.startswith(('http', '/')) else p + href
         ext = ' target="_blank" rel="noopener"' if href.startswith('http') else ''
         m = f' data-match="{e(match)}"' if match else ''
         return f'<a class="{cls}" href="{e(full)}"{ext}{m}>{e(t)}</a>'
-    # Main list: fixed items + Partners (with its groups); js/menus.js adds calendar events and sorts.
-    out.append('  <nav class="sn-main" aria-label="PTO events and pages">')
-    for t, href, match in MAIN_ITEMS:
-        out.append('    ' + link(t, href, match=match))
-    out.append('  </nav>')
+    out.append('  <div class="sn-label">Quick links</div>')
+    out += ['  ' + link(t, h) for t, h in QUICK_LINKS]
     out.append('  <hr class="sn-div">')
-    out += ['  ' + link(t, h) for t, h in ABOUT_ITEMS]
+    for key, name, small, colour, items in SCHOOL_MENUS:
+        out += [
+            f'  <div class="sn-school" style="--sc:{colour}">',
+            f'    <button type="button" class="sn-school-btn" aria-expanded="false" aria-controls="snm-{key}">',
+            f'      <span class="sn-dot" aria-hidden="true"></span><span class="sn-school-name">{e(name)}<small>{e(small)}</small></span>{ICON["chev"]}',
+            '    </button>',
+            f'    <div class="sn-sub" id="snm-{key}" hidden>',
+            *['      ' + link(t, h, 'sn-subitem') for t, h in items],
+            '    </div>',
+            '  </div>']
+    out.append('  <hr class="sn-div">')
+    out.append('  <div class="sn-label">Class of pages</div>')
+    for key, name, grades, colour, page, classes in SCHOOLS:
+        chips = ''.join(f'<a href="{p}{href}">{e(lbl)}</a>' for lbl, href in classes)
+        out.append(f'  <div class="sn-classes" style="--sc:{colour}" aria-label="{e(name)} class pages"><span>{e(name.split()[0])}</span>{chips}</div>')
+    out.append('  <hr class="sn-div">')
+    out.append('  <div class="sn-label">Shop</div>')
+    out += ['  ' + link(t, h) for t, h in SHOP_LINKS]
     out.append('  <hr class="sn-div">')
     out.append('  <div class="sn-label">School apps</div>')
     out += ['  ' + link(t, h) for t, h in SCHOOL_APPS]
-    out.append('  <hr class="sn-div">')
-    out.append('  <div class="sn-label">Schools</div>')
-    for key, name, grades, colour, page, classes in SCHOOLS:
-        chips = ''.join(f'<a href="{p}{href}">{e(lbl)}</a>' for lbl, href in classes)
-        out += [
-            f'  <div class="sn-school" style="--sc:{colour}">',
-            f'    <button type="button" class="sn-school-btn" aria-expanded="false" aria-controls="snav-{key}">',
-            f'      <span class="sn-dot" aria-hidden="true"></span><span class="sn-school-name">{e(name)}<small>{e(grades)}</small></span>{ICON["chev"]}',
-            '    </button>',
-            # id + class kept: js/page-menu.js appends this school's event pages into it
-            f'    <div class="sn-sub sidenav-submenu" id="snav-{key}" hidden>',
-            f'      <a class="sn-subitem" href="{p}{page}">School page</a>',
-            f'      <a class="sn-subitem" href="{p}{page}#program-grid">Events &amp; programs</a>',
-            *([f'      <a class="sn-subitem" href="{p}{YEARBOOK[key]}">Yearbook</a>'] if key in YEARBOOK else []),
-            *[f'      <a class="sn-subitem" href="{p}{href}">{e(lbl)}</a>' for lbl, href in EXTRA_LINKS.get(key, [])],
-            f'      <div class="sn-classes" aria-label="{e(name)} class pages"><span>Classes</span>{chips}</div>',
-            '    </div>',
-            '  </div>']
-    # Below the schools: Our Friends (the partner groups), then the sponsor ad (Julie, Oct 2026).
     out.append('  <hr class="sn-div">')
     out.append('  <div class="sn-row">' + link('Our Friends', 'partners.html') +
                '<div class="sn-children">' + ''.join(link(t, h, 'sn-item sn-child') for t, h in PARTNER_GROUPS) + '</div></div>')

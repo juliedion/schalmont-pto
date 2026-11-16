@@ -12,17 +12,19 @@
   <meta name="description" content="Order your Jefferson Elementary yearbook and upload photos for the 2026–2027 school year.">
   <link rel="stylesheet" href="css/styles.css?v=5">
   <link rel="icon" href="images/favicon.svg">
-  <link rel="stylesheet" href="css/menus.css?v=12">
   <style>
-    .yb-tr { display:grid; grid-template-columns:1fr minmax(0,380px); gap:32px; padding:32px; align-items:start; }
-    .yb-tr-btn { display:inline-block; background:#3a7a1e; color:#fff !important; font-weight:800; font-size:17px; text-decoration:none; border-radius:999px; padding:14px 28px; box-shadow:0 6px 18px rgba(58,122,30,.25); }
-    .yb-tr-btn:hover { background:#2f6518; }
-    .yb-tr ol { margin:20px 0 0; padding-left:22px; font-size:15px; line-height:1.7; color:var(--text); }
-    .yb-tr-tip { font-size:14px; color:var(--text-light); margin:14px 0 0; }
-    .yb-tr-pdf { display:inline-block; margin-top:14px; font-weight:700; font-size:14px; color:var(--primary); }
-    .yb-tr-flyer img { display:block; width:100%; height:auto; border:1px solid var(--border); border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,.08); }
-    @media (max-width: 800px) { .yb-tr { grid-template-columns:1fr; padding:22px; } .yb-tr-flyer { max-width:420px; } }
+    .ybf-top { background:linear-gradient(180deg,#eef7e8 0%,#fff 100%); padding:28px 16px 36px; border-bottom:1px solid var(--border); }
+    .ybf-top-inner { max-width:900px; margin:0 auto; text-align:center; }
+    .ybf-top-title { font-size:clamp(24px,3.6vw,34px); color:#1f4d12; margin:0 0 16px; }
+    .ybf-top-btns { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:20px; }
+    .ybf-b { font:inherit; font-weight:800; font-size:15.5px; border-radius:999px; padding:12px 22px; text-decoration:none; cursor:pointer; border:2px solid #3a7a1e; background:#fff; color:#3a7a1e !important; }
+    .ybf-b.is-main { background:#3a7a1e; color:#fff !important; box-shadow:0 6px 18px rgba(58,122,30,.25); }
+    .ybf-b:hover { background:#2f6518; border-color:#2f6518; color:#fff !important; }
+    .ybf-flyer { display:block; }
+    .ybf-flyer img { display:block; width:100%; max-width:850px; height:auto; margin:0 auto; border:1px solid var(--border); border-radius:14px; box-shadow:0 12px 34px rgba(0,0,0,.12); background:#fff; }
+    .ybf-top-note { font-size:15px; color:var(--text); margin:18px auto 0; max-width:680px; line-height:1.6; }
   </style>
+  <link rel="stylesheet" href="css/menus.css?v=12">
 </head>
 <body>
 
@@ -64,84 +66,125 @@
         <label class="sn-sr" for="sn-q">Search the site</label>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><input id="sn-q" name="q" type="search" placeholder="Search the site" autocomplete="off">
       </form>
+      <div class="sn-label">Quick links</div>
+      <a class="sn-item" href="dashboard.html">Dashboard</a>
+      <a class="sn-item" href="directory.html">Directory</a>
+      <a class="sn-item" href="contact.html">Contact</a>
       <a class="sn-item" href="index.html">Home</a>
-      <nav class="sn-main" aria-label="PTO events and pages">
-        <a class="sn-item" href="box-tops.html" data-match="box tops">Box Tops for Education</a>
-        <a class="sn-item" href="/event?t=cheesy-fundraiser" data-match="cheesy">Cheesy Fundraiser</a>
-        <a class="sn-item" href="couponbook.html" data-match="coupon">Coupon Books</a>
-        <a class="sn-item" href="/8thgradedance" data-match="8th grade dance">8th Grade Dance</a>
-        <a class="sn-item" href="dances.html" data-match="dance">Dances</a>
-        <a class="sn-item" href="directory.html">Directory</a>
-        <a class="sn-item" href="donate.html">Donate</a>
-        <a class="sn-item" href="index.html#calendar">Events Calendar</a>
-        <a class="sn-item" href="faq.html">FAQs</a>
-        <a class="sn-item" href="clubs.html" data-match="club">Clubs</a>
-        <a class="sn-item" href="holiday-boxes.html" data-match="food drive|holiday boxes">Food Drive: Holiday Boxes</a>
-        <a class="sn-item" href="giftcards.html" data-match="gift ?cards?">Giftcards</a>
-        <a class="sn-item" href="gertrude-hawk-chocolate.html" data-match="gertrude|chocolate">Gertrude Hawk Chocolate Bars</a>
-        <a class="sn-item" href="craft-fair.html" data-match="annual craft fair">Jefferson Craft Fair</a>
-        <a class="sn-item" href="holiday.html" data-match="holiday catalog">Holiday Catalog Fundraiser</a>
-        <a class="sn-item" href="holiday-shoppe.html" data-match="holiday shoppe">Holiday Shoppe</a>
-        <a class="sn-item" href="meetings.html" data-match="meeting">PTO Meetings</a>
-        <a class="sn-item" href="merry-morning.html" data-match="merry morning">Merry Morning at Jefferson</a>
-        <a class="sn-item" href="picture-days.html" data-match="picture">Picture Days</a>
-        <a class="sn-item" href="/event?t=school-spirit-friday" data-match="school spirit friday">School Spirit Fridays</a>
-        <a class="sn-item" href="shop.html" data-match="spiritwear">Spiritwear Shoppe</a>
-        <a class="sn-item" href="school-banking.html" data-match="banking">Student Banking</a>
-        <a class="sn-item" href="sports.html">Sports</a>
-        <a class="sn-item" href="storytime-at-the-shelter.html" data-match="storytime">Storytime at the Shelter</a>
-        <a class="sn-item" href="/trailoftreats" data-match="trail of treats">Trail of Treats</a>
-        <a class="sn-item" href="yearbooks.html" data-match="yearbook">Yearbooks</a>
-      </nav>
-      <hr class="sn-div">
-      <a class="sn-item" href="about.html">About us</a>
-      <a class="sn-item" href="contact.html">Contact Us</a>
+      <a class="sn-item" href="shop.html">Shop</a>
       <a class="sn-item" href="social.html">Social Media</a>
+      <hr class="sn-div">
+      <div class="sn-school" style="--sc:#6bb044">
+        <button type="button" class="sn-school-btn" aria-expanded="false" aria-controls="snm-jefferson">
+          <span class="sn-dot" aria-hidden="true"></span><span class="sn-school-name">Woestina/Jefferson<small>Pre-K–4</small></span><svg class="sn-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+        <div class="sn-sub" id="snm-jefferson" hidden>
+          <a class="sn-subitem" href="school-banking.html">Banking</a>
+          <a class="sn-subitem" href="book-fairs.html">Book Fairs</a>
+          <a class="sn-subitem" href="box-tops.html">Box Tops/Tools for Schools</a>
+          <a class="sn-subitem" href="jefferson.html#school-calendar">Calendar</a>
+          <a class="sn-subitem" href="craft-fair.html">Craft Fair</a>
+          <a class="sn-subitem" href="/jefferson/fallfr">Charleston Wrap</a>
+          <a class="sn-subitem" href="/event?t=cheesy-fundraiser">Cheesy Fundraiser</a>
+          <a class="sn-subitem" href="clubs.html">Clubs</a>
+          <a class="sn-subitem" href="/event?t=coin-wars">Coin Wars</a>
+          <a class="sn-subitem" href="dances.html">Dances</a>
+          <a class="sn-subitem" href="donate.html">Donations</a>
+          <a class="sn-subitem" href="family-scouts.html">Family Scouts</a>
+          <a class="sn-subitem" href="/event?t=field-day">Field Day</a>
+          <a class="sn-subitem" href="holiday-boxes.html">Food Drive</a>
+          <a class="sn-subitem" href="girl-scouts.html">Girl Scouts</a>
+          <a class="sn-subitem" href="index.html?q=giving+tree">Giving Tree</a>
+          <a class="sn-subitem" href="index.html?q=homeroom+parents">Homeroom Parents</a>
+          <a class="sn-subitem" href="/event?t=homecoming">Homecoming</a>
+          <a class="sn-subitem" href="incoming-kindergarten.html">Incoming Kindergarteners</a>
+          <a class="sn-subitem" href="merry-morning.html">Merry Morning</a>
+          <a class="sn-subitem" href="index.html?q=newsletter">Newsletters</a>
+          <a class="sn-subitem" href="/k1open">Open House</a>
+          <a class="sn-subitem" href="picture-days.html">Picture Day</a>
+          <a class="sn-subitem" href="meetings.html">PTO Meetings</a>
+          <a class="sn-subitem" href="/event?t=school-spirit-friday">Spirit Fridays</a>
+          <a class="sn-subitem" href="sports.html">Sports</a>
+          <a class="sn-subitem" href="storytime-at-the-shelter.html">Storytime Shelter Days</a>
+          <a class="sn-subitem" href="student-council.html">Student Council</a>
+          <a class="sn-subitem" href="appreciation-days.html">Teacher/Staff Appreciation</a>
+          <a class="sn-subitem" href="/event?t=tournament-of-champions">Tournament of Champions</a>
+          <a class="sn-subitem" href="trunk-or-treat.html">Trunk or Treat</a>
+          <a class="sn-subitem" href="turn-off-screens.html">Turn off the Screen</a>
+          <a class="sn-subitem" href="yearbook-jefferson.html">Yearbook</a>
+        </div>
+      </div>
+      <div class="sn-school" style="--sc:#087d40">
+        <button type="button" class="sn-school-btn" aria-expanded="false" aria-controls="snm-middle">
+          <span class="sn-dot" aria-hidden="true"></span><span class="sn-school-name">Middle School<small>Grades 5–8</small></span><svg class="sn-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+        <div class="sn-sub" id="snm-middle" hidden>
+          <a class="sn-subitem" href="book-fairs-middle.html">Book Fairs</a>
+          <a class="sn-subitem" href="/brawlfortheball">Brawl for the Ball</a>
+          <a class="sn-subitem" href="middle-school.html#school-calendar">Calendar</a>
+          <a class="sn-subitem" href="holiday.html">Catalog Fundraiser</a>
+          <a class="sn-subitem" href="dances.html">Dances</a>
+          <a class="sn-subitem" href="donate.html">Donations</a>
+          <a class="sn-subitem" href="/8thgradedance">8th Grade Dance</a>
+          <a class="sn-subitem" href="family-scouts.html">Family Scouts</a>
+          <a class="sn-subitem" href="/event?t=homecoming">Homecoming</a>
+          <a class="sn-subitem" href="/event?t=middle-school-open-house">Open House</a>
+          <a class="sn-subitem" href="picture-days.html">Picture Day</a>
+          <a class="sn-subitem" href="meetings.html">PTO Meetings</a>
+          <a class="sn-subitem" href="sports.html">Sports</a>
+          <a class="sn-subitem" href="student-council.html">Student Council</a>
+          <a class="sn-subitem" href="appreciation-days.html">Teacher/Staff Appreciation</a>
+          <a class="sn-subitem" href="/event?t=tournament-of-champions">Tournament of Champions</a>
+          <a class="sn-subitem" href="/trailoftreats">Trail of Treats</a>
+          <a class="sn-subitem" href="yearbook-middle.html">Yearbook</a>
+        </div>
+      </div>
+      <div class="sn-school" style="--sc:#044d2a">
+        <button type="button" class="sn-school-btn" aria-expanded="false" aria-controls="snm-high">
+          <span class="sn-dot" aria-hidden="true"></span><span class="sn-school-name">High School<small>Grades 9–12</small></span><svg class="sn-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+        <div class="sn-sub" id="snm-high" hidden>
+          <a class="sn-subitem" href="book-fairs-high.html">Book Fairs</a>
+          <a class="sn-subitem" href="high-school.html#school-calendar">Calendar</a>
+          <a class="sn-subitem" href="holiday.html">Catalog Fundraiser</a>
+          <a class="sn-subitem" href="/event?t=high-school-craft-fair-pto-scouts-support">Craft Fairs</a>
+          <a class="sn-subitem" href="clubs.html">Clubs</a>
+          <a class="sn-subitem" href="dances.html">Dances</a>
+          <a class="sn-subitem" href="donate.html">Donations</a>
+          <a class="sn-subitem" href="holiday-boxes.html">Food Drive</a>
+          <a class="sn-subitem" href="/event?t=homecoming">Homecoming</a>
+          <a class="sn-subitem" href="incoming-kindergarten.html">Incoming Kindergarteners</a>
+          <a class="sn-subitem" href="high-school.html#junior-prom">Junior Prom</a>
+          <a class="sn-subitem" href="/lightheloop">Light the Loop</a>
+          <a class="sn-subitem" href="/event?t=high-school-open-house">Open House</a>
+          <a class="sn-subitem" href="picture-days.html">Picture Day</a>
+          <a class="sn-subitem" href="meetings.html">PTO Meetings</a>
+          <a class="sn-subitem" href="high-school.html#senior-ball">Senior Ball</a>
+          <a class="sn-subitem" href="sports.html">Sports</a>
+          <a class="sn-subitem" href="student-council.html">Student Council</a>
+          <a class="sn-subitem" href="appreciation-days.html">Teacher/Staff Appreciation</a>
+          <a class="sn-subitem" href="yearbook-high.html">Yearbook</a>
+        </div>
+      </div>
+      <hr class="sn-div">
+      <div class="sn-label">Class of pages</div>
+      <div class="sn-classes" style="--sc:#6bb044" aria-label="Jefferson Elementary class pages"><span>Jefferson</span><a href="classof2040.html">Pre-K</a><a href="classof2039.html">K</a><a href="classof2038.html">1st</a><a href="classof2037.html">2nd</a><a href="classof2036.html">3rd</a><a href="classof2035.html">4th</a></div>
+      <div class="sn-classes" style="--sc:#087d40" aria-label="Middle School class pages"><span>Middle</span><a href="classof2034.html">5th</a><a href="classof2033.html">6th</a><a href="classof2032.html">7th</a><a href="classof2031.html">8th</a></div>
+      <div class="sn-classes" style="--sc:#044d2a" aria-label="High School class pages"><span>High</span><a href="classof2030.html">Fr</a><a href="classof2029.html">So</a><a href="classof2028.html">Jr</a><a href="classof2027.html">Sr</a></div>
+      <hr class="sn-div">
+      <div class="sn-label">Shop</div>
+      <a class="sn-item" href="holiday.html">Catalog Fundraiser</a>
+      <a class="sn-item" href="/jefferson/fallfr">Charleston Wrap</a>
+      <a class="sn-item" href="/event?t=cheesy-fundraiser">Cheesy Fundraiser</a>
+      <a class="sn-item" href="couponbook.html">Coupon Books</a>
+      <a class="sn-item" href="gertrude-hawk-chocolate.html">Gertrude Hawk Chocolate</a>
+      <a class="sn-item" href="shop.html">Spiritwear</a>
       <hr class="sn-div">
       <div class="sn-label">School apps</div>
       <a class="sn-item" href="https://www.parentsquare.com/signin" target="_blank" rel="noopener">ParentSquare</a>
       <a class="sn-item" href="https://parentportal-neric.eschooldata.com/SchalmontCSD" target="_blank" rel="noopener">eSchool Parent Portal</a>
       <a class="sn-item" href="https://app.schoology.com/login" target="_blank" rel="noopener">Schoology</a>
       <a class="sn-item" href="https://www.schalmont.org" target="_blank" rel="noopener">District Website</a>
-      <hr class="sn-div">
-      <div class="sn-label">Schools</div>
-      <div class="sn-school" style="--sc:#6bb044">
-        <button type="button" class="sn-school-btn" aria-expanded="false" aria-controls="snav-jefferson">
-          <span class="sn-dot" aria-hidden="true"></span><span class="sn-school-name">Jefferson Elementary<small>Pre-K–4 · incl. Woestina</small></span><svg class="sn-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-        </button>
-        <div class="sn-sub sidenav-submenu" id="snav-jefferson" hidden>
-          <a class="sn-subitem" href="jefferson.html">School page</a>
-          <a class="sn-subitem" href="jefferson.html#program-grid">Events &amp; programs</a>
-          <a class="sn-subitem" href="yearbook-jefferson.html">Yearbook</a>
-          <a class="sn-subitem" href="school-banking.html">Student Banking</a>
-          <div class="sn-classes" aria-label="Jefferson Elementary class pages"><span>Classes</span><a href="classof2040.html">Pre-K</a><a href="classof2039.html">K</a><a href="classof2038.html">1st</a><a href="classof2037.html">2nd</a><a href="classof2036.html">3rd</a><a href="classof2035.html">4th</a></div>
-        </div>
-      </div>
-      <div class="sn-school" style="--sc:#087d40">
-        <button type="button" class="sn-school-btn" aria-expanded="false" aria-controls="snav-middle">
-          <span class="sn-dot" aria-hidden="true"></span><span class="sn-school-name">Middle School<small>Grades 5–8</small></span><svg class="sn-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-        </button>
-        <div class="sn-sub sidenav-submenu" id="snav-middle" hidden>
-          <a class="sn-subitem" href="middle-school.html">School page</a>
-          <a class="sn-subitem" href="middle-school.html#program-grid">Events &amp; programs</a>
-          <a class="sn-subitem" href="yearbook-middle.html">Yearbook</a>
-          <a class="sn-subitem" href="5th-grade-dance.html">5th Grade Dance</a>
-          <a class="sn-subitem" href="6th-7th-grade-dance.html">6th &amp; 7th Grade Dance</a>
-          <a class="sn-subitem" href="8thgradedance.html">8th Grade Dance</a>
-          <div class="sn-classes" aria-label="Middle School class pages"><span>Classes</span><a href="classof2034.html">5th</a><a href="classof2033.html">6th</a><a href="classof2032.html">7th</a><a href="classof2031.html">8th</a></div>
-        </div>
-      </div>
-      <div class="sn-school" style="--sc:#044d2a">
-        <button type="button" class="sn-school-btn" aria-expanded="false" aria-controls="snav-high">
-          <span class="sn-dot" aria-hidden="true"></span><span class="sn-school-name">High School<small>Grades 9–12</small></span><svg class="sn-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-        </button>
-        <div class="sn-sub sidenav-submenu" id="snav-high" hidden>
-          <a class="sn-subitem" href="high-school.html">School page</a>
-          <a class="sn-subitem" href="high-school.html#program-grid">Events &amp; programs</a>
-          <a class="sn-subitem" href="yearbook-high.html">Yearbook</a>
-          <div class="sn-classes" aria-label="High School class pages"><span>Classes</span><a href="classof2030.html">Fr</a><a href="classof2029.html">So</a><a href="classof2028.html">Jr</a><a href="classof2027.html">Sr</a></div>
-        </div>
-      </div>
       <hr class="sn-div">
       <div class="sn-row"><a class="sn-item" href="partners.html">Our Friends</a><div class="sn-children"><a class="sn-item sn-child" href="student-council.html">Student Council</a><a class="sn-item sn-child" href="partners.html#sabre-nation">Sabre Nation</a><a class="sn-item sn-child" href="https://www.schalmont.org/middle-school/schalmont-athletic-association/" target="_blank" rel="noopener">Schalmont Athletic Association</a><a class="sn-item sn-child" href="https://www.schalmont.org/friends-of-music/" target="_blank" rel="noopener">Friends of Music</a><a class="sn-item sn-child" href="https://sites.google.com/schalmont.net/friendsofschalmontlibraries/home" target="_blank" rel="noopener">Friends of the Library</a><a class="sn-item sn-child" href="https://www.troop3054.org/" target="_blank" rel="noopener">Scouts</a><a class="sn-item sn-child" href="https://www.girlscoutsneny.org" target="_blank" rel="noopener">Girl Scouts</a><a class="sn-item sn-child" href="partners.html#apf">Animal Protective Foundation (APF)</a></div></div>
       <hr class="sn-div">
@@ -152,11 +195,28 @@
     <!-- MAIN CONTENT -->
     <div class="homepage-main">
 
+  <!-- YEARBOOK PHOTO FLYER: first thing on the page, big, download + print (Julie, Nov 2026).
+       Jefferson + Woestina photos go straight to TreeRing. -->
+  <section class="ybf-top" id="upload-photos">
+    <div class="ybf-top-inner">
+      <h1 class="ybf-top-title">Jefferson Elementary Yearbook: We need your photos!</h1>
+      <div class="ybf-top-btns">
+        <a class="ybf-b is-main" href="https://web.treering.com/school/251517/2026/school-content/school-photos" target="_blank" rel="noopener">Upload photos on TreeRing</a>
+        <a class="ybf-b" href="images/flyers/jefferson-yearbook-photo-request.pdf" download="Jefferson-Yearbook-Photo-Flyer.pdf">Download the flyer</a>
+        <button type="button" class="ybf-b" id="ybf-print">Print the flyer</button>
+      </div>
+      <a class="ybf-flyer" href="images/flyers/jefferson-yearbook-photo-request.pdf" target="_blank" rel="noopener">
+        <img src="images/flyers/jefferson-yearbook-photo-request.jpg" alt="Jefferson Elementary Yearbook: We need your help! Send us your pictures to help fill the yearbook with memories from this school year. Scan the QR codes to submit photos: Pumpkin Patch / Trunk or Treat, First Day of School, Go Pink Day, School Spirit, and All Photo Folders (bookmark this link to add memories throughout the school year)." width="1313" height="1700">
+      </a>
+      <p class="ybf-top-note">Scan a QR code on the flyer, or tap <strong>Upload photos on TreeRing</strong>, pick the event folder and add your photos. Bookmark the link to add memories all year long.</p>
+    </div>
+  </section>
+
   <!-- PAGE HERO -->
   <section class="page-hero" style="background:linear-gradient(135deg,#3a7a1e 0%,#6bb044 100%)">
     <div class="container">
       <p style="color:rgba(255,255,255,0.75);font-size:14px;margin-bottom:8px"><a href="yearbooks.html" style="color:rgba(255,255,255,0.75);text-decoration:none">← Back to Yearbooks</a></p>
-      <h1>🏫 Jefferson Elementary Yearbook</h1>
+      <h2 style="font-size:clamp(26px,4vw,38px);margin:0;color:#fff">Jefferson Elementary Yearbook</h2>
       <p>Jefferson Elementary PTO — Grades K–4 — 2026–2027 School Year</p>
     </div>
   </section>
@@ -187,27 +247,6 @@
           </div>
         </div>
 
-      </div>
-
-      <!-- PHOTO UPLOADS: Jefferson + Woestina photos go straight to TreeRing (Julie, Nov 2026) -->
-      <div id="upload-photos" style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;scroll-margin-top:100px">
-        <div style="background:linear-gradient(135deg,#3a7a1e 0%,#6bb044 100%);padding:28px 32px">
-          <h2 style="color:#fff;font-size:22px;margin-bottom:6px">Upload Photos for the Yearbook</h2>
-          <p style="color:rgba(255,255,255,0.85);font-size:14px;line-height:1.6;margin:0">Jefferson and Woestina families: help fill the yearbook with memories from this school year! Upload your photos right to our TreeRing yearbook.</p>
-        </div>
-        <div class="yb-tr">
-          <div class="yb-tr-text">
-            <a class="yb-tr-btn" href="https://web.treering.com/school/251517/2026/school-content/school-photos" target="_blank" rel="noopener">Upload photos on TreeRing</a>
-            <ol>
-              <li>Tap the button above (or scan a QR code on the flyer).</li>
-              <li>Pick the event folder your photos are from: Pumpkin Patch / Trunk or Treat, First Day of School, Go Pink Day, School Spirit, and more.</li>
-              <li>Add your photos. That&rsquo;s it!</li>
-            </ol>
-            <p class="yb-tr-tip"><strong>Tip:</strong> bookmark the link so you can add memories all year long.</p>
-            <a class="yb-tr-pdf" href="images/flyers/jefferson-yearbook-photo-request.pdf" target="_blank" rel="noopener">Download the flyer (PDF)</a>
-          </div>
-          <a class="yb-tr-flyer" href="images/flyers/jefferson-yearbook-photo-request.pdf" target="_blank" rel="noopener"><img src="images/flyers/jefferson-yearbook-photo-request.jpg" alt="Jefferson Elementary Yearbook: We need your help! Send us your pictures to help fill the yearbook with memories from this school year. Scan the QR codes to submit photos: Pumpkin Patch / Trunk or Treat, First Day of School, Go Pink Day, School Spirit, and All Photo Folders." width="1313" height="1700" loading="lazy"></a>
-        </div>
       </div>
 
     </div>
@@ -281,6 +320,16 @@
   <script src="js/app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
   <script src="js/page-menu.js?v=4"></script>
+  <script>
+    // Print just the flyer (a page holding only the flyer image, sized to one sheet).
+    document.getElementById('ybf-print').addEventListener('click', function () {
+      var w = window.open('', '_blank');
+      if (!w) { window.open('images/flyers/jefferson-yearbook-photo-request.pdf', '_blank'); return; }
+      w.document.write('<!doctype html><title>Jefferson Yearbook Photo Flyer</title><style>@page{margin:0.4in}html,body{margin:0}img{display:block;width:100%;height:auto;max-height:100vh;object-fit:contain}</style>' +
+        '<img src="' + new URL('images/flyers/jefferson-yearbook-photo-request.jpg', location.href).href + '" alt="Jefferson Yearbook Photo Flyer" onload="setTimeout(function(){window.focus();window.print();},200)">');
+      w.document.close();
+    });
+  </script>
   <script src="js/menus.js?v=5"></script>
 </body>
 </html>
