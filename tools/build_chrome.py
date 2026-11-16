@@ -64,8 +64,8 @@ MAIN_ITEMS = [
     ('Yearbooks', 'yearbooks.html', r'yearbook'),
 ]
 # ---- Left menu (Julie, Nov 2026) ----
-QUICK_LINKS = [('Directory', 'directory.html'), ('Contact', 'contact.html'),
-               ('Home', 'index.html'), ('Shop', 'shop.html'), ('Social Media', 'social.html')]
+QUICK_LINKS = [('Home', 'index.html'), ('Directory', 'directory.html'), ('Shop', 'shop.html'),
+               ('Social Media', 'social.html'), ('Contact', 'contact.html')]
 APPRECIATION = 'appreciation-days.html'
 # Each school: (key, name, small line, colour, [(label, link), ...]) -- shown as an open/close group.
 SCHOOL_MENUS = [
@@ -228,11 +228,12 @@ def sidebar(p, extra=''):
     out.append('  <hr class="sn-div">')
     for key, name, small, colour, items in SCHOOL_MENUS:
         out += [
-            f'  <div class="sn-school" style="--sc:{colour}">',
-            f'    <button type="button" class="sn-school-btn" aria-expanded="false" aria-controls="snm-{key}">',
+            # Open by default (Julie, Nov 2026); clicking the school name still closes it.
+            f'  <div class="sn-school is-open" style="--sc:{colour}">',
+            f'    <button type="button" class="sn-school-btn" aria-expanded="true" aria-controls="snm-{key}">',
             f'      <span class="sn-dot" aria-hidden="true"></span><span class="sn-school-name">{e(name)}<small>{e(small)}</small></span>{ICON["chev"]}',
             '    </button>',
-            f'    <div class="sn-sub" id="snm-{key}" hidden>',
+            f'    <div class="sn-sub" id="snm-{key}">',
             *['      ' + link(t, h, 'sn-subitem') for t, h in items],
             '    </div>',
             '  </div>']
@@ -248,8 +249,9 @@ def sidebar(p, extra=''):
     out.append('  <div class="sn-label">School apps</div>')
     out += ['  ' + link(t, h) for t, h in SCHOOL_APPS]
     out.append('  <hr class="sn-div">')
-    out.append('  <div class="sn-row">' + link('Our Friends', 'partners.html') +
-               '<div class="sn-children">' + ''.join(link(t, h, 'sn-item sn-child') for t, h in PARTNER_GROUPS) + '</div></div>')
+    # Our Friends: same look as School apps (a label, then the links) -- Julie, Nov 2026.
+    out.append('  <div class="sn-label">Our Friends</div>')
+    out += ['  ' + link(t, h) for t, h in PARTNER_GROUPS]
     out.append('  <hr class="sn-div">')
     out.append('  <div class="sn-label">Proud Sponsors</div>')
     out.append('  <div class="sn-ad" data-ad="square"></div>')   # ad spot: filled from data/ads.json
