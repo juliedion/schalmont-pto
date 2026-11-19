@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="Inflatable Thanksgiving Parade — Schalmont PTO">
+  <meta property="og:description" content="Sign up to wear an inflatable costume in our Thanksgiving parade: turkey, dinosaurs, sumo wrestler, Pikachu, cow, chicken, unicorn and hula girl. One person per costume.">
+  <meta property="og:url" content="https://schalmontpto.com/inflatableparade">
+  <meta property="og:type" content="website">
+  <meta name="description" content="Inflatable Thanksgiving Parade: sign up to wear one of our inflatable costumes. One person per costume.">
+  <title>Inflatable Thanksgiving Parade — Schalmont PTO</title>
+  <link rel="stylesheet" href="/css/styles.css?v=6">
+  <link rel="icon" href="/images/favicon.svg">
+  <style>
+    /* Inflatable Thanksgiving Parade (Julie, Nov 2026) */
+    .ip-card { background:#fff; border:1px solid var(--border); border-radius:16px; padding:20px 22px; margin-bottom:16px; }
+    .ip-card h2 { font-size:22px; margin:0 0 10px; color:#7c2d12; }
+    .ip-card p { font-size:16px; line-height:1.7; margin:0 0 10px; }
+    .ip-costumes { display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 0; padding:0; list-style:none; }
+    .ip-costumes li { background:#fff7ed; border:1px solid #fed7aa; color:#7c2d12; border-radius:999px; padding:6px 14px; font-size:15px; font-weight:700; }
+    .ip-signup { border:2px solid #c2410c; }
+    .ip-fallback { display:block; text-align:center; font-size:16px; line-height:1.7; padding:8px 0; }
+    .ip-fallback strong { display:block; font-size:18px; color:#7c2d12; }
+  </style>
+  <link rel="stylesheet" href="/css/menus.css?v=16">
+</head>
+<body>
+
+  <div id="sc-header"></div>
+
+  <div class="homepage-layout">
+    <div id="sc-sidenav"></div>
+    <div class="homepage-main">
+
+      <section class="page-hero" style="background:linear-gradient(135deg,#7c2d12 0%,#c2410c 55%,#ca8a04 100%)">
+        <div class="container">
+          <h1 style="margin:0">Inflatable Thanksgiving Parade 🦃</h1>
+          <p style="margin:10px 0 0">Grab a costume and join the parade!</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container" style="max-width:860px">
+          <div class="ip-card">
+            <h2>Pick your costume</h2>
+            <p>We need brave volunteers to waddle, stomp and hula their way through our Thanksgiving parade in an inflatable costume. Each costume fits <strong>one person</strong>, so grab yours before it&#8217;s taken!</p>
+            <ul class="ip-costumes" aria-label="Costumes">
+              <li>🦃 Turkey</li><li>🦖 Dinosaur (2)</li><li>🤼 Sumo wrestler</li><li>⚡ Pikachu</li><li>🐄 Cow</li><li>🐔 Chicken</li><li>🦄 Unicorn</li><li>🌺 Hula girl</li>
+            </ul>
+          </div>
+
+          <div class="ip-card ip-signup" id="signup">
+            <h2>Sign up</h2>
+            <!-- Shows the back-office sign-up sheet whose custom address is "inflatableparade"
+                 (js/signup-embed.js). Until that sheet exists, this fallback stays. -->
+            <div class="pg-su-embed" data-signup-slug="inflatableparade" data-hide-button="1">
+              <span class="ip-fallback">
+                <strong>Sign-ups are opening soon!</strong>
+                In the meantime, email <a href="mailto:julie@schalmontpto.com?subject=Inflatable%20Thanksgiving%20Parade">julie@schalmontpto.com</a> to claim a costume.
+              </span>
+            </div>
+          </div>
+
+          <p style="font-size:16px;line-height:1.7;text-align:center">Questions? Email <a href="mailto:julie@schalmontpto.com" style="color:var(--primary);font-weight:700">julie@schalmontpto.com</a>.</p>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <div id="sc-footer"></div>
+
+  <script src="/js/site-chrome.js?v=17"></script>
+  <script>renderSiteChrome();</script>
+  <script src="/js/menus.js?v=9"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/signup-embed.js?v=7"></script>
+  <script>
+    try { mountSignupEmbeds(firebase.firestore()); } catch (e) { /* the fallback text stays */ }
+  </script>
+</body>
+</html>
