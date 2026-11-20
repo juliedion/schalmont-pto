@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-19",
+ "updated": "2026-11-20",
  "events": [
   {
    "title": "3-4 Dance",
@@ -44,12 +44,6 @@
    "href": "/holiday-shoppe"
   },
   {
-   "title": "Interfaith Club Launch",
-   "date": "2026-11-19",
-   "end": "2026-11-19",
-   "href": "/high-school#ann-interfaith"
-  },
-  {
    "title": "Jefferson PTO Meeting",
    "date": "2026-12-15",
    "end": "2027-06-15",
@@ -92,12 +86,6 @@
    "href": "/middle-school#ann-girls-bball"
   },
   {
-   "title": "Polar Express Movie Night",
-   "date": "2026-11-19",
-   "end": "2026-11-19",
-   "href": "/polar-express"
-  },
-  {
    "title": "School Spirit Friday",
    "date": "2026-11-20",
    "end": "2027-06-18",
@@ -114,12 +102,6 @@
    "date": "2026-12-05",
    "end": "2026-12-05",
    "href": "/storytime-at-the-shelter"
-  },
-  {
-   "title": "Ukulele Club",
-   "date": "2026-11-19",
-   "end": "2026-11-19",
-   "href": "/middle-school#ann-ukulele"
   }
  ]
 }
