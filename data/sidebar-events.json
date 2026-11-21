@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-20",
+ "updated": "2026-11-21",
  "events": [
   {
    "title": "3-4 Dance",
@@ -74,12 +74,6 @@
    "href": "/lightheloop"
   },
   {
-   "title": "Middle School Picture Retakes",
-   "date": "2026-11-20",
-   "end": "2026-11-20",
-   "href": "/middle-school#ann-retakes"
-  },
-  {
    "title": "Modified Girls' Basketball Tryouts",
    "date": "2026-11-30",
    "end": "2026-12-01",
@@ -87,9 +81,9 @@
   },
   {
    "title": "School Spirit Friday",
-   "date": "2026-11-20",
+   "date": "2026-12-18",
    "end": "2027-06-18",
-   "href": "/event?d=2026-11-20&t=school-spirit-friday"
+   "href": "/event?d=2026-12-18&t=school-spirit-friday"
   },
   {
    "title": "Spring Spiritwear Drop",
