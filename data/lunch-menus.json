@@ -192,6 +192,219 @@
        "notes": []
       }
      }
+    },
+    "2026-12": {
+     "pdf": "https://www.schalmont.org/wp-content/uploads/2026/11/Woestina_Lunch_Menu_Dec_2026.pdf",
+     "ok": true,
+     "days": {
+      "2026-12-01": {
+       "items": [
+        "Turkey Hot Dog",
+        "Whole Grain Dinner Roll",
+        "Baked Beans",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-12-02": {
+       "items": [
+        "Wild Mike’s 4- cheese Pizza",
+        "Tossed Salad",
+        "LF Italian Dressing",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-12-03": {
+       "items": [
+        "WG Pasta w/Chicken in Alfredo Sauce",
+        "Whole Grain Texas Toast",
+        "Mixed Veggies",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-12-04": {
+       "items": [
+        "Mozzarella Sticks",
+        "Marinara Dipping Sauce",
+        "Seasoned Green Beans",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-12-07": {
+       "items": [
+        "Chicken Nuggets",
+        "BBQ Dipping Sauce",
+        "Whole Grain Dinner Roll",
+        "Green Beans",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-12-08": {
+       "items": [
+        "Cheese Beef Burger Sliders",
+        "Am. Yellow cheese Slice",
+        "Whole Grain Roll",
+        "French Fries",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-12-09": {
+       "items": [
+        "Homemade cheese Pizza",
+        "Tossed Salad",
+        "LF Italian Dressing",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-12-10": {
+       "items": [
+        "Meatball Sub",
+        "Whole Grain Roll",
+        "Topped w/ Mozzarella cheese",
+        "Corn",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-12-11": {
+       "items": [
+        "Cheese Quesadilla",
+        "Salsa",
+        "Sour Cream",
+        "Mexican Rice",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-12-14": {
+       "items": [
+        "Chicken Tenders",
+        "BBQ Dipping Sauce",
+        "WG Pretzel",
+        "Green Peas",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-12-15": {
+       "items": [
+        "WG Mac & Cheese",
+        "Whole Grain Dinner Roll",
+        "Cooked Carrots",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-12-16": {
+       "items": [
+        "Big Daddy’s Pizza",
+        "Tossed Salad",
+        "LF Italian Dressing",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-12-17": {
+       "items": [
+        "Orange Chicken",
+        "Brown Rice",
+        "Mixed Veggies",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-12-18": {
+       "items": [
+        "Deli Subs",
+        "Ham & Cheese on WG Roll Or Turkey & Cheese on WG Roll",
+        "Baked Chips .",
+        "Lettuce & Tomato Slice",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-12-21": {
+       "items": [
+        "Chicken Popcorn Boat",
+        "Corn",
+        "Mashed Potato",
+        "Gravy",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-12-22": {
+       "items": [
+        "WG Pancakes",
+        "Syrup",
+        "Crispy Potato Tots",
+        "Turkey Sausage Patty",
+        "Fruit"
+       ],
+       "notes": []
+      },
+      "2026-12-23": {
+       "items": [
+        "Stuffed Crust Pizza",
+        "Tossed Salad",
+        "LF Italian Dressing",
+        "Jolly Ice (Fruit)"
+       ],
+       "notes": []
+      },
+      "2026-12-24": {
+       "items": [
+        "Christmas Eve!"
+       ],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-25": {
+       "items": [
+        "Have a Merry Little Christmas!"
+       ],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-28": {
+       "items": [],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-29": {
+       "items": [],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-30": {
+       "items": [],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-31": {
+       "items": [],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      }
+     }
     }
    }
   },
@@ -392,6 +605,216 @@
         "Fresh Carrots w/LF Ranch Dip"
        ],
        "notes": []
+      }
+     }
+    },
+    "2026-12": {
+     "pdf": "https://www.schalmont.org/wp-content/uploads/2026/11/JES_MS_Lunch_Menu_Dec_2026.pdf",
+     "ok": true,
+     "days": {
+      "2026-12-01": {
+       "items": [
+        "Honey BBQ Beef Rib Sandwich",
+        "Whole Grain Roll",
+        "Smiley Fries",
+        "Fresh Celery Sticks w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-02": {
+       "items": [
+        "Wild Mike’s 4- cheese Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-03": {
+       "items": [
+        "WG Pasta w/Chicken in Alfredo Sauce",
+        "Whole Grain Texas Toast",
+        "Grated Cheese",
+        "Seasoned Mixed Veggies",
+        "Fresh Sliced Cucumbers w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-04": {
+       "items": [
+        "Pizza Crunchers",
+        "Marinara Dipping Sauce",
+        "Seasoned Green Beans",
+        "Fresh Celery w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-07": {
+       "items": [
+        "Chicken Tenders",
+        "BBQ Dipping Sauce",
+        "Whole Grain Dinner Roll",
+        "Seasoned Carrots",
+        "Fresh Carrots w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-08": {
+       "items": [
+        "Chicken & Cheese Quesadilla",
+        "Salsa & Sour Cream",
+        "Refried Beans",
+        "Fresh Celery w/ LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-09": {
+       "items": [
+        "Homemade Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-10": {
+       "items": [
+        "Chicken Patty on",
+        "Whole Grain Roll",
+        "Green Peas",
+        "Fresh Pepper Sticks w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-11": {
+       "items": [
+        "WG French toast Sticks",
+        "Turkey Sausage Patty",
+        "Syrup",
+        "Tater Tots",
+        "Fresh Celery w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-14": {
+       "items": [
+        "Chicken Nuggets",
+        "BBQ Dipping Sauce",
+        "Whole Grain Pretzels",
+        "Corn",
+        "Fresh Carrots w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-15": {
+       "items": [
+        "Cheeseburger or Burger on",
+        "Whole Grain Roll",
+        "French Fries",
+        "Fresh Celery Sticks w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-16": {
+       "items": [
+        "Big Daddy’s Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-17": {
+       "items": [
+        "Taco Salad",
+        "Chips & Lettuce, Salsa",
+        "Sour Cream, Cheddar Cheese",
+        "Black Beans",
+        "Fresh Celery w/ LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-18": {
+       "items": [
+        "Meatball Sub",
+        "Whole Grain Roll",
+        "Mozzarella Cheese",
+        "Garlic Green Beans",
+        "Fresh Veggie Sticks w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-21": {
+       "items": [
+        "Chicken Boat",
+        "Popcorn Chicken",
+        "Mashed Potato w/ Gravy",
+        "Buttery Corn",
+        "Fresh Mixed Veggies w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-22": {
+       "items": [
+        "WG Pancakes",
+        "Turkey Sausage Patty",
+        "Syrup",
+        "Tater Tots",
+        "Fresh Celery w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-23": {
+       "items": [
+        "Asst. Cheese Pizza Day!",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip",
+        "Jolly Ice"
+       ],
+       "notes": []
+      },
+      "2026-12-24": {
+       "items": [
+        "Christmas Eve!"
+       ],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-25": {
+       "items": [
+        "Merry Christmas!"
+       ],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-28": {
+       "items": [],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-29": {
+       "items": [],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-30": {
+       "items": [],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-31": {
+       "items": [],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
       }
      }
     }
@@ -596,6 +1019,216 @@
        "notes": []
       }
      }
+    },
+    "2026-12": {
+     "pdf": "https://www.schalmont.org/wp-content/uploads/2026/11/JES_MS_Lunch_Menu_Dec_2026.pdf",
+     "ok": true,
+     "days": {
+      "2026-12-01": {
+       "items": [
+        "Honey BBQ Beef Rib Sandwich",
+        "Whole Grain Roll",
+        "Smiley Fries",
+        "Fresh Celery Sticks w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-02": {
+       "items": [
+        "Wild Mike’s 4- cheese Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-03": {
+       "items": [
+        "WG Pasta w/Chicken in Alfredo Sauce",
+        "Whole Grain Texas Toast",
+        "Grated Cheese",
+        "Seasoned Mixed Veggies",
+        "Fresh Sliced Cucumbers w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-04": {
+       "items": [
+        "Pizza Crunchers",
+        "Marinara Dipping Sauce",
+        "Seasoned Green Beans",
+        "Fresh Celery w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-07": {
+       "items": [
+        "Chicken Tenders",
+        "BBQ Dipping Sauce",
+        "Whole Grain Dinner Roll",
+        "Seasoned Carrots",
+        "Fresh Carrots w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-08": {
+       "items": [
+        "Chicken & Cheese Quesadilla",
+        "Salsa & Sour Cream",
+        "Refried Beans",
+        "Fresh Celery w/ LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-09": {
+       "items": [
+        "Homemade Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-10": {
+       "items": [
+        "Chicken Patty on",
+        "Whole Grain Roll",
+        "Green Peas",
+        "Fresh Pepper Sticks w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-11": {
+       "items": [
+        "WG French toast Sticks",
+        "Turkey Sausage Patty",
+        "Syrup",
+        "Tater Tots",
+        "Fresh Celery w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-14": {
+       "items": [
+        "Chicken Nuggets",
+        "BBQ Dipping Sauce",
+        "Whole Grain Pretzels",
+        "Corn",
+        "Fresh Carrots w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-15": {
+       "items": [
+        "Cheeseburger or Burger on",
+        "Whole Grain Roll",
+        "French Fries",
+        "Fresh Celery Sticks w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-16": {
+       "items": [
+        "Big Daddy’s Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-17": {
+       "items": [
+        "Taco Salad",
+        "Chips & Lettuce, Salsa",
+        "Sour Cream, Cheddar Cheese",
+        "Black Beans",
+        "Fresh Celery w/ LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-18": {
+       "items": [
+        "Meatball Sub",
+        "Whole Grain Roll",
+        "Mozzarella Cheese",
+        "Garlic Green Beans",
+        "Fresh Veggie Sticks w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-21": {
+       "items": [
+        "Chicken Boat",
+        "Popcorn Chicken",
+        "Mashed Potato w/ Gravy",
+        "Buttery Corn",
+        "Fresh Mixed Veggies w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-22": {
+       "items": [
+        "WG Pancakes",
+        "Turkey Sausage Patty",
+        "Syrup",
+        "Tater Tots",
+        "Fresh Celery w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-23": {
+       "items": [
+        "Asst. Cheese Pizza Day!",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip",
+        "Jolly Ice"
+       ],
+       "notes": []
+      },
+      "2026-12-24": {
+       "items": [
+        "Christmas Eve!"
+       ],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-25": {
+       "items": [
+        "Merry Christmas!"
+       ],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-28": {
+       "items": [],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-29": {
+       "items": [],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-30": {
+       "items": [],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-31": {
+       "items": [],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      }
+     }
     }
    }
   },
@@ -798,9 +1431,219 @@
        "notes": []
       }
      }
+    },
+    "2026-12": {
+     "pdf": "https://www.schalmont.org/wp-content/uploads/2026/11/HS_Lunch_Menu_Dec_2026.pdf",
+     "ok": true,
+     "days": {
+      "2026-12-01": {
+       "items": [
+        "Beef Chili w/ Beans",
+        "Cheddar Cheese",
+        "Salsa & Sour Cream",
+        "WG Corn Bread",
+        "Fresh Celery Sticks w/ LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-02": {
+       "items": [
+        "Wild Mike’s 4- cheese Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-03": {
+       "items": [
+        "WG Pasta w/Chicken in Alfredo Sauce",
+        "Whole Grain Texas Toast",
+        "Grated Cheese",
+        "Seasoned Broccoli",
+        "Fresh Sliced Cucumbers w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-04": {
+       "items": [
+        "Mozzarella Sticks",
+        "Marinara Dipping Sauce",
+        "Seasoned Carrots",
+        "Fresh Mixed Veggies w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-07": {
+       "items": [
+        "Popcorn Chicken",
+        "BBQ Dipping Sauce",
+        "Whole Grain Dinner Roll",
+        "Seasoned Corn",
+        "Fresh Carrots w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-08": {
+       "items": [
+        "Bacon Cheeseburger or Burger",
+        "Whole Grain Roll",
+        "Baked Beans",
+        "Lettuce, Tomato Slice",
+        "Fresh Celery Sticks w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-09": {
+       "items": [
+        "Homemade Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-10": {
+       "items": [
+        "Hot Roast Beef & Cheddar Sandwich",
+        "Whole Grain Roll",
+        "Spiral Fries",
+        "Fresh Pepper Sticks w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-11": {
+       "items": [
+        "Chicken & Cheese Quesadilla",
+        "Salsa & Sour Cream",
+        "Mexican Rice",
+        "Fresh Mixed Veggies w/ LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-14": {
+       "items": [
+        "Chicken Tenders",
+        "BBQ Dipping Sauce",
+        "Whole Grain Cheez its",
+        "Green Beans",
+        "Fresh Carrots w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-15": {
+       "items": [
+        "WG Mac & Cheese",
+        "Whole Grain Dinner Roll",
+        "Seasoned Carrots",
+        "Fresh Celery Sticks w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-16": {
+       "items": [
+        "French bread Pizza",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-17": {
+       "items": [
+        "General Tso Chicken",
+        "Brown Rice",
+        "Seasoned Broccoli",
+        "Fresh Sliced Cucumbers w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-18": {
+       "items": [
+        "Honey BBQ Beef Rib Sandwich",
+        "Whole Grain Roll",
+        "Smiley Fries",
+        "Fresh Mixed Veggies w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-21": {
+       "items": [
+        "Chicken Boat",
+        "Popcorn Chicken",
+        "Mashed Potato w/ Gravy",
+        "Buttery Corn",
+        "Fresh Mixed Veggies w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-22": {
+       "items": [
+        "French bre ad Pizza",
+        "Tossed SalaWd Gw P/ aLnFc Iatakleias n Dressing",
+        "TomatTou rWkeeyd gSeaus swa/gLeF P Raatntyc h Dip",
+        "Syrup",
+        "Tatar Tots",
+        "Fresh Mixed Veggies w/LF Ranch Dip"
+       ],
+       "notes": []
+      },
+      "2026-12-23": {
+       "items": [
+        "Asst. Cheese Pizza Day!",
+        "Tossed Salad w/ LF Italian Dressing",
+        "Tomato Wedges w/LF Ranch Dip",
+        "Jolly Ice"
+       ],
+       "notes": []
+      },
+      "2026-12-24": {
+       "items": [
+        "Christmas Eve!"
+       ],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-25": {
+       "items": [
+        "Merry Christmas!"
+       ],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-28": {
+       "items": [],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-29": {
+       "items": [],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-30": {
+       "items": [],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      },
+      "2026-12-31": {
+       "items": [],
+       "notes": [
+        "Holiday Recess",
+        "No School"
+       ]
+      }
+     }
     }
    }
   }
  },
- "generated": "2026-11-01T10:58:33-05:00"
+ "generated": "2026-11-24T15:07:09-05:00"
 }
